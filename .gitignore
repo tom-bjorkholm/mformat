@@ -11,6 +11,7 @@ __pycache__
 *.egg-info
 base/venv
 base/venv/*
+base/dist
 base/dist/*
 base/build/*
 base/reports/*
@@ -22,6 +23,7 @@ base/__pycache__
 base/*.egg-info
 extend/venv
 extend/venv/*
+extend/dist
 extend/dist/*
 extend/build/*
 extend/reports/*
