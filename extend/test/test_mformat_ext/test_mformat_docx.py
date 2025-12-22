@@ -10,13 +10,13 @@ import pytest
 from mformat_ext.mformat_docx import MultiFormatDocx
 
 
-def test_exit_with_exception(capsys):
+def test_exit_with_exception(capsys):    # pylint: disable=duplicate-code
     """Test that exception propagates from __exit__."""
-    with TemporaryFile('w+b') as file:
+    with TemporaryFile('w+b') as file:  # pylint: disable=duplicate-code
         with pytest.raises(RuntimeError) as exc:
-            with MultiFormatDocx(file) as _:
+            with MultiFormatDocx(file) as _:  # pylint: disable=duplicate-code
                 raise RuntimeError('test exception')
-        assert exc.value.args[0] == 'test exception'
     out, err = capsys.readouterr()
-    assert out == ''
     assert err == ''
+    assert out == ''
+    assert exc.value.args[0] == 'test exception'

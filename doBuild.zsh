@@ -35,7 +35,7 @@ TSUMFILE=${DOCOUTDIR}/test_summary.md
 FLAKEOUTDIR=${DOCOUTDIR}/flake_report
 MYPYOUTDIR=${DOCOUTDIR}/mypy_report
 MYPYOUTFILE=${DOCOUTDIR}/mypy_errors.txt
-VER=`grep version < setup.py  | sed 'sX.*=.XXg' | sed 'sX.,$XXg'`
+VER=`grep version < base/setup.py  | sed 'sX.*=.XXg' | sed 'sX.,$XXg'`
 BUILDLOG=${DOCOUTDIR}/build_log.txt
 PYTESTLOG=${DOCOUTDIR}/pytest_log.txt
 if (($#VENVOKMARK == 0)) ; then
