@@ -5,34 +5,36 @@
 # MIT License
 #
 
-from io import BufferedWriter, BufferedRandom
-from types import TracebackType
 from docx import Document
-from mformat.mformat import MultiFormat, Iov
+from mformat.mformat import FormatterDescriptor, MultiFormat, \
+    MultiFormatState
 
 
 class MultiFormatDocx(MultiFormat):
     """Extension of the MultiFormat class for DOCX files."""
 
-    def __init__(self, file: Iov) -> None:
+    def __init__(self, file_name: str, url_as_text: bool = False) -> None:
         """Initialize the MultiFormatDocx class."""
-        assert isinstance(file, (BufferedWriter, BufferedRandom))
         self.doc = Document()
         self.entered = False
-        super().__init__(file)
+        super().__init__(file_name=file_name, url_as_text=url_as_text)
 
-    def __enter__(self) -> 'MultiFormatDocx':
-        """Enter the context manager."""
-        self.entered = True
-        super().__enter__()
-        return self
+    def file_name_extension(self) -> str:
+        """Get the file name extension for the formatter."""
+        return '.docx'
 
-    def __exit__(self, exc_type: type[BaseException] | None,
-                 exc_value: BaseException | None,
-                 traceback: TracebackType | None) -> bool:
-        """Exit the context manager."""
-        assert isinstance(self.file, (BufferedWriter, BufferedRandom))
-        if self.entered:
-            self.doc.save(self.file)
-        self.entered = False
-        return super().__exit__(exc_type, exc_value, traceback)
+    @classmethod
+    def get_arg_desciption(cls) -> FormatterDescriptor:
+        """Get the description of the arguments for the formatter."""
+        return FormatterDescriptor(name='docx', mandatory_args=[],
+                                   optional_args=[])
+
+    def open(self) -> None:
+        """Open the file."""
+        self.doc.save(self.file_name)
+
+    def close(self) -> None:
+        """Close the file."""
+        if self.state == MultiFormatState.EMPTY:
+            return
+        self.doc.save(self.file_name)
