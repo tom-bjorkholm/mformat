@@ -131,7 +131,7 @@ class MultiFormat:
                 self._start_paragraph()
         elif how == NewOrAppend.MUST_APPEND:
             err = f'Paragraph append required, but state is {self.state.name}'
-            raise ValueError(err)
+            raise RuntimeError(err)
         elif self.state == MultiFormatState.PARAGRAPH_END:
             self._start_paragraph()
         elif self.state not in (MultiFormatState.PARAGRAPH,

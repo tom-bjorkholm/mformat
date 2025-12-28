@@ -8,7 +8,7 @@ This is work in progress. Currently it is **not** ready for use.
 
 ## Test summary
 
-* Test result: 11 passed in 1s
+* Test result: 25 passed in 1s
 * No Flake8 warnings.
 * No mypy errors found.
 * 0.0.1 built and tested using python version: Python 3.14.2

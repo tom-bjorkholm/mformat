@@ -5,20 +5,19 @@
 # MIT License
 #
 
-from tempfile import TemporaryDirectory
 import pytest
-# from mformat.mformat import MultiFormat
-from mformat.mformat_md import MultiFormatMd
+from mformat.mformat import MultiFormat
 
 
-def test_exit_with_exception(capsys):  # pylint: disable=duplicate-code
-    """Test that exception propagates from __exit__."""
-    with TemporaryDirectory() as temp_dir:  # pylint: disable=duplicate-code
-        file_name = temp_dir + '/test.txt'  # pylint: disable=duplicate-code
-        with pytest.raises(RuntimeError) as exc:  # pylint: disable=duplicate-code # noqa: E501
-            with MultiFormatMd(file_name=file_name) as _:  # pylint: disable=duplicate-code # noqa: E501
-                raise RuntimeError('test exception')
-        assert exc.value.args[0] == 'test exception'
-        out, err = capsys.readouterr()
-        assert err == ''
-        assert out == ''
+@pytest.mark.parametrize('file_name, extension, res',
+                         [('test', 'txt', 'test.txt'),
+                          ('test.txt', 'txt', 'test.txt'),
+                          ('test.txt', 'html', 'test.txt.html'),
+                          ('test', 'md', 'test.md'),
+                          ('test.txt', 'docx', 'test.txt.docx'),
+                          ('test.txt', 'pdf', 'test.txt.pdf'),
+                          ('test.txt', 'csv', 'test.txt.csv'),
+                          ('test.txt', 'json', 'test.txt.json')])
+def test_file_name_with_extension(file_name, extension, res):
+    """Test the file_name_with_extension method."""
+    assert MultiFormat.file_name_with_extension(file_name, extension) == res

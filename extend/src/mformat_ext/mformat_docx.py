@@ -16,7 +16,6 @@ class MultiFormatDocx(MultiFormat):
     def __init__(self, file_name: str, url_as_text: bool = False) -> None:
         """Initialize the MultiFormatDocx class."""
         self.doc = Document()
-        self.entered = False
         super().__init__(file_name=file_name, url_as_text=url_as_text)
 
     def file_name_extension(self) -> str:

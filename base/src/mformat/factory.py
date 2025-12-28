@@ -7,9 +7,10 @@
 
 from typing import Optional
 from mformat.mformat import MultiFormat, FormatterDescriptor
+from mformat.reg_pkg_formats import register_formats_in_pkg
 
 
-the_factory: Optional[MultiFormatFactory] = None  # pylint: disable=invalid-name # noqa: E501
+_the_factory: Optional[MultiFormatFactory] = None  # pylint: disable=invalid-name # noqa: E501
 
 
 class MultiFormatFactory:
@@ -19,26 +20,29 @@ class MultiFormatFactory:
         """Initialize the factory with an empty registry."""
         self._registry: dict[str, type[MultiFormat]] = {}
         self._usage: dict[str, FormatterDescriptor] = {}
+        formats: list[type[MultiFormat]] = register_formats_in_pkg()
+        for format_class in formats:
+            self.i_register(format_class)
 
     @staticmethod
     def i_get_factory() -> MultiFormatFactory:
-        """Get the factory instance."""
-        global the_factory  # pylint: disable=global-statement # noqa: E501
-        if the_factory is None:
-            the_factory = MultiFormatFactory()
-        return the_factory
+        """Internally get the factory instance."""
+        global _the_factory  # pylint: disable=global-statement # noqa: E501
+        if _the_factory is None:
+            _the_factory = MultiFormatFactory()
+        return _the_factory
 
     @staticmethod
     def register(format_class: type[MultiFormat]) -> None:
         """Register a MultiFormat subclass with the factory."""
-        if not issubclass(format_class, MultiFormat):
-            err = f'{format_class.__name__} must be a subclass of MultiFormat'
-            raise ValueError(err)
         factory = MultiFormatFactory.i_get_factory()
         factory.i_register(format_class=format_class)
 
     def i_register(self, format_class: type[MultiFormat]) -> None:
-        """Register a MultiFormat subclass with the factory."""
+        """Internally register a MultiFormat subclass with the factory."""
+        if not issubclass(format_class, MultiFormat):
+            err = f'{format_class.__name__} must be a subclass of MultiFormat'
+            raise ValueError(err)
         desc: FormatterDescriptor = format_class.get_arg_desciption()
         self._registry[desc.name] = format_class
         self._usage[desc.name] = desc
@@ -70,7 +74,7 @@ class MultiFormatFactory:
     def i_create(self, format_name: str, file_name: str,
                  url_as_text: bool = False,
                  args: Optional[dict[str, str]] = None) -> MultiFormat:
-        """Create an instance of a registered MultiFormat subclass."""
+        """Internally create an instance of a registered subclass."""
         if format_name not in self._registry:
             raise ValueError(
                 f'Format "{format_name}" is not registered. '
@@ -94,7 +98,7 @@ class MultiFormatFactory:
         return factory.i_get_registered_formats()
 
     def i_get_registered_formats(self) -> list[str]:
-        """Get a list of registered format names."""
+        """Internally get a list of registered format names."""
         return list(self._registry.keys())
 
     @staticmethod
@@ -104,5 +108,5 @@ class MultiFormatFactory:
         return factory.i_get_usage(format_name=format_name)
 
     def i_get_usage(self, format_name: str) -> FormatterDescriptor:
-        """Get the usage information for a registered format."""
+        """Internally get the usage information for a registered format."""
         return self._usage[format_name]
