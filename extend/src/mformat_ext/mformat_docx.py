@@ -18,7 +18,8 @@ class MultiFormatDocx(MultiFormat):
         self.doc = Document()
         super().__init__(file_name=file_name, url_as_text=url_as_text)
 
-    def file_name_extension(self) -> str:
+    @classmethod
+    def file_name_extension(cls) -> str:
         """Get the file name extension for the formatter."""
         return '.docx'
 
@@ -29,11 +30,19 @@ class MultiFormatDocx(MultiFormat):
                                    optional_args=[])
 
     def open(self) -> None:
-        """Open the file."""
+        """Open the file.
+
+        Avoid using this method directly.
+        Use as a context manager instead, using a with statement.
+        """
         self.doc.save(self.file_name)
 
     def close(self) -> None:
-        """Close the file."""
+        """Close the file.
+
+        Avoid using this method directly.
+        Use as a context manager instead, using a with statement.
+        """
         if self.state == MultiFormatState.EMPTY:
             return
         self.doc.save(self.file_name)

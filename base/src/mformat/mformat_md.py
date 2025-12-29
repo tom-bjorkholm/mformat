@@ -16,7 +16,8 @@ class MultiFormatMd(MultiFormatTextBased):
         """Initialize the MdFormat class."""
         super().__init__(file_name=file_name, url_as_text=url_as_text)
 
-    def file_name_extension(self) -> str:
+    @classmethod
+    def file_name_extension(cls) -> str:
         """Get the file name extension for the formatter."""
         return '.md'
 

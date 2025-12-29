@@ -83,7 +83,7 @@ set +eE
 ${PYTHON} -m flake8 --format=html --htmldir=${FLAKEOUTDIR} base/src base/test extend/src extend/test 2>&1 | tee ${FLAKEOUTFILE}
 ${PYTHON} -m mypy base/src extend/src --strict --html-report ${MYPYOUTDIR} 2>&1 | tee ${MYPYOUTFILE}
 set -eE
-pytest --pylint ${pytestflag} --pylint-jobs=16 --html=${DOCOUTDIR}/pytest_report.html --cov=${PKG1} --cov-report=html:${DOCOUTDIR}/coverage 2>&1 | tee ${PYTESTLOG}
+pytest --pylint ${pytestflag} --pylint-jobs=16 --html=${DOCOUTDIR}/pytest_report.html --cov=${PKG1} --cov=${PKG2} --cov-report=html:${DOCOUTDIR}/coverage 2>&1 | tee ${PYTESTLOG}
 testStatus=$?
 set +v
 cat > ${DOCINDEX} <<EOF

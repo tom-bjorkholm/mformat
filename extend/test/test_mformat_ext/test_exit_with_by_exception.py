@@ -13,7 +13,6 @@ from mformat.mformat_md import MultiFormatMd
 from mformat.mformat_html import MultiFormatHtml
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize('cls, fname, file_created',
                          [(MultiFormatDocx, 'test.docx', True),
                           (MultiFormatMd, 'test.md', True),

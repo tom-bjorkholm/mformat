@@ -20,7 +20,8 @@ class MultiFormatHtml(MultiFormatTextBased):
         self.title: str = title
         self.css_file: Optional[str] = css_file
 
-    def file_name_extension(self) -> str:
+    @classmethod
+    def file_name_extension(cls) -> str:
         """Get the file name extension for the formatter."""
         return '.html'
 

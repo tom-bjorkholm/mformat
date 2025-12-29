@@ -52,7 +52,7 @@ class MultiFormat:
 
     def __init__(self, file_name: str,
                  url_as_text: bool = False):
-        """Initialize the MFormat class."""
+        """Initialize the MultiFormat class."""
         self.file_name: str = \
             self.file_name_with_extension(file_name,
                                           self.file_name_extension())
@@ -91,34 +91,43 @@ class MultiFormat:
         return FormatterDescriptor(name='', mandatory_args=[],
                                    optional_args=[])
 
-    def file_name_extension(self) -> str:
+    @classmethod
+    def file_name_extension(cls) -> str:
         """Get the file name extension for the formatter.
 
         Must be overridden by subclasses.
         """
-        err = self._must_be_overridden('file_name_extension')
+        err = cls._must_be_overridden('file_name_extension')
         raise NotImplementedError(err)
         # pylint: disable=unreachable
         return ''
 
     def open(self) -> None:
-        """Open the file."""
+        """Open the file.
+
+        Avoid using this method directly.
+        Use MultiFormat as a context manager instead, using a with statement.
+        """
         err = self._must_be_overridden('open')
         raise NotImplementedError(err)
 
     def close(self) -> None:
-        """Close the file."""
+        """Close the file.
+
+        Avoid using this method directly.
+        Use MultiFormat as a context manager instead, using a with statement.
+        """
         err = self._must_be_overridden('close')
         raise NotImplementedError(err)
 
     def _write_file_prefix(self) -> None:
         """Write the file prefix."""
-        err = self._must_be_overridden('write_file_prefix')
+        err = self._must_be_overridden('_write_file_prefix')
         raise NotImplementedError(err)
 
     def _write_file_suffix(self) -> None:
         """Write the file suffix."""
-        err = self._must_be_overridden('write_file_suffix')
+        err = self._must_be_overridden('_write_file_suffix')
         raise NotImplementedError(err)
 
     def write_paragraph(self, text: str,
@@ -152,18 +161,18 @@ class MultiFormat:
 
     def _start_paragraph(self) -> None:
         """Start a paragraph."""
-        err = self._must_be_overridden('start_paragraph')
+        err = self._must_be_overridden('_start_paragraph')
         raise NotImplementedError(err)
 
     def _end_paragraph(self) -> None:
         """End a paragraph."""
-        err = self._must_be_overridden('end_paragraph')
+        err = self._must_be_overridden('_end_paragraph')
         raise NotImplementedError(err)
 
     def _write_in_paragraph(self, text: str) -> None:
         """Write text into current paragraph."""
         assert isinstance(text, str)
-        err = self._must_be_overridden('write_paragraph')
+        err = self._must_be_overridden('_write_in_paragraph')
         raise NotImplementedError(err)
 
     @staticmethod
@@ -177,6 +186,6 @@ class MultiFormat:
 
     @classmethod
     def _must_be_overridden(cls, func_name: str) -> str:
-        """Raise an error if the function is not overridden by a subclass."""
+        """Error message if the function is not overridden by a subclass."""
         return f'{func_name} must be overridden by a ' + \
             f'subclass {cls.__name__}'

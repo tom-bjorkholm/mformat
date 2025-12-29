@@ -18,12 +18,20 @@ class MultiFormatTextBased(MultiFormat):
         self.file: Optional[TextIO] = None
 
     def open(self) -> None:
-        """Open the file."""
+        """Open the file.
+
+        Avoid using this method directly.
+        Use as a context manager instead, using a with statement.
+        """
         self.file = open(self.file_name,  # pylint: disable=consider-using-with
                          mode='wt', encoding='utf-8')
 
     def close(self) -> None:
-        """Close the file."""
+        """Close the file.
+
+        Avoid using this method directly.
+        Use as a context manager instead, using a with statement.
+        """
         if self.file is None:
             return
         assert self.file is not None
