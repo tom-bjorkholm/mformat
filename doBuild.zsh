@@ -145,7 +145,7 @@ cat >> ${DOCINDEX} <<EOF
 EOF
 echo "Build and test using python version:" `${PYTHON} --version`
 if [[ ${skipped} -eq 0 ]] ; then
-  for i in README.md README_pypi.md ; do
+  for i in README.md base/README_pypi.md extend/README_pypi.md ; do
     sed -n '/## Test summary/q;p' < ${i} > ${i}.new
     cat ${i}.new ${TSUMFILE} > ${i}
     rm ${i}.new

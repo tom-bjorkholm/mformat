@@ -8,6 +8,7 @@
 import builtins
 import sys
 import pytest  # pylint: disable=unused-import # noqa: F401
+from check_capsys import check_capsys
 from mformat.reg_pkg_formats import register_formats_in_pkg
 from mformat.mformat_html import MultiFormatHtml
 from mformat.mformat_md import MultiFormatMd
@@ -34,9 +35,7 @@ def test_register_pkg_formats1(capsys, monkeypatch):
     # Intercept imports
     monkeypatch.setattr(builtins, "__import__", fake_import)
     assert register_formats_in_pkg() == [MultiFormatHtml, MultiFormatMd]
-    out, err = capsys.readouterr()
-    assert err == ''
-    assert out == ''
+    check_capsys(capsys)
 
 
 def test_register_pkg_formats2(capsys):
@@ -45,6 +44,4 @@ def test_register_pkg_formats2(capsys):
     from mformat_ext.mformat_docx import MultiFormatDocx
     assert register_formats_in_pkg() == \
         [MultiFormatHtml, MultiFormatMd, MultiFormatDocx]
-    out, err = capsys.readouterr()
-    assert err == ''
-    assert out == ''
+    check_capsys(capsys)

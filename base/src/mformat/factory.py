@@ -76,8 +76,9 @@ class MultiFormatFactory:
         """Internally create an instance of a registered subclass."""
         if format_name not in self._registry:
             raise ValueError(
-                f'Format "{format_name}" is not registered. '
-                f'Available formats: {list(self._registry.keys())}'
+                f'Format "{format_name}" is not registered. ' +
+                'Available formats: ' +
+                f'{", ".join(sorted(list(self._registry.keys())))}'
             )
         format_class = self._registry[format_name]
         if args is None:
@@ -108,6 +109,12 @@ class MultiFormatFactory:
 
     def i_get_usage(self, format_name: str) -> FormatterDescriptor:
         """Internally get the usage information for a registered format."""
+        if format_name not in self._usage:
+            raise ValueError(
+                f'Format "{format_name}" is not registered. ' +
+                'Available formats: ' +
+                f'{", ".join(sorted(list(self._registry.keys())))}'
+            )
         return self._usage[format_name]
 
 

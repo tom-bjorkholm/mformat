@@ -6,6 +6,7 @@
 #
 
 import pytest
+from check_capsys import check_capsys
 from mformat.mformat import MultiFormat, MultiFormatState, NewOrAppend
 
 
@@ -37,9 +38,7 @@ def test_must_be_overridden1(capsys):
     # pylint: disable=protected-access
     msg = MultiFormat._must_be_overridden('test')
     assert msg == 'test must be overridden by a subclass MultiFormat'
-    out, err = capsys.readouterr()
-    assert err == ''
-    assert out == ''
+    check_capsys(capsys)
 
 
 def test_must_be_overridden2(capsys):
@@ -47,9 +46,7 @@ def test_must_be_overridden2(capsys):
     # pylint: disable=protected-access
     msg = MultiFormat2._must_be_overridden('test')
     assert msg == 'test must be overridden by a subclass MultiFormat2'
-    out, err = capsys.readouterr()
-    assert err == ''
-    assert out == ''
+    check_capsys(capsys)
 
 
 def test_file_name_extension(capsys):
@@ -58,9 +55,7 @@ def test_file_name_extension(capsys):
         _ = MultiFormat.file_name_extension()
     assert exc.value.args[0] == 'file_name_extension must be overridden ' + \
         'by a subclass MultiFormat'
-    out, err = capsys.readouterr()
-    assert err == ''
-    assert out == ''
+    check_capsys(capsys)
 
 
 def test_get_arg_desciption(capsys):
@@ -69,17 +64,13 @@ def test_get_arg_desciption(capsys):
         _ = MultiFormat.get_arg_desciption()
     assert exc.value.args[0] == 'get_arg_desciption must be overridden ' + \
         'by a subclass MultiFormat'
-    out, err = capsys.readouterr()
-    assert err == ''
-    assert out == ''
+    check_capsys(capsys)
 
 
 def test_file_name_extension2(capsys):
     """Test that the file_name_extension method is overridden."""
     assert MultiFormat2.file_name_extension() == '.test'
-    out, err = capsys.readouterr()
-    assert err == ''
-    assert out == ''
+    check_capsys(capsys)
 
 
 def test_mft_init(capsys):
@@ -88,9 +79,7 @@ def test_mft_init(capsys):
     assert mfmt.file_name == 'test.test'
     assert mfmt.state == MultiFormatState.EMPTY
     assert not mfmt.url_as_text
-    out, err = capsys.readouterr()
-    assert err == ''
-    assert out == ''
+    check_capsys(capsys)
 
 
 @pytest.mark.parametrize('method_name',
@@ -104,9 +93,7 @@ def test_cls_method_not_overridden(capsys, method_name):
         _ = getattr(mfmt, method_name)()
     assert exc.value.args[0] == f'{method_name} must be overridden by a ' + \
         'subclass MultiFormat2'
-    out, err = capsys.readouterr()
-    assert err == ''
-    assert out == ''
+    check_capsys(capsys)
 
 
 def test_write_in_paragraph(capsys):
@@ -116,9 +103,7 @@ def test_write_in_paragraph(capsys):
         mfmt._write_in_paragraph('test')  # pylint: disable=protected-access
     assert exc.value.args[0] == '_write_in_paragraph must be overridden ' + \
         'by a subclass MultiFormat2'
-    out, err = capsys.readouterr()
-    assert err == ''
-    assert out == ''
+    check_capsys(capsys)
 
 
 class MultiFormat3(MultiFormat2):
@@ -175,9 +160,7 @@ def test_end_state(capsys, from_state, to_state, count):
     mfmt._end_state()  # pylint: disable=protected-access
     assert mfmt.state == to_state
     assert mfmt.count == count
-    out, err = capsys.readouterr()
-    assert err == ''
-    assert out == ''
+    check_capsys(capsys)
 
 
 class MultiFormat4(MultiFormat3):
@@ -225,9 +208,7 @@ def test_write_paragraph(capsys,  # pylint: disable=too-many-arguments,too-many-
     mfmt.write_paragraph(text=text, how=how)
     assert mfmt.state == to_state
     assert mfmt.count == count
-    out, err = capsys.readouterr()
-    assert err == ''
-    assert out == ''
+    check_capsys(capsys)
 
 
 @pytest.mark.parametrize('from_state, to_state, how, text, exc, msg',
@@ -251,10 +232,8 @@ def test_write_paragraph_error(capsys,  # pylint: disable=too-many-arguments,too
     with pytest.raises(exc) as exc2:
         mfmt.write_paragraph(text=text, how=how)
     assert exc2.value.args[0] == msg
-    out, err = capsys.readouterr()
     assert mfmt.state == to_state
-    assert err == ''
-    assert out == ''
+    check_capsys(capsys)
 
 
 class MultiFormat5(MultiFormat4):
@@ -275,6 +254,4 @@ def test_enter_exit(capsys):
         assert isinstance(mfmt, MultiFormat5)
         assert mfmt.count == {'open': 1}
     assert mfmt.count == {'open': 1, 'close': 1}
-    out, err = capsys.readouterr()
-    assert err == ''
-    assert out == ''
+    check_capsys(capsys)
