@@ -18,6 +18,6 @@ def register_formats_in_pkg() -> list[type[MultiFormat]]:
         # pylint: disable=import-outside-toplevel,wrong-import-order
         from mformat_ext.reg_extpkg_formats import register_formats_in_ext_pkg
         ret += register_formats_in_ext_pkg()
-    except ImportError:
+    except (ImportError, ModuleNotFoundError):
         pass  # mformat_ext package not installed
     return ret

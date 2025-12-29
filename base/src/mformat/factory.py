@@ -58,10 +58,9 @@ class MultiFormatFactory:
             file_name: The file path to pass to the MultiFormat constructor.
             url_as_text: Format URLs as text not clickable URLs.
             args: additional arguments to pass to the MultiFormat constructor.
-
         Returns:
             An instance of the requested MultiFormat subclass.
-
+            Intended to be used as context manager, using a with statement.
         Raises:
             ValueError: If the format_name is not registered.
         """
@@ -110,3 +109,26 @@ class MultiFormatFactory:
     def i_get_usage(self, format_name: str) -> FormatterDescriptor:
         """Internally get the usage information for a registered format."""
         return self._usage[format_name]
+
+
+def create(format_name: str, file_name: str,
+           url_as_text: bool = False,
+           args: Optional[dict[str, str]] = None) -> MultiFormat:
+    """Create an instance of a registered MultiFormat subclass.
+
+    Intended to be used as context manager, using a with statement.
+    This is a shortcut for MultiFormatFactory.create().
+    Args:
+        format_name: The name identifier of the format class to create.
+        file_name: The file path to pass to the MultiFormat constructor.
+        url_as_text: Format URLs as text not clickable URLs.
+        args: additional arguments to pass to the MultiFormat constructor.
+    Returns:
+        An instance of the requested MultiFormat subclass.
+    Raises:
+        ValueError: If the format_name is not registered.
+    """
+    return MultiFormatFactory.create(format_name=format_name,
+                                     file_name=file_name,
+                                     url_as_text=url_as_text,
+                                     args=args)
