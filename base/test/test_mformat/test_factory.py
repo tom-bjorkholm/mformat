@@ -158,7 +158,7 @@ def test_factory_reg_ok(capsys):
                             optional_args=[])
     assert MultiFormatFactory.get_usage('html') == \
         FormatterDescriptor(name='html', mandatory_args=[],
-                            optional_args=['title', 'css_file'])
+                            optional_args=['title', 'css_file', 'lang'])
     assert MultiFormatFactory.get_usage('docx') == \
         FormatterDescriptor(name='docx', mandatory_args=[],
                             optional_args=[])
