@@ -21,6 +21,12 @@ class MultiFormatTextBased2(MultiFormatTextBased):
         """Test the file_name_extension method."""
         return '.test'
 
+    def _end_paragraph(self) -> None:
+        """Mock the end_paragraph method."""
+
+    def _write_file_suffix(self) -> None:
+        """Mock the write_file_suffix method."""
+
 
 @pytest.mark.parametrize('fname', ['a.test', 'b.test', 'c.test'])
 def test_open_close_context_manager(capsys, fname):

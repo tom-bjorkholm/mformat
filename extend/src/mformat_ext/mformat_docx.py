@@ -37,7 +37,7 @@ class MultiFormatDocx(MultiFormat):
         """
         self.doc.save(self.file_name)
 
-    def close(self) -> None:
+    def _close(self) -> None:
         """Close the file.
 
         Avoid using this method directly.

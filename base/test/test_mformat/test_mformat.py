@@ -83,7 +83,7 @@ def test_mft_init(capsys):
 
 
 @pytest.mark.parametrize('method_name',
-                         ['open', 'close',
+                         ['open', '_close',
                           '_write_file_prefix', '_write_file_suffix',
                           '_start_paragraph', '_end_paragraph'])
 def test_cls_method_not_overridden(capsys, method_name):
@@ -243,9 +243,9 @@ class MultiFormat5(MultiFormat4):
         """Open the file."""
         self.inc_count('open')
 
-    def close(self) -> None:
+    def _close(self) -> None:
         """Close the file."""
-        self.inc_count('close')
+        self.inc_count('_close')
 
 
 def test_enter_exit(capsys):
@@ -253,5 +253,5 @@ def test_enter_exit(capsys):
     with MultiFormat5(file_name='test', expected_text='abc') as mfmt:
         assert isinstance(mfmt, MultiFormat5)
         assert mfmt.count == {'open': 1}
-    assert mfmt.count == {'open': 1, 'close': 1}
+    assert mfmt.count == {'open': 1, '_close': 1}
     check_capsys(capsys)

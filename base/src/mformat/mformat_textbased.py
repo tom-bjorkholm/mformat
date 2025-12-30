@@ -26,7 +26,7 @@ class MultiFormatTextBased(MultiFormat):
         self.file = open(self.file_name,  # pylint: disable=consider-using-with
                          mode='wt', encoding='utf-8')
 
-    def close(self) -> None:
+    def _close(self) -> None:
         """Close the file.
 
         Avoid using this method directly.
@@ -34,6 +34,5 @@ class MultiFormatTextBased(MultiFormat):
         """
         if self.file is None:
             return
-        assert self.file is not None
         self.file.close()
         self.file = None

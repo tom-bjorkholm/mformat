@@ -117,7 +117,17 @@ class MultiFormat:
         Avoid using this method directly.
         Use MultiFormat as a context manager instead, using a with statement.
         """
-        err = self._must_be_overridden('close')
+        if self.state != MultiFormatState.EMPTY:
+            self._end_state()
+            self._write_file_suffix()
+        self._close()
+
+    def _close(self) -> None:
+        """Close the file.
+
+        Must be overridden by subclasses.
+        """
+        err = self._must_be_overridden('_close')
         raise NotImplementedError(err)
 
     def _write_file_prefix(self) -> None:

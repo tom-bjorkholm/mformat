@@ -5,7 +5,7 @@
 # MIT License
 #
 
-import pytest
+import pytest  # pylint: disable=unused-import # noqa: F401
 from check_capsys import check_capsys
 from mformat.mformat_html import MultiFormatHtml
 from mformat.mformat import FormatterDescriptor
