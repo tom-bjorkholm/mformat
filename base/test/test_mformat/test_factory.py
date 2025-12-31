@@ -8,7 +8,7 @@
 import pytest
 from check_capsys import check_capsys
 from mformat.factory import MultiFormatFactory
-from mformat.factory import create as create_mf
+from mformat.factory import create_mf
 from mformat.mformat import MultiFormat, FormatterDescriptor
 
 

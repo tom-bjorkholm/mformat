@@ -10,7 +10,7 @@ import pytest
 from check_capsys import check_capsys
 from mformat.mformat_html import MultiFormatHtml
 from mformat.mformat import FormatterDescriptor, NewOrAppend
-from mformat.factory import create as create_mf
+from mformat.factory import create_mf
 
 
 def test_file_name_extension(capsys):

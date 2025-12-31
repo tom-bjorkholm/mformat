@@ -5,12 +5,24 @@
 # MIT License
 #
 
-from typing import Optional
+from typing import Optional, TypedDict, Callable
 from mformat.mformat import MultiFormat, FormatterDescriptor
 from mformat.reg_pkg_formats import register_formats_in_pkg
 
 
 _the_factory: Optional[MultiFormatFactory] = None  # pylint: disable=invalid-name # noqa: E501
+
+
+class OptArgsDict(TypedDict, total=False):
+    """Optional arguments for the MultiFormat constructor."""
+
+    file_exists_callback: Optional[Callable[[str], None]]
+    lang: Optional[str]
+    title: Optional[str]
+    css_file: Optional[str]
+
+
+type OptArgs = Optional[OptArgsDict]
 
 
 class MultiFormatFactory:
@@ -50,7 +62,7 @@ class MultiFormatFactory:
     @staticmethod
     def create(format_name: str, file_name: str,
                url_as_text: bool = False,
-               args: Optional[dict[str, str]] = None) -> MultiFormat:
+               args: OptArgs = None) -> MultiFormat:
         """Create an instance of a registered MultiFormat subclass.
 
         Args:
@@ -72,7 +84,7 @@ class MultiFormatFactory:
 
     def i_create(self, format_name: str, file_name: str,
                  url_as_text: bool = False,
-                 args: Optional[dict[str, str]] = None) -> MultiFormat:
+                 args: OptArgs = None) -> MultiFormat:
         """Internally create an instance of a registered subclass."""
         if format_name not in self._registry:
             raise ValueError(
@@ -84,8 +96,10 @@ class MultiFormatFactory:
         if args is None:
             return format_class(file_name=file_name, url_as_text=url_as_text)
         assert args is not None
-        return format_class(file_name=file_name, url_as_text=url_as_text,
-                            **args)
+        return format_class(file_name=file_name,  # type: ignore[misc]
+                            url_as_text=url_as_text, **args)
+        # mypy cannot see which MultiFormat subclass is being created, so it
+        # cannot know which arguments are valid.
 
     @staticmethod
     def get_registered_formats() -> list[str]:
@@ -99,7 +113,7 @@ class MultiFormatFactory:
 
     def i_get_registered_formats(self) -> list[str]:
         """Internally get a list of registered format names."""
-        return list(self._registry.keys())
+        return sorted(list(self._registry.keys()))
 
     @staticmethod
     def get_usage(format_name: str) -> FormatterDescriptor:
@@ -118,9 +132,9 @@ class MultiFormatFactory:
         return self._usage[format_name]
 
 
-def create(format_name: str, file_name: str,
-           url_as_text: bool = False,
-           args: Optional[dict[str, str]] = None) -> MultiFormat:
+def create_mf(format_name: str, file_name: str,
+              url_as_text: bool = False,
+              args: OptArgs = None) -> MultiFormat:
     """Create an instance of a registered MultiFormat subclass.
 
     Intended to be used as context manager, using a with statement.
@@ -139,3 +153,33 @@ def create(format_name: str, file_name: str,
                                      file_name=file_name,
                                      url_as_text=url_as_text,
                                      args=args)
+
+
+def list_registered_mf() -> list[str]:
+    """Get a list of all registered format names.
+
+    This is a shortcut for MultiFormatFactory.get_registered_formats().
+    Returns:
+        A list of registered format name strings.
+    """
+    return MultiFormatFactory.get_registered_formats()
+
+
+def usage_mf(format_name: str) -> FormatterDescriptor:
+    """Get the usage information for a registered format.
+
+    This is a shortcut for MultiFormatFactory.get_usage().
+    """
+    return MultiFormatFactory.get_usage(format_name=format_name)
+
+
+def register_mf(format_class: type[MultiFormat]) -> None:
+    """Register a MultiFormat subclass with the factory.
+
+    This is a shortcut for MultiFormatFactory.register().
+    Args:
+        format_class: The MultiFormat subclass to register.
+    Raises:
+        ValueError: If the format_class is not a subclass of MultiFormat.
+    """
+    MultiFormatFactory.register(format_class=format_class)

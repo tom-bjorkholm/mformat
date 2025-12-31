@@ -5,7 +5,7 @@
 # MIT License
 #
 
-from typing import Optional
+from typing import Optional, Callable
 from mformat.mformat_textbased import MultiFormatTextBased
 from mformat.mformat import FormatterDescriptor
 
@@ -15,10 +15,27 @@ class MultiFormatHtml(MultiFormatTextBased):
 
     def __init__(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                  file_name: str, url_as_text: bool = False,
+                 file_exists_callback: Optional[Callable[[str], None]] = None,
                  title: str = 'HTML file', css_file: Optional[str] = None,
                  lang: str = 'en'):
-        """Initialize the HtmlFormat class."""
-        super().__init__(file_name=file_name, url_as_text=url_as_text)
+        """Initialize the HtmlFormat class.
+
+        Args:
+            file_name: The name of the file to write to.
+            url_as_text: Format URLs as text not clickable URLs.
+            file_exists_callback: A callback function to call if the file
+                                  already exists. Return to allow the file to
+                                  be overwritten. Raise an exception to prevent
+                                  the file from being overwritten.
+                                  (May for instance save existing file as
+                                  backup.)
+                                  (Default is to raise an exception.)
+            title: The title of the HTML file.
+            css_file: The name of the CSS file to use.
+            lang: The language of the HTML file.
+        """
+        super().__init__(file_name=file_name, url_as_text=url_as_text,
+                         file_exists_callback=file_exists_callback)
         self.title: str = title
         self.css_file: Optional[str] = css_file
         self.lang: str = lang

@@ -10,7 +10,7 @@ import os
 import pytest
 from mformat_ext.mformat_docx import MultiFormatDocx
 from mformat.mformat import FormatterDescriptor
-from mformat.factory import create as create_mf
+from mformat.factory import create_mf
 
 
 def test_file_name_extension(capsys):

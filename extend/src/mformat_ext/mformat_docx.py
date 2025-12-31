@@ -5,6 +5,7 @@
 # MIT License
 #
 
+from typing import Optional, Callable
 from docx import Document
 from mformat.mformat import FormatterDescriptor, MultiFormat, \
     MultiFormatState
@@ -13,10 +14,24 @@ from mformat.mformat import FormatterDescriptor, MultiFormat, \
 class MultiFormatDocx(MultiFormat):
     """Extension of the MultiFormat class for DOCX files."""
 
-    def __init__(self, file_name: str, url_as_text: bool = False) -> None:
-        """Initialize the MultiFormatDocx class."""
+    def __init__(self, file_name: str, url_as_text: bool = False,
+                 file_exists_callback: Optional[Callable[[str], None]] = None):
+        """Initialize the MultiFormatDocx class.
+
+        Args:
+            file_name: The name of the file to write to.
+            url_as_text: Format URLs as text not clickable URLs.
+            file_exists_callback: A callback function to call if the file
+                                  already exists. Return to allow the file to
+                                  be overwritten. Raise an exception to prevent
+                                  the file from being overwritten.
+                                  (May for instance save existing file as
+                                  backup.)
+                                  (Default is to raise an exception.)
+        """
         self.doc = Document()
-        super().__init__(file_name=file_name, url_as_text=url_as_text)
+        super().__init__(file_name=file_name, url_as_text=url_as_text,
+                         file_exists_callback=file_exists_callback)
 
     @classmethod
     def file_name_extension(cls) -> str:

@@ -7,7 +7,9 @@
 
 from types import TracebackType
 from enum import IntEnum, auto
-from typing import NamedTuple
+from typing import NamedTuple, Callable, Optional
+import sys
+import os
 
 
 class FormatterDescriptor(NamedTuple):
@@ -51,16 +53,34 @@ class MultiFormat:
     """Base class for all multi file format classes."""
 
     def __init__(self, file_name: str,
-                 url_as_text: bool = False):
-        """Initialize the MultiFormat class."""
+                 url_as_text: bool = False,
+                 file_exists_callback: Optional[Callable[[str], None]]
+                 = None):
+        """Initialize the MultiFormat class.
+
+        Args:
+            file_name: The name of the file to write to.
+            url_as_text: Format URLs as text not clickable URLs.
+            file_exists_callback: A callback function to call if the file
+                                  already exists. Return to allow the file to
+                                  be overwritten. Raise an exception to
+                                  prevent the file from being overwritten.
+                                  (May for instance save existing file as
+                                  backup.)
+                                  (Default is to raise an exception.)
+        """
+        self.file_exists_callback: Optional[Callable[[str], None]] = \
+            file_exists_callback
         self.file_name: str = \
             self.file_name_with_extension(file_name,
                                           self.file_name_extension())
         self.state: MultiFormatState = MultiFormatState.EMPTY
         self.url_as_text: bool = url_as_text
+        self._file_exists_check()
 
     def __enter__(self) -> 'MultiFormat':
         """Enter the context manager."""
+        self._file_exists_check()
         self.open()
         return self
 
@@ -89,7 +109,7 @@ class MultiFormat:
         raise NotImplementedError(err)
         # pylint: disable=unreachable
         return FormatterDescriptor(name='', mandatory_args=[],
-                                   optional_args=[])
+                                   optional_args=['file_exists_callback'])
 
     @classmethod
     def file_name_extension(cls) -> str:
@@ -199,3 +219,17 @@ class MultiFormat:
         """Error message if the function is not overridden by a subclass."""
         return f'{func_name} must be overridden by a ' + \
             f'subclass {cls.__name__}'
+
+    def _file_exists_check(self) -> None:
+        """Check if the file exists and handle it accordingly."""
+        if os.path.exists(self.file_name):
+            if self.file_exists_callback is not None:
+                self.file_exists_callback(self.file_name)
+            else:
+                msg = 'Cowardly refusing to overwrite existing file '
+                msg += f'{self.file_name}.\n\n'
+                msg += '(Use a different file name or provide a '
+                msg += 'file_exists_callback \n'
+                msg += ' function to allow the file to be overwritten.)\n'
+                print(msg, file=sys.stderr)
+                raise FileExistsError(msg)
