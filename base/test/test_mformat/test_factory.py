@@ -8,7 +8,8 @@
 import pytest
 from check_capsys import check_capsys
 from mformat.factory import MultiFormatFactory
-from mformat.factory import create_mf
+from mformat.factory import create_mf, register_mf, \
+    list_registered_mf, usage_mf
 from mformat.mformat import MultiFormat, FormatterDescriptor
 
 
@@ -124,42 +125,51 @@ def test_factory_obj_get_usage_nok(capsys):
     check_capsys(capsys)
 
 
-def test_factory_reg_ok(capsys):
+@pytest.mark.parametrize('usage_func',
+                         [MultiFormatFactory.get_usage, usage_mf])
+@pytest.mark.parametrize('list_func',
+                         [MultiFormatFactory.get_registered_formats,
+                          list_registered_mf])
+@pytest.mark.parametrize('create_func',
+                         [MultiFormatFactory.create, create_mf])
+@pytest.mark.parametrize('reg_func',
+                         [MultiFormatFactory.register, register_mf])
+def test_factory_reg_ok(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                        capsys, reg_func, create_func, list_func, usage_func):
     """Test the factory register method with an OK class."""
-    MultiFormatFactory.register(MultiFormat2T)
-    assert 'mf2t' in MultiFormatFactory.get_registered_formats()
+    reg_func(MultiFormat2T)
+    assert 'mf2t' in list_func()
     assert MultiFormatFactory.get_usage('mf2t') == \
         FormatterDescriptor(name='mf2t', mandatory_args=[],
                             optional_args=['arg1', 'arg2'])
-    mf2to1 = MultiFormatFactory.create('mf2t', 'test.test',
-                                       url_as_text=True,
-                                       args={'arg1': 'value1',
-                                             'arg2': 'value2'})
+    mf2to1 = create_func('mf2t', 'test.test',
+                         url_as_text=True,
+                         args={'arg1': 'value1',
+                               'arg2': 'value2'})
     assert mf2to1.arg1 == 'value1'
     assert mf2to1.arg2 == 'value2'
-    mf2to2 = MultiFormatFactory.create('mf2t', 'test.test', url_as_text=True,
-                                       args={'arg1': 'value1'})
+    mf2to2 = create_func('mf2t', 'test.test', url_as_text=True,
+                         args={'arg1': 'value1'})
     assert mf2to2.arg1 == 'value1'
     assert mf2to2.arg2 == ''
-    mf2to3 = MultiFormatFactory.create('mf2t', 'test.test', url_as_text=True,
-                                       args={'arg2': 'value2'})
+    mf2to3 = create_func('mf2t', 'test.test', url_as_text=True,
+                         args={'arg2': 'value2'})
     assert mf2to3.arg1 == ''
     assert mf2to3.arg2 == 'value2'
-    mf2to4 = MultiFormatFactory.create('mf2t', 'test.test', url_as_text=True)
+    mf2to4 = create_func('mf2t', 'test.test', url_as_text=True)
     assert mf2to4.arg1 == ''
     assert mf2to4.arg2 == ''
-    assert sorted(MultiFormatFactory.get_registered_formats()) == \
-        ['docx', 'html', 'md', 'mf2t']
-    assert MultiFormatFactory.get_usage('mf2t') == \
+    assert sorted(list_func()) == ['docx', 'html', 'md', 'mf2t']
+    assert usage_func('mf2t') == \
         FormatterDescriptor(name='mf2t', mandatory_args=[],
                             optional_args=['arg1', 'arg2'])
-    assert MultiFormatFactory.get_usage('md') == \
+    assert usage_func('md') == \
         FormatterDescriptor(name='md', mandatory_args=[],
                             optional_args=[])
-    assert MultiFormatFactory.get_usage('html') == \
+    assert usage_func('html') == \
         FormatterDescriptor(name='html', mandatory_args=[],
                             optional_args=['title', 'css_file', 'lang'])
-    assert MultiFormatFactory.get_usage('docx') == \
+    assert usage_func('docx') == \
         FormatterDescriptor(name='docx', mandatory_args=[],
                             optional_args=[])
     check_capsys(capsys)
