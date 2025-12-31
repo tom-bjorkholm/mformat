@@ -7,7 +7,7 @@
 
 from typing import Optional, Callable
 from mformat.mformat_textbased import MultiFormatTextBased
-from mformat.mformat import FormatterDescriptor
+from mformat.mformat import FormatterDescriptor, MultiFormatState
 
 
 class MultiFormatMd(MultiFormatTextBased):
@@ -58,7 +58,20 @@ class MultiFormatMd(MultiFormatTextBased):
         assert self.file is not None
         self.file.write('\n')
 
-    def _write_in_paragraph(self, text: str) -> None:
-        """Write text into current paragraph."""
+    def _write_text(self,  # pylint: disable=unused-argument,too-many-arguments,too-many-positional-arguments # noqa: E501
+                    text: str, state: MultiFormatState,
+                    bold: bool, italic: bool) -> None:
+        """Write text into current item (paragraph, bullet list item, etc.).
+
+        Args:
+            text: The text to write into the current item.
+            state: The state of the current item.
+            bold: If True, the text is bold.
+            italic: If True, the text is italic.
+        """
         assert self.file is not None
+        if bold:
+            text = f'**{text}**'
+        if italic:
+            text = f'*{text}*'
         self.file.write(text)

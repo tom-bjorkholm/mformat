@@ -9,7 +9,7 @@ from tempfile import TemporaryDirectory
 import pytest
 from check_capsys import check_capsys
 from mformat.mformat_html import MultiFormatHtml
-from mformat.mformat import FormatterDescriptor, NewOrAppend
+from mformat.mformat import FormatterDescriptor, MultiFormatState
 from mformat.factory import create_mf
 
 
@@ -109,17 +109,26 @@ def test_end_paragraph(capsys):
     check_capsys(capsys)
 
 
-@pytest.mark.parametrize('text, expected',
-                         [('Hello, world!', 'Hello, world!'),
-                          ('Something else', 'Something else')])
-def test_write_in_paragraph(capsys, text, expected):
-    """Test the write_in_paragraph method."""
+@pytest.mark.parametrize('text, bold, italic, expected',
+                         [('Hello, world!', False, False, 'Hello, world!'),
+                          ('Something else', False, False,
+                           'Something else'),
+                          ('Bold text', True, False,
+                           '<strong>Bold text</strong>'),
+                          ('Italic text', False, True,
+                           '<em>Italic text</em>'),
+                          ('Both', True, True,
+                           '<em><strong>Both</strong></em>')])
+def test_write_text(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                    text, bold, italic, expected):
+    """Test the _write_text method."""
     with TemporaryDirectory() as tmp_dir:
         fname = tmp_dir + '/test.html'
         mfd = create_mf('html', file_name=fname)
         assert isinstance(mfd, MultiFormatHtml)
         mfd.open()
-        mfd._write_in_paragraph(text)  # pylint: disable=protected-access
+        mfd._write_text(text, MultiFormatState.PARAGRAPH,  # pylint: disable=protected-access # noqa: E501
+                        bold, italic)
         mfd._close()  # pylint: disable=protected-access
         with open(fname, 'rt', encoding='utf-8') as file:
             txt = file.read()
@@ -130,6 +139,10 @@ def test_write_in_paragraph(capsys, text, expected):
 EN_NT_NC_T1 = PF_EN_NT_NC + '<p>\nHello, world!</p>\n<p>\nBye!</p>\n' + SFTOT
 SV_TS_C1_T2 = PF_SV_TS_C1 + '<p>\nSomething else</p>\n<p>\nYeah!</p>\n' + \
     SFTOT
+EN_NT_NC_BOLD = PF_EN_NT_NC + '<p>\n<strong>Bold text</strong></p>\n' + SFTOT
+EN_NT_NC_ITALIC = PF_EN_NT_NC + '<p>\n<em>Italic text</em></p>\n' + SFTOT
+EN_NT_NC_BOTH = PF_EN_NT_NC + \
+    '<p>\n<em><strong>Both styles</strong></em></p>\n' + SFTOT
 
 
 @pytest.mark.parametrize('lang, title, css_file, texts, expected',
@@ -137,9 +150,9 @@ SV_TS_C1_T2 = PF_SV_TS_C1 + '<p>\nSomething else</p>\n<p>\nYeah!</p>\n' + \
                            ['Hello, world!', 'Bye!'], EN_NT_NC_T1),
                           ('sv', 'Something', 'style1.css',
                            ['Something else', 'Yeah!'], SV_TS_C1_T2)])
-def test_write_paragraph(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
-                         lang, title, css_file, texts, expected):
-    """Test the write_paragraph method."""
+def test_start_paragraph2(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+                          lang, title, css_file, texts, expected):
+    """Test the start_paragraph method."""
     with TemporaryDirectory() as tmp_dir:
         fname = tmp_dir + '/test.html'
         args = {'lang': lang}
@@ -150,7 +163,25 @@ def test_write_paragraph(capsys,  # pylint: disable=too-many-arguments, too-many
         with create_mf('html', file_name=fname, args=args) as mfd:
             assert isinstance(mfd, MultiFormatHtml)
             for text in texts:
-                mfd.write_paragraph(text, how=NewOrAppend.NEW)
+                mfd.start_paragraph(text)
+        with open(fname, 'rt', encoding='utf-8') as file:
+            txt = file.read()
+            assert txt == expected
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('text, bold, italic, expected',
+                         [('Bold text', True, False, EN_NT_NC_BOLD),
+                          ('Italic text', False, True, EN_NT_NC_ITALIC),
+                          ('Both styles', True, True, EN_NT_NC_BOTH)])
+def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+                                    text, bold, italic, expected):
+    """Test the start_paragraph method with bold and italic."""
+    with TemporaryDirectory() as tmp_dir:
+        fname = tmp_dir + '/test.html'
+        with create_mf('html', file_name=fname) as mfd:
+            assert isinstance(mfd, MultiFormatHtml)
+            mfd.start_paragraph(text, bold=bold, italic=italic)
         with open(fname, 'rt', encoding='utf-8') as file:
             txt = file.read()
             assert txt == expected

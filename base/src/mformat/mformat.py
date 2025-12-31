@@ -160,25 +160,44 @@ class MultiFormat:
         err = self._must_be_overridden('_write_file_suffix')
         raise NotImplementedError(err)
 
-    def write_paragraph(self, text: str,
-                        how: NewOrAppend = NewOrAppend.APPEND_IF_EXISTS
-                        ) -> None:
-        """Write text in a paragraph."""
-        if self.state == MultiFormatState.PARAGRAPH:
-            if how == NewOrAppend.NEW:
-                self._end_paragraph()
-                self._start_paragraph()
-        elif how == NewOrAppend.MUST_APPEND:
-            err = f'Paragraph append required, but state is {self.state.name}'
-            raise RuntimeError(err)
-        elif self.state == MultiFormatState.PARAGRAPH_END:
-            self._start_paragraph()
-        elif self.state not in (MultiFormatState.PARAGRAPH,
-                                MultiFormatState.PARAGRAPH_END):
+    def start_paragraph(self, text: str, smart_ws: bool = True,
+                        bold: bool = False, italic: bool = False) -> None:
+        """Start a new paragraph.
+
+        Args:
+            text: The text to write in the paragraph.
+            smart_ws: If True, leading and trailing whitespace are collapsed
+                      and a single space is inserted between texts (from
+                      start_paragraph or add_text).
+            bold: If True, the text is bold.
+            italic: If True, the text is italic.
+        """
+        if self.state != MultiFormatState.PARAGRAPH_END:
             self._end_state()
-            self._start_paragraph()
-        self._write_in_paragraph(text)
+        self._start_paragraph()
         self.state = MultiFormatState.PARAGRAPH
+        self._write_text(text.strip() if smart_ws else text,
+                         self.state, bold, italic)
+
+    def add_text(self, text: str, smart_ws: bool = True,
+                 bold: bool = False, italic: bool = False) -> None:
+        """Add text to the current item (paragraph, bullet list item, etc.).
+
+        Args:
+            text: The text to add to the current item.
+            smart_ws: If True, leading and trailing whitespace are collapsed
+                      and a single space is inserted between texts (from
+                      start_paragraph, start_bullet, ... or add_text).
+            bold: If True, the text is bold.
+            italic: If True, the text is italic.
+        """
+        if self.state not in (MultiFormatState.PARAGRAPH,
+                              MultiFormatState.BULLET_LIST_ITEM,
+                              MultiFormatState.NUMERIC_LIST_ITEM):
+            err = f'Cannot add text to state {self.state.name}'
+            raise RuntimeError(err)
+        self._write_text(' ' + text.strip() if smart_ws else text,
+                         self.state, bold, italic)
 
     def _end_state(self) -> None:
         """End the current state."""
@@ -199,10 +218,14 @@ class MultiFormat:
         err = self._must_be_overridden('_end_paragraph')
         raise NotImplementedError(err)
 
-    def _write_in_paragraph(self, text: str) -> None:
-        """Write text into current paragraph."""
+    def _write_text(self, text: str, state: MultiFormatState,
+                    bold: bool, italic: bool) -> None:
+        """Write text into current item (paragraph, bullet list item...)."""
         assert isinstance(text, str)
-        err = self._must_be_overridden('_write_in_paragraph')
+        assert isinstance(state, MultiFormatState)
+        assert isinstance(bold, bool)
+        assert isinstance(italic, bool)
+        err = self._must_be_overridden('_write_text')
         raise NotImplementedError(err)
 
     @staticmethod

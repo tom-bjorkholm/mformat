@@ -7,7 +7,7 @@
 
 from typing import Optional, Callable
 from mformat.mformat_textbased import MultiFormatTextBased
-from mformat.mformat import FormatterDescriptor
+from mformat.mformat import FormatterDescriptor, MultiFormatState
 
 
 class MultiFormatHtml(MultiFormatTextBased):
@@ -81,7 +81,19 @@ class MultiFormatHtml(MultiFormatTextBased):
         assert self.file is not None
         self.file.write('</p>\n')
 
-    def _write_in_paragraph(self, text: str) -> None:
-        """Write text into current paragraph."""
+    def _write_text(self, text: str, state: MultiFormatState,
+                    bold: bool, italic: bool) -> None:
+        """Write text into current item (paragraph, bullet list item, etc.).
+
+        Args:
+            text: The text to write into the current item.
+            state: The state of the current item.
+            bold: If True, the text is bold.
+            italic: If True, the text is italic.
+        """
         assert self.file is not None
+        if bold:
+            text = f'<strong>{text}</strong>'
+        if italic:
+            text = f'<em>{text}</em>'
         self.file.write(text)

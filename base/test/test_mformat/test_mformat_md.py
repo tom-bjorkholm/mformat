@@ -32,9 +32,23 @@ def test_get_arg_desciption(capsys):
                           ('_write_file_suffix', None, ''),
                           ('_start_paragraph', None, '\n'),
                           ('_end_paragraph', None, '\n'),
-                          ('_write_in_paragraph', 'test', 'test'),
-                          ('_write_in_paragraph', 'test\ntest', 'test\ntest')])
-def test_methods(capsys, method, arg, expected):
+                          ('_write_text',
+                           ('test', MultiFormatState.PARAGRAPH,
+                            False, False), 'test'),
+                          ('_write_text',
+                           ('test\ntest', MultiFormatState.PARAGRAPH,
+                            False, False), 'test\ntest'),
+                          ('_write_text',
+                           ('bold', MultiFormatState.PARAGRAPH,
+                            True, False), '**bold**'),
+                          ('_write_text',
+                           ('italic', MultiFormatState.PARAGRAPH,
+                            False, True), '*italic*'),
+                          ('_write_text',
+                           ('both', MultiFormatState.PARAGRAPH,
+                            True, True), '***both***')])
+def test_methods(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+                 method, arg, expected):
     """Test the trivial methods of the MultiFormatMd class."""
     with TemporaryDirectory() as tmp_dir:
         fname = tmp_dir + '/test.md'
@@ -42,7 +56,10 @@ def test_methods(capsys, method, arg, expected):
             assert type(mfd).__name__ == 'MultiFormatMd'
             assert mfd.state == MultiFormatState.EMPTY
             if arg is not None:
-                getattr(mfd, method)(text=arg)
+                if isinstance(arg, tuple):
+                    getattr(mfd, method)(*arg)
+                else:
+                    getattr(mfd, method)(text=arg)
             else:
                 getattr(mfd, method)()
             assert mfd.state == MultiFormatState.EMPTY
@@ -54,14 +71,33 @@ def test_methods(capsys, method, arg, expected):
 @pytest.mark.parametrize('text, expected',
                          [('test', '\ntest\n'),
                           ('test\ntest', '\ntest\ntest\n')])
-def test_write_paragraph(capsys, text, expected):
-    """Test the write_paragraph method."""
+def test_start_paragraph(capsys, text, expected):
+    """Test the start_paragraph method."""
     with TemporaryDirectory() as tmp_dir:
         fname = tmp_dir + '/test.md'
         with create_mf('md', file_name=fname) as mfd:
             assert type(mfd).__name__ == 'MultiFormatMd'
             assert mfd.state == MultiFormatState.EMPTY
-            mfd.write_paragraph(text=text)
+            mfd.start_paragraph(text=text)
+            assert mfd.state == MultiFormatState.PARAGRAPH
+        with open(fname, 'rt', encoding='utf-8') as file:
+            assert file.read() == expected
+        check_capsys(capsys)
+
+
+@pytest.mark.parametrize('text, bold, italic, expected',
+                         [('bold text', True, False, '\n**bold text**\n'),
+                          ('italic text', False, True, '\n*italic text*\n'),
+                          ('both', True, True, '\n***both***\n')])
+def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+                                    text, bold, italic, expected):
+    """Test the start_paragraph method with bold and italic."""
+    with TemporaryDirectory() as tmp_dir:
+        fname = tmp_dir + '/test.md'
+        with create_mf('md', file_name=fname) as mfd:
+            assert type(mfd).__name__ == 'MultiFormatMd'
+            assert mfd.state == MultiFormatState.EMPTY
+            mfd.start_paragraph(text=text, bold=bold, italic=italic)
             assert mfd.state == MultiFormatState.PARAGRAPH
         with open(fname, 'rt', encoding='utf-8') as file:
             assert file.read() == expected

@@ -7,6 +7,8 @@
 
 from typing import Optional, Callable
 from docx import Document
+from docx.document import Document as DocumentObject
+from docx.text.paragraph import Paragraph
 from mformat.mformat import FormatterDescriptor, MultiFormat, \
     MultiFormatState
 
@@ -29,7 +31,8 @@ class MultiFormatDocx(MultiFormat):
                                   backup.)
                                   (Default is to raise an exception.)
         """
-        self.doc = Document()
+        self.doc: DocumentObject = Document()
+        self.current_paragraph: Optional[Paragraph] = None
         super().__init__(file_name=file_name, url_as_text=url_as_text,
                          file_exists_callback=file_exists_callback)
 
@@ -61,3 +64,29 @@ class MultiFormatDocx(MultiFormat):
         if self.state == MultiFormatState.EMPTY:
             return
         self.doc.save(self.file_name)
+
+    def _start_paragraph(self) -> None:
+        """Start a paragraph."""
+        self.current_paragraph = self.doc.add_paragraph()
+
+    def _end_paragraph(self) -> None:
+        """End a paragraph."""
+        self.current_paragraph = None
+
+    def _write_text(self, text: str, state: MultiFormatState,
+                    bold: bool, italic: bool) -> None:
+        """Write text into current item (paragraph, bullet list item, etc.).
+
+        Args:
+            text: The text to write into the current item.
+            state: The state of the current item.
+            bold: If True, the text is bold.
+            italic: If True, the text is italic.
+        """
+        if self.current_paragraph is None:
+            raise RuntimeError('No current paragraph to write text into')
+        run = self.current_paragraph.add_run(text)
+        if bold:
+            run.bold = True
+        if italic:
+            run.italic = True

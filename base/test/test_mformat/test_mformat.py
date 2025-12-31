@@ -7,7 +7,7 @@
 
 import pytest
 from check_capsys import check_capsys
-from mformat.mformat import MultiFormat, MultiFormatState, NewOrAppend
+from mformat.mformat import MultiFormat, MultiFormatState
 
 
 @pytest.mark.parametrize('file_name, extension, res',
@@ -85,23 +85,28 @@ def test_mft_init(capsys):
 @pytest.mark.parametrize('method_name',
                          ['open', '_close',
                           '_write_file_prefix', '_write_file_suffix',
-                          '_start_paragraph', '_end_paragraph'])
+                          '_start_paragraph', '_end_paragraph', '_write_text'])
 def test_cls_method_not_overridden(capsys, method_name):
     """Test that the instance method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
-        _ = getattr(mfmt, method_name)()
+        if method_name == '_write_text':
+            _ = getattr(mfmt, method_name)('test', MultiFormatState.PARAGRAPH,
+                                           False, False)
+        else:
+            _ = getattr(mfmt, method_name)()
     assert exc.value.args[0] == f'{method_name} must be overridden by a ' + \
         'subclass MultiFormat2'
     check_capsys(capsys)
 
 
-def test_write_in_paragraph(capsys):
-    """Test that the write_in_paragraph method is not overridden."""
+def test_write_text(capsys):
+    """Test that the _write_text method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
-        mfmt._write_in_paragraph('test')  # pylint: disable=protected-access
-    assert exc.value.args[0] == '_write_in_paragraph must be overridden ' + \
+        mfmt._write_text('test',  # pylint: disable=protected-access
+                         MultiFormatState.PARAGRAPH, False, False)
+    assert exc.value.args[0] == '_write_text must be overridden ' + \
         'by a subclass MultiFormat2'
     check_capsys(capsys)
 
@@ -121,10 +126,14 @@ class MultiFormat3(MultiFormat2):
         else:
             self.count[func_name] += 1
 
-    def _write_in_paragraph(self, text: str) -> None:
-        """Write text into current paragraph."""
+    def _write_text(self, text: str, state: MultiFormatState,
+                    bold: bool, italic: bool) -> None:
+        """Write text into current item (paragraph, bullet list item, etc.)."""
         assert isinstance(text, str)
-        self.inc_count('_write_in_paragraph')
+        assert isinstance(state, MultiFormatState)
+        assert isinstance(bold, bool)
+        assert isinstance(italic, bool)
+        self.inc_count('_write_text')
 
     def _start_paragraph(self) -> None:
         """Start a paragraph."""
@@ -166,73 +175,129 @@ def test_end_state(capsys, from_state, to_state, count):
 class MultiFormat4(MultiFormat3):
     """Class used for testing."""
 
-    def __init__(self, file_name: str, expected_text: str):
+    def __init__(self, file_name: str, expected_text: str,
+                 expected_bold: bool = False,
+                 expected_italic: bool = False):
         """Initialize the MultiFormat4 class."""
         super().__init__(file_name=file_name)
         self.expected_text: str = expected_text
+        self.expected_bold: bool = expected_bold
+        self.expected_italic: bool = expected_italic
 
-    def _write_in_paragraph(self, text: str) -> None:
-        """Write text into current paragraph."""
-        super()._write_in_paragraph(text)
+    def _write_text(self, text: str, state: MultiFormatState,
+                    bold: bool, italic: bool) -> None:
+        """Write text into current item (paragraph, bullet list item, etc.)."""
+        super()._write_text(text, state, bold, italic)
         assert text == self.expected_text
+        assert bold == self.expected_bold
+        assert italic == self.expected_italic
 
 
-@pytest.mark.parametrize('from_state, to_state, count, how, text',
+@pytest.mark.parametrize('from_state, to_state, count, text',
                          [(MultiFormatState.EMPTY,
                            MultiFormatState.PARAGRAPH,
-                           {'_start_paragraph': 1, '_write_in_paragraph': 1,
+                           {'_start_paragraph': 1, '_write_text': 1,
                             '_write_file_prefix': 1},
-                           NewOrAppend.NEW, 'abc'),
+                           'abc'),
                           (MultiFormatState.PARAGRAPH_END,
                            MultiFormatState.PARAGRAPH,
-                           {'_start_paragraph': 1, '_write_in_paragraph': 1},
-                           NewOrAppend.NEW, 'abc'),
-                          (MultiFormatState.PARAGRAPH,
-                           MultiFormatState.PARAGRAPH,
-                           {'_write_in_paragraph': 1},
-                           NewOrAppend.APPEND_IF_EXISTS, 'abc'),
-                          (MultiFormatState.PARAGRAPH,
-                           MultiFormatState.PARAGRAPH,
-                           {'_write_in_paragraph': 1},
-                           NewOrAppend.MUST_APPEND, 'abc'),
+                           {'_start_paragraph': 1, '_write_text': 1},
+                           'abc'),
                           (MultiFormatState.PARAGRAPH,
                            MultiFormatState.PARAGRAPH,
                            {'_end_paragraph': 1, '_start_paragraph': 1,
-                            '_write_in_paragraph': 1},
-                           NewOrAppend.NEW, 'abc')])
-def test_write_paragraph(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                         from_state, to_state, count, how, text):
-    """Test that the write_paragraph method is correct."""
+                            '_write_text': 1},
+                           'def')])
+def test_start_paragraph(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                         from_state, to_state, count, text):
+    """Test that the start_paragraph method is correct."""
     mfmt = MultiFormat4(file_name='test', expected_text=text)
     mfmt.state = from_state
-    mfmt.write_paragraph(text=text, how=how)
+    mfmt.start_paragraph(text=text)
     assert mfmt.state == to_state
     assert mfmt.count == count
     check_capsys(capsys)
 
 
-@pytest.mark.parametrize('from_state, to_state, how, text, exc, msg',
+@pytest.mark.parametrize('from_state, text, exc, msg',
                          [(MultiFormatState.PARAGRAPH_END,
-                           MultiFormatState.PARAGRAPH_END,
-                           NewOrAppend.MUST_APPEND, 'abc',
+                           'abc',
                            RuntimeError,
-                           'Paragraph append required, ' +
-                           'but state is PARAGRAPH_END'),
+                           'Cannot add text to state PARAGRAPH_END'),
                           (MultiFormatState.BULLET_LIST,
-                           MultiFormatState.BULLET_LIST,
-                           NewOrAppend.MUST_APPEND, 'abc',
+                           'abc',
                            RuntimeError,
-                           'Paragraph append required, ' +
-                           'but state is BULLET_LIST')])
-def test_write_paragraph_error(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                               from_state, to_state, how, text, exc, msg):
-    """Test that the write_paragraph method raises an error."""
+                           'Cannot add text to state BULLET_LIST'),
+                          (MultiFormatState.EMPTY,
+                           'abc',
+                           RuntimeError,
+                           'Cannot add text to state EMPTY')])
+def test_add_text_error(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                        from_state, text, exc, msg):
+    """Test that the add_text method raises an error in wrong state."""
     mfmt = MultiFormat4(file_name='test', expected_text=text)
     mfmt.state = from_state
     with pytest.raises(exc) as exc2:
-        mfmt.write_paragraph(text=text, how=how)
+        mfmt.add_text(text=text)
     assert exc2.value.args[0] == msg
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('from_state, to_state, count, text',
+                         [(MultiFormatState.PARAGRAPH,
+                           MultiFormatState.PARAGRAPH,
+                           {'_write_text': 1},
+                           ' xyz'),
+                          (MultiFormatState.BULLET_LIST_ITEM,
+                           MultiFormatState.BULLET_LIST_ITEM,
+                           {'_write_text': 1},
+                           ' def'),
+                          (MultiFormatState.NUMERIC_LIST_ITEM,
+                           MultiFormatState.NUMERIC_LIST_ITEM,
+                           {'_write_text': 1},
+                           ' ghi')])
+def test_add_text(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                  from_state, to_state, count, text):
+    """Test that the add_text method is correct."""
+    mfmt = MultiFormat4(file_name='test', expected_text=text)
+    mfmt.state = from_state
+    mfmt.add_text(text=text)
     assert mfmt.state == to_state
+    assert mfmt.count == count
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('text, bold, italic, expected_text',
+                         [('abc', False, False, 'abc'),
+                          ('def', True, False, 'def'),
+                          ('ghi', False, True, 'ghi'),
+                          ('jkl', True, True, 'jkl')])
+def test_start_paragraph_bold_italic(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                                     text, bold, italic, expected_text):
+    """Test start_paragraph with bold and italic parameters."""
+    mfmt = MultiFormat4(file_name='test', expected_text=expected_text,
+                        expected_bold=bold, expected_italic=italic)
+    mfmt.start_paragraph(text=text, bold=bold, italic=italic)
+    assert mfmt.state == MultiFormatState.PARAGRAPH
+    assert mfmt.count == {'_start_paragraph': 1, '_write_text': 1,
+                          '_write_file_prefix': 1}
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('text, bold, italic, expected_text',
+                         [('abc', False, False, ' abc'),
+                          ('def', True, False, ' def'),
+                          ('ghi', False, True, ' ghi'),
+                          ('jkl', True, True, ' jkl')])
+def test_add_text_bold_italic(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                              text, bold, italic, expected_text):
+    """Test add_text with bold and italic parameters."""
+    mfmt = MultiFormat4(file_name='test', expected_text=expected_text,
+                        expected_bold=bold, expected_italic=italic)
+    mfmt.state = MultiFormatState.PARAGRAPH
+    mfmt.add_text(text=text, bold=bold, italic=italic)
+    assert mfmt.state == MultiFormatState.PARAGRAPH
+    assert mfmt.count == {'_write_text': 1}
     check_capsys(capsys)
 
 
