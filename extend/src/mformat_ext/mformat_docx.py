@@ -1,7 +1,7 @@
 #! /usr/local/bin/python3
 """Extension of the MultiFormat class for DOCX files."""
 
-# Copyright (c) 2025 Tom Björkholm
+# Copyright (c) 2025 - 2026 Tom Björkholm
 # MIT License
 #
 

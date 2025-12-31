@@ -1,7 +1,7 @@
 #! /usr/local/bin/python3
 """Base class for all text based format classes."""
 
-# Copyright (c) 2025 Tom Björkholm
+# Copyright (c) 2025 - 2026 Tom Björkholm
 # MIT License
 #
 

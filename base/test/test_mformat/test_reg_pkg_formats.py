@@ -1,7 +1,7 @@
 #! /usr/local/bin/python3
 """Test the reg_pkg_formats module."""
 
-# Copyright (c) 2025 Tom Björkholm
+# Copyright (c) 2025 - 2026 Tom Björkholm
 # MIT License
 #
 

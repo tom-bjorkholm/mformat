@@ -1,7 +1,7 @@
 #! /usr/local/bin/python3
 """Markdown format class."""
 
-# Copyright (c) 2025 Tom Björkholm
+# Copyright (c) 2025 - 2026 Tom Björkholm
 # MIT License
 #
 

@@ -1,7 +1,7 @@
 #! /usr/local/bin/python3
 """Test the register_formats_in_ext_pkg module."""
 
-# Copyright (c) 2025 Tom Björkholm
+# Copyright (c) 2025 - 2026 Tom Björkholm
 # MIT License
 #
 
