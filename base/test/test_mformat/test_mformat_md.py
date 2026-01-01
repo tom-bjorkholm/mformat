@@ -8,6 +8,7 @@
 from tempfile import TemporaryDirectory
 import pytest
 from check_capsys import check_capsys
+from test_helpers import run_with_context_manager, run_protected_method
 from mformat.mformat_md import MultiFormatMd
 from mformat.mformat import FormatterDescriptor, MultiFormatState
 from mformat.factory import create_mf
@@ -92,16 +93,15 @@ def test_start_paragraph(capsys, text, expected):
 def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
                                     text, bold, italic, expected):
     """Test the start_paragraph method with bold and italic."""
-    with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.md'
-        with create_mf('md', file_name=fname) as mfd:
-            assert type(mfd).__name__ == 'MultiFormatMd'
-            assert mfd.state == MultiFormatState.EMPTY
-            mfd.start_paragraph(text=text, bold=bold, italic=italic)
-            assert mfd.state == MultiFormatState.PARAGRAPH
-        with open(fname, 'rt', encoding='utf-8') as file:
-            assert file.read() == expected
-        check_capsys(capsys)
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        assert mfd.state == MultiFormatState.EMPTY
+        mfd.start_paragraph(text=text, bold=bold, italic=italic)
+        assert mfd.state == MultiFormatState.PARAGRAPH
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    assert txt == expected
+    check_capsys(capsys)
 
 
 @pytest.mark.parametrize('url, text, bold, italic, expected',
@@ -118,17 +118,10 @@ def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-argument
 def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                    url, text, bold, italic, expected):
     """Test the _write_url method."""
-    with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.md'
-        mfd = create_mf('md', file_name=fname)
-        assert type(mfd).__name__ == 'MultiFormatMd'
-        mfd.open()
-        mfd._write_url(url, text, MultiFormatState.PARAGRAPH,  # pylint: disable=protected-access # noqa: E501
-                       bold, italic)
-        mfd._close()  # pylint: disable=protected-access
-        with open(fname, 'rt', encoding='utf-8') as file:
-            txt = file.read()
-            assert txt == expected
+    txt = run_protected_method('md', '.md', '_write_url',
+                               (url, text, MultiFormatState.PARAGRAPH,
+                                bold, italic))
+    assert txt == expected
     check_capsys(capsys)
 
 
@@ -140,15 +133,13 @@ def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positi
 def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                  url, text, expected):
     """Test the add_url method."""
-    with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.md'
-        with create_mf('md', file_name=fname) as mfd:
-            assert type(mfd).__name__ == 'MultiFormatMd'
-            mfd.start_paragraph('')
-            mfd.add_url(url=url, text=text)
-        with open(fname, 'rt', encoding='utf-8') as file:
-            txt = file.read()
-            assert txt == expected
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_paragraph('')
+        mfd.add_url(url=url, text=text)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    assert txt == expected
     check_capsys(capsys)
 
 
@@ -160,13 +151,12 @@ def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-position
 def test_add_url_as_text(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                          url, text, expected):
     """Test the add_url method with url_as_text=True."""
-    with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.md'
-        with create_mf('md', file_name=fname, url_as_text=True) as mfd:
-            assert type(mfd).__name__ == 'MultiFormatMd'
-            mfd.start_paragraph('')
-            mfd.add_url(url=url, text=text)
-        with open(fname, 'rt', encoding='utf-8') as file:
-            txt = file.read()
-            assert txt == expected
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_paragraph('')
+        mfd.add_url(url=url, text=text)
+
+    txt = run_with_context_manager('md', '.md', test_action,
+                                   url_as_text=True)
+    assert txt == expected
     check_capsys(capsys)

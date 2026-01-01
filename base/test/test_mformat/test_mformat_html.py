@@ -5,12 +5,11 @@
 # MIT License
 #
 
-from tempfile import TemporaryDirectory
 import pytest
 from check_capsys import check_capsys
+from test_helpers import run_with_context_manager, run_protected_method
 from mformat.mformat_html import MultiFormatHtml
 from mformat.mformat import FormatterDescriptor, MultiFormatState
-from mformat.factory import create_mf
 
 
 def test_file_name_extension(capsys):
@@ -46,66 +45,35 @@ PF_SV_TS_C1 = PFDT + 'sv' + PTAL + 'Something' + PFAT + PFCSS + \
                           ('sv', 'Something', 'style1.css', PF_SV_TS_C1)])
 def test_write_file_prefix(capsys, lang, title, css_file, expected):
     """Test the write_file_prefix method."""
-    with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.html'
-        args = {'lang': lang}
-        if title is not None:
-            args['title'] = title
-        if css_file is not None:
-            args['css_file'] = css_file
-        mfd = create_mf('html', file_name=fname, args=args)
-        assert isinstance(mfd, MultiFormatHtml)
-        mfd.open()
-        mfd._write_file_prefix()  # pylint: disable=protected-access
-        mfd._close()  # pylint: disable=protected-access
-        with open(fname, 'rt', encoding='utf-8') as file:
-            txt = file.read()
-            assert txt == expected
+    args = {'lang': lang}
+    if title is not None:
+        args['title'] = title
+    if css_file is not None:
+        args['css_file'] = css_file
+    txt = run_protected_method('html', '.html', '_write_file_prefix',
+                               args=args)
+    assert txt == expected
     check_capsys(capsys)
 
 
 def test_write_file_suffix(capsys):
     """Test the write_file_suffix method."""
-    with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.html'
-        mfd = create_mf('html', file_name=fname)
-        assert isinstance(mfd, MultiFormatHtml)
-        mfd.open()
-        mfd._write_file_suffix()  # pylint: disable=protected-access
-        mfd._close()  # pylint: disable=protected-access
-        with open(fname, 'rt', encoding='utf-8') as file:
-            txt = file.read()
-            assert txt == SFTOT
+    txt = run_protected_method('html', '.html', '_write_file_suffix')
+    assert txt == SFTOT
     check_capsys(capsys)
 
 
 def test_start_paragraph(capsys):
     """Test the start_paragraph method."""
-    with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.html'
-        mfd = create_mf('html', file_name=fname)
-        assert isinstance(mfd, MultiFormatHtml)
-        mfd.open()
-        mfd._start_paragraph()  # pylint: disable=protected-access
-        mfd._close()  # pylint: disable=protected-access
-        with open(fname, 'rt', encoding='utf-8') as file:
-            txt = file.read()
-            assert txt == '<p>\n'
+    txt = run_protected_method('html', '.html', '_start_paragraph')
+    assert txt == '<p>\n'
     check_capsys(capsys)
 
 
 def test_end_paragraph(capsys):
     """Test the end_paragraph method."""
-    with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.html'
-        mfd = create_mf('html', file_name=fname)
-        assert isinstance(mfd, MultiFormatHtml)
-        mfd.open()
-        mfd._end_paragraph()  # pylint: disable=protected-access
-        mfd._close()  # pylint: disable=protected-access
-        with open(fname, 'rt', encoding='utf-8') as file:
-            txt = file.read()
-            assert txt == '</p>\n'
+    txt = run_protected_method('html', '.html', '_end_paragraph')
+    assert txt == '</p>\n'
     check_capsys(capsys)
 
 
@@ -122,17 +90,10 @@ def test_end_paragraph(capsys):
 def test_write_text(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                     text, bold, italic, expected):
     """Test the _write_text method."""
-    with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.html'
-        mfd = create_mf('html', file_name=fname)
-        assert isinstance(mfd, MultiFormatHtml)
-        mfd.open()
-        mfd._write_text(text, MultiFormatState.PARAGRAPH,  # pylint: disable=protected-access # noqa: E501
-                        bold, italic)
-        mfd._close()  # pylint: disable=protected-access
-        with open(fname, 'rt', encoding='utf-8') as file:
-            txt = file.read()
-            assert txt == expected
+    txt = run_protected_method('html', '.html', '_write_text',
+                               (text, MultiFormatState.PARAGRAPH,
+                                bold, italic))
+    assert txt == expected
     check_capsys(capsys)
 
 
@@ -153,20 +114,19 @@ EN_NT_NC_BOTH = PF_EN_NT_NC + \
 def test_start_paragraph2(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
                           lang, title, css_file, texts, expected):
     """Test the start_paragraph method."""
-    with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.html'
-        args = {'lang': lang}
-        if title is not None:
-            args['title'] = title
-        if css_file is not None:
-            args['css_file'] = css_file
-        with create_mf('html', file_name=fname, args=args) as mfd:
-            assert isinstance(mfd, MultiFormatHtml)
-            for text in texts:
-                mfd.start_paragraph(text)
-        with open(fname, 'rt', encoding='utf-8') as file:
-            txt = file.read()
-            assert txt == expected
+    args = {'lang': lang}
+    if title is not None:
+        args['title'] = title
+    if css_file is not None:
+        args['css_file'] = css_file
+
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        for text in texts:
+            mfd.start_paragraph(text)
+
+    txt = run_with_context_manager('html', '.html', test_action, args=args)
+    assert txt == expected
     check_capsys(capsys)
 
 
@@ -180,14 +140,12 @@ def test_start_paragraph2(capsys,  # pylint: disable=too-many-arguments, too-man
 def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
                                     text, bold, italic, expected):
     """Test the start_paragraph method with bold and italic."""
-    with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.html'
-        with create_mf('html', file_name=fname) as mfd:
-            assert isinstance(mfd, MultiFormatHtml)
-            mfd.start_paragraph(text, bold=bold, italic=italic)
-        with open(fname, 'rt', encoding='utf-8') as file:
-            txt = file.read()
-            assert txt == PF_EN_NT_NC + '<p>\n' + expected + '</p>\n' + SFTOT
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_paragraph(text, bold=bold, italic=italic)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    assert txt == PF_EN_NT_NC + '<p>\n' + expected + '</p>\n' + SFTOT
     check_capsys(capsys)
 
 
@@ -210,17 +168,10 @@ def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-argument
 def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                    url, text, bold, italic, expected):
     """Test the _write_url method."""
-    with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.html'
-        mfd = create_mf('html', file_name=fname)
-        assert isinstance(mfd, MultiFormatHtml)
-        mfd.open()
-        mfd._write_url(url, text, MultiFormatState.PARAGRAPH,  # pylint: disable=protected-access # noqa: E501
-                       bold, italic)
-        mfd._close()  # pylint: disable=protected-access
-        with open(fname, 'rt', encoding='utf-8') as file:
-            txt = file.read()
-            assert txt == expected
+    txt = run_protected_method('html', '.html', '_write_url',
+                               (url, text, MultiFormatState.PARAGRAPH,
+                                bold, italic))
+    assert txt == expected
     check_capsys(capsys)
 
 
@@ -236,15 +187,13 @@ def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positi
 def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                  url, text, expected):
     """Test the add_url method."""
-    with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.html'
-        with create_mf('html', file_name=fname) as mfd:
-            assert isinstance(mfd, MultiFormatHtml)
-            mfd.start_paragraph('')
-            mfd.add_url(url=url, text=text)
-        with open(fname, 'rt', encoding='utf-8') as file:
-            txt = file.read()
-            assert txt == expected
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_paragraph('')
+        mfd.add_url(url=url, text=text)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    assert txt == expected
     check_capsys(capsys)
 
 
@@ -259,13 +208,12 @@ def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-position
 def test_add_url_as_text(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                          url, text, expected):
     """Test the add_url method with url_as_text=True."""
-    with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.html'
-        with create_mf('html', file_name=fname, url_as_text=True) as mfd:
-            assert isinstance(mfd, MultiFormatHtml)
-            mfd.start_paragraph('')
-            mfd.add_url(url=url, text=text)
-        with open(fname, 'rt', encoding='utf-8') as file:
-            txt = file.read()
-            assert txt == expected
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_paragraph('')
+        mfd.add_url(url=url, text=text)
+
+    txt = run_with_context_manager('html', '.html', test_action,
+                                   url_as_text=True)
+    assert txt == expected
     check_capsys(capsys)

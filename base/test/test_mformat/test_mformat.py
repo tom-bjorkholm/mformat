@@ -161,6 +161,7 @@ class MultiFormat3(MultiFormat2):
         (paragraph, bullet list item, etc.)
         """
         # pylint: disable=too-many-arguments,too-many-positional-arguments
+        # pylint: disable=duplicate-code
         assert isinstance(url, str)
         if text is not None:
             assert isinstance(text, str)
