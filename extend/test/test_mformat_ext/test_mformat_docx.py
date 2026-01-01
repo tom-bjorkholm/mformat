@@ -84,3 +84,107 @@ def test_add_url_as_text(capsys):
     out, err = capsys.readouterr()
     assert err == ''
     assert out == ''
+
+
+@pytest.mark.parametrize('level', [1, 2, 3, 4, 5, 6])
+def test_heading_creation(capsys, level):
+    """Test creating headings at different levels."""
+    with TemporaryDirectory() as tmp_dir:
+        fpath = tmp_dir + '/test.docx'
+        with create_mf('docx', file_name=fpath) as mfd:
+            assert type(mfd).__name__ == 'MultiFormatDocx'
+            mfd.start_heading(level=level, text=f'Heading Level {level}')
+        assert os.path.exists(fpath)
+    out, err = capsys.readouterr()
+    assert err == ''
+    assert out == ''
+
+
+def test_heading_with_text(capsys):
+    """Test heading with additional text."""
+    with TemporaryDirectory() as tmp_dir:
+        fpath = tmp_dir + '/test.docx'
+        with create_mf('docx', file_name=fpath) as mfd:
+            assert type(mfd).__name__ == 'MultiFormatDocx'
+            mfd.start_heading(level=1, text='Main Title')
+            mfd.add_text(text=' - Extended')
+        assert os.path.exists(fpath)
+    out, err = capsys.readouterr()
+    assert err == ''
+    assert out == ''
+
+
+def test_heading_with_url(capsys):
+    """Test heading with URL."""
+    with TemporaryDirectory() as tmp_dir:
+        fpath = tmp_dir + '/test.docx'
+        with create_mf('docx', file_name=fpath) as mfd:
+            assert type(mfd).__name__ == 'MultiFormatDocx'
+            mfd.start_heading(level=2, text='Check ')
+            mfd.add_url(url='http://example.com', text='this link')
+        assert os.path.exists(fpath)
+    out, err = capsys.readouterr()
+    assert err == ''
+    assert out == ''
+
+
+def test_heading_then_paragraph(capsys):
+    """Test heading followed by paragraph."""
+    with TemporaryDirectory() as tmp_dir:
+        fpath = tmp_dir + '/test.docx'
+        with create_mf('docx', file_name=fpath) as mfd:
+            assert type(mfd).__name__ == 'MultiFormatDocx'
+            mfd.start_heading(level=1, text='Title')
+            mfd.start_paragraph('Some text')
+        assert os.path.exists(fpath)
+    out, err = capsys.readouterr()
+    assert err == ''
+    assert out == ''
+
+
+def test_multiple_headings(capsys):
+    """Test multiple headings."""
+    with TemporaryDirectory() as tmp_dir:
+        fpath = tmp_dir + '/test.docx'
+        with create_mf('docx', file_name=fpath) as mfd:
+            assert type(mfd).__name__ == 'MultiFormatDocx'
+            mfd.start_heading(level=1, text='Main')
+            mfd.start_heading(level=2, text='Sub')
+            mfd.start_heading(level=3, text='Subsub')
+        assert os.path.exists(fpath)
+    out, err = capsys.readouterr()
+    assert err == ''
+    assert out == ''
+
+
+def test_heading_paragraph_heading(capsys):
+    """Test heading, paragraph, then another heading."""
+    with TemporaryDirectory() as tmp_dir:
+        fpath = tmp_dir + '/test.docx'
+        with create_mf('docx', file_name=fpath) as mfd:
+            assert type(mfd).__name__ == 'MultiFormatDocx'
+            mfd.start_heading(level=1, text='First Heading')
+            mfd.start_paragraph('Some content here.')
+            mfd.start_heading(level=2, text='Second Heading')
+        assert os.path.exists(fpath)
+    out, err = capsys.readouterr()
+    assert err == ''
+    assert out == ''
+
+
+@pytest.mark.parametrize('bold, italic',
+                         [(True, False),
+                          (False, True),
+                          (True, True)])
+def test_heading_formatting(capsys, bold, italic):
+    """Test heading with bold and italic formatting."""
+    with TemporaryDirectory() as tmp_dir:
+        fpath = tmp_dir + '/test.docx'
+        with create_mf('docx', file_name=fpath) as mfd:
+            assert type(mfd).__name__ == 'MultiFormatDocx'
+            mfd.start_heading(level=1, text='Formatted Title',
+                              bold=bold, italic=italic)
+        assert os.path.exists(fpath)
+    out, err = capsys.readouterr()
+    assert err == ''
+    assert out == ''

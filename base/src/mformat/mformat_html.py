@@ -81,6 +81,16 @@ class MultiFormatHtml(MultiFormatTextBased):
         assert self.file is not None
         self.file.write('</p>\n')
 
+    def _start_heading(self, level: int) -> None:
+        """Start a heading."""
+        assert self.file is not None
+        self.file.write(f'<h{level}>\n')
+
+    def _end_heading(self, level: int) -> None:
+        """End a heading."""
+        assert self.file is not None
+        self.file.write(f'</h{level}>\n')
+
     def _write_text(self, text: str, state: MultiFormatState,
                     bold: bool, italic: bool) -> None:
         """Write text into current item (paragraph, bullet list item, etc.).
@@ -106,7 +116,7 @@ class MultiFormatHtml(MultiFormatTextBased):
         assert self.file is not None
         if not text:
             text = url
-        text = f' <a href="{url}">{text}</a>'
+        text = f'<a href="{url}">{text}</a>'
         if bold:
             text = f'<strong>{text}</strong>'
         if italic:

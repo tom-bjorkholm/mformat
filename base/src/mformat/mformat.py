@@ -167,6 +167,33 @@ class MultiFormat:
         err = self._must_be_overridden('_write_file_suffix')
         raise NotImplementedError(err)
 
+    def start_heading(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                      level: int, text: str, smart_ws: bool = True,
+                      bold: bool = False, italic: bool = False) -> None:
+        """Start a new heading.
+
+        Args:
+            level: The level of the heading.
+            text: The text to write in the heading.
+            smart_ws: If True, leading and trailing whitespace are collapsed
+                      and a single space is inserted between texts (from
+                      start_heading or add_text).
+            bold: If True, the text is bold.
+                  Recommended to leave False for headings as it will be
+                  formatted as a heading.
+            italic: If True, the text is italic.
+                    Recommended to leave False for headings as it will be
+                    formatted as a heading.
+        """
+        if self.state != MultiFormatState.PARAGRAPH_END:
+            self._end_state()
+        self._start_heading(level)
+        self.state = MultiFormatState.HEADING
+        self.heading_level = level
+        self.ws_needed_at_append = False
+        self._write_text(self._to_write(text, smart_ws, False),
+                         self.state, bold, italic)
+
     def start_paragraph(self, text: str, smart_ws: bool = True,
                         bold: bool = False, italic: bool = False) -> None:
         """Start a new paragraph.
@@ -236,7 +263,14 @@ class MultiFormat:
             text_to_write += url.strip()
             self._write_text(text_to_write, self.state, bold, italic)
             return
-        self._write_url(url, self._to_write_optional(text, smart_ws, True),
+        # Write spacing before URL if needed
+        if smart_ws and self.ws_needed_at_append:
+            self._write_text(' ', self.state, False, False)
+        # Process URL text and update ws_needed_at_append
+        processed_text = text.strip() if text and smart_ws else text
+        self.ws_needed_at_append = \
+            not processed_text[-1].isspace() if processed_text else True
+        self._write_url(url, processed_text if processed_text else None,
                         self.state, bold, italic)
 
     def _end_state(self) -> None:
@@ -247,6 +281,11 @@ class MultiFormat:
         elif self.state == MultiFormatState.PARAGRAPH:
             self._end_paragraph()
             self.state = MultiFormatState.PARAGRAPH_END
+        elif self.state == MultiFormatState.HEADING:
+            assert self.heading_level is not None
+            self._end_heading(level=self.heading_level)
+            self.state = MultiFormatState.PARAGRAPH_END
+            self.heading_level = None
 
     def _start_paragraph(self) -> None:
         """Start a paragraph."""
@@ -256,6 +295,18 @@ class MultiFormat:
     def _end_paragraph(self) -> None:
         """End a paragraph."""
         err = self._must_be_overridden('_end_paragraph')
+        raise NotImplementedError(err)
+
+    def _start_heading(self, level: int) -> None:
+        """Start a heading."""
+        assert isinstance(level, int)
+        err = self._must_be_overridden('_start_heading')
+        raise NotImplementedError(err)
+
+    def _end_heading(self, level: int) -> None:
+        """End a heading."""
+        assert isinstance(level, int)
+        err = self._must_be_overridden('_end_heading')
         raise NotImplementedError(err)
 
     def _write_text(self, text: str, state: MultiFormatState,

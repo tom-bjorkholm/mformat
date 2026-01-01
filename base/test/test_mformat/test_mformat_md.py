@@ -106,15 +106,15 @@ def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-argument
 
 @pytest.mark.parametrize('url, text, bold, italic, expected',
                          [('http://example.com', None, False, False,
-                           ' [http://example.com](http://example.com)'),
+                           '[http://example.com](http://example.com)'),
                           ('http://test.org', 'link text', False, False,
-                           ' [link text](http://test.org)'),
+                           '[link text](http://test.org)'),
                           ('http://test.org', 'link', True, False,
-                           '** [link](http://test.org)**'),
+                           '**[link](http://test.org)**'),
                           ('http://test.org', 'link', False, True,
-                           '* [link](http://test.org)*'),
+                           '*[link](http://test.org)*'),
                           ('http://test.org', 'link', True, True,
-                           '*** [link](http://test.org)***')])
+                           '***[link](http://test.org)***')])
 def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                    url, text, bold, italic, expected):
     """Test the _write_url method."""
@@ -127,9 +127,9 @@ def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positi
 
 @pytest.mark.parametrize('url, text, expected',
                          [('http://example.com', None,
-                           '\n [http://example.com](http://example.com)\n'),
+                           '\n[http://example.com](http://example.com)\n'),
                           ('http://test.org', 'link text',
-                           '\n [link text](http://test.org)\n')])
+                           '\n[link text](http://test.org)\n')])
 def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                  url, text, expected):
     """Test the add_url method."""
@@ -158,5 +158,124 @@ def test_add_url_as_text(capsys,  # pylint: disable=too-many-arguments,too-many-
 
     txt = run_with_context_manager('md', '.md', test_action,
                                    url_as_text=True)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('level, expected_prefix',
+                         [(1, '# '),
+                          (2, '## '),
+                          (3, '### '),
+                          (4, '#### '),
+                          (5, '##### '),
+                          (6, '###### ')])
+def test_start_heading(capsys, level, expected_prefix):
+    """Test the _start_heading method."""
+    txt = run_protected_method('md', '.md', '_start_heading', (level,))
+    assert txt == expected_prefix
+    check_capsys(capsys)
+
+
+def test_end_heading(capsys):
+    """Test the _end_heading method."""
+    txt = run_protected_method('md', '.md', '_end_heading', (1,))
+    assert txt == '\n'
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('level, text, expected',
+                         [(1, 'Main Title', '# Main Title\n'),
+                          (2, 'Subtitle', '## Subtitle\n'),
+                          (3, 'Section', '### Section\n')])
+def test_heading_integration(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                             level, text, expected):
+    """Test complete heading creation."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_heading(level=level, text=text)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('level, text, bold, italic, expected',
+                         [(1, 'Bold Title', True, False,
+                           '# **Bold Title**\n'),
+                          (2, 'Italic Title', False, True,
+                           '## *Italic Title*\n'),
+                          (3, 'Both', True, True,
+                           '### ***Both***\n')])
+def test_heading_formatting(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                            level, text, bold, italic, expected):
+    """Test heading with bold and italic formatting."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_heading(level=level, text=text, bold=bold, italic=italic)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_heading_add_text(capsys):
+    """Test adding text to a heading."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_heading(level=1, text='Title')
+        mfd.add_text(text=' and more')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    assert txt == '# Title and more\n'
+    check_capsys(capsys)
+
+
+def test_heading_add_url(capsys):
+    """Test adding URL to a heading."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_heading(level=2, text='Check ')
+        mfd.add_url(url='http://example.com', text='this link')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    assert txt == '## Check [this link](http://example.com)\n'
+    check_capsys(capsys)
+
+
+def test_heading_then_paragraph(capsys):
+    """Test heading followed by paragraph."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_heading(level=1, text='Title')
+        mfd.start_paragraph('Some text')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    assert txt == '# Title\n\nSome text\n'
+    check_capsys(capsys)
+
+
+def test_multiple_headings(capsys):
+    """Test multiple headings."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_heading(level=1, text='Main')
+        mfd.start_heading(level=2, text='Sub')
+        mfd.start_heading(level=3, text='Subsub')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    assert txt == '# Main\n## Sub\n### Subsub\n'
+    check_capsys(capsys)
+
+
+def test_heading_paragraph_heading(capsys):
+    """Test heading, paragraph, then another heading."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_heading(level=1, text='First Heading')
+        mfd.start_paragraph('Some content here.')
+        mfd.start_heading(level=2, text='Second Heading')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '# First Heading\n\nSome content here.\n## Second Heading\n'
     assert txt == expected
     check_capsys(capsys)

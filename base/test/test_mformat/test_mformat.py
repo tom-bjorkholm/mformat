@@ -673,3 +673,243 @@ def test_smart_ws_false_trailing_ws_then_smart_ws_true(capsys):
     assert mfmt.count == {'_start_paragraph': 1, '_write_text': 2,
                           '_write_file_prefix': 1}
     check_capsys(capsys)
+
+
+class MultiFormat8(MultiFormat3):
+    """Class used for testing start_heading."""
+
+    def __init__(self, file_name: str, expected_text: str,
+                 expected_level: int,
+                 expected_bold: bool = False,
+                 expected_italic: bool = False):
+        """Initialize the MultiFormat8 class."""
+        # pylint: disable=too-many-arguments,too-many-positional-arguments
+        super().__init__(file_name=file_name)
+        self.expected_text: str = expected_text
+        self.expected_level: int = expected_level
+        self.expected_bold: bool = expected_bold
+        self.expected_italic: bool = expected_italic
+
+    def _start_heading(self, level: int) -> None:
+        """Start a heading."""
+        self.inc_count('_start_heading')
+        assert level == self.expected_level
+
+    def _end_heading(self, level: int) -> None:
+        """End a heading."""
+        self.inc_count('_end_heading')
+        # Note: We don't assert on level here because _end_heading
+        # is called automatically when transitioning to other states
+
+    def _write_text(self, text: str, state: MultiFormatState,
+                    bold: bool, italic: bool) -> None:
+        """Write text into current item (paragraph, bullet list item, etc.)."""
+        super()._write_text(text, state, bold, italic)
+        assert text == self.expected_text
+        assert bold == self.expected_bold
+        assert italic == self.expected_italic
+
+
+@pytest.mark.parametrize('from_state, to_state, count, level, text',
+                         [(MultiFormatState.EMPTY,
+                           MultiFormatState.HEADING,
+                           {'_start_heading': 1, '_write_text': 1,
+                            '_write_file_prefix': 1},
+                           1, 'Main Heading'),
+                          (MultiFormatState.PARAGRAPH_END,
+                           MultiFormatState.HEADING,
+                           {'_start_heading': 1, '_write_text': 1},
+                           2, 'Subheading'),
+                          (MultiFormatState.PARAGRAPH,
+                           MultiFormatState.HEADING,
+                           {'_end_paragraph': 1, '_start_heading': 1,
+                            '_write_text': 1},
+                           3, 'Sub-subheading')])
+def test_start_heading(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                       from_state, to_state, count, level, text):
+    """Test that the start_heading method is correct."""
+    mfmt = MultiFormat8(file_name='test', expected_text=text,
+                        expected_level=level)
+    mfmt.state = from_state
+    mfmt.start_heading(level=level, text=text)
+    assert mfmt.state == to_state
+    assert mfmt.heading_level == level
+    assert mfmt.count == count
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('level, text, bold, italic',
+                         [(1, 'Heading', False, False),
+                          (2, 'Bold Heading', True, False),
+                          (3, 'Italic Heading', False, True),
+                          (4, 'Both Heading', True, True)])
+def test_start_heading_bold_italic(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                                   level, text, bold, italic):
+    """Test start_heading with bold and italic parameters."""
+    mfmt = MultiFormat8(file_name='test', expected_text=text,
+                        expected_level=level,
+                        expected_bold=bold, expected_italic=italic)
+    mfmt.start_heading(level=level, text=text, bold=bold, italic=italic)
+    assert mfmt.state == MultiFormatState.HEADING
+    assert mfmt.heading_level == level
+    assert mfmt.count == {'_start_heading': 1, '_write_text': 1,
+                          '_write_file_prefix': 1}
+    check_capsys(capsys)
+
+
+def test_heading_add_text(capsys):
+    """Test adding text to a heading."""
+    mfmt = MultiFormat8(file_name='test', expected_text='More text',
+                        expected_level=1)
+    mfmt.state = MultiFormatState.HEADING
+    mfmt.heading_level = 1
+    mfmt.add_text(text='More text')
+    assert mfmt.state == MultiFormatState.HEADING
+    assert mfmt.count == {'_write_text': 1}
+    check_capsys(capsys)
+
+
+class MultiFormat9(MultiFormat8):
+    """Class used for testing add_url in headings."""
+
+    def __init__(self, file_name: str, expected_url: str,
+                 expected_url_text: Optional[str] = None,
+                 expected_level: int = 1,
+                 expected_bold: bool = False,
+                 expected_italic: bool = False):
+        """Initialize the MultiFormat9 class."""
+        # pylint: disable=too-many-arguments,too-many-positional-arguments
+        super().__init__(file_name=file_name,
+                         expected_text='',
+                         expected_level=expected_level)
+        self.expected_url: str = expected_url
+        self.expected_url_text: Optional[str] = expected_url_text
+        self.expected_bold: bool = expected_bold
+        self.expected_italic: bool = expected_italic
+
+    def _write_url(self, url: str, text: Optional[str],
+                   state: MultiFormatState,
+                   bold: bool, italic: bool) -> None:
+        """Write a URL into current item.
+
+        (paragraph, bullet list item, etc.)
+        """
+        # pylint: disable=too-many-arguments,too-many-positional-arguments
+        super()._write_url(url, text, state, bold, italic)
+        assert url == self.expected_url
+        assert text == self.expected_url_text
+        assert bold == self.expected_bold
+        assert italic == self.expected_italic
+
+
+def test_heading_add_url(capsys):
+    """Test adding URL to a heading."""
+    mfmt = MultiFormat9(file_name='test',
+                        expected_url='http://example.com',
+                        expected_url_text='Example')
+    mfmt.state = MultiFormatState.HEADING
+    mfmt.heading_level = 1
+    mfmt.add_url(url='http://example.com', text='Example')
+    assert mfmt.state == MultiFormatState.HEADING
+    assert mfmt.count == {'_write_url': 1}
+    check_capsys(capsys)
+
+
+def test_end_state_heading(capsys):
+    """Test ending a heading state."""
+    mfmt = MultiFormat8(file_name='test', expected_text='Test',
+                        expected_level=2)
+    mfmt.state = MultiFormatState.HEADING
+    mfmt.heading_level = 2
+    mfmt._end_state()  # pylint: disable=protected-access
+    assert mfmt.state == MultiFormatState.PARAGRAPH_END
+    assert mfmt.heading_level is None
+    assert mfmt.count == {'_end_heading': 1}
+    check_capsys(capsys)
+
+
+def test_heading_then_paragraph(capsys):
+    """Test heading followed by paragraph."""
+    mfmt = MultiFormat8(file_name='test', expected_text='Title',
+                        expected_level=1)
+    mfmt.start_heading(level=1, text='Title')
+    assert mfmt.state == MultiFormatState.HEADING
+
+    # Now start a paragraph - should end the heading
+    # Note: We don't check expected_level for the paragraph
+    mfmt.expected_text = 'Paragraph text'
+    mfmt.start_paragraph(text='Paragraph text')
+    assert mfmt.state == MultiFormatState.PARAGRAPH
+    assert mfmt.heading_level is None
+    assert mfmt.count == {'_start_heading': 1, '_write_text': 2,
+                          '_write_file_prefix': 1,
+                          '_end_heading': 1, '_start_paragraph': 1}
+    check_capsys(capsys)
+
+
+def test_multiple_headings(capsys):
+    """Test multiple headings in sequence."""
+    mfmt = MultiFormat8(file_name='test', expected_text='First',
+                        expected_level=1)
+    mfmt.start_heading(level=1, text='First')
+    assert mfmt.heading_level == 1
+
+    # Start another heading - should end the first
+    mfmt.expected_text = 'Second'
+    mfmt.expected_level = 2
+    mfmt.start_heading(level=2, text='Second')
+    assert mfmt.heading_level == 2
+    assert mfmt.count == {'_start_heading': 2, '_write_text': 2,
+                          '_write_file_prefix': 1,
+                          '_end_heading': 1}
+    check_capsys(capsys)
+
+
+def test_heading_with_smart_ws(capsys):
+    """Test heading with smart_ws parameter."""
+    mfmt = MultiFormat8(file_name='test', expected_text='Heading',
+                        expected_level=1)
+    mfmt.start_heading(level=1, text='  Heading  ', smart_ws=True)
+    assert mfmt.ws_needed_at_append is True
+
+    mfmt.expected_text = ' more'
+    mfmt.add_text(text='  more  ', smart_ws=True)
+    assert mfmt.count == {'_start_heading': 1, '_write_text': 2,
+                          '_write_file_prefix': 1}
+    check_capsys(capsys)
+
+
+def test_url_then_text_spacing(capsys):
+    """Test that add_text after add_url gets proper spacing."""
+    mfmt = MultiFormat6(file_name='test',
+                        expected_url='http://example.com',
+                        expected_url_text='link')
+    mfmt.state = MultiFormatState.PARAGRAPH
+    mfmt.add_url(url='http://example.com', text='link')
+    assert mfmt.ws_needed_at_append is True
+
+    # Now add text - it should get a leading space
+    mfmt2 = MultiFormat4(file_name='test', expected_text=' more text')
+    mfmt2.state = MultiFormatState.PARAGRAPH
+    mfmt2.ws_needed_at_append = True
+    mfmt2.add_text(text='more text', smart_ws=True)
+    assert mfmt2.count == {'_write_text': 1}
+    check_capsys(capsys)
+
+
+def test_url_then_text_no_spacing_when_smart_ws_false(capsys):
+    """Test add_text after add_url without smart_ws."""
+    mfmt = MultiFormat6(file_name='test',
+                        expected_url='http://example.com',
+                        expected_url_text='link')
+    mfmt.state = MultiFormatState.PARAGRAPH
+    # URL text ends without whitespace
+    mfmt.add_url(url='http://example.com', text='link', smart_ws=False)
+    assert mfmt.ws_needed_at_append is True
+
+    # Add text with smart_ws=False - no space added
+    mfmt2 = MultiFormat4(file_name='test', expected_text='more')
+    mfmt2.state = MultiFormatState.PARAGRAPH
+    mfmt2.add_text(text='more', smart_ws=False)
+    assert mfmt2.count == {'_write_text': 1}
+    check_capsys(capsys)

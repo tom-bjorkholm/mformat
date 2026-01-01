@@ -58,6 +58,16 @@ class MultiFormatMd(MultiFormatTextBased):
         assert self.file is not None
         self.file.write('\n')
 
+    def _start_heading(self, level: int) -> None:
+        """Start a heading."""
+        assert self.file is not None
+        self.file.write(f'{"#" * level} ')
+
+    def _end_heading(self, level: int) -> None:
+        """End a heading."""
+        assert self.file is not None
+        self.file.write('\n')
+
     def _write_text(self,  # pylint: disable=unused-argument,too-many-arguments,too-many-positional-arguments # noqa: E501
                     text: str, state: MultiFormatState,
                     bold: bool, italic: bool) -> None:
@@ -84,7 +94,7 @@ class MultiFormatMd(MultiFormatTextBased):
         assert self.file is not None
         if not text:
             text = url
-        text = f' [{text}]({url})'
+        text = f'[{text}]({url})'
         if bold:
             text = f'**{text}**'
         if italic:

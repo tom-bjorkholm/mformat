@@ -151,19 +151,19 @@ def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-argument
 
 @pytest.mark.parametrize('url, text, bold, italic, expected',
                          [('http://example.com', None, False, False,
-                           ' <a href="http://example.com">'
+                           '<a href="http://example.com">'
                            'http://example.com</a>'),
                           ('http://test.org', 'link text', False, False,
-                           ' <a href="http://test.org">'
+                           '<a href="http://test.org">'
                            'link text</a>'),
                           ('http://test.org', 'link', True, False,
-                           '<strong> <a href="http://test.org">'
+                           '<strong><a href="http://test.org">'
                            'link</a></strong>'),
                           ('http://test.org', 'link', False, True,
-                           '<em> <a href="http://test.org">'
+                           '<em><a href="http://test.org">'
                            'link</a></em>'),
                           ('http://test.org', 'link', True, True,
-                           '<em><strong> <a href="http://test.org">'
+                           '<em><strong><a href="http://test.org">'
                            'link</a></strong></em>')])
 def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                    url, text, bold, italic, expected):
@@ -178,11 +178,11 @@ def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positi
 @pytest.mark.parametrize('url, text, expected',
                          [('http://example.com', None,
                            PF_EN_NT_NC +
-                           '<p>\n <a href="http://example.com">'
+                           '<p>\n<a href="http://example.com">'
                            'http://example.com</a></p>\n' + SFTOT),
                           ('http://test.org', 'link text',
                            PF_EN_NT_NC +
-                           '<p>\n <a href="http://test.org">'
+                           '<p>\n<a href="http://test.org">'
                            'link text</a></p>\n' + SFTOT)])
 def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                  url, text, expected):
@@ -215,5 +215,143 @@ def test_add_url_as_text(capsys,  # pylint: disable=too-many-arguments,too-many-
 
     txt = run_with_context_manager('html', '.html', test_action,
                                    url_as_text=True)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('level, expected',
+                         [(1, '<h1>\n'),
+                          (2, '<h2>\n'),
+                          (3, '<h3>\n'),
+                          (4, '<h4>\n'),
+                          (5, '<h5>\n'),
+                          (6, '<h6>\n')])
+def test_start_heading(capsys, level, expected):
+    """Test the _start_heading method."""
+    txt = run_protected_method('html', '.html', '_start_heading', (level,))
+    assert txt == expected
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('level, expected',
+                         [(1, '</h1>\n'),
+                          (2, '</h2>\n'),
+                          (3, '</h3>\n'),
+                          (4, '</h4>\n'),
+                          (5, '</h5>\n'),
+                          (6, '</h6>\n')])
+def test_end_heading(capsys, level, expected):
+    """Test the _end_heading method."""
+    txt = run_protected_method('html', '.html', '_end_heading', (level,))
+    assert txt == expected
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('level, text, expected',
+                         [(1, 'Main Title',
+                           PF_EN_NT_NC + '<h1>\nMain Title</h1>\n' + SFTOT),
+                          (2, 'Subtitle',
+                           PF_EN_NT_NC + '<h2>\nSubtitle</h2>\n' + SFTOT),
+                          (3, 'Section',
+                           PF_EN_NT_NC + '<h3>\nSection</h3>\n' + SFTOT)])
+def test_heading_integration(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                             level, text, expected):
+    """Test complete heading creation."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_heading(level=level, text=text)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('level, text, bold, italic, expected',
+                         [(1, 'Bold Title', True, False,
+                           '<h1>\n<strong>Bold Title</strong></h1>\n'),
+                          (2, 'Italic Title', False, True,
+                           '<h2>\n<em>Italic Title</em></h2>\n'),
+                          (3, 'Both', True, True,
+                           '<h3>\n<em><strong>Both</strong></em></h3>\n')])
+def test_heading_formatting(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                            level, text, bold, italic, expected):
+    """Test heading with bold and italic formatting."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_heading(level=level, text=text, bold=bold, italic=italic)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    assert txt == PF_EN_NT_NC + expected + SFTOT
+    check_capsys(capsys)
+
+
+def test_heading_add_text(capsys):
+    """Test adding text to a heading."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_heading(level=1, text='Title')
+        mfd.add_text(text=' and more')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = PF_EN_NT_NC + '<h1>\nTitle and more</h1>\n' + SFTOT
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_heading_add_url(capsys):
+    """Test adding URL to a heading."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_heading(level=2, text='Check ')
+        mfd.add_url(url='http://example.com', text='this link')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<h2>\nCheck ' +
+                '<a href="http://example.com">this link</a></h2>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_heading_then_paragraph(capsys):
+    """Test heading followed by paragraph."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_heading(level=1, text='Title')
+        mfd.start_paragraph('Some text')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<h1>\nTitle</h1>\n' +
+                '<p>\nSome text</p>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_multiple_headings(capsys):
+    """Test multiple headings."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_heading(level=1, text='Main')
+        mfd.start_heading(level=2, text='Sub')
+        mfd.start_heading(level=3, text='Subsub')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<h1>\nMain</h1>\n' +
+                '<h2>\nSub</h2>\n<h3>\nSubsub</h3>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_heading_paragraph_heading(capsys):
+    """Test heading, paragraph, then another heading."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_heading(level=1, text='First Heading')
+        mfd.start_paragraph('Some content here.')
+        mfd.start_heading(level=2, text='Second Heading')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<h1>\nFirst Heading</h1>\n' +
+                '<p>\nSome content here.</p>\n' +
+                '<h2>\nSecond Heading</h2>\n' + SFTOT)
     assert txt == expected
     check_capsys(capsys)

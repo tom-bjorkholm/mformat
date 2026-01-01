@@ -87,6 +87,22 @@ class MultiFormatDocx(MultiFormat):
         """End a paragraph."""
         self.current_paragraph = None
 
+    def _start_heading(self, level: int) -> None:
+        """Start a heading.
+
+        Args:
+            level: The level of the heading (1-9).
+        """
+        self.current_paragraph = self.doc.add_heading(level=level)
+
+    def _end_heading(self, level: int) -> None:
+        """End a heading.
+
+        Args:
+            level: The level of the heading (1-9).
+        """
+        self.current_paragraph = None
+
     def _write_text(self, text: str, state: MultiFormatState,
                     bold: bool, italic: bool) -> None:
         """Write text into current item (paragraph, bullet list item, etc.).
@@ -121,10 +137,8 @@ class MultiFormatDocx(MultiFormat):
             raise RuntimeError('No current paragraph to write URL into')
         if not text:
             text = url
-        # Add space before URL
-        self.current_paragraph.add_run(' ')
-        # Add hyperlink (Note: python-docx doesn't have direct hyperlink
-        # support, so we add it as styled text)
+        # Note: python-docx doesn't have direct hyperlink
+        # support, so we add it as styled text
         run = self.current_paragraph.add_run(text)
         if bold:
             run.bold = True
