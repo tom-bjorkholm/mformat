@@ -355,3 +355,188 @@ def test_heading_paragraph_heading(capsys):
                 '<h2>\nSecond Heading</h2>\n' + SFTOT)
     assert txt == expected
     check_capsys(capsys)
+
+
+def test_single_bullet_item(capsys):
+    """Test a single bullet item."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_bullet_item(text='First item')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = PF_EN_NT_NC + '<ul>\n<li>First item</li>\n</ul>\n' + SFTOT
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_multiple_bullet_items(capsys):
+    """Test multiple bullet items."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_bullet_item(text='First item')
+        mfd.start_bullet_item(text='Second item')
+        mfd.start_bullet_item(text='Third item')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ul>\n<li>First item</li>\n' +
+                '<li>Second item</li>\n<li>Third item</li>\n</ul>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_bullet_item_with_add_text(capsys):
+    """Test bullet item with additional text."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_bullet_item(text='First item')
+        mfd.add_text(text=' with more text')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ul>\n<li>First item with more text</li>\n' +
+                '</ul>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_bullet_item_with_url(capsys):
+    """Test bullet item with URL."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_bullet_item(text='Check ')
+        mfd.add_url(url='http://example.com', text='this link')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ul>\n<li>Check ' +
+                '<a href="http://example.com">this link</a></li>\n' +
+                '</ul>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_nested_bullet_items_level2(capsys):
+    """Test nested bullet items at level 2."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_bullet_item(text='Level 1', level=1)
+        mfd.start_bullet_item(text='Level 2', level=2)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ul>\n<li>Level 1</li>\n' +
+                '<ul>\n<li>Level 2</li>\n</ul>\n</ul>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_nested_bullet_items_level3(capsys):
+    """Test nested bullet items at level 3."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_bullet_item(text='Level 1', level=1)
+        mfd.start_bullet_item(text='Level 2', level=2)
+        mfd.start_bullet_item(text='Level 3', level=3)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ul>\n<li>Level 1</li>\n' +
+                '<ul>\n<li>Level 2</li>\n' +
+                '<ul>\n<li>Level 3</li>\n</ul>\n</ul>\n</ul>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_bullet_list_back_to_level1(capsys):
+    """Test bullet list returning to level 1."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_bullet_item(text='Level 1 first', level=1)
+        mfd.start_bullet_item(text='Level 2', level=2)
+        mfd.start_bullet_item(text='Level 1 second', level=1)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ul>\n<li>Level 1 first</li>\n' +
+                '<ul>\n<li>Level 2</li>\n</ul>\n' +
+                '<li>Level 1 second</li>\n</ul>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_bullet_list_formatting(capsys):
+    """Test bullet list with bold and italic."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_bullet_item(text='Bold item', bold=True)
+        mfd.start_bullet_item(text='Italic item', italic=True)
+        mfd.start_bullet_item(text='Both', bold=True, italic=True)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ul>\n<li><strong>Bold item</strong></li>\n' +
+                '<li><em>Italic item</em></li>\n' +
+                '<li><em><strong>Both</strong></em></li>\n</ul>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_paragraph_then_bullet_list(capsys):
+    """Test paragraph followed by bullet list."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_paragraph(text='Intro paragraph')
+        mfd.start_bullet_item(text='First item')
+        mfd.start_bullet_item(text='Second item')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<p>\nIntro paragraph</p>\n' +
+                '<ul>\n<li>First item</li>\n<li>Second item</li>\n' +
+                '</ul>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_bullet_list_then_paragraph(capsys):
+    """Test bullet list followed by paragraph."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_bullet_item(text='First item')
+        mfd.start_bullet_item(text='Second item')
+        mfd.start_paragraph(text='Concluding paragraph')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ul>\n<li>First item</li>\n' +
+                '<li>Second item</li>\n</ul>\n' +
+                '<p>\nConcluding paragraph</p>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_heading_then_bullet_list(capsys):
+    """Test heading followed by bullet list."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_heading(level=1, text='Main Title')
+        mfd.start_bullet_item(text='First item')
+        mfd.start_bullet_item(text='Second item')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<h1>\nMain Title</h1>\n' +
+                '<ul>\n<li>First item</li>\n<li>Second item</li>\n' +
+                '</ul>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_complex_nested_structure(capsys):
+    """Test complex nested bullet structure."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_bullet_item(text='Item 1', level=1)
+        mfd.start_bullet_item(text='Item 1.1', level=2)
+        mfd.start_bullet_item(text='Item 1.2', level=2)
+        mfd.start_bullet_item(text='Item 2', level=1)
+        mfd.start_bullet_item(text='Item 2.1', level=2)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ul>\n<li>Item 1</li>\n' +
+                '<ul>\n<li>Item 1.1</li>\n<li>Item 1.2</li>\n</ul>\n' +
+                '<li>Item 2</li>\n' +
+                '<ul>\n<li>Item 2.1</li>\n</ul>\n</ul>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)

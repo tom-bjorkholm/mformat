@@ -9,6 +9,7 @@ from typing import Optional, Callable
 from docx import Document
 from docx.document import Document as DocumentObject
 from docx.text.paragraph import Paragraph
+from docx.shared import Inches
 from mformat.mformat import FormatterDescriptor, MultiFormat, \
     MultiFormatState
 
@@ -147,3 +148,92 @@ class MultiFormatDocx(MultiFormat):
         run.font.color.rgb = None  # Use default color
         # Note: For proper hyperlinks in docx, we would need to manipulate
         # the underlying XML. For now, we just format the text.
+
+    def _start_bullet_list(self, level: int) -> None:
+        """Start a bullet list.
+
+        Args:
+            level: The level of the bullet list (1-9).
+        """
+        assert isinstance(level, int)
+        # In python-docx, lists are created by setting paragraph styles
+        # No explicit list start/end is needed
+
+    def _end_bullet_list(self, level: int) -> None:
+        """End a bullet list.
+
+        Args:
+            level: The level of the bullet list (1-9).
+        """
+        assert isinstance(level, int)
+        # In python-docx, lists are created by setting paragraph styles
+        # No explicit list start/end is needed
+
+    def _start_bullet_item(self, level: int) -> None:
+        """Start a bullet item.
+
+        Args:
+            level: The level of the bullet item (1-9).
+        """
+        assert isinstance(level, int)
+        self.current_paragraph = self.doc.add_paragraph(style='List Bullet')
+        # Set the indentation level for nested lists
+        if level > 1:
+            self.current_paragraph.paragraph_format.left_indent = \
+                Inches(0.5 * (level - 1))
+
+    def _end_bullet_item(self, level: int) -> None:
+        """End a bullet item.
+
+        Args:
+            level: The level of the bullet item (1-9).
+        """
+        assert isinstance(level, int)
+        self.current_paragraph = None
+
+    def _start_numeric_list(self, level: int) -> None:
+        """Start a numeric list.
+
+        Args:
+            level: The level of the numeric list (1-9).
+        """
+        assert isinstance(level, int)
+        # In python-docx, lists are created by setting paragraph styles
+        # No explicit list start/end is needed
+
+    def _end_numeric_list(self, level: int) -> None:
+        """End a numeric list.
+
+        Args:
+            level: The level of the numeric list (1-9).
+        """
+        assert isinstance(level, int)
+        # In python-docx, lists are created by setting paragraph styles
+        # No explicit list start/end is needed
+
+    def _start_numeric_item(self, level: int, num: int) -> None:
+        """Start a numeric item.
+
+        Args:
+            level: The level of the numeric item (1-9).
+            num: The number of the item.
+        """
+        assert isinstance(level, int)
+        assert isinstance(num, int)
+        self.current_paragraph = self.doc.add_paragraph(
+            style='List Number')
+        # Set the indentation level for nested lists
+        if level > 1:
+            self.current_paragraph.paragraph_format.left_indent = \
+                Inches(0.5 * (level - 1))
+
+    def _end_numeric_item(self, level: int, num: int) -> None:
+        """End a numeric item.
+
+        Args:
+            level: The level of the numeric item (1-9).
+            num: The number of the item.
+        """
+        assert isinstance(level, int)
+        assert isinstance(num, int)
+        self.current_paragraph = None

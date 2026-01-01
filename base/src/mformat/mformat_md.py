@@ -100,3 +100,55 @@ class MultiFormatMd(MultiFormatTextBased):
         if italic:
             text = f'*{text}*'
         self.file.write(text)
+
+    def _start_bullet_list(self, level: int) -> None:
+        """Start a bullet list."""
+        assert self.file is not None
+        assert isinstance(level, int)
+
+    def _end_bullet_list(self, level: int) -> None:
+        """End a bullet list."""
+        assert self.file is not None
+        assert isinstance(level, int)
+
+    def _indent(self, level: int) -> str:
+        """Get the indentation for a level."""
+        assert self.file is not None
+        assert isinstance(level, int)
+        return 2*(level-1)*' '
+
+    def _start_bullet_item(self, level: int) -> None:
+        """Start a bullet item."""
+        assert self.file is not None
+        assert isinstance(level, int)
+        self.file.write(self._indent(level) + '- ')
+
+    def _end_bullet_item(self, level: int) -> None:
+        """End a bullet item."""
+        assert self.file is not None
+        assert isinstance(level, int)
+        self.file.write('\n')
+
+    def _start_numeric_list(self, level: int) -> None:
+        """Start a numeric list."""
+        assert self.file is not None
+        assert isinstance(level, int)
+
+    def _end_numeric_list(self, level: int) -> None:
+        """End a numeric list."""
+        assert self.file is not None
+        assert isinstance(level, int)
+
+    def _start_numeric_item(self, level: int, num: int) -> None:
+        """Start a numeric item."""
+        assert self.file is not None
+        assert isinstance(level, int)
+        assert isinstance(num, int)
+        self.file.write(self._indent(level) + f'{num}. ')
+
+    def _end_numeric_item(self, level: int, num: int) -> None:
+        """End a numeric item."""
+        assert self.file is not None
+        assert isinstance(level, int)
+        assert isinstance(num, int)
+        self.file.write('\n')

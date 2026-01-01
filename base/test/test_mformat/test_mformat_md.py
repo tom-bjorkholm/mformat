@@ -279,3 +279,168 @@ def test_heading_paragraph_heading(capsys):
     expected = '# First Heading\n\nSome content here.\n## Second Heading\n'
     assert txt == expected
     check_capsys(capsys)
+
+
+def test_single_bullet_item(capsys):
+    """Test a single bullet item."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_bullet_item(text='First item')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    assert txt == '- First item\n'
+    check_capsys(capsys)
+
+
+def test_multiple_bullet_items(capsys):
+    """Test multiple bullet items."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_bullet_item(text='First item')
+        mfd.start_bullet_item(text='Second item')
+        mfd.start_bullet_item(text='Third item')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '- First item\n- Second item\n- Third item\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_bullet_item_with_add_text(capsys):
+    """Test bullet item with additional text."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_bullet_item(text='First item')
+        mfd.add_text(text=' with more text')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    assert txt == '- First item with more text\n'
+    check_capsys(capsys)
+
+
+def test_bullet_item_with_url(capsys):
+    """Test bullet item with URL."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_bullet_item(text='Check ')
+        mfd.add_url(url='http://example.com', text='this link')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    assert txt == '- Check [this link](http://example.com)\n'
+    check_capsys(capsys)
+
+
+def test_nested_bullet_items_level2(capsys):
+    """Test nested bullet items at level 2."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_bullet_item(text='Level 1', level=1)
+        mfd.start_bullet_item(text='Level 2', level=2)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '- Level 1\n  - Level 2\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_nested_bullet_items_level3(capsys):
+    """Test nested bullet items at level 3."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_bullet_item(text='Level 1', level=1)
+        mfd.start_bullet_item(text='Level 2', level=2)
+        mfd.start_bullet_item(text='Level 3', level=3)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '- Level 1\n  - Level 2\n    - Level 3\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_bullet_list_back_to_level1(capsys):
+    """Test bullet list returning to level 1."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_bullet_item(text='Level 1 first', level=1)
+        mfd.start_bullet_item(text='Level 2', level=2)
+        mfd.start_bullet_item(text='Level 1 second', level=1)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('- Level 1 first\n  - Level 2\n'
+                '- Level 1 second\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_bullet_list_formatting(capsys):
+    """Test bullet list with bold and italic."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_bullet_item(text='Bold item', bold=True)
+        mfd.start_bullet_item(text='Italic item', italic=True)
+        mfd.start_bullet_item(text='Both', bold=True, italic=True)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('- **Bold item**\n- *Italic item*\n'
+                '- ***Both***\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_paragraph_then_bullet_list(capsys):
+    """Test paragraph followed by bullet list."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_paragraph(text='Intro paragraph')
+        mfd.start_bullet_item(text='First item')
+        mfd.start_bullet_item(text='Second item')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '\nIntro paragraph\n- First item\n- Second item\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_bullet_list_then_paragraph(capsys):
+    """Test bullet list followed by paragraph."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_bullet_item(text='First item')
+        mfd.start_bullet_item(text='Second item')
+        mfd.start_paragraph(text='Concluding paragraph')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '- First item\n- Second item\n\nConcluding paragraph\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_heading_then_bullet_list(capsys):
+    """Test heading followed by bullet list."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_heading(level=1, text='Main Title')
+        mfd.start_bullet_item(text='First item')
+        mfd.start_bullet_item(text='Second item')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '# Main Title\n- First item\n- Second item\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_complex_nested_structure(capsys):
+    """Test complex nested bullet structure."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_bullet_item(text='Item 1', level=1)
+        mfd.start_bullet_item(text='Item 1.1', level=2)
+        mfd.start_bullet_item(text='Item 1.2', level=2)
+        mfd.start_bullet_item(text='Item 2', level=1)
+        mfd.start_bullet_item(text='Item 2.1', level=2)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('- Item 1\n  - Item 1.1\n  - Item 1.2\n'
+                '- Item 2\n  - Item 2.1\n')
+    assert txt == expected
+    check_capsys(capsys)

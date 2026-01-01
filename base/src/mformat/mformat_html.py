@@ -122,3 +122,53 @@ class MultiFormatHtml(MultiFormatTextBased):
         if italic:
             text = f'<em>{text}</em>'
         self.file.write(text)
+
+    def _start_bullet_list(self, level: int) -> None:
+        """Start a bullet list."""
+        assert self.file is not None
+        assert isinstance(level, int)
+        self.file.write('<ul>\n')
+
+    def _end_bullet_list(self, level: int) -> None:
+        """End a bullet list."""
+        assert self.file is not None
+        assert isinstance(level, int)
+        self.file.write('</ul>\n')
+
+    def _start_bullet_item(self, level: int) -> None:
+        """Start a bullet item."""
+        assert self.file is not None
+        assert isinstance(level, int)
+        self.file.write('<li>')
+
+    def _end_bullet_item(self, level: int) -> None:
+        """End a bullet item."""
+        assert self.file is not None
+        assert isinstance(level, int)
+        self.file.write('</li>\n')
+
+    def _start_numeric_list(self, level: int) -> None:
+        """Start a numeric list."""
+        assert self.file is not None
+        assert isinstance(level, int)
+        self.file.write('<ol>\n')
+
+    def _end_numeric_list(self, level: int) -> None:
+        """End a numeric list."""
+        assert self.file is not None
+        assert isinstance(level, int)
+        self.file.write('</ol>\n')
+
+    def _start_numeric_item(self, level: int, num: int) -> None:
+        """Start a numeric item."""
+        assert self.file is not None
+        assert isinstance(level, int)
+        assert isinstance(num, int)
+        self.file.write('<li>')
+
+    def _end_numeric_item(self, level: int, num: int) -> None:
+        """End a numeric item."""
+        assert self.file is not None
+        assert isinstance(level, int)
+        assert isinstance(num, int)
+        self.file.write('</li>\n')

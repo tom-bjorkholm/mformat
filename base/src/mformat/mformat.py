@@ -29,12 +29,8 @@ class MultiFormatState(IntEnum):
     PARAGRAPH_END = auto()
     BULLET_LIST = auto()
     BULLET_LIST_ITEM = auto()
-    BULLET_LIST_ITEM_END = auto()
-    BULLET_LIST_END = auto()
     NUMERIC_LIST = auto()
     NUMERIC_LIST_ITEM = auto()
-    NUMERIC_LIST_ITEM_END = auto()
-    NUMERIC_LIST_END = auto()
     CLOSED = auto()
 
 
@@ -148,6 +144,7 @@ class MultiFormat:
             self._end_state()
             self._write_file_suffix()
         self._close()
+        self.state = MultiFormatState.CLOSED
 
     def _close(self) -> None:
         """Close the file.
@@ -212,6 +209,194 @@ class MultiFormat:
         self.state = MultiFormatState.PARAGRAPH
         self._write_text(self._to_write(text, smart_ws, False),
                          self.state, bold, italic)
+
+    def start_bullet_item(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                          text: str, level: Optional[int] = None,
+                          smart_ws: bool = True, bold: bool = False,
+                          italic: bool = False) -> None:
+        """Start a new bullet list item and a new bullet list if needed.
+
+        If level is not provided, the item is added to the current bullet list.
+        If level is not provided and there is no current bullet list, a new
+        bullet list is started.
+        If level is provided and it is one greater than the current level, a
+        new bullet list is started.
+        If level is provided and it is less than the current level, one or
+        several lists are ended to get to the level specified.
+        If level is provided and it is equal to the current level, the item is
+        added to the current bullet list item.
+        If level is provided and it is more than one greater than the current
+        level, an error is raised.
+        If level is provided and and the list at that level is not a bullet
+        list, the list at that level is ended and a new bullet list is started.
+        Args:
+            text: The text to write in the bullet list item.
+            level: The level of the bullet list item.
+            smart_ws: If True, leading and trailing whitespace are collapsed
+                      and a single space is inserted between texts (from
+                      start_bullet_item or add_text).
+            bold: If True, the text is bold.
+            italic: If True, the text is italic.
+        """
+        assert level is None or level > 0
+        self._start_point_list_item(
+            text=text, level=level, smart_ws=smart_ws,
+            bold=bold, italic=italic,
+            point_list_type=PointListType.BULLET)
+
+    def _start_point_list_item(  # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals # noqa: E501
+            self, text: str, level: Optional[int],
+            smart_ws: bool, bold: bool, italic: bool,
+            point_list_type: PointListType) -> None:
+        """Start a new point list item (bullet or numeric).
+
+        Args:
+            text: The text to write in the list item.
+            level: The level of the list item.
+            smart_ws: If True, leading and trailing whitespace are collapsed.
+            bold: If True, the text is bold.
+            italic: If True, the text is italic.
+            point_list_type: The type of point list (bullet or numeric).
+        """
+        if self._should_end_lists_to_reach_level(level):
+            while level and len(self.point_list_stack) > level:
+                self._end_list_state()
+            self._start_point_list_item(
+                text=text, level=level, smart_ws=smart_ws,
+                bold=bold, italic=italic,
+                point_list_type=point_list_type)
+            return
+        if self._can_add_item_to_current_list(level, point_list_type):
+            self._add_item_to_current_list(
+                text=text, smart_ws=smart_ws,
+                bold=bold, italic=italic,
+                point_list_type=point_list_type)
+            return
+        if self._needs_to_switch_list_type(point_list_type):
+            self._end_list_state()
+        # End current state if not in a list state
+        if self.state not in (MultiFormatState.BULLET_LIST,
+                              MultiFormatState.BULLET_LIST_ITEM,
+                              MultiFormatState.NUMERIC_LIST,
+                              MultiFormatState.NUMERIC_LIST_ITEM,
+                              MultiFormatState.PARAGRAPH_END):
+            self._end_state()
+        self._start_new_list_with_item(
+            text=text, level=level, smart_ws=smart_ws,
+            bold=bold, italic=italic,
+            point_list_type=point_list_type)
+
+    def _should_end_lists_to_reach_level(
+            self, level: Optional[int]) -> bool:
+        """Check if lists need to be ended to reach target level."""
+        if level and level < len(self.point_list_stack):
+            assert self.state in (
+                MultiFormatState.BULLET_LIST_ITEM,
+                MultiFormatState.BULLET_LIST,
+                MultiFormatState.NUMERIC_LIST_ITEM,
+                MultiFormatState.NUMERIC_LIST)
+            return True
+        return False
+
+    def _can_add_item_to_current_list(
+            self, level: Optional[int],
+            point_list_type: PointListType) -> bool:
+        """Check if item can be added to current list."""
+        if not level or level == len(self.point_list_stack):
+            if point_list_type == PointListType.BULLET:
+                return self.state in (
+                    MultiFormatState.BULLET_LIST_ITEM,
+                    MultiFormatState.BULLET_LIST)
+            if point_list_type == PointListType.NUMERIC:
+                return self.state in (
+                    MultiFormatState.NUMERIC_LIST_ITEM,
+                    MultiFormatState.NUMERIC_LIST)
+        return False
+
+    def _needs_to_switch_list_type(
+            self, point_list_type: PointListType) -> bool:
+        """Check if list type needs to be switched."""
+        if point_list_type == PointListType.BULLET:
+            return self.state in (
+                MultiFormatState.NUMERIC_LIST,
+                MultiFormatState.NUMERIC_LIST_ITEM)
+        if point_list_type == PointListType.NUMERIC:
+            return self.state in (
+                MultiFormatState.BULLET_LIST,
+                MultiFormatState.BULLET_LIST_ITEM)
+        return False
+
+    def _add_item_to_current_list(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+            self, text: str, smart_ws: bool,
+            bold: bool, italic: bool,
+            point_list_type: PointListType) -> None:
+        """Add item to the current list."""
+        lev = len(self.point_list_stack)
+        if point_list_type == PointListType.BULLET:
+            if self.state == MultiFormatState.BULLET_LIST_ITEM:
+                self._end_bullet_item(level=lev)
+            self.point_list_stack[-1]['number_at_level'] += 1
+            self._start_bullet_item(level=lev)
+            self.state = MultiFormatState.BULLET_LIST_ITEM
+        else:  # PointListType.NUMERIC
+            if self.state == MultiFormatState.NUMERIC_LIST_ITEM:
+                num = self.point_list_stack[-1]['number_at_level']
+                self._end_numeric_item(level=lev, num=num)
+            self.point_list_stack[-1]['number_at_level'] += 1
+            num = self.point_list_stack[-1]['number_at_level']
+            self._start_numeric_item(level=lev, num=num)
+            self.state = MultiFormatState.NUMERIC_LIST_ITEM
+        self._write_text(
+            self._to_write(text, smart_ws, False),
+            self.state, bold, italic)
+
+    def _start_new_list_with_item(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+            self, text: str, level: Optional[int],
+            smart_ws: bool, bold: bool, italic: bool,
+            point_list_type: PointListType) -> None:
+        """Start a new list and add the first item."""
+        if level and level > len(self.point_list_stack) + 1:
+            list_type_name = ('bullet' if point_list_type ==
+                              PointListType.BULLET else 'numeric')
+            raise RuntimeError(
+                f'start_{list_type_name}_item called with level={level}, '
+                f'but level {level-1} does not exist.')
+
+        assert not level or level == len(self.point_list_stack) + 1
+
+        # If starting a nested list, end the current item first
+        if self.point_list_stack:
+            if self.state == MultiFormatState.BULLET_LIST_ITEM:
+                self._end_bullet_item(level=len(self.point_list_stack))
+                self.state = MultiFormatState.BULLET_LIST
+            elif self.state == MultiFormatState.NUMERIC_LIST_ITEM:
+                num = self.point_list_stack[-1]['number_at_level']
+                self._end_numeric_item(level=len(self.point_list_stack),
+                                       num=num)
+                self.state = MultiFormatState.NUMERIC_LIST
+        stack_item = PointStackItem(
+            point_list_type=point_list_type,
+            number_at_level=0)
+        self.point_list_stack.append(stack_item)
+        lev = len(self.point_list_stack)
+
+        if point_list_type == PointListType.BULLET:
+            self.state = MultiFormatState.BULLET_LIST
+            self._start_bullet_list(level=lev)
+            self.state = MultiFormatState.BULLET_LIST_ITEM
+            self.point_list_stack[-1]['number_at_level'] += 1
+            self._start_bullet_item(level=lev)
+        else:  # PointListType.NUMERIC
+            self.state = MultiFormatState.NUMERIC_LIST
+            self._start_numeric_list(level=lev)
+            self.state = MultiFormatState.NUMERIC_LIST_ITEM
+            self.point_list_stack[-1]['number_at_level'] += 1
+            num = self.point_list_stack[-1]['number_at_level']
+            self._start_numeric_item(level=lev, num=num)
+
+        self._write_text(
+            self._to_write(text, smart_ws, False),
+            self.state, bold, italic)
 
     def add_text(self, text: str, smart_ws: bool = True,
                  bold: bool = False, italic: bool = False) -> None:
@@ -286,6 +471,13 @@ class MultiFormat:
             self._end_heading(level=self.heading_level)
             self.state = MultiFormatState.PARAGRAPH_END
             self.heading_level = None
+        elif self.state in (MultiFormatState.BULLET_LIST_ITEM,
+                            MultiFormatState.BULLET_LIST,
+                            MultiFormatState.NUMERIC_LIST_ITEM,
+                            MultiFormatState.NUMERIC_LIST):
+            while self.point_list_stack:
+                self._end_list_state()
+            self.state = MultiFormatState.PARAGRAPH_END
 
     def _start_paragraph(self) -> None:
         """Start a paragraph."""
@@ -386,3 +578,90 @@ class MultiFormat:
         ret = self._to_write_optional(text, smart_ws, in_add)
         assert ret is not None  # ret can only be None if text is None
         return ret
+
+    def _start_bullet_list(self, level: int) -> None:
+        """Start a bullet list."""
+        assert isinstance(level, int)
+        err = self._must_be_overridden('_start_bullet_list')
+        raise NotImplementedError(err)
+
+    def _end_bullet_list(self, level: int) -> None:
+        """End a bullet list."""
+        assert isinstance(level, int)
+        err = self._must_be_overridden('_end_bullet_list')
+        raise NotImplementedError(err)
+
+    def _start_bullet_item(self, level: int) -> None:
+        """Start a bullet item."""
+        assert isinstance(level, int)
+        err = self._must_be_overridden('_start_bullet_item')
+        raise NotImplementedError(err)
+
+    def _end_bullet_item(self, level: int) -> None:
+        """End a bullet item."""
+        assert isinstance(level, int)
+        err = self._must_be_overridden('_end_bullet_item')
+        raise NotImplementedError(err)
+
+    def _end_numeric_item(self, level: int, num: int) -> None:
+        """End a numeric item."""
+        assert isinstance(level, int)
+        assert isinstance(num, int)
+        err = self._must_be_overridden('_end_numeric_item')
+        raise NotImplementedError(err)
+
+    def _end_numeric_list(self, level: int) -> None:
+        """End a numeric list."""
+        assert isinstance(level, int)
+        err = self._must_be_overridden('_end_numeric_list')
+        raise NotImplementedError(err)
+
+    def _start_numeric_list(self, level: int) -> None:
+        """Start a numeric list."""
+        assert isinstance(level, int)
+        err = self._must_be_overridden('_start_numeric_list')
+        raise NotImplementedError(err)
+
+    def _start_numeric_item(self, level: int, num: int) -> None:
+        """Start a numeric item."""
+        assert isinstance(level, int)
+        assert isinstance(num, int)
+        err = self._must_be_overridden('_start_numeric_item')
+        raise NotImplementedError(err)
+
+    def _state_from_point_list(self) -> None:
+        """Set the state from the point list stack."""
+        if not self.point_list_stack:
+            self.state = MultiFormatState.PARAGRAPH_END
+            return
+        point_list_type = self.point_list_stack[-1]['point_list_type']
+        if point_list_type == PointListType.BULLET:
+            self.state = MultiFormatState.BULLET_LIST
+            return
+        if point_list_type == PointListType.NUMERIC:
+            self.state = MultiFormatState.NUMERIC_LIST
+            return
+        err = 'Unknown point list type ' + \
+            f'{self.point_list_stack[-1]["point_list_type"]}'
+        raise RuntimeError(err)
+
+    def _end_list_state(self) -> None:
+        """End a list state."""
+        assert self.point_list_stack
+        if self.state == MultiFormatState.BULLET_LIST_ITEM:
+            self._end_bullet_item(level=len(self.point_list_stack))
+            self.state = MultiFormatState.BULLET_LIST
+        if self.state == MultiFormatState.BULLET_LIST:
+            self._end_bullet_list(level=len(self.point_list_stack))
+            self.point_list_stack.pop()
+            self._state_from_point_list()
+            return
+        if self.state == MultiFormatState.NUMERIC_LIST_ITEM:
+            num = self.point_list_stack[-1]['number_at_level']
+            self._end_numeric_item(level=len(self.point_list_stack),
+                                   num=num)
+            self.state = MultiFormatState.NUMERIC_LIST
+        if self.state == MultiFormatState.NUMERIC_LIST:
+            self._end_numeric_list(level=len(self.point_list_stack))
+            self.point_list_stack.pop()
+            self._state_from_point_list()
