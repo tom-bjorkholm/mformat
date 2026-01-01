@@ -7,7 +7,7 @@
 
 from types import TracebackType
 from enum import IntEnum, auto
-from typing import NamedTuple, Callable, Optional
+from typing import NamedTuple, Callable, Optional, TypedDict
 import sys
 import os
 
@@ -45,6 +45,13 @@ class PointListType(IntEnum):
     NUMERIC = auto()
 
 
+class PointStackItem(TypedDict):
+    """Item in the point list stack."""
+
+    point_list_type: PointListType
+    number_at_level: int
+
+
 class MultiFormat:
     """Base class for all multi file format classes."""
 
@@ -73,8 +80,10 @@ class MultiFormat:
         self.state: MultiFormatState = MultiFormatState.EMPTY
         self.url_as_text: bool = url_as_text
         self._file_exists_check()
-        self.point_list_stack: list[PointListType] = []
+        self.point_list_stack: list[PointStackItem] = []
         self.heading_level: Optional[int] = None
+        # Is whitespace needed at beginning of next text to be added?
+        self.ws_needed_at_append: bool = False
 
     def __enter__(self) -> 'MultiFormat':
         """Enter the context manager."""
@@ -174,7 +183,7 @@ class MultiFormat:
             self._end_state()
         self._start_paragraph()
         self.state = MultiFormatState.PARAGRAPH
-        self._write_text(text.strip() if smart_ws else text,
+        self._write_text(self._to_write(text, smart_ws, False),
                          self.state, bold, italic)
 
     def add_text(self, text: str, smart_ws: bool = True,
@@ -195,7 +204,7 @@ class MultiFormat:
                               MultiFormatState.NUMERIC_LIST_ITEM):
             err = f'Cannot add text to state {self.state.name}'
             raise RuntimeError(err)
-        self._write_text((' ' + text.strip()) if smart_ws else text,
+        self._write_text(self._to_write(text, smart_ws, True),
                          self.state, bold, italic)
 
     def add_url(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
@@ -222,12 +231,12 @@ class MultiFormat:
         if self.url_as_text:
             text_to_write = ''
             if text:
-                text_to_write += (' ' + text.strip()) if smart_ws else text
-                text_to_write += ' '
+                assert text is not None
+                text_to_write = self._to_write(text, smart_ws, True) + ' '
             text_to_write += url.strip()
             self._write_text(text_to_write, self.state, bold, italic)
             return
-        self._write_url(url, text.strip() if text and smart_ws else text,
+        self._write_url(url, self._to_write_optional(text, smart_ws, True),
                         self.state, bold, italic)
 
     def _end_state(self) -> None:
@@ -301,3 +310,28 @@ class MultiFormat:
                 msg += ' function to allow the file to be overwritten.)\n'
                 print(msg, file=sys.stderr)
                 raise FileExistsError(msg)
+
+    def _to_write_optional(self, text: Optional[str],
+                           smart_ws: bool,
+                           in_add: bool) -> Optional[str]:
+        """Get the text to write."""
+        if text is None:
+            return None
+        if not smart_ws:
+            self.ws_needed_at_append = \
+               bool(text) and not text[-1].isspace()
+            return text
+        ret = text.strip()
+        if self.ws_needed_at_append and in_add:
+            ret = ' ' + ret
+        # As ret was stripped, no whitespace at end of text. Whitespace is
+        # needed at beginning of next text to be added.
+        # However, if ret is empty, whitespace is not needed.
+        self.ws_needed_at_append = bool(ret)
+        return ret
+
+    def _to_write(self, text: str, smart_ws: bool, in_add: bool) -> str:
+        """Get the text to write."""
+        ret = self._to_write_optional(text, smart_ws, in_add)
+        assert ret is not None  # ret can only be None if text is None
+        return ret

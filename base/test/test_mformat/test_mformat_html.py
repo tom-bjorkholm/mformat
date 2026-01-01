@@ -203,7 +203,7 @@ def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-position
                            '<p>\nhttp://example.com</p>\n' + SFTOT),
                           ('http://test.org', 'See here',
                            PF_EN_NT_NC +
-                           '<p>\n See here http://test.org</p>\n' +
+                           '<p>\nSee here http://test.org</p>\n' +
                            SFTOT)])
 def test_add_url_as_text(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                          url, text, expected):
