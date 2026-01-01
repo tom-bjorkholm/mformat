@@ -97,3 +97,18 @@ class MultiFormatHtml(MultiFormatTextBased):
         if italic:
             text = f'<em>{text}</em>'
         self.file.write(text)
+
+    def _write_url(self,  # pylint: disable=unused-argument,too-many-arguments,too-many-positional-arguments # noqa: E501
+                   url: str, text: Optional[str],
+                   state: MultiFormatState,
+                   bold: bool, italic: bool) -> None:
+        """Write a URL into current item (paragraph, bullet list item...)."""
+        assert self.file is not None
+        if not text:
+            text = url
+        text = f' <a href="{url}">{text}</a>'
+        if bold:
+            text = f'<strong>{text}</strong>'
+        if italic:
+            text = f'<em>{text}</em>'
+        self.file.write(text)

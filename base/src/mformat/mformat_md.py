@@ -75,3 +75,18 @@ class MultiFormatMd(MultiFormatTextBased):
         if italic:
             text = f'*{text}*'
         self.file.write(text)
+
+    def _write_url(self,  # pylint: disable=unused-argument,too-many-arguments,too-many-positional-arguments # noqa: E501
+                   url: str, text: Optional[str],
+                   state: MultiFormatState,
+                   bold: bool, italic: bool) -> None:
+        """Write a URL into current item (paragraph, bullet list item...)."""
+        assert self.file is not None
+        if not text:
+            text = url
+        text = f' [{text}]({url})'
+        if bold:
+            text = f'**{text}**'
+        if italic:
+            text = f'*{text}*'
+        self.file.write(text)

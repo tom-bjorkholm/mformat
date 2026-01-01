@@ -24,10 +24,7 @@ class MultiFormatState(IntEnum):
     """Enum for the state of the multi file format."""
 
     EMPTY = auto()
-    H1 = auto()
-    H2 = auto()
-    H3 = auto()
-    H4 = auto()
+    HEADING = auto()
     PARAGRAPH = auto()
     PARAGRAPH_END = auto()
     BULLET_LIST = auto()
@@ -41,12 +38,11 @@ class MultiFormatState(IntEnum):
     CLOSED = auto()
 
 
-class NewOrAppend(IntEnum):
-    """Enum for whether to start new section or append to existing section."""
+class PointListType(IntEnum):
+    """Enum for the type of point list."""
 
-    NEW = auto()
-    MUST_APPEND = auto()
-    APPEND_IF_EXISTS = auto()
+    BULLET = auto()
+    NUMERIC = auto()
 
 
 class MultiFormat:
@@ -77,6 +73,8 @@ class MultiFormat:
         self.state: MultiFormatState = MultiFormatState.EMPTY
         self.url_as_text: bool = url_as_text
         self._file_exists_check()
+        self.point_list_stack: list[PointListType] = []
+        self.heading_level: Optional[int] = None
 
     def __enter__(self) -> 'MultiFormat':
         """Enter the context manager."""
@@ -191,13 +189,46 @@ class MultiFormat:
             bold: If True, the text is bold.
             italic: If True, the text is italic.
         """
-        if self.state not in (MultiFormatState.PARAGRAPH,
+        if self.state not in (MultiFormatState.HEADING,
+                              MultiFormatState.PARAGRAPH,
                               MultiFormatState.BULLET_LIST_ITEM,
                               MultiFormatState.NUMERIC_LIST_ITEM):
             err = f'Cannot add text to state {self.state.name}'
             raise RuntimeError(err)
-        self._write_text(' ' + text.strip() if smart_ws else text,
+        self._write_text((' ' + text.strip()) if smart_ws else text,
                          self.state, bold, italic)
+
+    def add_url(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                url: str, text: Optional[str] = None,
+                smart_ws: bool = True,
+                bold: bool = False, italic: bool = False) -> None:
+        """Add a URL to the current item (paragraph, bullet list item, etc.).
+
+        Args:
+            url: The URL to add to the current item.
+            text: The text to add to the current item.
+            smart_ws: If True, leading and trailing whitespace are collapsed
+                      and a single space is inserted between texts (from
+                      add_url or add_text).
+            bold: If True, the text is bold.
+            italic: If True, the text is italic.
+        """
+        if self.state not in (MultiFormatState.HEADING,
+                              MultiFormatState.PARAGRAPH,
+                              MultiFormatState.BULLET_LIST_ITEM,
+                              MultiFormatState.NUMERIC_LIST_ITEM):
+            err = f'Cannot add URL to state {self.state.name}'
+            raise RuntimeError(err)
+        if self.url_as_text:
+            text_to_write = ''
+            if text:
+                text_to_write += (' ' + text.strip()) if smart_ws else text
+                text_to_write += ' '
+            text_to_write += url.strip()
+            self._write_text(text_to_write, self.state, bold, italic)
+            return
+        self._write_url(url, text.strip() if text and smart_ws else text,
+                        self.state, bold, italic)
 
     def _end_state(self) -> None:
         """End the current state."""
@@ -226,6 +257,20 @@ class MultiFormat:
         assert isinstance(bold, bool)
         assert isinstance(italic, bool)
         err = self._must_be_overridden('_write_text')
+        raise NotImplementedError(err)
+
+    def _write_url(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                   url: str, text: Optional[str],
+                   state: MultiFormatState,
+                   bold: bool, italic: bool) -> None:
+        """Write a URL into current item (paragraph, bullet list item...)."""
+        assert isinstance(url, str)
+        if text is not None:
+            assert isinstance(text, str)
+        assert isinstance(state, MultiFormatState)
+        assert isinstance(bold, bool)
+        assert isinstance(italic, bool)
+        err = self._must_be_overridden('_write_url')
         raise NotImplementedError(err)
 
     @staticmethod

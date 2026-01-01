@@ -102,3 +102,71 @@ def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-argument
         with open(fname, 'rt', encoding='utf-8') as file:
             assert file.read() == expected
         check_capsys(capsys)
+
+
+@pytest.mark.parametrize('url, text, bold, italic, expected',
+                         [('http://example.com', None, False, False,
+                           ' [http://example.com](http://example.com)'),
+                          ('http://test.org', 'link text', False, False,
+                           ' [link text](http://test.org)'),
+                          ('http://test.org', 'link', True, False,
+                           '** [link](http://test.org)**'),
+                          ('http://test.org', 'link', False, True,
+                           '* [link](http://test.org)*'),
+                          ('http://test.org', 'link', True, True,
+                           '*** [link](http://test.org)***')])
+def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                   url, text, bold, italic, expected):
+    """Test the _write_url method."""
+    with TemporaryDirectory() as tmp_dir:
+        fname = tmp_dir + '/test.md'
+        mfd = create_mf('md', file_name=fname)
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.open()
+        mfd._write_url(url, text, MultiFormatState.PARAGRAPH,  # pylint: disable=protected-access # noqa: E501
+                       bold, italic)
+        mfd._close()  # pylint: disable=protected-access
+        with open(fname, 'rt', encoding='utf-8') as file:
+            txt = file.read()
+            assert txt == expected
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('url, text, expected',
+                         [('http://example.com', None,
+                           '\n [http://example.com](http://example.com)\n'),
+                          ('http://test.org', 'link text',
+                           '\n [link text](http://test.org)\n')])
+def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                 url, text, expected):
+    """Test the add_url method."""
+    with TemporaryDirectory() as tmp_dir:
+        fname = tmp_dir + '/test.md'
+        with create_mf('md', file_name=fname) as mfd:
+            assert type(mfd).__name__ == 'MultiFormatMd'
+            mfd.start_paragraph('')
+            mfd.add_url(url=url, text=text)
+        with open(fname, 'rt', encoding='utf-8') as file:
+            txt = file.read()
+            assert txt == expected
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('url, text, expected',
+                         [('http://example.com', None,
+                           '\nhttp://example.com\n'),
+                          ('http://test.org', 'See here',
+                           '\n See here http://test.org\n')])
+def test_add_url_as_text(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                         url, text, expected):
+    """Test the add_url method with url_as_text=True."""
+    with TemporaryDirectory() as tmp_dir:
+        fname = tmp_dir + '/test.md'
+        with create_mf('md', file_name=fname, url_as_text=True) as mfd:
+            assert type(mfd).__name__ == 'MultiFormatMd'
+            mfd.start_paragraph('')
+            mfd.add_url(url=url, text=text)
+        with open(fname, 'rt', encoding='utf-8') as file:
+            txt = file.read()
+            assert txt == expected
+    check_capsys(capsys)

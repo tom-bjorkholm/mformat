@@ -55,3 +55,34 @@ def test_create_nok(capsys):
     out, err = capsys.readouterr()
     assert err == ''
     assert out == ''
+
+
+@pytest.mark.skip(reason='Precondition not implemented yet')
+def test_add_url(capsys):
+    """Test the add_url method creates a docx file."""
+    with TemporaryDirectory() as tmp_dir:
+        fpath = tmp_dir + '/test.docx'
+        with create_mf('docx', file_name=fpath) as mfd:
+            assert type(mfd).__name__ == 'MultiFormatDocx'
+            mfd.start_paragraph('Check this link:')
+            mfd.add_url(url='http://example.com', text='Example')
+        assert os.path.exists(fpath)
+    out, err = capsys.readouterr()
+    assert err == ''
+    assert out == ''
+
+
+@pytest.mark.skip(reason='Precondition not implemented yet')
+def test_add_url_as_text(capsys):
+    """Test the add_url method with url_as_text=True."""
+    with TemporaryDirectory() as tmp_dir:
+        fpath = tmp_dir + '/test.docx'
+        with create_mf('docx', file_name=fpath,
+                       url_as_text=True) as mfd:
+            assert type(mfd).__name__ == 'MultiFormatDocx'
+            mfd.start_paragraph('Check this:')
+            mfd.add_url(url='http://example.com', text='Here')
+        assert os.path.exists(fpath)
+    out, err = capsys.readouterr()
+    assert err == ''
+    assert out == ''

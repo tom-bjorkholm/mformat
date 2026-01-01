@@ -5,6 +5,7 @@
 # MIT License
 #
 
+from typing import Optional
 import pytest
 from check_capsys import check_capsys
 from mformat.mformat import MultiFormat, MultiFormatState
@@ -85,13 +86,18 @@ def test_mft_init(capsys):
 @pytest.mark.parametrize('method_name',
                          ['open', '_close',
                           '_write_file_prefix', '_write_file_suffix',
-                          '_start_paragraph', '_end_paragraph', '_write_text'])
+                          '_start_paragraph', '_end_paragraph', '_write_text',
+                          '_write_url'])
 def test_cls_method_not_overridden(capsys, method_name):
     """Test that the instance method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
         if method_name == '_write_text':
             _ = getattr(mfmt, method_name)('test', MultiFormatState.PARAGRAPH,
+                                           False, False)
+        elif method_name == '_write_url':
+            _ = getattr(mfmt, method_name)('http://example.com', 'text',
+                                           MultiFormatState.PARAGRAPH,
                                            False, False)
         else:
             _ = getattr(mfmt, method_name)()
@@ -107,6 +113,18 @@ def test_write_text(capsys):
         mfmt._write_text('test',  # pylint: disable=protected-access
                          MultiFormatState.PARAGRAPH, False, False)
     assert exc.value.args[0] == '_write_text must be overridden ' + \
+        'by a subclass MultiFormat2'
+    check_capsys(capsys)
+
+
+def test_write_url(capsys):
+    """Test that the _write_url method is not overridden."""
+    mfmt = MultiFormat2(file_name='test')
+    with pytest.raises(NotImplementedError) as exc:
+        # pylint: disable=protected-access
+        mfmt._write_url('http://example.com', 'text',
+                        MultiFormatState.PARAGRAPH, False, False)
+    assert exc.value.args[0] == '_write_url must be overridden ' + \
         'by a subclass MultiFormat2'
     check_capsys(capsys)
 
@@ -134,6 +152,22 @@ class MultiFormat3(MultiFormat2):
         assert isinstance(bold, bool)
         assert isinstance(italic, bool)
         self.inc_count('_write_text')
+
+    def _write_url(self, url: str, text: Optional[str],
+                   state: MultiFormatState,
+                   bold: bool, italic: bool) -> None:
+        """Write a URL into current item.
+
+        (paragraph, bullet list item, etc.)
+        """
+        # pylint: disable=too-many-arguments,too-many-positional-arguments
+        assert isinstance(url, str)
+        if text is not None:
+            assert isinstance(text, str)
+        assert isinstance(state, MultiFormatState)
+        assert isinstance(bold, bool)
+        assert isinstance(italic, bool)
+        self.inc_count('_write_url')
 
     def _start_paragraph(self) -> None:
         """Start a paragraph."""
@@ -311,6 +345,159 @@ class MultiFormat5(MultiFormat4):
     def _close(self) -> None:
         """Close the file."""
         self.inc_count('_close')
+
+
+class MultiFormat6(MultiFormat3):
+    """Class used for testing add_url."""
+
+    def __init__(self, file_name: str, expected_url: str,
+                 expected_url_text: Optional[str] = None,
+                 expected_bold: bool = False,
+                 expected_italic: bool = False,
+                 url_as_text: bool = False):
+        """Initialize the MultiFormat6 class."""
+        # pylint: disable=too-many-arguments,too-many-positional-arguments
+        super().__init__(file_name=file_name)
+        self.expected_url: str = expected_url
+        self.expected_url_text: Optional[str] = expected_url_text
+        self.expected_bold: bool = expected_bold
+        self.expected_italic: bool = expected_italic
+        self.url_as_text: bool = url_as_text
+
+    def _write_url(self, url: str, text: Optional[str],
+                   state: MultiFormatState,
+                   bold: bool, italic: bool) -> None:
+        """Write a URL into current item.
+
+        (paragraph, bullet list item, etc.)
+        """
+        # pylint: disable=too-many-arguments,too-many-positional-arguments
+        super()._write_url(url, text, state, bold, italic)
+        assert url == self.expected_url
+        assert text == self.expected_url_text
+        assert bold == self.expected_bold
+        assert italic == self.expected_italic
+
+
+@pytest.mark.parametrize('from_state, exc, msg',
+                         [(MultiFormatState.PARAGRAPH_END,
+                           RuntimeError,
+                           'Cannot add URL to state PARAGRAPH_END'),
+                          (MultiFormatState.BULLET_LIST,
+                           RuntimeError,
+                           'Cannot add URL to state BULLET_LIST'),
+                          (MultiFormatState.EMPTY,
+                           RuntimeError,
+                           'Cannot add URL to state EMPTY')])
+def test_add_url_error(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                       from_state, exc, msg):
+    """Test that the add_url method raises an error in wrong state."""
+    mfmt = MultiFormat6(file_name='test',
+                        expected_url='http://example.com')
+    mfmt.state = from_state
+    with pytest.raises(exc) as exc2:
+        mfmt.add_url(url='http://example.com')
+    assert exc2.value.args[0] == msg
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('url, text, expected_url, expected_text',
+                         [('http://example.com', None,
+                           'http://example.com', None),
+                          ('http://test.org', 'link text',
+                           'http://test.org', 'link text'),
+                          ('http://test.org', '  link text  ',
+                           'http://test.org', 'link text')])
+def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                 url, text, expected_url, expected_text):
+    """Test that the add_url method is correct."""
+    mfmt = MultiFormat6(file_name='test', expected_url=expected_url,
+                        expected_url_text=expected_text)
+    mfmt.state = MultiFormatState.PARAGRAPH
+    mfmt.add_url(url=url, text=text)
+    assert mfmt.state == MultiFormatState.PARAGRAPH
+    assert mfmt.count == {'_write_url': 1}
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('url, text, bold, italic, expected_url, '
+                         'expected_text, expected_bold, expected_italic',
+                         [('http://example.com', None, False, False,
+                           'http://example.com', None, False, False),
+                          ('http://test.org', 'link', True, False,
+                           'http://test.org', 'link', True, False),
+                          ('http://test.org', 'link', False, True,
+                           'http://test.org', 'link', False, True),
+                          ('http://test.org', 'link', True, True,
+                           'http://test.org', 'link', True, True)])
+def test_add_url_bold_italic(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                             url, text, bold, italic, expected_url,
+                             expected_text, expected_bold, expected_italic):
+    """Test add_url with bold and italic parameters."""
+    mfmt = MultiFormat6(file_name='test', expected_url=expected_url,
+                        expected_url_text=expected_text,
+                        expected_bold=expected_bold,
+                        expected_italic=expected_italic)
+    mfmt.state = MultiFormatState.PARAGRAPH
+    mfmt.add_url(url=url, text=text, bold=bold, italic=italic)
+    assert mfmt.state == MultiFormatState.PARAGRAPH
+    assert mfmt.count == {'_write_url': 1}
+    check_capsys(capsys)
+
+
+class MultiFormat7(MultiFormat4):
+    """Class used for testing add_url with url_as_text=True."""
+
+    def __init__(self, file_name: str, expected_text: str,
+                 expected_bold: bool = False,
+                 expected_italic: bool = False,
+                 url_as_text: bool = True):
+        """Initialize the MultiFormat7 class."""
+        # pylint: disable=too-many-arguments,too-many-positional-arguments
+        super().__init__(file_name=file_name,
+                         expected_text=expected_text,
+                         expected_bold=expected_bold,
+                         expected_italic=expected_italic)
+        self.url_as_text: bool = url_as_text
+
+
+@pytest.mark.parametrize('url, text, expected_text',
+                         [('http://example.com', None,
+                           'http://example.com'),
+                          ('http://test.org', 'See here',
+                           ' See here http://test.org'),
+                          ('http://test.org', '  See here  ',
+                           ' See here http://test.org')])
+def test_add_url_as_text(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                         url, text, expected_text):
+    """Test add_url with url_as_text=True."""
+    mfmt = MultiFormat7(file_name='test', expected_text=expected_text,
+                        url_as_text=True)
+    mfmt.state = MultiFormatState.PARAGRAPH
+    mfmt.add_url(url=url, text=text)
+    assert mfmt.state == MultiFormatState.PARAGRAPH
+    assert mfmt.count == {'_write_text': 1}
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('url, text, bold, italic, expected_text',
+                         [('http://example.com', None, True, False,
+                           'http://example.com'),
+                          ('http://test.org', 'See', False, True,
+                           ' See http://test.org'),
+                          ('http://test.org', 'Here', True, True,
+                           ' Here http://test.org')])
+def test_add_url_as_text_formatting(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                                    url, text, bold, italic, expected_text):
+    """Test add_url with url_as_text=True and bold/italic."""
+    mfmt = MultiFormat7(file_name='test', expected_text=expected_text,
+                        expected_bold=bold, expected_italic=italic,
+                        url_as_text=True)
+    mfmt.state = MultiFormatState.PARAGRAPH
+    mfmt.add_url(url=url, text=text, bold=bold, italic=italic)
+    assert mfmt.state == MultiFormatState.PARAGRAPH
+    assert mfmt.count == {'_write_text': 1}
+    check_capsys(capsys)
 
 
 def test_enter_exit(capsys):

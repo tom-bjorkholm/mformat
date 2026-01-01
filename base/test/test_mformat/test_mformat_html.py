@@ -171,9 +171,12 @@ def test_start_paragraph2(capsys,  # pylint: disable=too-many-arguments, too-man
 
 
 @pytest.mark.parametrize('text, bold, italic, expected',
-                         [('Bold text', True, False, EN_NT_NC_BOLD),
-                          ('Italic text', False, True, EN_NT_NC_ITALIC),
-                          ('Both styles', True, True, EN_NT_NC_BOTH)])
+                         [('Bold text', True, False,
+                           '<strong>Bold text</strong>'),
+                          ('Italic text', False, True,
+                           '<em>Italic text</em>'),
+                          ('Both styles', True, True,
+                           '<em><strong>Both styles</strong></em>')])
 def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
                                     text, bold, italic, expected):
     """Test the start_paragraph method with bold and italic."""
@@ -182,6 +185,86 @@ def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-argument
         with create_mf('html', file_name=fname) as mfd:
             assert isinstance(mfd, MultiFormatHtml)
             mfd.start_paragraph(text, bold=bold, italic=italic)
+        with open(fname, 'rt', encoding='utf-8') as file:
+            txt = file.read()
+            assert txt == PF_EN_NT_NC + '<p>\n' + expected + '</p>\n' + SFTOT
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('url, text, bold, italic, expected',
+                         [('http://example.com', None, False, False,
+                           ' <a href="http://example.com">'
+                           'http://example.com</a>'),
+                          ('http://test.org', 'link text', False, False,
+                           ' <a href="http://test.org">'
+                           'link text</a>'),
+                          ('http://test.org', 'link', True, False,
+                           '<strong> <a href="http://test.org">'
+                           'link</a></strong>'),
+                          ('http://test.org', 'link', False, True,
+                           '<em> <a href="http://test.org">'
+                           'link</a></em>'),
+                          ('http://test.org', 'link', True, True,
+                           '<em><strong> <a href="http://test.org">'
+                           'link</a></strong></em>')])
+def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                   url, text, bold, italic, expected):
+    """Test the _write_url method."""
+    with TemporaryDirectory() as tmp_dir:
+        fname = tmp_dir + '/test.html'
+        mfd = create_mf('html', file_name=fname)
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.open()
+        mfd._write_url(url, text, MultiFormatState.PARAGRAPH,  # pylint: disable=protected-access # noqa: E501
+                       bold, italic)
+        mfd._close()  # pylint: disable=protected-access
+        with open(fname, 'rt', encoding='utf-8') as file:
+            txt = file.read()
+            assert txt == expected
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('url, text, expected',
+                         [('http://example.com', None,
+                           PF_EN_NT_NC +
+                           '<p>\n <a href="http://example.com">'
+                           'http://example.com</a></p>\n' + SFTOT),
+                          ('http://test.org', 'link text',
+                           PF_EN_NT_NC +
+                           '<p>\n <a href="http://test.org">'
+                           'link text</a></p>\n' + SFTOT)])
+def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                 url, text, expected):
+    """Test the add_url method."""
+    with TemporaryDirectory() as tmp_dir:
+        fname = tmp_dir + '/test.html'
+        with create_mf('html', file_name=fname) as mfd:
+            assert isinstance(mfd, MultiFormatHtml)
+            mfd.start_paragraph('')
+            mfd.add_url(url=url, text=text)
+        with open(fname, 'rt', encoding='utf-8') as file:
+            txt = file.read()
+            assert txt == expected
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('url, text, expected',
+                         [('http://example.com', None,
+                           PF_EN_NT_NC +
+                           '<p>\nhttp://example.com</p>\n' + SFTOT),
+                          ('http://test.org', 'See here',
+                           PF_EN_NT_NC +
+                           '<p>\n See here http://test.org</p>\n' +
+                           SFTOT)])
+def test_add_url_as_text(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                         url, text, expected):
+    """Test the add_url method with url_as_text=True."""
+    with TemporaryDirectory() as tmp_dir:
+        fname = tmp_dir + '/test.html'
+        with create_mf('html', file_name=fname, url_as_text=True) as mfd:
+            assert isinstance(mfd, MultiFormatHtml)
+            mfd.start_paragraph('')
+            mfd.add_url(url=url, text=text)
         with open(fname, 'rt', encoding='utf-8') as file:
             txt = file.read()
             assert txt == expected

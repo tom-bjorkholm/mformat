@@ -90,3 +90,32 @@ class MultiFormatDocx(MultiFormat):
             run.bold = True
         if italic:
             run.italic = True
+
+    def _write_url(self, url: str, text: Optional[str],
+                   state: MultiFormatState,
+                   bold: bool, italic: bool) -> None:
+        """Write a URL into current item (paragraph, bullet list item, etc.).
+
+        Args:
+            url: The URL to write into the current item.
+            text: The text to display for the URL.
+            state: The state of the current item.
+            bold: If True, the text is bold.
+            italic: If True, the text is italic.
+        """  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        if self.current_paragraph is None:
+            raise RuntimeError('No current paragraph to write URL into')
+        if not text:
+            text = url
+        # Add space before URL
+        self.current_paragraph.add_run(' ')
+        # Add hyperlink (Note: python-docx doesn't have direct hyperlink
+        # support, so we add it as styled text)
+        run = self.current_paragraph.add_run(text)
+        if bold:
+            run.bold = True
+        if italic:
+            run.italic = True
+        run.font.color.rgb = None  # Use default color
+        # Note: For proper hyperlinks in docx, we would need to manipulate
+        # the underlying XML. For now, we just format the text.
