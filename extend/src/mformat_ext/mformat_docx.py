@@ -65,6 +65,20 @@ class MultiFormatDocx(MultiFormat):
             return
         self.doc.save(self.file_name)
 
+    def _write_file_prefix(self) -> None:
+        """Write the file prefix.
+
+        For DOCX files, this is a no-op since the document
+        structure is handled by python-docx.
+        """
+
+    def _write_file_suffix(self) -> None:
+        """Write the file suffix.
+
+        For DOCX files, this is a no-op since the document
+        structure is handled by python-docx.
+        """
+
     def _start_paragraph(self) -> None:
         """Start a paragraph."""
         self.current_paragraph = self.doc.add_paragraph()

@@ -57,7 +57,6 @@ def test_create_nok(capsys):
     assert out == ''
 
 
-@pytest.mark.skip(reason='Precondition not implemented yet')
 def test_add_url(capsys):
     """Test the add_url method creates a docx file."""
     with TemporaryDirectory() as tmp_dir:
@@ -72,7 +71,6 @@ def test_add_url(capsys):
     assert out == ''
 
 
-@pytest.mark.skip(reason='Precondition not implemented yet')
 def test_add_url_as_text(capsys):
     """Test the add_url method with url_as_text=True."""
     with TemporaryDirectory() as tmp_dir:
