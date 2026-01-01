@@ -1,5 +1,5 @@
 #! /usr/local/bin/python3
-"""Helper functions for testing mformat modules."""
+"""Shared test helper classes and functions for mformat tests."""
 
 # Copyright (c) 2025 - 2026 Tom Björkholm
 # MIT License
@@ -7,6 +7,7 @@
 
 from tempfile import TemporaryDirectory
 from typing import Optional, Any, Callable
+from mformat.mformat import MultiFormat, MultiFormatState
 from mformat.factory import create_mf
 
 
@@ -74,3 +75,296 @@ def run_protected_method(
         mfd._close()  # pylint: disable=protected-access
         with open(fname, 'rt', encoding='utf-8') as file:
             return file.read()
+
+
+class MultiFormat2(MultiFormat):
+    """Class used for testing."""
+
+    @classmethod
+    def file_name_extension(cls) -> str:
+        """Get the file name extension for the formatter."""
+        return '.test'
+
+
+class MultiFormat3(MultiFormat2):
+    """Class used for testing."""
+
+    def __init__(self, file_name: str):
+        """Initialize the MultiFormat3 class."""
+        super().__init__(file_name=file_name)
+        self.count: dict[str, int] = {}
+
+    def inc_count(self, func_name: str) -> None:
+        """Increment the count for the function name."""
+        if func_name not in self.count:
+            self.count[func_name] = 1
+        else:
+            self.count[func_name] += 1
+
+    def _write_text(self, text: str, state: MultiFormatState,
+                    bold: bool, italic: bool) -> None:
+        """Write text into current item (paragraph, bullet list item, etc.)."""
+        assert isinstance(text, str)
+        assert isinstance(state, MultiFormatState)
+        assert isinstance(bold, bool)
+        assert isinstance(italic, bool)
+        self.inc_count('_write_text')
+
+    def _write_url(self, url: str, text: Optional[str],
+                   state: MultiFormatState,
+                   bold: bool, italic: bool) -> None:
+        """Write a URL into current item.
+
+        (paragraph, bullet list item, etc.)
+        """
+        # pylint: disable=too-many-arguments,too-many-positional-arguments
+        # pylint: disable=duplicate-code
+        assert isinstance(url, str)
+        if text is not None:
+            assert isinstance(text, str)
+        assert isinstance(state, MultiFormatState)
+        assert isinstance(bold, bool)
+        assert isinstance(italic, bool)
+        self.inc_count('_write_url')
+
+    def _start_paragraph(self) -> None:
+        """Start a paragraph."""
+        self.inc_count('_start_paragraph')
+
+    def _end_paragraph(self) -> None:
+        """End a paragraph."""
+        self.inc_count('_end_paragraph')
+
+    def _write_file_prefix(self) -> None:
+        """Write the file prefix."""
+        self.inc_count('_write_file_prefix')
+
+    def _write_file_suffix(self) -> None:
+        """Write the file suffix."""
+        self.inc_count('_write_file_suffix')
+
+
+class MultiFormat4(MultiFormat3):
+    """Class used for testing."""
+
+    def __init__(self, file_name: str, expected_text: str,
+                 expected_bold: bool = False,
+                 expected_italic: bool = False):
+        """Initialize the MultiFormat4 class."""
+        super().__init__(file_name=file_name)
+        self.expected_text: str = expected_text
+        self.expected_bold: bool = expected_bold
+        self.expected_italic: bool = expected_italic
+
+    def _write_text(self, text: str, state: MultiFormatState,
+                    bold: bool, italic: bool) -> None:
+        """Write text into current item (paragraph, bullet list item, etc.)."""
+        super()._write_text(text, state, bold, italic)
+        assert text == self.expected_text
+        assert bold == self.expected_bold
+        assert italic == self.expected_italic
+
+
+class MultiFormat5(MultiFormat4):
+    """Class used for testing."""
+
+    def open(self) -> None:
+        """Open the file."""
+        self.inc_count('open')
+
+    def _close(self) -> None:
+        """Close the file."""
+        self.inc_count('_close')
+
+
+class MultiFormat6(MultiFormat3):
+    """Class used for testing add_url."""
+
+    def __init__(self, file_name: str, expected_url: str,
+                 expected_url_text: Optional[str] = None,
+                 expected_bold: bool = False,
+                 expected_italic: bool = False,
+                 url_as_text: bool = False):
+        """Initialize the MultiFormat6 class."""
+        # pylint: disable=too-many-arguments,too-many-positional-arguments
+        super().__init__(file_name=file_name)
+        self.expected_url: str = expected_url
+        self.expected_url_text: Optional[str] = expected_url_text
+        self.expected_bold: bool = expected_bold
+        self.expected_italic: bool = expected_italic
+        self.url_as_text: bool = url_as_text
+
+    def _write_url(self, url: str, text: Optional[str],
+                   state: MultiFormatState,
+                   bold: bool, italic: bool) -> None:
+        """Write a URL into current item.
+
+        (paragraph, bullet list item, etc.)
+        """
+        # pylint: disable=too-many-arguments,too-many-positional-arguments
+        super()._write_url(url, text, state, bold, italic)
+        assert url == self.expected_url
+        assert text == self.expected_url_text
+        assert bold == self.expected_bold
+        assert italic == self.expected_italic
+
+
+class MultiFormat7(MultiFormat4):
+    """Class used for testing add_url with url_as_text=True."""
+
+    def __init__(self, file_name: str, expected_text: str,
+                 expected_bold: bool = False,
+                 expected_italic: bool = False,
+                 url_as_text: bool = True):
+        """Initialize the MultiFormat7 class."""
+        # pylint: disable=too-many-arguments,too-many-positional-arguments
+        super().__init__(file_name=file_name,
+                         expected_text=expected_text,
+                         expected_bold=expected_bold,
+                         expected_italic=expected_italic)
+        self.url_as_text: bool = url_as_text
+
+
+class MultiFormat8(MultiFormat3):
+    """Class used for testing start_heading."""
+
+    def __init__(self, file_name: str, expected_text: str,
+                 expected_level: int,
+                 expected_bold: bool = False,
+                 expected_italic: bool = False):
+        """Initialize the MultiFormat8 class."""
+        # pylint: disable=too-many-arguments,too-many-positional-arguments
+        super().__init__(file_name=file_name)
+        self.expected_text: str = expected_text
+        self.expected_level: int = expected_level
+        self.expected_bold: bool = expected_bold
+        self.expected_italic: bool = expected_italic
+
+    def _start_heading(self, level: int) -> None:
+        """Start a heading."""
+        self.inc_count('_start_heading')
+        assert level == self.expected_level
+
+    def _end_heading(self, level: int) -> None:
+        """End a heading."""
+        self.inc_count('_end_heading')
+        # Note: We don't assert on level here because _end_heading
+        # is called automatically when transitioning to other states
+
+    def _write_text(self, text: str, state: MultiFormatState,
+                    bold: bool, italic: bool) -> None:
+        """Write text into current item (paragraph, bullet list item, etc.)."""
+        super()._write_text(text, state, bold, italic)
+        assert text == self.expected_text
+        assert bold == self.expected_bold
+        assert italic == self.expected_italic
+
+
+class MultiFormat9(MultiFormat8):
+    """Class used for testing add_url in headings."""
+
+    def __init__(self, file_name: str, expected_url: str,
+                 expected_url_text: Optional[str] = None,
+                 expected_level: int = 1,
+                 expected_bold: bool = False,
+                 expected_italic: bool = False):
+        """Initialize the MultiFormat9 class."""
+        # pylint: disable=too-many-arguments,too-many-positional-arguments
+        super().__init__(file_name=file_name,
+                         expected_text='',
+                         expected_level=expected_level)
+        self.expected_url: str = expected_url
+        self.expected_url_text: Optional[str] = expected_url_text
+        self.expected_bold: bool = expected_bold
+        self.expected_italic: bool = expected_italic
+
+    def _write_url(self, url: str, text: Optional[str],
+                   state: MultiFormatState,
+                   bold: bool, italic: bool) -> None:
+        """Write a URL into current item.
+
+        (paragraph, bullet list item, etc.)
+        """
+        # pylint: disable=too-many-arguments,too-many-positional-arguments
+        super()._write_url(url, text, state, bold, italic)
+        assert url == self.expected_url
+        assert text == self.expected_url_text
+        assert bold == self.expected_bold
+        assert italic == self.expected_italic
+
+
+class MultiFormat10(MultiFormat3):
+    """Class used for testing bullet lists."""
+
+    def _start_bullet_list(self, level: int) -> None:
+        """Start a bullet list."""
+        assert isinstance(level, int)
+        self.inc_count('_start_bullet_list')
+
+    def _end_bullet_list(self, level: int) -> None:
+        """End a bullet list."""
+        assert isinstance(level, int)
+        self.inc_count('_end_bullet_list')
+
+    def _start_bullet_item(self, level: int) -> None:
+        """Start a bullet item."""
+        assert isinstance(level, int)
+        self.inc_count('_start_bullet_item')
+
+    def _end_bullet_item(self, level: int) -> None:
+        """End a bullet item."""
+        assert isinstance(level, int)
+        self.inc_count('_end_bullet_item')
+
+    def _start_numeric_list(self, level: int) -> None:
+        """Start a numeric list."""
+        assert isinstance(level, int)
+        self.inc_count('_start_numeric_list')
+
+    def _end_numeric_list(self, level: int) -> None:
+        """End a numeric list."""
+        assert isinstance(level, int)
+        self.inc_count('_end_numeric_list')
+
+    def _start_numeric_item(self, level: int, num: int) -> None:
+        """Start a numeric item."""
+        assert isinstance(level, int)
+        assert isinstance(num, int)
+        self.inc_count('_start_numeric_item')
+
+    def _end_numeric_item(self, level: int, num: int) -> None:
+        """End a numeric item."""
+        assert isinstance(level, int)
+        assert isinstance(num, int)
+        self.inc_count('_end_numeric_item')
+
+    def _start_heading(self, level: int) -> None:
+        """Start a heading."""
+        assert isinstance(level, int)
+        self.inc_count('_start_heading')
+
+    def _end_heading(self, level: int) -> None:
+        """End a heading."""
+        assert isinstance(level, int)
+        self.inc_count('_end_heading')
+
+
+# Common test action functions that can be reused across format tests
+
+
+def action_complex_nested_bullet_structure(mfd: Any) -> None:
+    """Create a complex nested bullet structure.
+
+    This is a common test pattern used across multiple format tests.
+    Creates a structure like:
+    - Item 1
+      - Item 1.1
+      - Item 1.2
+    - Item 2
+      - Item 2.1
+    """
+    mfd.start_bullet_item(text='Item 1', level=1)
+    mfd.start_bullet_item(text='Item 1.1', level=2)
+    mfd.start_bullet_item(text='Item 1.2', level=2)
+    mfd.start_bullet_item(text='Item 2', level=1)
+    mfd.start_bullet_item(text='Item 2.1', level=2)

@@ -7,7 +7,11 @@
 
 import pytest
 from check_capsys import check_capsys
-from test_helpers import run_with_context_manager, run_protected_method
+from test_helpers import (
+    run_with_context_manager,
+    run_protected_method,
+    action_complex_nested_bullet_structure
+)
 from mformat.mformat_html import MultiFormatHtml
 from mformat.mformat import FormatterDescriptor, MultiFormatState
 
@@ -527,11 +531,7 @@ def test_complex_nested_structure(capsys):
     """Test complex nested bullet structure."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_bullet_item(text='Item 1', level=1)
-        mfd.start_bullet_item(text='Item 1.1', level=2)
-        mfd.start_bullet_item(text='Item 1.2', level=2)
-        mfd.start_bullet_item(text='Item 2', level=1)
-        mfd.start_bullet_item(text='Item 2.1', level=2)
+        action_complex_nested_bullet_structure(mfd)
 
     txt = run_with_context_manager('html', '.html', test_action)
     expected = (PF_EN_NT_NC + '<ul>\n<li>Item 1</li>\n' +

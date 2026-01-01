@@ -5,12 +5,23 @@
 # MIT License
 #
 
-from tempfile import TemporaryDirectory
+import sys
 import os
+from pathlib import Path
+from tempfile import TemporaryDirectory
 import pytest
 from mformat_ext.mformat_docx import MultiFormatDocx
 from mformat.mformat import FormatterDescriptor
 from mformat.factory import create_mf
+
+# Add base test helpers to path for shared test utilities
+_base_test_path = (
+    Path(__file__).parent.parent.parent.parent /
+    'base' / 'test' / 'test_mformat'
+)
+sys.path.insert(0, str(_base_test_path))
+# pylint: disable=wrong-import-order,wrong-import-position,import-error
+from test_helpers import action_complex_nested_bullet_structure  # noqa: E402
 
 
 def test_file_name_extension(capsys):
@@ -356,11 +367,7 @@ def test_complex_nested_structure(capsys):
         fpath = tmp_dir + '/test.docx'
         with create_mf('docx', file_name=fpath) as mfd:
             assert type(mfd).__name__ == 'MultiFormatDocx'
-            mfd.start_bullet_item(text='Item 1', level=1)
-            mfd.start_bullet_item(text='Item 1.1', level=2)
-            mfd.start_bullet_item(text='Item 1.2', level=2)
-            mfd.start_bullet_item(text='Item 2', level=1)
-            mfd.start_bullet_item(text='Item 2.1', level=2)
+            action_complex_nested_bullet_structure(mfd)
         assert os.path.exists(fpath)
     out, err = capsys.readouterr()
     assert err == ''
