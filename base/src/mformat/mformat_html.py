@@ -172,3 +172,65 @@ class MultiFormatHtml(MultiFormatTextBased):
         assert isinstance(level, int)
         assert isinstance(num, int)
         self.file.write('</li>\n')
+
+    def _start_table(self, num_columns: int) -> None:
+        """Start a table."""
+        assert self.file is not None
+        assert isinstance(num_columns, int)
+        self.file.write('<table>\n')
+
+    def _end_table(self, num_columns: int, num_rows: int) -> None:
+        """End a table."""
+        assert self.file is not None
+        assert isinstance(num_columns, int)
+        assert isinstance(num_rows, int)
+        self.file.write('</table>\n')
+
+    def _write_table_first_row(self, first_row: list[str],
+                               bold: bool, italic: bool) -> None:
+        """Write the first row of a table."""
+        assert self.file is not None
+        assert self.table is not None
+        self._write_table_row(row=first_row, bold=bold, italic=italic,
+                              row_number=0)
+
+    def _write_table_row(self, row: list[str],
+                         bold: bool, italic: bool, row_number: int) -> None:
+        """Write a row of a table."""
+        assert self.file is not None
+        assert self.table is not None
+        self.file.write('<tr>\n')
+        for cell in row:
+            if bold:
+                cell = f'<strong>{cell}</strong>'
+            if italic:
+                cell = f'<em>{cell}</em>'
+            self.file.write(f'<td>{cell}</td>\n')
+        self.file.write('</tr>\n')
+
+    def _start_code_block(self, programming_language: Optional[str]) -> None:
+        """Start a code block."""
+        assert self.file is not None
+        assert programming_language is None or \
+            isinstance(programming_language, str)
+        self.file.write('<pre><code>\n')
+        if programming_language is not None:
+            span = f'<span class="language-{programming_language}">'
+            self.file.write(span)
+
+    def _end_code_block(self, programming_language: Optional[str]) -> None:
+        """End a code block."""
+        assert self.file is not None
+        assert programming_language is None or \
+            isinstance(programming_language, str)
+        if programming_language is not None:
+            self.file.write('</span>\n')
+        self.file.write('</code></pre>\n')
+
+    def _write_code_block(self, text: str,
+                          programming_language: Optional[str]) -> None:
+        """Write a code block."""
+        assert self.file is not None
+        assert programming_language is None or \
+            isinstance(programming_language, str)
+        self.file.write(text)
