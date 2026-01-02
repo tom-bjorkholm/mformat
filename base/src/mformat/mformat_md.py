@@ -5,6 +5,7 @@
 # MIT License
 #
 
+from copy import deepcopy
 from typing import Optional, Callable
 from mformat.mformat_textbased import MultiFormatTextBased
 from mformat.mformat import FormatterDescriptor, MultiFormatState
@@ -152,3 +153,70 @@ class MultiFormatMd(MultiFormatTextBased):
         assert isinstance(level, int)
         assert isinstance(num, int)
         self.file.write('\n')
+
+    def _start_code_block(self, programming_language: Optional[str]) -> None:
+        """Start a code block."""
+        assert self.file is not None
+        if programming_language is None:
+            programming_language = 'text'
+        self.file.write(f'\n```{programming_language}\n')
+
+    def _end_code_block(self, programming_language: Optional[str]) -> None:
+        """End a code block."""
+        assert self.file is not None
+        assert programming_language is None or \
+            isinstance(programming_language, str)
+        self.file.write('\n```\n')
+
+    def _write_code_block(self, text: str,
+                          programming_language: Optional[str]) -> None:
+        """Write a code block."""
+        assert self.file is not None
+        assert programming_language is None or \
+            isinstance(programming_language, str)
+        self.file.write(text)
+
+    def _start_table(self, num_columns: int) -> None:
+        """Start a table."""
+        assert self.file is not None
+        assert isinstance(num_columns, int)
+        self.file.write('\n')
+
+    def _end_table(self, num_columns: int, num_rows: int) -> None:
+        """End a table."""
+        assert self.file is not None
+        assert isinstance(num_columns, int)
+        assert isinstance(num_rows, int)
+        self.file.write('\n')
+
+    def _write_table_first_row(self, first_row: list[str],
+                               bold: bool, italic: bool) -> None:
+        """Write the first row of a table."""
+        assert self.file is not None
+        assert self.table is not None
+        self._write_table_row(row=first_row, bold=bold, italic=italic,
+                              row_number=0)
+        line_length = sum(self.table.column_widths) + \
+            3*len(self.table.column_widths) + 1
+        self.file.write('-' * line_length + '\n')
+
+    def _write_table_row(self, row: list[str],
+                         bold: bool, italic: bool, row_number: int) -> None:
+        """Write a row of a table."""
+        assert self.file is not None
+        assert self.table is not None
+        if len(row) != self.table.number_of_columns:
+            err = f'Row {row_number} has {len(row)} columns, but '
+            err += f'table has {self.table.number_of_columns} columns.'
+            raise ValueError(err)
+        # Make a copy of the row to avoid modifying the original row.
+        local_row = deepcopy(row)
+        if bold:
+            local_row = [f'**{cell}**' for cell in local_row]
+        if italic:
+            local_row = [f'*{cell}*' for cell in local_row]
+        if bold or italic:
+            self._update_table_column_widths(row=local_row)
+        local_row = [cell.ljust(width) for cell, width in
+                     zip(local_row, self.table.column_widths)]
+        self.file.write(f'| {" | ".join(local_row)} |\n')

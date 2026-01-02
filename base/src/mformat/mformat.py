@@ -31,6 +31,8 @@ class MultiFormatState(IntEnum):
     BULLET_LIST_ITEM = auto()
     NUMERIC_LIST = auto()
     NUMERIC_LIST_ITEM = auto()
+    TABLE = auto()
+    CODE_BLOCK = auto()
     CLOSED = auto()
 
 
@@ -48,7 +50,15 @@ class PointStackItem(TypedDict):
     number_at_level: int
 
 
-class MultiFormat:
+class TableInformation:  # pylint: disable=too-few-public-methods
+    """Information about a table."""
+
+    number_of_columns: int = 0
+    number_of_rows: int = 0
+    column_widths: list[int] = []
+
+
+class MultiFormat:  # pylint: disable=too-many-instance-attributes
     """Base class for all multi file format classes."""
 
     def __init__(self, file_name: str,
@@ -80,6 +90,7 @@ class MultiFormat:
         self.heading_level: Optional[int] = None
         # Is whitespace needed at beginning of next text to be added?
         self.ws_needed_at_append: bool = False
+        self.table: Optional[TableInformation] = None
 
     def __enter__(self) -> 'MultiFormat':
         """Enter the context manager."""
@@ -226,6 +237,42 @@ class MultiFormat:
             bold=bold, italic=italic,
             point_list_type=PointListType.BULLET)
 
+    def start_numbered_point_item(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                                  text: str, level: Optional[int] = None,
+                                  smart_ws: bool = True, bold: bool = False,
+                                  italic: bool = False) -> None:
+        """Start a new numbered point list item and a new list if needed.
+
+        If level is not provided, the item is added to the current numbered
+        point list
+        If level is not provided and there is no current numbered point list,
+        a new numbered point list is started.
+        If level is provided and it is one greater than the current level, a
+        new numbered point list is started.
+        If level is provided and it is less than the current level, one or
+        several lists are ended to get to the level specified.
+        If level is provided and it is equal to the current level, the item is
+        added to the current numbered point list item.
+        If level is provided and it is more than one greater than the current
+        level, an error is raised.
+        If level is provided and and the list at that level is not a numbered
+        point list, the list at that level is ended and a new numbered point
+        list is started.
+        Args:
+            text: The text to write in the numbered point list item.
+            level: The level of the numbered point list item.
+            smart_ws: If True, leading and trailing whitespace are collapsed
+                      and a single space is inserted between texts (from
+                      start_numbered_point_item or add_text).
+            bold: If True, the text is bold.
+            italic: If True, the text is italic.
+        """
+        assert level is None or level > 0
+        self._start_point_list_item(
+            text=text, level=level, smart_ws=smart_ws,
+            bold=bold, italic=italic,
+            point_list_type=PointListType.NUMERIC)
+
     def add_text(self, text: str, smart_ws: bool = True,
                  bold: bool = False, italic: bool = False) -> None:
         """Add text to the current item (paragraph, bullet list item, etc.).
@@ -285,6 +332,110 @@ class MultiFormat:
             not processed_text[-1].isspace() if processed_text else True
         self._write_url(url, processed_text if processed_text else None,
                         self.state, bold, italic)
+
+    def start_table(self, first_row: list[str],
+                    bold: bool = False, italic: bool = False) -> None:
+        """Start a new table.
+
+        Args:
+            first_row: The first row of the table.
+            bold: If True, the text in each cell in first row is bold.
+            italic: If True, the text in each cell in first row is italic.
+        """
+        if self.state != MultiFormatState.PARAGRAPH_END:
+            self._end_state()
+        if not self.table:
+            self.table = TableInformation()
+        self.table.number_of_rows = 0
+        self.table.number_of_columns = len(first_row)
+        self.table.column_widths = []
+        self.state = MultiFormatState.TABLE
+        self._update_table_column_widths(row=first_row)
+        self._start_table(num_columns=self.table.number_of_columns)
+        self._write_table_first_row(first_row=first_row, bold=bold,
+                                    italic=italic)
+        self.table.number_of_rows += 1
+
+    def add_table_row(self, row: list[str],
+                      bold: bool = False, italic: bool = False) -> None:
+        """Add a row to the table.
+
+        Args:
+            row: The row to add to the table.
+            bold: If True, the text in each cell in row is bold.
+            italic: If True, the text in each cell in row is italic.
+        """
+        assert self.table is not None
+        if self.state != MultiFormatState.TABLE:
+            errmsg = f'Cannot add table row to state {self.state.name}'
+            raise RuntimeError(errmsg)
+        if len(row) != self.table.number_of_columns:
+            errmsg = f'Row has {len(row)} columns, but table has '
+            errmsg += '{self.table.number_of_columns} columns'
+            raise RuntimeError(errmsg)
+        self._update_table_column_widths(row=row)
+        self._write_table_row(row=row, bold=bold, italic=italic,
+                              row_number=self.table.number_of_rows)
+        self.table.number_of_rows += 1
+
+    def write_complete_table(self, table: list[list[str]],
+                             bold_first_row: bool = False,
+                             italic_first_row: bool = False) -> None:
+        """Add a complete table.
+
+        Result is same as calling start_table followed by add_table_row
+        for each row. Args:
+            table: The complete table to add.
+            bold_first_row: If True, the text in each cell in first
+                            row is bold.
+            italic_first_row: If True, the text in each cell in first
+                              row is italic.
+        """
+        assert table is not None and isinstance(table, list)
+        if len(table) < 0:
+            errmsg = 'Table must have at least one row.'
+            raise RuntimeError(errmsg)
+        num_cols = len(table[0])
+        if num_cols < 0:
+            errmsg = 'First row of table must have at least one column.'
+            raise RuntimeError(errmsg)
+        self.table = TableInformation()
+        for row_number, row in enumerate(table):
+            if len(row) != num_cols:
+                errmsg = f'Row {row_number} has {len(row)} columns, but '
+                errmsg += f'first row has {num_cols} columns.\n'
+                errmsg += 'All rows must have the same number of columns!'
+                raise RuntimeError(errmsg)
+            self._update_table_column_widths(row=row)
+        self.start_table(first_row=table[0], bold=bold_first_row,
+                         italic=italic_first_row)
+        for row in table[1:]:
+            self.add_table_row(row=row, bold=False, italic=False)
+
+    def write_code_block(self, text: str,
+                         programming_language: Optional[str] = None) -> None:
+        """Add a code block.
+
+        Write a text block verbatim into the document. Trying to keep all
+        aspects of the text block, including whitespace, line breaks, etc.
+        The text block is ended with a line break.
+        Depending on the actual document format, the text block may be
+        formatted as a code block or as a verbatim text block.
+        Args:
+            text: The text to add to the code block.
+            programming_language: The programming language of the code block.
+                                  Depending on the actual document format,
+                                  this may be ignored or used to syntax
+                                  highlight the code block.
+        """
+        if self.state != MultiFormatState.PARAGRAPH_END:
+            self._end_state()
+        self.state = MultiFormatState.CODE_BLOCK
+        self._start_code_block(programming_language=programming_language)
+        self._write_code_block(text=text,
+                               programming_language=programming_language)
+        self._end_code_block(programming_language=programming_language)
+        self.state = MultiFormatState.PARAGRAPH_END
 
     def _start_point_list_item(  # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals # noqa: E501
             self, text: str, level: Optional[int],
@@ -471,6 +622,12 @@ class MultiFormat:
             self._end_heading(level=self.heading_level)
             self.state = MultiFormatState.PARAGRAPH_END
             self.heading_level = None
+        elif self.state == MultiFormatState.TABLE:
+            assert self.table is not None
+            self._end_table(num_columns=self.table.number_of_columns,
+                            num_rows=self.table.number_of_rows)
+            self.table = None
+            self.state = MultiFormatState.PARAGRAPH_END
         elif self.state in (MultiFormatState.BULLET_LIST_ITEM,
                             MultiFormatState.BULLET_LIST,
                             MultiFormatState.NUMERIC_LIST_ITEM,
@@ -629,6 +786,47 @@ class MultiFormat:
         err = self._must_be_overridden('_start_numeric_item')
         raise NotImplementedError(err)
 
+    def _update_table_column_widths(self, row: list[str]) -> None:
+        """Update the column widths of the table."""
+        assert self.table is not None
+        while len(self.table.column_widths) < len(row):
+            self.table.column_widths.append(0)
+        self.table.column_widths = \
+            [max(len(cell), width) for cell, width in
+             zip(row, self.table.column_widths)]
+
+    def _start_table(self, num_columns: int) -> None:
+        """Start a table."""
+        assert isinstance(num_columns, int)
+        err = self._must_be_overridden('_start_table')
+        raise NotImplementedError(err)
+
+    def _end_table(self, num_columns: int, num_rows: int) -> None:
+        """End a table."""
+        assert isinstance(num_columns, int)
+        assert isinstance(num_rows, int)
+        err = self._must_be_overridden('_end_table')
+        raise NotImplementedError(err)
+
+    def _write_table_first_row(self, first_row: list[str],
+                               bold: bool, italic: bool) -> None:
+        """Write the first row of the table."""
+        assert isinstance(first_row, list)
+        assert isinstance(bold, bool)
+        assert isinstance(italic, bool)
+        err = self._must_be_overridden('_write_table_first_row')
+        raise NotImplementedError(err)
+
+    def _write_table_row(self, row: list[str], bold: bool, italic: bool,
+                         row_number: int) -> None:
+        """Write a row of the table."""
+        assert isinstance(row, list)
+        assert isinstance(bold, bool)
+        assert isinstance(italic, bool)
+        assert isinstance(row_number, int)
+        err = self._must_be_overridden('_write_table_row')
+        raise NotImplementedError(err)
+
     def _state_from_point_list(self) -> None:
         """Set the state from the point list stack."""
         if not self.point_list_stack:
@@ -665,3 +863,26 @@ class MultiFormat:
             self._end_numeric_list(level=len(self.point_list_stack))
             self.point_list_stack.pop()
             self._state_from_point_list()
+
+    def _start_code_block(self, programming_language: Optional[str]) -> None:
+        """Start a code block."""
+        if programming_language is not None:
+            assert isinstance(programming_language, str)
+        err = self._must_be_overridden('_start_code_block')
+        raise NotImplementedError(err)
+
+    def _end_code_block(self, programming_language: Optional[str]) -> None:
+        """End a code block."""
+        if programming_language is not None:
+            assert isinstance(programming_language, str)
+        err = self._must_be_overridden('_end_code_block')
+        raise NotImplementedError(err)
+
+    def _write_code_block(self, text: str,
+                          programming_language: Optional[str]) -> None:
+        """Write a code block."""
+        assert isinstance(text, str)
+        if programming_language is not None:
+            assert isinstance(programming_language, str)
+        err = self._must_be_overridden('_write_code_block')
+        raise NotImplementedError(err)
