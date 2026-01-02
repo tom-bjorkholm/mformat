@@ -146,24 +146,6 @@ class MultiFormat:
         self._close()
         self.state = MultiFormatState.CLOSED
 
-    def _close(self) -> None:
-        """Close the file.
-
-        Must be overridden by subclasses.
-        """
-        err = self._must_be_overridden('_close')
-        raise NotImplementedError(err)
-
-    def _write_file_prefix(self) -> None:
-        """Write the file prefix."""
-        err = self._must_be_overridden('_write_file_prefix')
-        raise NotImplementedError(err)
-
-    def _write_file_suffix(self) -> None:
-        """Write the file suffix."""
-        err = self._must_be_overridden('_write_file_suffix')
-        raise NotImplementedError(err)
-
     def start_heading(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                       level: int, text: str, smart_ws: bool = True,
                       bold: bool = False, italic: bool = False) -> None:
@@ -243,6 +225,66 @@ class MultiFormat:
             text=text, level=level, smart_ws=smart_ws,
             bold=bold, italic=italic,
             point_list_type=PointListType.BULLET)
+
+    def add_text(self, text: str, smart_ws: bool = True,
+                 bold: bool = False, italic: bool = False) -> None:
+        """Add text to the current item (paragraph, bullet list item, etc.).
+
+        Args:
+            text: The text to add to the current item.
+            smart_ws: If True, leading and trailing whitespace are collapsed
+                      and a single space is inserted between texts (from
+                      start_paragraph, start_bullet, ... or add_text).
+            bold: If True, the text is bold.
+            italic: If True, the text is italic.
+        """
+        if self.state not in (MultiFormatState.HEADING,
+                              MultiFormatState.PARAGRAPH,
+                              MultiFormatState.BULLET_LIST_ITEM,
+                              MultiFormatState.NUMERIC_LIST_ITEM):
+            err = f'Cannot add text to state {self.state.name}'
+            raise RuntimeError(err)
+        self._write_text(self._to_write(text, smart_ws, True),
+                         self.state, bold, italic)
+
+    def add_url(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                url: str, text: Optional[str] = None,
+                smart_ws: bool = True,
+                bold: bool = False, italic: bool = False) -> None:
+        """Add a URL to the current item (paragraph, bullet list item, etc.).
+
+        Args:
+            url: The URL to add to the current item.
+            text: The text to add to the current item.
+            smart_ws: If True, leading and trailing whitespace are collapsed
+                      and a single space is inserted between texts (from
+                      add_url or add_text).
+            bold: If True, the text is bold.
+            italic: If True, the text is italic.
+        """
+        if self.state not in (MultiFormatState.HEADING,
+                              MultiFormatState.PARAGRAPH,
+                              MultiFormatState.BULLET_LIST_ITEM,
+                              MultiFormatState.NUMERIC_LIST_ITEM):
+            err = f'Cannot add URL to state {self.state.name}'
+            raise RuntimeError(err)
+        if self.url_as_text:
+            text_to_write = ''
+            if text:
+                assert text is not None
+                text_to_write = self._to_write(text, smart_ws, True) + ' '
+            text_to_write += url.strip()
+            self._write_text(text_to_write, self.state, bold, italic)
+            return
+        # Write spacing before URL if needed
+        if smart_ws and self.ws_needed_at_append:
+            self._write_text(' ', self.state, False, False)
+        # Process URL text and update ws_needed_at_append
+        processed_text = text.strip() if text and smart_ws else text
+        self.ws_needed_at_append = \
+            not processed_text[-1].isspace() if processed_text else True
+        self._write_url(url, processed_text if processed_text else None,
+                        self.state, bold, italic)
 
     def _start_point_list_item(  # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals # noqa: E501
             self, text: str, level: Optional[int],
@@ -398,65 +440,23 @@ class MultiFormat:
             self._to_write(text, smart_ws, False),
             self.state, bold, italic)
 
-    def add_text(self, text: str, smart_ws: bool = True,
-                 bold: bool = False, italic: bool = False) -> None:
-        """Add text to the current item (paragraph, bullet list item, etc.).
+    def _close(self) -> None:
+        """Close the file.
 
-        Args:
-            text: The text to add to the current item.
-            smart_ws: If True, leading and trailing whitespace are collapsed
-                      and a single space is inserted between texts (from
-                      start_paragraph, start_bullet, ... or add_text).
-            bold: If True, the text is bold.
-            italic: If True, the text is italic.
+        Must be overridden by subclasses.
         """
-        if self.state not in (MultiFormatState.HEADING,
-                              MultiFormatState.PARAGRAPH,
-                              MultiFormatState.BULLET_LIST_ITEM,
-                              MultiFormatState.NUMERIC_LIST_ITEM):
-            err = f'Cannot add text to state {self.state.name}'
-            raise RuntimeError(err)
-        self._write_text(self._to_write(text, smart_ws, True),
-                         self.state, bold, italic)
+        err = self._must_be_overridden('_close')
+        raise NotImplementedError(err)
 
-    def add_url(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                url: str, text: Optional[str] = None,
-                smart_ws: bool = True,
-                bold: bool = False, italic: bool = False) -> None:
-        """Add a URL to the current item (paragraph, bullet list item, etc.).
+    def _write_file_prefix(self) -> None:
+        """Write the file prefix."""
+        err = self._must_be_overridden('_write_file_prefix')
+        raise NotImplementedError(err)
 
-        Args:
-            url: The URL to add to the current item.
-            text: The text to add to the current item.
-            smart_ws: If True, leading and trailing whitespace are collapsed
-                      and a single space is inserted between texts (from
-                      add_url or add_text).
-            bold: If True, the text is bold.
-            italic: If True, the text is italic.
-        """
-        if self.state not in (MultiFormatState.HEADING,
-                              MultiFormatState.PARAGRAPH,
-                              MultiFormatState.BULLET_LIST_ITEM,
-                              MultiFormatState.NUMERIC_LIST_ITEM):
-            err = f'Cannot add URL to state {self.state.name}'
-            raise RuntimeError(err)
-        if self.url_as_text:
-            text_to_write = ''
-            if text:
-                assert text is not None
-                text_to_write = self._to_write(text, smart_ws, True) + ' '
-            text_to_write += url.strip()
-            self._write_text(text_to_write, self.state, bold, italic)
-            return
-        # Write spacing before URL if needed
-        if smart_ws and self.ws_needed_at_append:
-            self._write_text(' ', self.state, False, False)
-        # Process URL text and update ws_needed_at_append
-        processed_text = text.strip() if text and smart_ws else text
-        self.ws_needed_at_append = \
-            not processed_text[-1].isspace() if processed_text else True
-        self._write_url(url, processed_text if processed_text else None,
-                        self.state, bold, italic)
+    def _write_file_suffix(self) -> None:
+        """Write the file suffix."""
+        err = self._must_be_overridden('_write_file_suffix')
+        raise NotImplementedError(err)
 
     def _end_state(self) -> None:
         """End the current state."""
