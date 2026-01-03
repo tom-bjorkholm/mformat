@@ -368,3 +368,29 @@ def action_complex_nested_bullet_structure(mfd: Any) -> None:
     mfd.start_bullet_item(text='Item 1.2', level=2)
     mfd.start_bullet_item(text='Item 2', level=1)
     mfd.start_bullet_item(text='Item 2.1', level=2)
+
+
+# Common table data for tests to avoid code duplication
+
+TABLE_DATA_3X2 = [
+    ['Header1', 'Header2'],
+    ['Row1Col1', 'Row1Col2'],
+    ['Row2Col1', 'Row2Col2']
+]
+
+TABLE_DATA_3X2_SIMPLE = [
+    ['Name', 'Value'],
+    ['Alpha', '1'],
+    ['Beta', '2']
+]
+
+TABLE_DATA_VARIED_WIDTHS = [
+    ['Short', 'Longer'],
+    ['A', 'Very long text'],
+    ['Medium', 'X']
+]
+
+TABLE_DATA_WRONG_COLUMNS = [
+    ['A', 'B'],
+    ['1', '2', '3']  # Wrong number of columns
+]

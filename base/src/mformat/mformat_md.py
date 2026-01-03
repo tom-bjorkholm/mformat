@@ -215,6 +215,7 @@ class MultiFormatMd(MultiFormatTextBased):
             local_row = [f'**{cell}**' for cell in local_row]
         if italic:
             local_row = [f'*{cell}*' for cell in local_row]
+        # Update column widths to account for formatted text
         if bold or italic:
             self._update_table_column_widths(row=local_row)
         local_row = [cell.ljust(width) for cell, width in

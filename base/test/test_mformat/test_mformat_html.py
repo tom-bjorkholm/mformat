@@ -1,5 +1,6 @@
 #! /usr/local/bin/python3
 """Test the mformat_html module."""
+# pylint: disable=too-many-lines
 
 # Copyright (c) 2025 - 2026 Tom Björkholm
 # MIT License
@@ -10,7 +11,9 @@ from check_capsys import check_capsys
 from test_helpers import (
     run_with_context_manager,
     run_protected_method,
-    action_complex_nested_bullet_structure
+    action_complex_nested_bullet_structure,
+    TABLE_DATA_3X2,
+    TABLE_DATA_3X2_SIMPLE
 )
 from mformat.mformat_html import MultiFormatHtml
 from mformat.mformat import FormatterDescriptor, MultiFormatState
@@ -538,5 +541,477 @@ def test_complex_nested_structure(capsys):
                 '<ul>\n<li>Item 1.1</li>\n<li>Item 1.2</li>\n</ul>\n' +
                 '<li>Item 2</li>\n' +
                 '<ul>\n<li>Item 2.1</li>\n</ul>\n</ul>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+# Tests for numbered point lists
+
+
+def test_single_numbered_item(capsys):
+    """Test a single numbered point item."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_numbered_point_item(text='First item')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = PF_EN_NT_NC + '<ol>\n<li>First item</li>\n</ol>\n' + SFTOT
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_multiple_numbered_items(capsys):
+    """Test multiple numbered point items."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_numbered_point_item(text='First item')
+        mfd.start_numbered_point_item(text='Second item')
+        mfd.start_numbered_point_item(text='Third item')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ol>\n<li>First item</li>\n' +
+                '<li>Second item</li>\n<li>Third item</li>\n</ol>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_numbered_item_with_add_text(capsys):
+    """Test numbered point item with additional text."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_numbered_point_item(text='First item')
+        mfd.add_text(text=' with more text')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ol>\n<li>First item with more text</li>\n' +
+                '</ol>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_numbered_item_with_url(capsys):
+    """Test numbered point item with URL."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_numbered_point_item(text='Check ')
+        mfd.add_url(url='http://example.com', text='this link')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ol>\n<li>Check ' +
+                '<a href="http://example.com">this link</a></li>\n' +
+                '</ol>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_nested_numbered_items_level2(capsys):
+    """Test nested numbered point items at level 2."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_numbered_point_item(text='Level 1', level=1)
+        mfd.start_numbered_point_item(text='Level 2', level=2)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ol>\n<li>Level 1</li>\n' +
+                '<ol>\n<li>Level 2</li>\n</ol>\n</ol>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_nested_numbered_items_level3(capsys):
+    """Test nested numbered point items at level 3."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_numbered_point_item(text='Level 1', level=1)
+        mfd.start_numbered_point_item(text='Level 2', level=2)
+        mfd.start_numbered_point_item(text='Level 3', level=3)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ol>\n<li>Level 1</li>\n' +
+                '<ol>\n<li>Level 2</li>\n' +
+                '<ol>\n<li>Level 3</li>\n</ol>\n</ol>\n</ol>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_numbered_list_back_to_level1(capsys):
+    """Test numbered point list returning to level 1."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_numbered_point_item(text='Level 1 first', level=1)
+        mfd.start_numbered_point_item(text='Level 2', level=2)
+        mfd.start_numbered_point_item(text='Level 1 second', level=1)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ol>\n<li>Level 1 first</li>\n' +
+                '<ol>\n<li>Level 2</li>\n</ol>\n' +
+                '<li>Level 1 second</li>\n</ol>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_numbered_list_formatting(capsys):
+    """Test numbered point list with bold and italic."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_numbered_point_item(text='Bold item', bold=True)
+        mfd.start_numbered_point_item(text='Italic item', italic=True)
+        mfd.start_numbered_point_item(text='Both', bold=True, italic=True)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ol>\n<li><strong>Bold item</strong></li>\n' +
+                '<li><em>Italic item</em></li>\n' +
+                '<li><em><strong>Both</strong></em></li>\n</ol>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_paragraph_then_numbered_list(capsys):
+    """Test paragraph followed by numbered point list."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_paragraph(text='Intro paragraph')
+        mfd.start_numbered_point_item(text='First item')
+        mfd.start_numbered_point_item(text='Second item')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<p>\nIntro paragraph</p>\n' +
+                '<ol>\n<li>First item</li>\n<li>Second item</li>\n' +
+                '</ol>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_numbered_list_then_paragraph(capsys):
+    """Test numbered point list followed by paragraph."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_numbered_point_item(text='First item')
+        mfd.start_numbered_point_item(text='Second item')
+        mfd.start_paragraph(text='Concluding paragraph')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ol>\n<li>First item</li>\n' +
+                '<li>Second item</li>\n</ol>\n' +
+                '<p>\nConcluding paragraph</p>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_heading_then_numbered_list(capsys):
+    """Test heading followed by numbered point list."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_heading(level=1, text='Main Title')
+        mfd.start_numbered_point_item(text='First item')
+        mfd.start_numbered_point_item(text='Second item')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<h1>\nMain Title</h1>\n' +
+                '<ol>\n<li>First item</li>\n<li>Second item</li>\n' +
+                '</ol>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_mixed_bullet_and_numbered_lists(capsys):
+    """Test switching between bullet and numbered point lists."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_bullet_item(text='Bullet 1', level=1)
+        mfd.start_bullet_item(text='Bullet 2', level=1)
+        mfd.start_numbered_point_item(text='Numbered 1', level=1)
+        mfd.start_numbered_point_item(text='Numbered 2', level=1)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ul>\n<li>Bullet 1</li>\n<li>Bullet 2</li>\n'
+                '</ul>\n<ol>\n<li>Numbered 1</li>\n<li>Numbered 2</li>\n'
+                '</ol>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_nested_mixed_lists(capsys):
+    """Test nested mixed bullet and numbered point lists."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_bullet_item(text='Bullet 1', level=1)
+        mfd.start_numbered_point_item(text='Numbered 1.1', level=2)
+        mfd.start_numbered_point_item(text='Numbered 1.2', level=2)
+        mfd.start_bullet_item(text='Bullet 2', level=1)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<ul>\n<li>Bullet 1</li>\n' +
+                '<ol>\n<li>Numbered 1.1</li>\n<li>Numbered 1.2</li>\n' +
+                '</ol>\n<li>Bullet 2</li>\n</ul>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+# Tests for code blocks
+
+
+def test_simple_code_block(capsys):
+    """Test a simple code block."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.write_code_block(text='print("Hello, World!")')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<pre><code>\nprint("Hello, World!")' +
+                '</code></pre>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_code_block_with_language(capsys):
+    """Test a code block with programming language."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.write_code_block(text='print("Hello")',
+                             programming_language='python')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<pre><code>\n' +
+                '<span class="language-python">print("Hello")</span>\n' +
+                '</code></pre>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_code_block_multiline(capsys):
+    """Test a multiline code block."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        code = 'def hello():\n    print("Hello")\n    return True'
+        mfd.write_code_block(text=code, programming_language='python')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<pre><code>\n' +
+                '<span class="language-python">def hello():\n' +
+                '    print("Hello")\n    return True</span>\n' +
+                '</code></pre>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_code_block_with_special_chars(capsys):
+    """Test a code block with special characters."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        code = 'x = "test <>&"\ny = \'another\''
+        mfd.write_code_block(text=code)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<pre><code>\nx = "test <>&"\n' +
+                'y = \'another\'</code></pre>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_paragraph_then_code_block(capsys):
+    """Test paragraph followed by code block."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_paragraph(text='Here is some code:')
+        mfd.write_code_block(text='x = 42', programming_language='python')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<p>\nHere is some code:</p>\n' +
+                '<pre><code>\n<span class="language-python">x = 42' +
+                '</span>\n</code></pre>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_code_block_then_paragraph(capsys):
+    """Test code block followed by paragraph."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.write_code_block(text='x = 42')
+        mfd.start_paragraph(text='That was the code.')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<pre><code>\nx = 42</code></pre>\n' +
+                '<p>\nThat was the code.</p>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_heading_then_code_block(capsys):
+    """Test heading followed by code block."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_heading(level=2, text='Code Example')
+        mfd.write_code_block(text='example()', programming_language='python')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<h2>\nCode Example</h2>\n' +
+                '<pre><code>\n<span class="language-python">example()' +
+                '</span>\n</code></pre>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_multiple_code_blocks(capsys):
+    """Test multiple code blocks."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.write_code_block(text='x = 1', programming_language='python')
+        mfd.write_code_block(text='y = 2', programming_language='python')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<pre><code>\n' +
+                '<span class="language-python">x = 1</span>\n' +
+                '</code></pre>\n<pre><code>\n' +
+                '<span class="language-python">y = 2</span>\n' +
+                '</code></pre>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+# Tests for tables
+
+
+def test_simple_table(capsys):
+    """Test a simple table."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_table(first_row=['Col1', 'Col2'])
+        mfd.add_table_row(row=['A', 'B'])
+        mfd.add_table_row(row=['C', 'D'])
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<table>\n<tr>\n<td>Col1</td>\n<td>Col2</td>\n'
+                '</tr>\n<tr>\n<td>A</td>\n<td>B</td>\n</tr>\n<tr>\n'
+                '<td>C</td>\n<td>D</td>\n</tr>\n</table>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_table_with_bold_header(capsys):
+    """Test a table with bold header."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_table(first_row=['Name', 'Age'], bold=True)
+        mfd.add_table_row(row=['Alice', '30'])
+        mfd.add_table_row(row=['Bob', '25'])
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<table>\n<tr>\n<td><strong>Name</strong></td>\n'
+                '<td><strong>Age</strong></td>\n</tr>\n<tr>\n<td>Alice</td>\n'
+                '<td>30</td>\n</tr>\n<tr>\n<td>Bob</td>\n<td>25</td>\n</tr>\n'
+                '</table>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_table_with_italic_header(capsys):
+    """Test a table with italic header."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_table(first_row=['Name', 'Age'], italic=True)
+        mfd.add_table_row(row=['Alice', '30'])
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<table>\n<tr>\n<td><em>Name</em></td>\n'
+                '<td><em>Age</em></td>\n</tr>\n<tr>\n<td>Alice</td>\n'
+                '<td>30</td>\n</tr>\n</table>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_write_complete_table(capsys):
+    """Test write_complete_table method."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.write_complete_table(table=TABLE_DATA_3X2)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<table>\n<tr>\n<td>Header1</td>\n'
+                '<td>Header2</td>\n</tr>\n<tr>\n<td>Row1Col1</td>\n'
+                '<td>Row1Col2</td>\n</tr>\n<tr>\n<td>Row2Col1</td>\n'
+                '<td>Row2Col2</td>\n</tr>\n</table>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_write_complete_table_with_bold_header(capsys):
+    """Test write_complete_table with bold first row."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.write_complete_table(
+            table=TABLE_DATA_3X2_SIMPLE, bold_first_row=True)
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<table>\n<tr>\n<td><strong>Name</strong></td>\n'
+                '<td><strong>Value</strong></td>\n</tr>\n<tr>\n'
+                '<td>Alpha</td>\n<td>1</td>\n</tr>\n<tr>\n<td>Beta</td>\n'
+                '<td>2</td>\n</tr>\n</table>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_paragraph_then_table(capsys):
+    """Test paragraph followed by table."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_paragraph(text='Here is a table:')
+        mfd.start_table(first_row=['A', 'B'])
+        mfd.add_table_row(row=['1', '2'])
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<p>\nHere is a table:</p>\n<table>\n<tr>\n'
+                '<td>A</td>\n<td>B</td>\n</tr>\n<tr>\n<td>1</td>\n'
+                '<td>2</td>\n</tr>\n</table>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_table_then_paragraph(capsys):
+    """Test table followed by paragraph."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_table(first_row=['X', 'Y'])
+        mfd.add_table_row(row=['1', '2'])
+        mfd.start_paragraph(text='That was the table.')
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<table>\n<tr>\n<td>X</td>\n<td>Y</td>\n</tr>\n'
+                '<tr>\n<td>1</td>\n<td>2</td>\n</tr>\n</table>\n'
+                '<p>\nThat was the table.</p>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_heading_then_table(capsys):
+    """Test heading followed by table."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_heading(level=2, text='Data Table')
+        mfd.start_table(first_row=['Col1', 'Col2'])
+        mfd.add_table_row(row=['A', 'B'])
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<h2>\nData Table</h2>\n<table>\n<tr>\n'
+                '<td>Col1</td>\n<td>Col2</td>\n</tr>\n<tr>\n<td>A</td>\n'
+                '<td>B</td>\n</tr>\n</table>\n' + SFTOT)
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_table_with_three_columns(capsys):
+    """Test a table with three columns."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_table(first_row=['Name', 'Age', 'City'])
+        mfd.add_table_row(row=['Alice', '30', 'NYC'])
+        mfd.add_table_row(row=['Bob', '25', 'LA'])
+
+    txt = run_with_context_manager('html', '.html', test_action)
+    expected = (PF_EN_NT_NC + '<table>\n<tr>\n<td>Name</td>\n<td>Age</td>\n'
+                '<td>City</td>\n</tr>\n<tr>\n<td>Alice</td>\n<td>30</td>\n'
+                '<td>NYC</td>\n</tr>\n<tr>\n<td>Bob</td>\n<td>25</td>\n'
+                '<td>LA</td>\n</tr>\n</table>\n' + SFTOT)
     assert txt == expected
     check_capsys(capsys)

@@ -5,6 +5,7 @@
 # MIT License
 #
 
+from typing import Optional
 import pytest
 from check_capsys import check_capsys
 from test_helpers import (
@@ -285,4 +286,132 @@ def test_heading_with_smart_ws(capsys):
     mfmt.add_text(text='  more  ', smart_ws=True)
     assert mfmt.count == {'_start_heading': 1, '_write_text': 2,
                           '_write_file_prefix': 1}
+    check_capsys(capsys)
+
+
+# Tests for code blocks
+
+
+class MultiFormat12(MultiFormat3):
+    """Class used for testing code blocks."""
+
+    def _start_code_block(self, programming_language: Optional[str]) -> None:
+        """Start a code block."""
+        if programming_language is not None:
+            assert isinstance(programming_language, str)
+        self.inc_count('_start_code_block')
+
+    def _end_code_block(self, programming_language: Optional[str]) -> None:
+        """End a code block."""
+        if programming_language is not None:
+            assert isinstance(programming_language, str)
+        self.inc_count('_end_code_block')
+
+    def _write_code_block(self, text: str,
+                          programming_language: Optional[str]) -> None:
+        """Write a code block."""
+        assert isinstance(text, str)
+        if programming_language is not None:
+            assert isinstance(programming_language, str)
+        self.inc_count('_write_code_block')
+
+
+def test_write_code_block_basic(capsys):
+    """Test basic code block writing."""
+    mfmt = MultiFormat12(file_name='test')
+    assert mfmt.state == MultiFormatState.EMPTY
+    mfmt.write_code_block(text='print("Hello")')
+    assert mfmt.state == MultiFormatState.PARAGRAPH_END
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_code_block': 1,
+        '_write_code_block': 1,
+        '_end_code_block': 1}
+    check_capsys(capsys)
+
+
+def test_write_code_block_with_language(capsys):
+    """Test code block with programming language."""
+    mfmt = MultiFormat12(file_name='test')
+    mfmt.write_code_block(text='x = 42', programming_language='python')
+    assert mfmt.state == MultiFormatState.PARAGRAPH_END
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_code_block': 1,
+        '_write_code_block': 1,
+        '_end_code_block': 1}
+    check_capsys(capsys)
+
+
+def test_paragraph_then_code_block(capsys):
+    """Test paragraph followed by code block."""
+    mfmt = MultiFormat12(file_name='test')
+    mfmt.start_paragraph(text='Here is code:')
+    mfmt.write_code_block(text='code here')
+    assert mfmt.state == MultiFormatState.PARAGRAPH_END
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_paragraph': 1,
+        '_write_text': 1,
+        '_end_paragraph': 1,
+        '_start_code_block': 1,
+        '_write_code_block': 1,
+        '_end_code_block': 1}
+    check_capsys(capsys)
+
+
+def test_code_block_then_paragraph(capsys):
+    """Test code block followed by paragraph."""
+    mfmt = MultiFormat12(file_name='test')
+    mfmt.write_code_block(text='code')
+    mfmt.start_paragraph(text='After code')
+    assert mfmt.state == MultiFormatState.PARAGRAPH
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_code_block': 1,
+        '_write_code_block': 1,
+        '_end_code_block': 1,
+        '_start_paragraph': 1,
+        '_write_text': 1}
+    check_capsys(capsys)
+
+
+def test_multiple_code_blocks(capsys):
+    """Test multiple code blocks in sequence."""
+    mfmt = MultiFormat12(file_name='test')
+    mfmt.write_code_block(text='first', programming_language='python')
+    mfmt.write_code_block(text='second', programming_language='javascript')
+    assert mfmt.state == MultiFormatState.PARAGRAPH_END
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_code_block': 2,
+        '_write_code_block': 2,
+        '_end_code_block': 2}
+    check_capsys(capsys)
+
+
+def test_code_block_multiline(capsys):
+    """Test code block with multiline text."""
+    mfmt = MultiFormat12(file_name='test')
+    code = 'def hello():\n    print("Hello")\n    return True'
+    mfmt.write_code_block(text=code, programming_language='python')
+    assert mfmt.state == MultiFormatState.PARAGRAPH_END
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_code_block': 1,
+        '_write_code_block': 1,
+        '_end_code_block': 1}
+    check_capsys(capsys)
+
+
+def test_code_block_empty(capsys):
+    """Test code block with empty text."""
+    mfmt = MultiFormat12(file_name='test')
+    mfmt.write_code_block(text='')
+    assert mfmt.state == MultiFormatState.PARAGRAPH_END
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_code_block': 1,
+        '_write_code_block': 1,
+        '_end_code_block': 1}
     check_capsys(capsys)

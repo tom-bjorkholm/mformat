@@ -226,3 +226,181 @@ def test_heading_then_bullet_list(capsys):
         '_start_bullet_item': 1,
         '_write_text': 2}
     check_capsys(capsys)
+
+
+# Tests for numbered point lists
+
+
+def test_start_numbered_item_from_empty(capsys):
+    """Test starting a numbered point item from empty state."""
+    mfmt = MultiFormat10(file_name='test')
+    assert mfmt.state == MultiFormatState.EMPTY
+    mfmt.start_numbered_point_item(text='First item')
+    assert mfmt.state == MultiFormatState.NUMERIC_LIST_ITEM
+    assert len(mfmt.point_list_stack) == 1
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_numeric_list': 1,
+        '_start_numeric_item': 1,
+        '_write_text': 1}
+    check_capsys(capsys)
+
+
+def test_start_multiple_numbered_items(capsys):
+    """Test starting multiple numbered point items at same level."""
+    mfmt = MultiFormat10(file_name='test')
+    mfmt.start_numbered_point_item(text='First item')
+    mfmt.start_numbered_point_item(text='Second item')
+    assert mfmt.state == MultiFormatState.NUMERIC_LIST_ITEM
+    assert len(mfmt.point_list_stack) == 1
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_numeric_list': 1,
+        '_start_numeric_item': 2,
+        '_end_numeric_item': 1,
+        '_write_text': 2}
+    check_capsys(capsys)
+
+
+def test_start_numbered_item_nested(capsys):
+    """Test starting nested numbered point items."""
+    mfmt = MultiFormat10(file_name='test')
+    mfmt.start_numbered_point_item(text='Level 1 item', level=1)
+    mfmt.start_numbered_point_item(text='Level 2 item', level=2)
+    assert mfmt.state == MultiFormatState.NUMERIC_LIST_ITEM
+    assert len(mfmt.point_list_stack) == 2
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_numeric_list': 2,
+        '_start_numeric_item': 2,
+        '_end_numeric_item': 1,
+        '_write_text': 2}
+    check_capsys(capsys)
+
+
+def test_numbered_list_back_to_level1(capsys):
+    """Test numbered point list returning to level 1."""
+    mfmt = MultiFormat10(file_name='test')
+    mfmt.start_numbered_point_item(text='Level 1 first', level=1)
+    mfmt.start_numbered_point_item(text='Level 2', level=2)
+    mfmt.start_numbered_point_item(text='Level 1 second', level=1)
+    assert mfmt.state == MultiFormatState.NUMERIC_LIST_ITEM
+    assert len(mfmt.point_list_stack) == 1
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_numeric_list': 2,
+        '_start_numeric_item': 3,
+        '_end_numeric_item': 2,
+        '_end_numeric_list': 1,
+        '_write_text': 3}
+    check_capsys(capsys)
+
+
+def test_numbered_then_paragraph(capsys):
+    """Test numbered point list followed by paragraph."""
+    mfmt = MultiFormat10(file_name='test')
+    mfmt.start_numbered_point_item(text='Numbered item')
+    mfmt.start_paragraph(text='Paragraph')
+    assert mfmt.state == MultiFormatState.PARAGRAPH
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_numeric_list': 1,
+        '_start_numeric_item': 1,
+        '_end_numeric_item': 1,
+        '_end_numeric_list': 1,
+        '_start_paragraph': 1,
+        '_write_text': 2}
+    check_capsys(capsys)
+
+
+def test_mixed_bullet_and_numbered_same_level(capsys):
+    """Test switching between bullet and numbered at same level."""
+    mfmt = MultiFormat10(file_name='test')
+    mfmt.start_bullet_item(text='Bullet 1', level=1)
+    mfmt.start_bullet_item(text='Bullet 2', level=1)
+    mfmt.start_numbered_point_item(text='Numbered 1', level=1)
+    mfmt.start_numbered_point_item(text='Numbered 2', level=1)
+    assert mfmt.state == MultiFormatState.NUMERIC_LIST_ITEM
+    assert len(mfmt.point_list_stack) == 1
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_bullet_list': 1,
+        '_start_bullet_item': 2,
+        '_end_bullet_item': 2,
+        '_end_bullet_list': 1,
+        '_start_numeric_list': 1,
+        '_start_numeric_item': 2,
+        '_end_numeric_item': 1,
+        '_write_text': 4}
+    check_capsys(capsys)
+
+
+def test_nested_mixed_bullet_then_numbered(capsys):
+    """Test nested list with bullet at level 1 and numbered at level 2."""
+    mfmt = MultiFormat10(file_name='test')
+    mfmt.start_bullet_item(text='Bullet 1', level=1)
+    mfmt.start_numbered_point_item(text='Numbered 1.1', level=2)
+    mfmt.start_numbered_point_item(text='Numbered 1.2', level=2)
+    mfmt.start_bullet_item(text='Bullet 2', level=1)
+    assert mfmt.state == MultiFormatState.BULLET_LIST_ITEM
+    assert len(mfmt.point_list_stack) == 1
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_bullet_list': 1,
+        '_start_bullet_item': 2,
+        '_end_bullet_item': 1,
+        '_start_numeric_list': 1,
+        '_start_numeric_item': 2,
+        '_end_numeric_item': 2,
+        '_end_numeric_list': 1,
+        '_write_text': 4}
+    check_capsys(capsys)
+
+
+def test_nested_mixed_numbered_then_bullet(capsys):
+    """Test nested list with numbered at level 1 and bullet at level 2."""
+    mfmt = MultiFormat10(file_name='test')
+    mfmt.start_numbered_point_item(text='Numbered 1', level=1)
+    mfmt.start_bullet_item(text='Bullet 1.1', level=2)
+    mfmt.start_bullet_item(text='Bullet 1.2', level=2)
+    mfmt.start_numbered_point_item(text='Numbered 2', level=1)
+    assert mfmt.state == MultiFormatState.NUMERIC_LIST_ITEM
+    assert len(mfmt.point_list_stack) == 1
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_numeric_list': 1,
+        '_start_numeric_item': 2,
+        '_end_numeric_item': 1,
+        '_start_bullet_list': 1,
+        '_start_bullet_item': 2,
+        '_end_bullet_item': 2,
+        '_end_bullet_list': 1,
+        '_write_text': 4}
+    check_capsys(capsys)
+
+
+def test_three_level_nested_numbered(capsys):
+    """Test three-level nested numbered point lists."""
+    mfmt = MultiFormat10(file_name='test')
+    mfmt.start_numbered_point_item(text='Level 1', level=1)
+    mfmt.start_numbered_point_item(text='Level 2', level=2)
+    mfmt.start_numbered_point_item(text='Level 3', level=3)
+    assert mfmt.state == MultiFormatState.NUMERIC_LIST_ITEM
+    assert len(mfmt.point_list_stack) == 3
+    assert mfmt.count == {
+        '_write_file_prefix': 1,
+        '_start_numeric_list': 3,
+        '_start_numeric_item': 3,
+        '_end_numeric_item': 2,
+        '_write_text': 3}
+    check_capsys(capsys)
+
+
+def test_numbered_list_error_skip_level(capsys):
+    """Test error when skipping a level in numbered point list."""
+    mfmt = MultiFormat10(file_name='test')
+    mfmt.start_numbered_point_item(text='Level 1', level=1)
+    with pytest.raises(RuntimeError,
+                       match='start_numeric_item called with level=3'):
+        mfmt.start_numbered_point_item(text='Level 3', level=3)
+    check_capsys(capsys)

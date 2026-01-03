@@ -237,3 +237,121 @@ class MultiFormatDocx(MultiFormat):
         assert isinstance(level, int)
         assert isinstance(num, int)
         self.current_paragraph = None
+
+    def _start_table(self, num_columns: int) -> None:
+        """Start a table.
+
+        Args:
+            num_columns: The number of columns in the table.
+        """
+        assert isinstance(num_columns, int)
+        # In python-docx, we need to know the number of rows in advance
+        # We'll handle this by creating a table with 1 row initially
+        # and adding rows as needed
+        # Note: This is a placeholder - actual table creation happens
+        # in _write_table_first_row
+
+    def _end_table(self, num_columns: int, num_rows: int) -> None:
+        """End a table.
+
+        Args:
+            num_columns: The number of columns in the table.
+            num_rows: The number of rows in the table.
+        """
+        assert isinstance(num_columns, int)
+        assert isinstance(num_rows, int)
+        # No action needed - table is already complete
+
+    def _write_table_first_row(self, first_row: list[str],
+                               bold: bool, italic: bool) -> None:
+        """Write the first row of a table.
+
+        Args:
+            first_row: The first row of the table.
+            bold: If True, the text in each cell is bold.
+            italic: If True, the text in each cell is italic.
+        """
+        assert isinstance(first_row, list)
+        assert isinstance(bold, bool)
+        assert isinstance(italic, bool)
+        # Create the table with the first row
+        table = self.doc.add_table(rows=1, cols=len(first_row))
+        table.style = 'Table Grid'
+        # Fill in the first row
+        for idx, cell_text in enumerate(first_row):
+            cell = table.rows[0].cells[idx]
+            para = cell.paragraphs[0]
+            run = para.add_run(cell_text)
+            if bold:
+                run.bold = True
+            if italic:
+                run.italic = True
+
+    def _write_table_row(self, row: list[str], bold: bool, italic: bool,
+                         row_number: int) -> None:
+        """Write a row of a table.
+
+        Args:
+            row: The row to add to the table.
+            bold: If True, the text in each cell is bold.
+            italic: If True, the text in each cell is italic.
+            row_number: The row number (0-based).
+        """
+        assert isinstance(row, list)
+        assert isinstance(bold, bool)
+        assert isinstance(italic, bool)
+        assert isinstance(row_number, int)
+        # Get the last table in the document
+        table = self.doc.tables[-1]
+        # Add a new row
+        new_row = table.add_row()  # type: ignore[no-untyped-call]
+        # Fill in the row
+        for idx, cell_text in enumerate(row):
+            cell = new_row.cells[idx]
+            para = cell.paragraphs[0]
+            run = para.add_run(cell_text)
+            if bold:
+                run.bold = True
+            if italic:
+                run.italic = True
+
+    def _start_code_block(self, programming_language: Optional[str]) -> None:
+        """Start a code block.
+
+        Args:
+            programming_language: The programming language of the code block.
+        """
+        assert programming_language is None or \
+            isinstance(programming_language, str)
+        # Create a paragraph with a code/verbatim style
+        # python-docx doesn't have a built-in code style,
+        # so we'll use 'No Spacing' style and monospace font
+        self.current_paragraph = self.doc.add_paragraph()
+        self.current_paragraph.style = 'No Spacing'
+
+    def _end_code_block(self, programming_language: Optional[str]) -> None:
+        """End a code block.
+
+        Args:
+            programming_language: The programming language of the code block.
+        """
+        assert programming_language is None or \
+            isinstance(programming_language, str)
+        self.current_paragraph = None
+
+    def _write_code_block(self, text: str,
+                          programming_language: Optional[str]) -> None:
+        """Write a code block.
+
+        Args:
+            text: The text to add to the code block.
+            programming_language: The programming language of the code block.
+        """
+        assert isinstance(text, str)
+        assert programming_language is None or \
+            isinstance(programming_language, str)
+        if self.current_paragraph is None:
+            raise RuntimeError('No current paragraph to write code into')
+        run = self.current_paragraph.add_run(text)
+        # Set monospace font
+        run.font.name = 'Courier New'

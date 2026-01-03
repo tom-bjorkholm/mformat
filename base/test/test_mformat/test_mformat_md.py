@@ -1,5 +1,6 @@
 #! /usr/local/bin/python3
 """Test the mformat_md module."""
+# pylint: disable=too-many-lines
 
 # Copyright (c) 2025 - 2026 Tom Björkholm
 # MIT License
@@ -11,7 +12,9 @@ from check_capsys import check_capsys
 from test_helpers import (
     run_with_context_manager,
     run_protected_method,
-    action_complex_nested_bullet_structure
+    action_complex_nested_bullet_structure,
+    TABLE_DATA_3X2,
+    TABLE_DATA_3X2_SIMPLE
 )
 from mformat.mformat_md import MultiFormatMd
 from mformat.mformat import FormatterDescriptor, MultiFormatState
@@ -442,5 +445,467 @@ def test_complex_nested_structure(capsys):
     txt = run_with_context_manager('md', '.md', test_action)
     expected = ('- Item 1\n  - Item 1.1\n  - Item 1.2\n'
                 '- Item 2\n  - Item 2.1\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+# Tests for numbered point lists
+
+
+def test_single_numbered_item(capsys):
+    """Test a single numbered point item."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_numbered_point_item(text='First item')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    assert txt == '1. First item\n'
+    check_capsys(capsys)
+
+
+def test_multiple_numbered_items(capsys):
+    """Test multiple numbered point items."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_numbered_point_item(text='First item')
+        mfd.start_numbered_point_item(text='Second item')
+        mfd.start_numbered_point_item(text='Third item')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '1. First item\n2. Second item\n3. Third item\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_numbered_item_with_add_text(capsys):
+    """Test numbered point item with additional text."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_numbered_point_item(text='First item')
+        mfd.add_text(text=' with more text')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    assert txt == '1. First item with more text\n'
+    check_capsys(capsys)
+
+
+def test_numbered_item_with_url(capsys):
+    """Test numbered point item with URL."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_numbered_point_item(text='Check ')
+        mfd.add_url(url='http://example.com', text='this link')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    assert txt == '1. Check [this link](http://example.com)\n'
+    check_capsys(capsys)
+
+
+def test_nested_numbered_items_level2(capsys):
+    """Test nested numbered point items at level 2."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_numbered_point_item(text='Level 1', level=1)
+        mfd.start_numbered_point_item(text='Level 2', level=2)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '1. Level 1\n  1. Level 2\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_nested_numbered_items_level3(capsys):
+    """Test nested numbered point items at level 3."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_numbered_point_item(text='Level 1', level=1)
+        mfd.start_numbered_point_item(text='Level 2', level=2)
+        mfd.start_numbered_point_item(text='Level 3', level=3)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '1. Level 1\n  1. Level 2\n    1. Level 3\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_numbered_list_back_to_level1(capsys):
+    """Test numbered point list returning to level 1."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_numbered_point_item(text='Level 1 first', level=1)
+        mfd.start_numbered_point_item(text='Level 2', level=2)
+        mfd.start_numbered_point_item(text='Level 1 second', level=1)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('1. Level 1 first\n  1. Level 2\n'
+                '2. Level 1 second\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_numbered_list_formatting(capsys):
+    """Test numbered point list with bold and italic."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_numbered_point_item(text='Bold item', bold=True)
+        mfd.start_numbered_point_item(text='Italic item', italic=True)
+        mfd.start_numbered_point_item(text='Both', bold=True, italic=True)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('1. **Bold item**\n2. *Italic item*\n'
+                '3. ***Both***\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_paragraph_then_numbered_list(capsys):
+    """Test paragraph followed by numbered point list."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_paragraph(text='Intro paragraph')
+        mfd.start_numbered_point_item(text='First item')
+        mfd.start_numbered_point_item(text='Second item')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '\nIntro paragraph\n1. First item\n2. Second item\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_numbered_list_then_paragraph(capsys):
+    """Test numbered point list followed by paragraph."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_numbered_point_item(text='First item')
+        mfd.start_numbered_point_item(text='Second item')
+        mfd.start_paragraph(text='Concluding paragraph')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '1. First item\n2. Second item\n\nConcluding paragraph\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_heading_then_numbered_list(capsys):
+    """Test heading followed by numbered point list."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_heading(level=1, text='Main Title')
+        mfd.start_numbered_point_item(text='First item')
+        mfd.start_numbered_point_item(text='Second item')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '# Main Title\n1. First item\n2. Second item\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_mixed_bullet_and_numbered_lists(capsys):
+    """Test switching between bullet and numbered point lists."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_bullet_item(text='Bullet 1', level=1)
+        mfd.start_bullet_item(text='Bullet 2', level=1)
+        mfd.start_numbered_point_item(text='Numbered 1', level=1)
+        mfd.start_numbered_point_item(text='Numbered 2', level=1)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('- Bullet 1\n- Bullet 2\n'
+                '1. Numbered 1\n2. Numbered 2\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_nested_mixed_lists(capsys):
+    """Test nested mixed bullet and numbered point lists."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_bullet_item(text='Bullet 1', level=1)
+        mfd.start_numbered_point_item(text='Numbered 1.1', level=2)
+        mfd.start_numbered_point_item(text='Numbered 1.2', level=2)
+        mfd.start_bullet_item(text='Bullet 2', level=1)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('- Bullet 1\n  1. Numbered 1.1\n  2. Numbered 1.2\n'
+                '- Bullet 2\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+# Tests for code blocks
+
+
+def test_simple_code_block(capsys):
+    """Test a simple code block."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.write_code_block(text='print("Hello, World!")')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '\n```text\nprint("Hello, World!")\n```\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_code_block_with_language(capsys):
+    """Test a code block with programming language."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.write_code_block(text='print("Hello")',
+                             programming_language='python')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '\n```python\nprint("Hello")\n```\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_code_block_multiline(capsys):
+    """Test a multiline code block."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        code = 'def hello():\n    print("Hello")\n    return True'
+        mfd.write_code_block(text=code, programming_language='python')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('\n```python\ndef hello():\n    print("Hello")\n'
+                '    return True\n```\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_code_block_with_special_chars(capsys):
+    """Test a code block with special characters."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        code = 'x = "test <>&"\ny = \'another\''
+        mfd.write_code_block(text=code)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '\n```text\nx = "test <>&"\ny = \'another\'\n```\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_paragraph_then_code_block(capsys):
+    """Test paragraph followed by code block."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_paragraph(text='Here is some code:')
+        mfd.write_code_block(text='x = 42', programming_language='python')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '\nHere is some code:\n\n```python\nx = 42\n```\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_code_block_then_paragraph(capsys):
+    """Test code block followed by paragraph."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.write_code_block(text='x = 42')
+        mfd.start_paragraph(text='That was the code.')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '\n```text\nx = 42\n```\n\nThat was the code.\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_heading_then_code_block(capsys):
+    """Test heading followed by code block."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_heading(level=2, text='Code Example')
+        mfd.write_code_block(text='example()', programming_language='python')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = '## Code Example\n\n```python\nexample()\n```\n'
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_multiple_code_blocks(capsys):
+    """Test multiple code blocks."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.write_code_block(text='x = 1', programming_language='python')
+        mfd.write_code_block(text='y = 2', programming_language='python')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('\n```python\nx = 1\n```\n'
+                '\n```python\ny = 2\n```\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+# Tests for tables
+
+
+def test_simple_table(capsys):
+    """Test a simple table."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_table(first_row=['Col1', 'Col2'])
+        mfd.add_table_row(row=['A', 'B'])
+        mfd.add_table_row(row=['C', 'D'])
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('\n| Col1 | Col2 |\n'
+                '---------------\n'
+                '| A    | B    |\n'
+                '| C    | D    |\n\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_table_with_bold_header(capsys):
+    """Test a table with bold header."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_table(first_row=['Name', 'Age'], bold=True)
+        mfd.add_table_row(row=['Alice', '30'])
+        mfd.add_table_row(row=['Bob', '25'])
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('\n| **Name** | **Age** |\n'
+                '----------------------\n'
+                '| Alice    | 30      |\n'
+                '| Bob      | 25      |\n\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_table_with_italic_header(capsys):
+    """Test a table with italic header."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_table(first_row=['Name', 'Age'], italic=True)
+        mfd.add_table_row(row=['Alice', '30'])
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('\n| *Name* | *Age* |\n'
+                '------------------\n'
+                '| Alice  | 30    |\n\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_table_with_varied_column_widths(capsys):
+    """Test a table with varied column widths."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_table(first_row=['Short', 'Longer'])
+        mfd.add_table_row(row=['A', 'Very long text'])
+        mfd.add_table_row(row=['B', 'Short'])
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    # Note: separator width is based on first row only
+    expected = ('\n| Short | Longer |\n'
+                '------------------\n'
+                '| A     | Very long text |\n'
+                '| B     | Short          |\n\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_write_complete_table(capsys):
+    """Test write_complete_table method."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.write_complete_table(table=TABLE_DATA_3X2)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('\n| Header1  | Header2  |\n'
+                '-----------------------\n'
+                '| Row1Col1 | Row1Col2 |\n'
+                '| Row2Col1 | Row2Col2 |\n\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_write_complete_table_with_bold_header(capsys):
+    """Test write_complete_table with bold first row."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.write_complete_table(
+            table=TABLE_DATA_3X2_SIMPLE, bold_first_row=True)
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('\n| **Name** | **Value** |\n'
+                '------------------------\n'
+                '| Alpha    | 1         |\n'
+                '| Beta     | 2         |\n\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_paragraph_then_table(capsys):
+    """Test paragraph followed by table."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_paragraph(text='Here is a table:')
+        mfd.start_table(first_row=['A', 'B'])
+        mfd.add_table_row(row=['1', '2'])
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('\nHere is a table:\n'
+                '\n| A | B |\n'
+                '---------\n'
+                '| 1 | 2 |\n\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_table_then_paragraph(capsys):
+    """Test table followed by paragraph."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_table(first_row=['X', 'Y'])
+        mfd.add_table_row(row=['1', '2'])
+        mfd.start_paragraph(text='That was the table.')
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('\n| X | Y |\n'
+                '---------\n'
+                '| 1 | 2 |\n'
+                '\n\nThat was the table.\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_heading_then_table(capsys):
+    """Test heading followed by table."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_heading(level=2, text='Data Table')
+        mfd.start_table(first_row=['Col1', 'Col2'])
+        mfd.add_table_row(row=['A', 'B'])
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    expected = ('## Data Table\n'
+                '\n| Col1 | Col2 |\n'
+                '---------------\n'
+                '| A    | B    |\n\n')
+    assert txt == expected
+    check_capsys(capsys)
+
+
+def test_table_with_three_columns(capsys):
+    """Test a table with three columns."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_table(first_row=['Name', 'Age', 'City'])
+        mfd.add_table_row(row=['Alice', '30', 'NYC'])
+        mfd.add_table_row(row=['Bob', '25', 'LA'])
+
+    txt = run_with_context_manager('md', '.md', test_action)
+    # Note: separator width based on first row widths [4, 3, 4]
+    # Subsequent rows can be wider
+    expected = ('\n| Name | Age | City |\n'
+                '---------------------\n'
+                '| Alice | 30  | NYC  |\n'
+                '| Bob   | 25  | LA   |\n\n')
     assert txt == expected
     check_capsys(capsys)

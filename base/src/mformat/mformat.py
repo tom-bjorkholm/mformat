@@ -53,9 +53,11 @@ class PointStackItem(TypedDict):
 class TableInformation:  # pylint: disable=too-few-public-methods
     """Information about a table."""
 
-    number_of_columns: int = 0
-    number_of_rows: int = 0
-    column_widths: list[int] = []
+    def __init__(self) -> None:
+        """Initialize the TableInformation class."""
+        self.number_of_columns: int = 0
+        self.number_of_rows: int = 0
+        self.column_widths: list[int] = []
 
 
 class MultiFormat:  # pylint: disable=too-many-instance-attributes
@@ -348,9 +350,8 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             self.table = TableInformation()
         self.table.number_of_rows = 0
         self.table.number_of_columns = len(first_row)
-        self.table.column_widths = []
-        self.state = MultiFormatState.TABLE
         self._update_table_column_widths(row=first_row)
+        self.state = MultiFormatState.TABLE
         self._start_table(num_columns=self.table.number_of_columns)
         self._write_table_first_row(first_row=first_row, bold=bold,
                                     italic=italic)
@@ -371,7 +372,7 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             raise RuntimeError(errmsg)
         if len(row) != self.table.number_of_columns:
             errmsg = f'Row has {len(row)} columns, but table has '
-            errmsg += '{self.table.number_of_columns} columns'
+            errmsg += f'{self.table.number_of_columns} columns'
             raise RuntimeError(errmsg)
         self._update_table_column_widths(row=row)
         self._write_table_row(row=row, bold=bold, italic=italic,
@@ -392,11 +393,11 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
                               row is italic.
         """
         assert table is not None and isinstance(table, list)
-        if len(table) < 0:
+        if len(table) == 0:
             errmsg = 'Table must have at least one row.'
             raise RuntimeError(errmsg)
         num_cols = len(table[0])
-        if num_cols < 0:
+        if num_cols == 0:
             errmsg = 'First row of table must have at least one column.'
             raise RuntimeError(errmsg)
         self.table = TableInformation()
@@ -465,7 +466,9 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
                 bold=bold, italic=italic,
                 point_list_type=point_list_type)
             return
-        if self._needs_to_switch_list_type(point_list_type):
+        needs_switch = self._needs_to_switch_list_type(
+            level, point_list_type)
+        if needs_switch:
             self._end_list_state()
         # End current state if not in a list state
         if self.state not in (MultiFormatState.BULLET_LIST,
@@ -507,8 +510,17 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         return False
 
     def _needs_to_switch_list_type(
-            self, point_list_type: PointListType) -> bool:
-        """Check if list type needs to be switched."""
+            self, level: Optional[int],
+            point_list_type: PointListType) -> bool:
+        """Check if list type needs to be switched at current level.
+
+        Only returns True if we're switching list types at the same level,
+        not when nesting to a different level.
+        """
+        # If adding at a nested level, don't switch - nest instead
+        if level and level > len(self.point_list_stack):
+            return False
+        # Check if we need to switch list type at current level
         if point_list_type == PointListType.BULLET:
             return self.state in (
                 MultiFormatState.NUMERIC_LIST,
