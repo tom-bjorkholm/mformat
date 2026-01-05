@@ -142,6 +142,7 @@ def test_heading_then_bullet_list(capsys):
         mfd.start_bullet_item(text='First item')
         mfd.start_bullet_item(text='Second item')
 
+    # pylint: disable=duplicate-code
     expected = '# Main Title\n- First item\n- Second item\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
@@ -309,6 +310,7 @@ def test_heading_then_numbered_list(capsys):
         mfd.start_numbered_point_item(text='First item')
         mfd.start_numbered_point_item(text='Second item')
 
+    # pylint: disable=duplicate-code
     expected = '# Main Title\n1. First item\n2. Second item\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,

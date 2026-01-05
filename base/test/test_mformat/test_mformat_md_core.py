@@ -146,6 +146,7 @@ def test_heading_add_url(capsys):
         mfd.start_heading(level=2, text='Check ')
         mfd.add_url(url='http://example.com', text='this link')
 
+    # pylint: disable=duplicate-code
     expected = '## Check [this link](http://example.com)\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
@@ -172,6 +173,7 @@ def test_multiple_headings(capsys):
         mfd.start_heading(level=2, text='Sub')
         mfd.start_heading(level=3, text='Subsub')
 
+    # pylint: disable=duplicate-code
     expected = '# Main\n## Sub\n### Subsub\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
