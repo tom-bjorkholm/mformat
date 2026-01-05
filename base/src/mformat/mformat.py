@@ -366,10 +366,10 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             bold: If True, the text in each cell in row is bold.
             italic: If True, the text in each cell in row is italic.
         """
-        assert self.table is not None
         if self.state != MultiFormatState.TABLE:
             errmsg = f'Cannot add table row to state {self.state.name}'
             raise RuntimeError(errmsg)
+        assert self.table is not None
         if len(row) != self.table.number_of_columns:
             errmsg = f'Row has {len(row)} columns, but table has '
             errmsg += f'{self.table.number_of_columns} columns'
@@ -529,7 +529,9 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             return self.state in (
                 MultiFormatState.BULLET_LIST,
                 MultiFormatState.BULLET_LIST_ITEM)
-        return False
+        # This is unreachable code as _can_add_item_to_current_list
+        # would have returned True and this code would not be executed.
+        return False  # pragma: no cover
 
     def _add_item_to_current_list(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
             self, text: str, smart_ws: bool,
@@ -566,9 +568,7 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             raise RuntimeError(
                 f'start_{list_type_name}_item called with level={level}, '
                 f'but level {level-1} does not exist.')
-
         assert not level or level == len(self.point_list_stack) + 1
-
         # If starting a nested list, end the current item first
         if self.point_list_stack:
             if self.state == MultiFormatState.BULLET_LIST_ITEM:
@@ -584,7 +584,6 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             number_at_level=0)
         self.point_list_stack.append(stack_item)
         lev = len(self.point_list_stack)
-
         if point_list_type == PointListType.BULLET:
             self.state = MultiFormatState.BULLET_LIST
             self._start_bullet_list(level=lev)
@@ -598,7 +597,6 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             self.point_list_stack[-1]['number_at_level'] += 1
             num = self.point_list_stack[-1]['number_at_level']
             self._start_numeric_item(level=lev, num=num)
-
         self._write_text(
             self._to_write(text, smart_ws, False),
             self.state, bold, italic)

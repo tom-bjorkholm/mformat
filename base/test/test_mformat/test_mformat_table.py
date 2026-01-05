@@ -259,3 +259,13 @@ def test_write_complete_table_then_start_table(capsys):
     assert mfmt.table.column_widths == [4, 5]
     assert mfmt.table.number_of_columns == 2
     check_capsys(capsys)
+
+
+def test_table_row_in_paragraph(capsys):
+    """Test table row in paragraph."""
+    mfmt = MultiFormat11(file_name='test')
+    mfmt.start_paragraph(text='A')
+    with pytest.raises(RuntimeError) as exc:
+        mfmt.add_table_row(row=['1', '2'])
+    assert exc.value.args[0] == 'Cannot add table row to state PARAGRAPH'
+    check_capsys(capsys)

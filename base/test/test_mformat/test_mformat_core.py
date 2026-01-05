@@ -12,7 +12,7 @@ from test_helpers import (
     MultiFormat2, MultiFormat3, MultiFormat5,
     MultiFormat8, MultiFormat9
 )
-from mformat.mformat import MultiFormat, MultiFormatState
+from mformat.mformat import MultiFormat, MultiFormatState, PointStackItem
 
 
 @pytest.mark.parametrize('file_name, extension, res',
@@ -130,6 +130,53 @@ def test_cls_method_not_overridden3(capsys, method_name):
     check_capsys(capsys)
 
 
+def test_write_table_row_not_impl(capsys):
+    """Test that the write_table_row method is not overridden."""
+    mfmt = MultiFormat2(file_name='test')
+    with pytest.raises(NotImplementedError) as exc:
+        mfmt._write_table_row(  # pylint: disable=protected-access
+                              row=['X', 'Y'],
+                              bold=False, italic=False, row_number=2)
+    assert exc.value.args[0] == '_write_table_row must be ' + \
+        'overridden by a subclass MultiFormat2'
+    check_capsys(capsys)
+
+
+def test_write_table_frow_not_impl(capsys):
+    """Test that the write_table_first_row method is not overridden."""
+    mfmt = MultiFormat2(file_name='test')
+    with pytest.raises(NotImplementedError) as exc:
+        mfmt._write_table_first_row(  # pylint: disable=protected-access
+                                    first_row=['X', 'Y'],
+                                    bold=False, italic=False)
+    assert exc.value.args[0] == '_write_table_first_row must ' + \
+        'be overridden by a subclass MultiFormat2'
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('method_name',
+                         ['_start_code_block', '_end_code_block'])
+def test_cls_method_not_overridden5(capsys, method_name):
+    """Test that the class method is not overridden."""
+    mfmt = MultiFormat2(file_name='test')
+    with pytest.raises(NotImplementedError) as exc:
+        _ = getattr(mfmt, method_name)(programming_language='python')
+    assert exc.value.args[0] == f'{method_name} must be overridden by a ' + \
+        'subclass MultiFormat2'
+    check_capsys(capsys)
+
+
+def test_write_code_block_not_impl(capsys):
+    """Test that the write_code_block method is not overridden."""
+    mfmt = MultiFormat2(file_name='test')
+    with pytest.raises(NotImplementedError) as exc:
+        mfmt._write_code_block(text='test',  # pylint: disable=protected-access
+                               programming_language='python')
+    assert exc.value.args[0] == '_write_code_block must be ' + \
+        'overridden by a subclass MultiFormat2'
+    check_capsys(capsys)
+
+
 def test_write_text(capsys):
     """Test that the _write_text method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
@@ -150,6 +197,14 @@ def test_write_url(capsys):
                         MultiFormatState.PARAGRAPH, False, False)
     assert exc.value.args[0] == '_write_url must be overridden ' + \
         'by a subclass MultiFormat2'
+    check_capsys(capsys)
+
+
+def test_to_write_optional_none(capsys):
+    """Test that the to_write_optional method handles None."""
+    mfmt = MultiFormat2(file_name='test')
+    assert mfmt._to_write_optional(None,  # pylint: disable=protected-access
+                                   smart_ws=True, in_add=False) is None
     check_capsys(capsys)
 
 
@@ -443,4 +498,17 @@ def test_code_block_empty(capsys):
         '_start_code_block': 1,
         '_write_code_block': 1,
         '_end_code_block': 1}
+    check_capsys(capsys)
+
+
+def test_invalid_state_plist(capsys):
+    """Test the handling of invalid state for point lists."""
+    mfmt = MultiFormat12(file_name='test')
+    mfmt.state = MultiFormatState.BULLET_LIST_ITEM
+    with pytest.raises(RuntimeError) as exc:
+        psi = PointStackItem(point_list_type=17,
+                             number_at_level=1)
+        mfmt.point_list_stack.append(psi)
+        mfmt._state_from_point_list()  # pylint: disable=protected-access # noqa: E501
+    assert 'Unknown point list type' in exc.value.args[0]
     check_capsys(capsys)
