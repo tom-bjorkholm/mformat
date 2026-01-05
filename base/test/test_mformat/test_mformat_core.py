@@ -101,6 +101,35 @@ def test_cls_method_not_overridden(capsys, method_name):
     check_capsys(capsys)
 
 
+@pytest.mark.parametrize('method_name',
+                         ['_start_heading', '_end_heading',
+                          '_start_bullet_list', '_end_bullet_list',
+                          '_start_numeric_list', '_end_numeric_list',
+                          '_start_bullet_item', '_end_bullet_item',
+                          '_start_table'])
+def test_cls_method_not_overridden2(capsys, method_name):
+    """Test that the class method is not overridden."""
+    mfmt = MultiFormat2(file_name='test')
+    with pytest.raises(NotImplementedError) as exc:
+        _ = getattr(mfmt, method_name)(2)
+    assert exc.value.args[0] == f'{method_name} must be overridden by a ' + \
+        'subclass MultiFormat2'
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('method_name',
+                         ['_end_table',
+                          '_start_numeric_item', '_end_numeric_item'])
+def test_cls_method_not_overridden3(capsys, method_name):
+    """Test that the class method is not overridden."""
+    mfmt = MultiFormat2(file_name='test')
+    with pytest.raises(NotImplementedError) as exc:
+        _ = getattr(mfmt, method_name)(2, 7)
+    assert exc.value.args[0] == f'{method_name} must be overridden by a ' + \
+        'subclass MultiFormat2'
+    check_capsys(capsys)
+
+
 def test_write_text(capsys):
     """Test that the _write_text method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
