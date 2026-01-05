@@ -7,6 +7,8 @@
 
 from tempfile import TemporaryDirectory
 from typing import Optional, Any, Callable
+import pytest
+from check_capsys import check_capsys
 from mformat.mformat import MultiFormat, MultiFormatState
 from mformat.factory import create_mf
 
@@ -40,6 +42,35 @@ def run_with_context_manager(
             test_action(mfd)
         with open(fname, 'rt', encoding='utf-8') as file:
             return file.read()
+
+
+def check_run_with_context_manager(    # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+        format_name: str,
+        file_extension: str,
+        test_action: Callable[[Any], None],
+        expected_text: str,
+        args: Optional[dict[str, Any]] = None,
+        url_as_text: bool = False,
+        capsys: Optional[pytest.CaptureFixture[str]] = None,
+        err_msgs: Optional[list[str]] = None,
+        out_msgs: Optional[list[str]] = None) -> None:
+    """Run the test action with context manager and check file contents.
+
+    Args:
+        format_name: The format name (e.g. 'html', 'md')
+        file_extension: The file extension (e.g. '.html', '.md')
+        test_action: A function that takes mfd and performs actions
+        args: Optional arguments to pass to create_mf
+        url_as_text: Whether to format URLs as text
+        expected_text: The expected text in the file
+    """
+    txt = run_with_context_manager(format_name, file_extension,
+                                   test_action, args, url_as_text)
+    assert txt == expected_text
+    if err_msgs is not None or out_msgs is not None:
+        assert capsys is not None
+    if capsys is not None:
+        check_capsys(capsys, err_msgs, out_msgs)
 
 
 def run_protected_method(
