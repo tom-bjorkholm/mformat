@@ -332,7 +332,9 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         processed_text = text.strip() if text and smart_ws else text
         self.ws_needed_at_append = \
             not processed_text[-1].isspace() if processed_text else True
-        self._write_url(url, processed_text if processed_text else None,
+        self._write_url(url,
+                        self._encode_text(processed_text) if processed_text
+                        else None,
                         self.state, bold, italic)
 
     def start_table(self, first_row: list[str],
@@ -353,7 +355,9 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         self._update_table_column_widths(row=first_row)
         self.state = MultiFormatState.TABLE
         self._start_table(num_columns=self.table.number_of_columns)
-        self._write_table_first_row(first_row=first_row, bold=bold,
+        encoded_first_row = self._encode_table_row(first_row)
+        self._write_table_first_row(first_row=encoded_first_row,
+                                    bold=bold,
                                     italic=italic)
         self.table.number_of_rows += 1
 
@@ -375,7 +379,8 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             errmsg += f'{self.table.number_of_columns} columns'
             raise RuntimeError(errmsg)
         self._update_table_column_widths(row=row)
-        self._write_table_row(row=row, bold=bold, italic=italic,
+        self._write_table_row(row=self._encode_table_row(row),
+                              bold=bold, italic=italic,
                               row_number=self.table.number_of_rows)
         self.table.number_of_rows += 1
 
@@ -433,7 +438,7 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             self._end_state()
         self.state = MultiFormatState.CODE_BLOCK
         self._start_code_block(programming_language=programming_language)
-        self._write_code_block(text=text,
+        self._write_code_block(text=self._encode_text(text),
                                programming_language=programming_language)
         self._end_code_block(programming_language=programming_language)
         self.state = MultiFormatState.PARAGRAPH_END
@@ -730,7 +735,7 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         if not smart_ws:
             self.ws_needed_at_append = \
                bool(text) and not text[-1].isspace()
-            return text
+            return self._encode_text(text)
         ret = text.strip()
         if self.ws_needed_at_append and in_add:
             ret = ' ' + ret
@@ -738,7 +743,7 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         # needed at beginning of next text to be added.
         # However, if ret is empty, whitespace is not needed.
         self.ws_needed_at_append = bool(ret)
-        return ret
+        return self._encode_text(ret)
 
     def _to_write(self, text: str, smart_ws: bool, in_add: bool) -> str:
         """Get the text to write."""
@@ -896,3 +901,29 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             assert isinstance(programming_language, str)
         err = self._must_be_overridden('_write_code_block')
         raise NotImplementedError(err)
+
+    def _encode_text(self, text: str) -> str:
+        """Encode text (escape special characters).
+
+        Derived classes must implement this method.
+        Whenever special characters need to be encoded, this method
+        should be defined in the derived class. The base class always
+        calls this method with the text to encode.
+        Notice that the derived class implementation have access to
+        the self.state variable, in case the encoding depends on the
+        current state.
+
+        Args:
+            text: The text to encode.
+        Returns:
+            The encoded text.
+        """
+        assert isinstance(text, str)
+        err = self._must_be_overridden('_encode_text')
+        raise NotImplementedError(err)
+        return text  # pylint: disable=unreachable
+
+    def _encode_table_row(self, row: list[str]) -> list[str]:
+        """Encode a table row."""
+        assert isinstance(row, list)
+        return [self._encode_text(cell) for cell in row]

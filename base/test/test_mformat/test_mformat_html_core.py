@@ -244,7 +244,8 @@ def test_simple_code_block(capsys):
         assert isinstance(mfd, MultiFormatHtml)
         mfd.write_code_block(text='print("Hello, World!")')
 
-    exp = (PF_EN_NT_NC + '<pre><code>\nprint("Hello, World!")' +
+    exp = (PF_EN_NT_NC +
+           '<pre><code>\nprint(&quot;Hello, World!&quot;)' +
            '</code></pre>\n' + SFTOT)
     check_run_with_context_manager('html', '.html', test_action,
                                    expected_text=exp, capsys=capsys)
@@ -258,7 +259,7 @@ def test_code_block_with_language(capsys):
                              programming_language='python')
 
     exp = (PF_EN_NT_NC + '<pre><code>\n' +
-           '<span class="language-python">print("Hello")</span>\n' +
+           '<span class="language-python">print(&quot;Hello&quot;)</span>\n' +
            '</code></pre>\n' + SFTOT)
     check_run_with_context_manager('html', '.html', test_action,
                                    expected_text=exp, capsys=capsys)
@@ -272,8 +273,9 @@ def test_code_block_multiline(capsys):
         mfd.write_code_block(text=code, programming_language='python')
 
     exp = (PF_EN_NT_NC + '<pre><code>\n' +
-           '<span class="language-python">def hello():\n' +
-           '    print("Hello")\n    return True</span>\n' +
+           '<span class="language-python">def hello():<br>\n' +
+           '    print(&quot;Hello&quot;)<br>\n' +
+           '    return True</span>\n' +
            '</code></pre>\n' + SFTOT)
     check_run_with_context_manager('html', '.html', test_action,
                                    expected_text=exp, capsys=capsys)
@@ -285,9 +287,9 @@ def test_code_block_with_special_chars(capsys):
         assert isinstance(mfd, MultiFormatHtml)
         code = 'x = "test <>&"\ny = \'another\''
         mfd.write_code_block(text=code)
-
-    exp = (PF_EN_NT_NC + '<pre><code>\nx = "test <>&"\n' +
-           'y = \'another\'</code></pre>\n' + SFTOT)
+    exp = (PF_EN_NT_NC +
+           '<pre><code>\nx = &quot;test &lt;&gt;&amp;&quot;<br>\n' +
+           'y = &#x27;another&#x27;</code></pre>\n' + SFTOT)
     check_run_with_context_manager('html', '.html', test_action,
                                    expected_text=exp, capsys=capsys)
 

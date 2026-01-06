@@ -19,6 +19,7 @@ def test_start_bullet_item_from_empty(capsys):
     assert mfmt.state == MultiFormatState.BULLET_LIST_ITEM
     assert len(mfmt.point_list_stack) == 1
     assert mfmt.count == {
+        '_encode_text': 1,
         '_write_file_prefix': 1,
         '_start_bullet_list': 1,
         '_start_bullet_item': 1,
@@ -34,6 +35,7 @@ def test_start_multiple_bullet_items(capsys):
     assert mfmt.state == MultiFormatState.BULLET_LIST_ITEM
     assert len(mfmt.point_list_stack) == 1
     assert mfmt.count == {
+        '_encode_text': 2,
         '_write_file_prefix': 1,
         '_start_bullet_list': 1,
         '_start_bullet_item': 2,
@@ -50,6 +52,7 @@ def test_start_bullet_item_nested(capsys):
     assert mfmt.state == MultiFormatState.BULLET_LIST_ITEM
     assert len(mfmt.point_list_stack) == 2
     assert mfmt.count == {
+        '_encode_text': 2,
         '_write_file_prefix': 1,
         '_start_bullet_list': 2,
         '_start_bullet_item': 2,
@@ -67,6 +70,7 @@ def test_start_bullet_item_nested_then_back_to_level1(capsys):
     assert mfmt.state == MultiFormatState.BULLET_LIST_ITEM
     assert len(mfmt.point_list_stack) == 1
     assert mfmt.count == {
+        '_encode_text': 3,
         '_write_file_prefix': 1,
         '_start_bullet_list': 2,
         '_start_bullet_item': 3,
@@ -83,6 +87,7 @@ def test_bullet_item_with_add_text(capsys):
     mfmt.add_text(text=' more text')
     assert mfmt.state == MultiFormatState.BULLET_LIST_ITEM
     assert mfmt.count == {
+        '_encode_text': 2,
         '_write_file_prefix': 1,
         '_start_bullet_list': 1,
         '_start_bullet_item': 1,
@@ -97,6 +102,7 @@ def test_bullet_item_with_add_url(capsys):
     mfmt.add_url(url='http://example.com', text='link')
     assert mfmt.state == MultiFormatState.BULLET_LIST_ITEM
     assert mfmt.count == {
+        '_encode_text': 2,
         '_write_file_prefix': 1,
         '_start_bullet_list': 1,
         '_start_bullet_item': 1,
@@ -124,6 +130,7 @@ def test_bullet_list_three_levels(capsys):
     mfmt.start_bullet_item(text='Level 3', level=3)
     assert len(mfmt.point_list_stack) == 3
     assert mfmt.count == {
+        '_encode_text': 3,
         '_write_file_prefix': 1,
         '_start_bullet_list': 3,
         '_start_bullet_item': 3,
@@ -141,6 +148,7 @@ def test_bullet_list_three_levels_back_to_one(capsys):
     mfmt.start_bullet_item(text='Back to 1', level=1)
     assert len(mfmt.point_list_stack) == 1
     assert mfmt.count == {
+        '_encode_text': 4,
         '_write_file_prefix': 1,
         '_start_bullet_list': 3,
         '_start_bullet_item': 4,
@@ -157,6 +165,7 @@ def test_bullet_list_smart_ws(capsys):
     assert mfmt.ws_needed_at_append is True
     mfmt.add_text(text='  more  ', smart_ws=True)
     assert mfmt.count == {
+        '_encode_text': 2,
         '_write_file_prefix': 1,
         '_start_bullet_list': 1,
         '_start_bullet_item': 1,
@@ -171,6 +180,7 @@ def test_bullet_list_bold_italic(capsys):
     mfmt.start_bullet_item(text='Italic', italic=True)
     mfmt.start_bullet_item(text='Both', bold=True, italic=True)
     assert mfmt.count == {
+        '_encode_text': 3,
         '_write_file_prefix': 1,
         '_start_bullet_list': 1,
         '_start_bullet_item': 3,
@@ -186,6 +196,7 @@ def test_paragraph_then_bullet_list(capsys):
     mfmt.start_bullet_item(text='Bullet item')
     assert mfmt.state == MultiFormatState.BULLET_LIST_ITEM
     assert mfmt.count == {
+        '_encode_text': 2,
         '_write_file_prefix': 1,
         '_start_paragraph': 1,
         '_end_paragraph': 1,
@@ -202,6 +213,7 @@ def test_bullet_list_then_paragraph(capsys):
     mfmt.start_paragraph(text='Paragraph')
     assert mfmt.state == MultiFormatState.PARAGRAPH
     assert mfmt.count == {
+        '_encode_text': 2,
         '_write_file_prefix': 1,
         '_start_bullet_list': 1,
         '_start_bullet_item': 1,
@@ -219,6 +231,7 @@ def test_heading_then_bullet_list(capsys):
     mfmt.start_bullet_item(text='Bullet item')
     assert mfmt.state == MultiFormatState.BULLET_LIST_ITEM
     assert mfmt.count == {
+        '_encode_text': 2,
         '_write_file_prefix': 1,
         '_start_heading': 1,
         '_end_heading': 1,
@@ -239,6 +252,7 @@ def test_start_numbered_item_from_empty(capsys):
     assert mfmt.state == MultiFormatState.NUMERIC_LIST_ITEM
     assert len(mfmt.point_list_stack) == 1
     assert mfmt.count == {
+        '_encode_text': 1,
         '_write_file_prefix': 1,
         '_start_numeric_list': 1,
         '_start_numeric_item': 1,
@@ -254,6 +268,7 @@ def test_start_multiple_numbered_items(capsys):
     assert mfmt.state == MultiFormatState.NUMERIC_LIST_ITEM
     assert len(mfmt.point_list_stack) == 1
     assert mfmt.count == {
+        '_encode_text': 2,
         '_write_file_prefix': 1,
         '_start_numeric_list': 1,
         '_start_numeric_item': 2,
@@ -270,6 +285,7 @@ def test_start_numbered_item_nested(capsys):
     assert mfmt.state == MultiFormatState.NUMERIC_LIST_ITEM
     assert len(mfmt.point_list_stack) == 2
     assert mfmt.count == {
+        '_encode_text': 2,
         '_write_file_prefix': 1,
         '_start_numeric_list': 2,
         '_start_numeric_item': 2,
@@ -287,6 +303,7 @@ def test_numbered_list_back_to_level1(capsys):
     assert mfmt.state == MultiFormatState.NUMERIC_LIST_ITEM
     assert len(mfmt.point_list_stack) == 1
     assert mfmt.count == {
+        '_encode_text': 3,
         '_write_file_prefix': 1,
         '_start_numeric_list': 2,
         '_start_numeric_item': 3,
@@ -303,6 +320,7 @@ def test_numbered_then_paragraph(capsys):
     mfmt.start_paragraph(text='Paragraph')
     assert mfmt.state == MultiFormatState.PARAGRAPH
     assert mfmt.count == {
+        '_encode_text': 2,
         '_write_file_prefix': 1,
         '_start_numeric_list': 1,
         '_start_numeric_item': 1,
@@ -323,6 +341,7 @@ def test_mixed_bullet_and_numbered_same_level(capsys):
     assert mfmt.state == MultiFormatState.NUMERIC_LIST_ITEM
     assert len(mfmt.point_list_stack) == 1
     assert mfmt.count == {
+        '_encode_text': 4,
         '_write_file_prefix': 1,
         '_start_bullet_list': 1,
         '_start_bullet_item': 2,
@@ -345,6 +364,7 @@ def test_nested_mixed_bullet_then_numbered(capsys):
     assert mfmt.state == MultiFormatState.BULLET_LIST_ITEM
     assert len(mfmt.point_list_stack) == 1
     assert mfmt.count == {
+        '_encode_text': 4,
         '_write_file_prefix': 1,
         '_start_bullet_list': 1,
         '_start_bullet_item': 2,
@@ -367,6 +387,7 @@ def test_nested_mixed_numbered_then_bullet(capsys):
     assert mfmt.state == MultiFormatState.NUMERIC_LIST_ITEM
     assert len(mfmt.point_list_stack) == 1
     assert mfmt.count == {
+        '_encode_text': 4,
         '_write_file_prefix': 1,
         '_start_numeric_list': 1,
         '_start_numeric_item': 2,
@@ -388,6 +409,7 @@ def test_three_level_nested_numbered(capsys):
     assert mfmt.state == MultiFormatState.NUMERIC_LIST_ITEM
     assert len(mfmt.point_list_stack) == 3
     assert mfmt.count == {
+        '_encode_text': 3,
         '_write_file_prefix': 1,
         '_start_numeric_list': 3,
         '_start_numeric_item': 3,

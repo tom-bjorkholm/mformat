@@ -355,3 +355,8 @@ class MultiFormatDocx(MultiFormat):
         run = self.current_paragraph.add_run(text)
         # Set monospace font
         run.font.name = 'Courier New'
+
+    def _encode_text(self, text: str) -> str:
+        """Encode text (escape special characters)."""
+        # No encoding needed for DOCX
+        return text

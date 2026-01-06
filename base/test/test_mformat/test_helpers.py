@@ -174,6 +174,11 @@ class MultiFormat3(MultiFormat2):
         """Write the file suffix."""
         self.inc_count('_write_file_suffix')
 
+    def _encode_text(self, text: str) -> str:
+        """Encode text (escape special characters)."""
+        self.inc_count('_encode_text')
+        return text
+
 
 class MultiFormat4(MultiFormat3):
     """Class used for testing."""

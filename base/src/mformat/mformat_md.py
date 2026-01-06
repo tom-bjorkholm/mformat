@@ -221,3 +221,10 @@ class MultiFormatMd(MultiFormatTextBased):
         local_row = [cell.ljust(width) for cell, width in
                      zip(local_row, self.table.column_widths)]
         self.file.write(f'| {" | ".join(local_row)} |\n')
+
+    def _encode_text(self, text: str) -> str:
+        """Encode text (escape special characters)."""
+        if self.state == MultiFormatState.CODE_BLOCK:
+            return text.replace('```', '\\`\\`\\`')
+        chars = r'_*[]()~`>#+-=|{}!'
+        return ''.join(('\\' + c) if c in chars else c for c in text)

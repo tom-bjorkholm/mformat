@@ -177,6 +177,16 @@ def test_write_code_block_not_impl(capsys):
     check_capsys(capsys)
 
 
+def test_encode_text_not_impl(capsys):
+    """Test that the encode_text method is not overridden."""
+    mfmt = MultiFormat2(file_name='test')
+    with pytest.raises(NotImplementedError) as exc:
+        mfmt._encode_text('test')  # pylint: disable=protected-access
+    assert exc.value.args[0] == '_encode_text must be overridden by a ' + \
+        'subclass MultiFormat2'
+    check_capsys(capsys)
+
+
 def test_write_text(capsys):
     """Test that the _write_text method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
@@ -240,17 +250,18 @@ def test_enter_exit(capsys):
 @pytest.mark.parametrize('from_state, to_state, count, level, text',
                          [(MultiFormatState.EMPTY,
                            MultiFormatState.HEADING,
-                           {'_start_heading': 1, '_write_text': 1,
-                            '_write_file_prefix': 1},
+                           {'_encode_text': 1, '_start_heading': 1,
+                            '_write_text': 1, '_write_file_prefix': 1},
                            1, 'Main Heading'),
                           (MultiFormatState.PARAGRAPH_END,
                            MultiFormatState.HEADING,
-                           {'_start_heading': 1, '_write_text': 1},
+                           {'_encode_text': 1, '_start_heading': 1,
+                            '_write_text': 1},
                            2, 'Subheading'),
                           (MultiFormatState.PARAGRAPH,
                            MultiFormatState.HEADING,
-                           {'_end_paragraph': 1, '_start_heading': 1,
-                            '_write_text': 1},
+                           {'_encode_text': 1, '_end_paragraph': 1,
+                            '_start_heading': 1, '_write_text': 1},
                            3, 'Sub-subheading')])
 def test_start_heading(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                        from_state, to_state, count, level, text):
@@ -279,8 +290,8 @@ def test_start_heading_bold_italic(capsys,  # pylint: disable=too-many-arguments
     mfmt.start_heading(level=level, text=text, bold=bold, italic=italic)
     assert mfmt.state == MultiFormatState.HEADING
     assert mfmt.heading_level == level
-    assert mfmt.count == {'_start_heading': 1, '_write_text': 1,
-                          '_write_file_prefix': 1}
+    assert mfmt.count == {'_encode_text': 1, '_start_heading': 1,
+                          '_write_text': 1, '_write_file_prefix': 1}
     check_capsys(capsys)
 
 
@@ -292,7 +303,7 @@ def test_heading_add_text(capsys):
     mfmt.heading_level = 1
     mfmt.add_text(text='More text')
     assert mfmt.state == MultiFormatState.HEADING
-    assert mfmt.count == {'_write_text': 1}
+    assert mfmt.count == {'_encode_text': 1, '_write_text': 1}
     check_capsys(capsys)
 
 
@@ -305,7 +316,7 @@ def test_heading_add_url(capsys):
     mfmt.heading_level = 1
     mfmt.add_url(url='http://example.com', text='Example')
     assert mfmt.state == MultiFormatState.HEADING
-    assert mfmt.count == {'_write_url': 1}
+    assert mfmt.count == {'_encode_text': 1, '_write_url': 1}
     check_capsys(capsys)
 
 
@@ -328,15 +339,14 @@ def test_heading_then_paragraph(capsys):
                         expected_level=1)
     mfmt.start_heading(level=1, text='Title')
     assert mfmt.state == MultiFormatState.HEADING
-
     # Now start a paragraph - should end the heading
     # Note: We don't check expected_level for the paragraph
     mfmt.expected_text = 'Paragraph text'
     mfmt.start_paragraph(text='Paragraph text')
     assert mfmt.state == MultiFormatState.PARAGRAPH
     assert mfmt.heading_level is None
-    assert mfmt.count == {'_start_heading': 1, '_write_text': 2,
-                          '_write_file_prefix': 1,
+    assert mfmt.count == {'_encode_text': 2, '_start_heading': 1,
+                          '_write_text': 2, '_write_file_prefix': 1,
                           '_end_heading': 1, '_start_paragraph': 1}
     check_capsys(capsys)
 
@@ -347,14 +357,13 @@ def test_multiple_headings(capsys):
                         expected_level=1)
     mfmt.start_heading(level=1, text='First')
     assert mfmt.heading_level == 1
-
     # Start another heading - should end the first
     mfmt.expected_text = 'Second'
     mfmt.expected_level = 2
     mfmt.start_heading(level=2, text='Second')
     assert mfmt.heading_level == 2
-    assert mfmt.count == {'_start_heading': 2, '_write_text': 2,
-                          '_write_file_prefix': 1,
+    assert mfmt.count == {'_encode_text': 2, '_start_heading': 2,
+                          '_write_text': 2, '_write_file_prefix': 1,
                           '_end_heading': 1}
     check_capsys(capsys)
 
@@ -365,11 +374,10 @@ def test_heading_with_smart_ws(capsys):
                         expected_level=1)
     mfmt.start_heading(level=1, text='  Heading  ', smart_ws=True)
     assert mfmt.ws_needed_at_append is True
-
     mfmt.expected_text = ' more'
     mfmt.add_text(text='  more  ', smart_ws=True)
-    assert mfmt.count == {'_start_heading': 1, '_write_text': 2,
-                          '_write_file_prefix': 1}
+    assert mfmt.count == {'_encode_text': 2, '_start_heading': 1,
+                          '_write_text': 2, '_write_file_prefix': 1}
     check_capsys(capsys)
 
 
@@ -407,6 +415,7 @@ def test_write_code_block_basic(capsys):
     mfmt.write_code_block(text='print("Hello")')
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
     assert mfmt.count == {
+        '_encode_text': 1,
         '_write_file_prefix': 1,
         '_start_code_block': 1,
         '_write_code_block': 1,
@@ -420,6 +429,7 @@ def test_write_code_block_with_language(capsys):
     mfmt.write_code_block(text='x = 42', programming_language='python')
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
     assert mfmt.count == {
+        '_encode_text': 1,
         '_write_file_prefix': 1,
         '_start_code_block': 1,
         '_write_code_block': 1,
@@ -434,6 +444,7 @@ def test_paragraph_then_code_block(capsys):
     mfmt.write_code_block(text='code here')
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
     assert mfmt.count == {
+        '_encode_text': 2,
         '_write_file_prefix': 1,
         '_start_paragraph': 1,
         '_write_text': 1,
@@ -451,6 +462,7 @@ def test_code_block_then_paragraph(capsys):
     mfmt.start_paragraph(text='After code')
     assert mfmt.state == MultiFormatState.PARAGRAPH
     assert mfmt.count == {
+        '_encode_text': 2,
         '_write_file_prefix': 1,
         '_start_code_block': 1,
         '_write_code_block': 1,
@@ -467,6 +479,7 @@ def test_multiple_code_blocks(capsys):
     mfmt.write_code_block(text='second', programming_language='javascript')
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
     assert mfmt.count == {
+        '_encode_text': 2,
         '_write_file_prefix': 1,
         '_start_code_block': 2,
         '_write_code_block': 2,
@@ -481,6 +494,7 @@ def test_code_block_multiline(capsys):
     mfmt.write_code_block(text=code, programming_language='python')
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
     assert mfmt.count == {
+        '_encode_text': 1,
         '_write_file_prefix': 1,
         '_start_code_block': 1,
         '_write_code_block': 1,
@@ -494,6 +508,7 @@ def test_code_block_empty(capsys):
     mfmt.write_code_block(text='')
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
     assert mfmt.count == {
+        '_encode_text': 1,
         '_write_file_prefix': 1,
         '_start_code_block': 1,
         '_write_code_block': 1,

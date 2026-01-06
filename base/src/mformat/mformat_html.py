@@ -6,6 +6,7 @@
 #
 
 from typing import Optional, Callable
+from html import escape
 from mformat.mformat_textbased import MultiFormatTextBased
 from mformat.mformat import FormatterDescriptor, MultiFormatState
 
@@ -234,3 +235,10 @@ class MultiFormatHtml(MultiFormatTextBased):
         assert programming_language is None or \
             isinstance(programming_language, str)
         self.file.write(text)
+
+    def _encode_text(self, text: str) -> str:
+        """Encode text (escape special characters)."""
+        ret = escape(text, quote=True)
+        if self.state == MultiFormatState.CODE_BLOCK:
+            ret = ret.replace('\n', '<br>\n')
+        return ret

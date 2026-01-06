@@ -69,6 +69,7 @@ def test_start_table_basic(capsys):
     assert mfmt.table.number_of_rows == 1
     assert mfmt.table.column_widths == [4, 4]
     assert mfmt.count == {
+        '_encode_text': 2,
         '_write_file_prefix': 1,
         '_start_table': 1,
         '_write_table_first_row': 1}
@@ -85,6 +86,7 @@ def test_start_table_with_rows(capsys):
     assert mfmt.table.number_of_rows == 3
     assert mfmt.table.column_widths == [5, 3]
     assert mfmt.count == {
+        '_encode_text': 6,
         '_write_file_prefix': 1,
         '_start_table': 1,
         '_write_table_first_row': 1,
@@ -114,6 +116,7 @@ def test_write_complete_table_basic(capsys):
     # Column widths calculated from all rows
     assert mfmt.table.column_widths == [8, 8]
     assert mfmt.count == {
+        '_encode_text': 6,
         '_write_file_prefix': 1,
         '_start_table': 1,
         '_write_table_first_row': 1,
@@ -138,6 +141,7 @@ def test_table_then_paragraph(capsys):
     mfmt.start_paragraph(text='After table')
     assert mfmt.state == MultiFormatState.PARAGRAPH
     assert mfmt.count == {
+        '_encode_text': 5,
         '_write_file_prefix': 1,
         '_start_table': 1,
         '_write_table_first_row': 1,
@@ -155,6 +159,7 @@ def test_heading_then_table(capsys):
     mfmt.start_table(first_row=['Col1', 'Col2'])
     assert mfmt.state == MultiFormatState.TABLE
     assert mfmt.count == {
+        '_encode_text': 3,
         '_write_file_prefix': 1,
         '_start_heading': 1,
         '_write_text': 1,
@@ -175,6 +180,7 @@ def test_multiple_tables(capsys):
     assert mfmt.state == MultiFormatState.TABLE
     assert mfmt.table.number_of_columns == 3
     assert mfmt.count == {
+        '_encode_text': 11,
         '_write_file_prefix': 1,
         '_start_table': 2,
         '_write_table_first_row': 2,

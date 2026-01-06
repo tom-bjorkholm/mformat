@@ -14,17 +14,18 @@ from mformat.mformat import MultiFormatState
 @pytest.mark.parametrize('from_state, to_state, count, text',
                          [(MultiFormatState.EMPTY,
                            MultiFormatState.PARAGRAPH,
-                           {'_start_paragraph': 1, '_write_text': 1,
-                            '_write_file_prefix': 1},
+                           {'_encode_text': 1, '_start_paragraph': 1,
+                            '_write_text': 1, '_write_file_prefix': 1},
                            'abc'),
                           (MultiFormatState.PARAGRAPH_END,
                            MultiFormatState.PARAGRAPH,
-                           {'_start_paragraph': 1, '_write_text': 1},
+                           {'_encode_text': 1, '_start_paragraph': 1,
+                            '_write_text': 1},
                            'abc'),
                           (MultiFormatState.PARAGRAPH,
                            MultiFormatState.PARAGRAPH,
-                           {'_end_paragraph': 1, '_start_paragraph': 1,
-                            '_write_text': 1},
+                           {'_encode_text': 1, '_end_paragraph': 1,
+                            '_start_paragraph': 1, '_write_text': 1},
                            'def')])
 def test_start_paragraph(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                          from_state, to_state, count, text):
@@ -64,15 +65,15 @@ def test_add_text_error(capsys,  # pylint: disable=too-many-arguments,too-many-p
 @pytest.mark.parametrize('from_state, to_state, count, text',
                          [(MultiFormatState.PARAGRAPH,
                            MultiFormatState.PARAGRAPH,
-                           {'_write_text': 1},
+                           {'_encode_text': 1, '_write_text': 1},
                            'xyz'),
                           (MultiFormatState.BULLET_LIST_ITEM,
                            MultiFormatState.BULLET_LIST_ITEM,
-                           {'_write_text': 1},
+                           {'_encode_text': 1, '_write_text': 1},
                            'def'),
                           (MultiFormatState.NUMERIC_LIST_ITEM,
                            MultiFormatState.NUMERIC_LIST_ITEM,
-                           {'_write_text': 1},
+                           {'_encode_text': 1, '_write_text': 1},
                            'ghi')])
 def test_add_text(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                   from_state, to_state, count, text):
@@ -97,8 +98,8 @@ def test_start_paragraph_bold_italic(capsys,  # pylint: disable=too-many-argumen
                         expected_bold=bold, expected_italic=italic)
     mfmt.start_paragraph(text=text, bold=bold, italic=italic)
     assert mfmt.state == MultiFormatState.PARAGRAPH
-    assert mfmt.count == {'_start_paragraph': 1, '_write_text': 1,
-                          '_write_file_prefix': 1}
+    assert mfmt.count == {'_encode_text': 1, '_start_paragraph': 1,
+                          '_write_text': 1, '_write_file_prefix': 1}
     check_capsys(capsys)
 
 
@@ -115,7 +116,7 @@ def test_add_text_bold_italic(capsys,  # pylint: disable=too-many-arguments,too-
     mfmt.state = MultiFormatState.PARAGRAPH
     mfmt.add_text(text=text, bold=bold, italic=italic)
     assert mfmt.state == MultiFormatState.PARAGRAPH
-    assert mfmt.count == {'_write_text': 1}
+    assert mfmt.count == {'_encode_text': 1, '_write_text': 1}
     check_capsys(capsys)
 
 
@@ -156,7 +157,10 @@ def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-position
     mfmt.state = MultiFormatState.PARAGRAPH
     mfmt.add_url(url=url, text=text)
     assert mfmt.state == MultiFormatState.PARAGRAPH
-    assert mfmt.count == {'_write_url': 1}
+    if text is not None:
+        assert mfmt.count == {'_encode_text': 1, '_write_url': 1}
+    else:
+        assert mfmt.count == {'_write_url': 1}
     check_capsys(capsys)
 
 
@@ -181,7 +185,10 @@ def test_add_url_bold_italic(capsys,  # pylint: disable=too-many-arguments,too-m
     mfmt.state = MultiFormatState.PARAGRAPH
     mfmt.add_url(url=url, text=text, bold=bold, italic=italic)
     assert mfmt.state == MultiFormatState.PARAGRAPH
-    assert mfmt.count == {'_write_url': 1}
+    if text is not None:
+        assert mfmt.count == {'_encode_text': 1, '_write_url': 1}
+    else:
+        assert mfmt.count == {'_write_url': 1}
     check_capsys(capsys)
 
 
@@ -200,7 +207,10 @@ def test_add_url_as_text(capsys,  # pylint: disable=too-many-arguments,too-many-
     mfmt.state = MultiFormatState.PARAGRAPH
     mfmt.add_url(url=url, text=text)
     assert mfmt.state == MultiFormatState.PARAGRAPH
-    assert mfmt.count == {'_write_text': 1}
+    if text is not None:
+        assert mfmt.count == {'_encode_text': 1, '_write_text': 1}
+    else:
+        assert mfmt.count == {'_write_text': 1}
     check_capsys(capsys)
 
 
@@ -220,7 +230,10 @@ def test_add_url_as_text_formatting(capsys,  # pylint: disable=too-many-argument
     mfmt.state = MultiFormatState.PARAGRAPH
     mfmt.add_url(url=url, text=text, bold=bold, italic=italic)
     assert mfmt.state == MultiFormatState.PARAGRAPH
-    assert mfmt.count == {'_write_text': 1}
+    if text is not None:
+        assert mfmt.count == {'_encode_text': 1, '_write_text': 1}
+    else:
+        assert mfmt.count == {'_write_text': 1}
     check_capsys(capsys)
 
 
@@ -240,8 +253,8 @@ def test_start_paragraph_smart_ws_false(capsys,  # pylint: disable=too-many-argu
     mfmt.start_paragraph(text=text, smart_ws=False)
     assert mfmt.state == MultiFormatState.PARAGRAPH
     assert mfmt.ws_needed_at_append == expected_ws_needed
-    assert mfmt.count == {'_start_paragraph': 1, '_write_text': 1,
-                          '_write_file_prefix': 1}
+    assert mfmt.count == {'_encode_text': 1, '_start_paragraph': 1,
+                          '_write_text': 1, '_write_file_prefix': 1}
     check_capsys(capsys)
 
 
@@ -259,7 +272,7 @@ def test_add_text_smart_ws_false(capsys,  # pylint: disable=too-many-arguments,t
     mfmt.add_text(text=text, smart_ws=False)
     assert mfmt.state == MultiFormatState.PARAGRAPH
     assert mfmt.ws_needed_at_append == expected_ws_needed
-    assert mfmt.count == {'_write_text': 1}
+    assert mfmt.count == {'_encode_text': 1, '_write_text': 1}
     check_capsys(capsys)
 
 
@@ -269,13 +282,12 @@ def test_smart_ws_false_no_space_between_texts(capsys):
     mfmt = MultiFormat4(file_name='test', expected_text='hello')
     mfmt.start_paragraph(text='hello', smart_ws=False)
     assert mfmt.ws_needed_at_append is True
-
     # Second call: write 'world' (should NOT get leading space)
     mfmt.expected_text = 'world'
     mfmt.add_text(text='world', smart_ws=False)
     assert mfmt.ws_needed_at_append is True
-    assert mfmt.count == {'_start_paragraph': 1, '_write_text': 2,
-                          '_write_file_prefix': 1}
+    assert mfmt.count == {'_encode_text': 2, '_start_paragraph': 1,
+                          '_write_text': 2, '_write_file_prefix': 1}
     check_capsys(capsys)
 
 
@@ -285,13 +297,12 @@ def test_smart_ws_false_with_trailing_space(capsys):
     mfmt = MultiFormat4(file_name='test', expected_text='hello ')
     mfmt.start_paragraph(text='hello ', smart_ws=False)
     assert mfmt.ws_needed_at_append is False
-
     # Second call: write 'world' (should NOT get leading space)
     mfmt.expected_text = 'world'
     mfmt.add_text(text='world', smart_ws=False)
     assert mfmt.ws_needed_at_append is True
-    assert mfmt.count == {'_start_paragraph': 1, '_write_text': 2,
-                          '_write_file_prefix': 1}
+    assert mfmt.count == {'_encode_text': 2, '_start_paragraph': 1,
+                          '_write_text': 2, '_write_file_prefix': 1}
     check_capsys(capsys)
 
 
@@ -300,13 +311,12 @@ def test_smart_ws_false_empty_text(capsys):
     mfmt = MultiFormat4(file_name='test', expected_text='')
     mfmt.start_paragraph(text='', smart_ws=False)
     assert mfmt.ws_needed_at_append is False
-
     # Add more text after empty start
     mfmt.expected_text = 'content'
     mfmt.add_text(text='content', smart_ws=False)
     assert mfmt.ws_needed_at_append is True
-    assert mfmt.count == {'_start_paragraph': 1, '_write_text': 2,
-                          '_write_file_prefix': 1}
+    assert mfmt.count == {'_encode_text': 2, '_start_paragraph': 1,
+                          '_write_text': 2, '_write_file_prefix': 1}
     check_capsys(capsys)
 
 
@@ -336,13 +346,11 @@ def test_mixed_smart_ws_modes(capsys,  # pylint: disable=too-many-arguments,too-
     expected_first = first_text.strip() if first_smart_ws else first_text
     mfmt = MultiFormat4(file_name='test', expected_text=expected_first)
     mfmt.start_paragraph(text=first_text, smart_ws=first_smart_ws)
-
     # Second call
     mfmt.expected_text = expected_second
     mfmt.add_text(text=second_text, smart_ws=second_smart_ws)
-
-    assert mfmt.count == {'_start_paragraph': 1, '_write_text': 2,
-                          '_write_file_prefix': 1}
+    assert mfmt.count == {'_encode_text': 2, '_start_paragraph': 1,
+                          '_write_text': 2, '_write_file_prefix': 1}
     check_capsys(capsys)
 
 
@@ -352,23 +360,19 @@ def test_complex_mixed_smart_ws_sequence(capsys):
     mfmt = MultiFormat4(file_name='test', expected_text='First')
     mfmt.start_paragraph(text='First', smart_ws=False)
     assert mfmt.ws_needed_at_append is True
-
     # Add with smart_ws=True - should add space
     mfmt.expected_text = ' second'
     mfmt.add_text(text='second', smart_ws=True)
     assert mfmt.ws_needed_at_append is True
-
     # Add with smart_ws=False - should NOT add space (doesn't check state)
     mfmt.expected_text = 'third'
     mfmt.add_text(text='third', smart_ws=False)
     assert mfmt.ws_needed_at_append is True
-
     # Add with smart_ws=True - should add space
     mfmt.expected_text = ' fourth'
     mfmt.add_text(text='fourth', smart_ws=True)
-
-    assert mfmt.count == {'_start_paragraph': 1, '_write_text': 4,
-                          '_write_file_prefix': 1}
+    assert mfmt.count == {'_encode_text': 4, '_start_paragraph': 1,
+                          '_write_text': 4, '_write_file_prefix': 1}
     check_capsys(capsys)
 
 
@@ -378,14 +382,12 @@ def test_smart_ws_false_trailing_ws_then_smart_ws_true(capsys):
     mfmt = MultiFormat4(file_name='test', expected_text='Hello ')
     mfmt.start_paragraph(text='Hello ', smart_ws=False)
     assert mfmt.ws_needed_at_append is False
-
     # Add text with smart_ws=True - should NOT add space
     mfmt.expected_text = 'world'
     mfmt.add_text(text='world', smart_ws=True)
     assert mfmt.ws_needed_at_append is True
-
-    assert mfmt.count == {'_start_paragraph': 1, '_write_text': 2,
-                          '_write_file_prefix': 1}
+    assert mfmt.count == {'_encode_text': 2, '_start_paragraph': 1,
+                          '_write_text': 2, '_write_file_prefix': 1}
     check_capsys(capsys)
 
 
@@ -397,13 +399,12 @@ def test_url_then_text_spacing(capsys):
     mfmt.state = MultiFormatState.PARAGRAPH
     mfmt.add_url(url='http://example.com', text='link')
     assert mfmt.ws_needed_at_append is True
-
     # Now add text - it should get a leading space
     mfmt2 = MultiFormat4(file_name='test', expected_text=' more text')
     mfmt2.state = MultiFormatState.PARAGRAPH
     mfmt2.ws_needed_at_append = True
     mfmt2.add_text(text='more text', smart_ws=True)
-    assert mfmt2.count == {'_write_text': 1}
+    assert mfmt2.count == {'_encode_text': 1, '_write_text': 1}
     check_capsys(capsys)
 
 
@@ -421,5 +422,5 @@ def test_url_then_text_no_spacing_when_smart_ws_false(capsys):
     mfmt2 = MultiFormat4(file_name='test', expected_text='more')
     mfmt2.state = MultiFormatState.PARAGRAPH
     mfmt2.add_text(text='more', smart_ws=False)
-    assert mfmt2.count == {'_write_text': 1}
+    assert mfmt2.count == {'_encode_text': 1, '_write_text': 1}
     check_capsys(capsys)
