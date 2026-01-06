@@ -1,0 +1,106 @@
+<!DOCTYPE html encoding="utf-8">
+<html lang="en">
+<head>
+<title>HTML file</title>
+</head>
+<body>
+<h1>
+Main heading of example</h1>
+<p>
+With start_paragraph we can start a paragraph. With add_text we can add text to the paragraph.</p>
+<h2>
+Sub heading of example where add_text adds text to the sub heading.</h2>
+<p>
+Whenever we start a new item type the previous item type is automatically closed. Add text does not automatically close the previous item type, instead it just adds text to that item.<em><strong> There is never a need to close an item type.</strong></em></p>
+<h2>
+The example is <a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/simple_complete.py">here</a></h2>
+<p>
+As you can see, we can add URLs to both headings and paragraphs. It is also possible to add URLs to text, for instance the URL to the example file is added here. <a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/simple_complete.py">here</a></p>
+<p>
+URLs can (depending on the format) be formatted as clickable URLs or as text. To force URLs to be formatted as text, set url_as_text=True.</p>
+<p>
+You may have noticed that we have not worried about about the whitespace between text. This is because we use a smart whitespace handling.If we disable smart whitespace handling,we need to handle whitespace manually,  which can be cumbersome as shown here.</p>
+<h2>
+Bullet lists and numbered lists</h2>
+<ul>
+<li>Item 1</li>
+<li>Item 2</li>
+<ul>
+<li>Item 2.1</li>
+<li>Item 2.2</li>
+</ul>
+<li>Item 3</li>
+</ul>
+<ol>
+<li>Item 1</li>
+<li>Item 2 with some more text. Naturally more text can be added in the same item using add_text.</li>
+<li>Item 3</li>
+<ol>
+<li>Item 3.1</li>
+<ul>
+<li>Item 3.1.1</li>
+<li>Item 3.1.1</li>
+</ul>
+</ol>
+<li>Item 4</li>
+</ol>
+<h2>
+A simple table</h2>
+<table border="1">
+<tr>
+<td><strong>Name</strong></td>
+<td><strong>Street</strong></td>
+<td><strong>City</strong></td>
+</tr>
+<tr>
+<td><em>John Doe</em></td>
+<td><em>123 Main St</em></td>
+<td><em>Anytown</em></td>
+</tr>
+<tr>
+<td>Jane Doe</td>
+<td>456 Main St</td>
+<td>Anytown</td>
+</tr>
+<tr>
+<td>Jim Doe</td>
+<td>789 Main St</td>
+<td>The Village</td>
+</tr>
+</table>
+<h3>
+Another table</h3>
+<table border="1">
+<tr>
+<td><strong>Name</strong></td>
+<td><strong>Age</strong></td>
+<td><strong>Gender</strong></td>
+</tr>
+<tr>
+<td>John Doe</td>
+<td>30</td>
+<td>Male</td>
+</tr>
+<tr>
+<td>Jane Doe</td>
+<td>25</td>
+<td>Female</td>
+</tr>
+<tr>
+<td>Jim Doe</td>
+<td>35</td>
+<td>Male</td>
+</tr>
+</table>
+<h2>
+Finally code blocks</h2>
+<p>
+Code blocks are written with write_code_block.</p>
+<pre><code>
+<span class="language-python">def my_function(x: int) -&gt; int:<br>
+    return x + 1<br>
+<br>
+print(my_function(1))</span>
+</code></pre>
+</body>
+</html>
