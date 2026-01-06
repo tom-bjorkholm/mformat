@@ -223,8 +223,129 @@ class MultiFormatMd(MultiFormatTextBased):
         self.file.write(f'| {" | ".join(local_row)} |\n')
 
     def _encode_text(self, text: str) -> str:
-        """Encode text (escape special characters)."""
+        """Encode text (escape special characters) for Markdown.
+
+        Uses context-aware escaping based on Markdown syntax rules.
+        Characters are only escaped when they could be interpreted as
+        Markdown syntax in their specific context.
+        """
+        if not text:
+            return text
         if self.state == MultiFormatState.CODE_BLOCK:
             return text.replace('```', '\\`\\`\\`')
-        chars = r'_*[]()~`>#+-=|{}!'
-        return ''.join(('\\' + c) if c in chars else c for c in text)
+        result: list[str] = []
+        n = len(text)
+        for i, char in enumerate(text):
+            prev_char = text[i - 1] if i > 0 else ''
+            next_char = text[i + 1] if i + 1 < n else ''
+            result.append(self._escape_char(char, prev_char, next_char))
+        return ''.join(result)
+
+    def _escape_char(self, char: str, prev_char: str, next_char: str) -> str:
+        """Escape a single character based on context.
+
+        Args:
+            char: The character to potentially escape.
+            prev_char: The previous character ('' if at start).
+            next_char: The next character ('' if at end).
+
+        Returns:
+            The character, escaped if necessary.
+        """
+        # Characters that always need escaping
+        always_escape = '\\`[]{}<|'
+        if char in always_escape:
+            return '\\' + char
+        # Characters with simple context rules
+        simple_context = {
+            '(': '\\(' if prev_char == ']' else char,
+            '!': '\\!' if next_char == '[' else char,
+            '~': '\\~' if prev_char == '~' or next_char == '~' else char,
+        }
+        if char in simple_context:
+            return simple_context[char]
+        # Characters requiring line-start awareness
+        at_line_start = prev_char in ('', '\n')
+        return self._escape_line_context_char(char, prev_char, next_char,
+                                              at_line_start)
+
+    def _escape_line_context_char(
+            self, char: str, prev_char: str, next_char: str,
+            at_line_start: bool) -> str:
+        """Escape characters that depend on line position context.
+
+        Args:
+            char: The character to potentially escape.
+            prev_char: The previous character ('' if at start).
+            next_char: The next character ('' if at end).
+            at_line_start: True if at the start of a line.
+
+        Returns:
+            The character, escaped if necessary.
+        """
+        if char == '>':
+            return self._escape_greater_than(prev_char, at_line_start)
+        if char == '#':
+            return '\\#' if at_line_start else char
+        if char in '-+':
+            return self._escape_list_marker(char, next_char, at_line_start)
+        if char in '*_':
+            return self._escape_emphasis(char, prev_char, next_char,
+                                         at_line_start)
+        if char == '=':
+            return self._escape_equals(next_char, at_line_start)
+        return char
+
+    def _escape_greater_than(self, prev_char: str,
+                             at_line_start: bool) -> str:
+        """Escape > for blockquotes and HTML."""
+        if at_line_start or prev_char == '<':
+            return '\\>'
+        return '>'
+
+    def _escape_list_marker(self, char: str, next_char: str,
+                            at_line_start: bool) -> str:
+        """Escape - or + for list markers and horizontal rules."""
+        if not at_line_start:
+            return char
+        if next_char in (' ', '\t', '') or next_char == char:
+            return '\\' + char
+        return char
+
+    def _escape_emphasis(self, char: str, prev_char: str, next_char: str,
+                         at_line_start: bool) -> str:
+        """Escape * or _ for emphasis markers."""
+        # Check for list item or horizontal rule at line start
+        if at_line_start and char == '*':
+            if next_char in (' ', '\t', '') or next_char == '*':
+                return '\\*'
+        elif at_line_start and next_char == char:
+            return '\\' + char
+        # Check for emphasis at word boundaries
+        if self._is_emphasis_position(prev_char, next_char):
+            return '\\' + char
+        return char
+
+    def _escape_equals(self, next_char: str, at_line_start: bool) -> str:
+        """Escape = for setext heading underlines."""
+        if at_line_start and next_char in ('=', ''):
+            return '\\='
+        return '='
+
+    def _is_emphasis_position(self, prev_char: str, next_char: str) -> bool:
+        """Check if position could be an emphasis delimiter.
+
+        Based on CommonMark flanking rules - emphasis delimiters are
+        recognized at word boundaries (adjacent to whitespace, punctuation,
+        or string boundaries).
+
+        Args:
+            prev_char: Character before the potential delimiter ('' if none).
+            next_char: Character after the potential delimiter ('' if none).
+
+        Returns:
+            True if the position could be an emphasis delimiter.
+        """
+        prev_is_boundary = not prev_char or not prev_char.isalnum()
+        next_is_boundary = not next_char or not next_char.isalnum()
+        return prev_is_boundary or next_is_boundary
