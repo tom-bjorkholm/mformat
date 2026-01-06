@@ -159,14 +159,14 @@ class MultiFormatMd(MultiFormatTextBased):
         assert self.file is not None
         if programming_language is None:
             programming_language = 'text'
-        self.file.write(f'\n```{programming_language}\n')
+        self.file.write(f'\n````{programming_language}\n')
 
     def _end_code_block(self, programming_language: Optional[str]) -> None:
         """End a code block."""
         assert self.file is not None
         assert programming_language is None or \
             isinstance(programming_language, str)
-        self.file.write('\n```\n')
+        self.file.write('\n````\n')
 
     def _write_code_block(self, text: str,
                           programming_language: Optional[str]) -> None:
@@ -196,9 +196,9 @@ class MultiFormatMd(MultiFormatTextBased):
         assert self.table is not None
         self._write_table_row(row=first_row, bold=bold, italic=italic,
                               row_number=0)
-        line_length = sum(self.table.column_widths) + \
-            3*len(self.table.column_widths) + 1
-        self.file.write('-' * line_length + '\n')
+        col_lines = [width*'-' for width in self.table.column_widths]
+        line = '|-' + '-|-'.join(col_lines) + '-|'
+        self.file.write(line + '\n')
 
     def _write_table_row(self, row: list[str],
                          bold: bool, italic: bool, row_number: int) -> None:

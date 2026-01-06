@@ -24,7 +24,7 @@ def test_simple_table(capsys):
         mfd.add_table_row(row=['C', 'D'])
 
     expected = ('\n| Col1 | Col2 |\n'
-                '---------------\n'
+                '|------|------|\n'
                 '| A    | B    |\n'
                 '| C    | D    |\n\n')
     check_run_with_context_manager('md', '.md', test_action,
@@ -41,7 +41,7 @@ def test_table_with_bold_header(capsys):
         mfd.add_table_row(row=['Bob', '25'])
 
     expected = ('\n| **Name** | **Age** |\n'
-                '----------------------\n'
+                '|----------|---------|\n'
                 '| Alice    | 30      |\n'
                 '| Bob      | 25      |\n\n')
     check_run_with_context_manager('md', '.md', test_action,
@@ -57,7 +57,7 @@ def test_table_with_italic_header(capsys):
         mfd.add_table_row(row=['Alice', '30'])
 
     expected = ('\n| *Name* | *Age* |\n'
-                '------------------\n'
+                '|--------|-------|\n'
                 '| Alice  | 30    |\n\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
@@ -74,7 +74,7 @@ def test_table_with_varied_column_widths(capsys):
 
     # Note: separator width is based on first row only
     expected = ('\n| Short | Longer |\n'
-                '------------------\n'
+                '|-------|--------|\n'
                 '| A     | Very long text |\n'
                 '| B     | Short          |\n\n')
     check_run_with_context_manager('md', '.md', test_action,
@@ -89,7 +89,7 @@ def test_write_complete_table(capsys):
         mfd.write_complete_table(table=TABLE_DATA_3X2)
 
     expected = ('\n| Header1  | Header2  |\n'
-                '-----------------------\n'
+                '|----------|----------|\n'
                 '| Row1Col1 | Row1Col2 |\n'
                 '| Row2Col1 | Row2Col2 |\n\n')
     check_run_with_context_manager('md', '.md', test_action,
@@ -105,7 +105,7 @@ def test_write_complete_table_with_bold_header(capsys):
             table=TABLE_DATA_3X2_SIMPLE, bold_first_row=True)
 
     expected = ('\n| **Name** | **Value** |\n'
-                '------------------------\n'
+                '|----------|-----------|\n'
                 '| Alpha    | 1         |\n'
                 '| Beta     | 2         |\n\n')
     check_run_with_context_manager('md', '.md', test_action,
@@ -123,7 +123,7 @@ def test_paragraph_then_table(capsys):
 
     expected = ('\nHere is a table:\n'
                 '\n| A | B |\n'
-                '---------\n'
+                '|---|---|\n'
                 '| 1 | 2 |\n\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
@@ -139,7 +139,7 @@ def test_table_then_paragraph(capsys):
         mfd.start_paragraph(text='That was the table.')
 
     expected = ('\n| X | Y |\n'
-                '---------\n'
+                '|---|---|\n'
                 '| 1 | 2 |\n'
                 '\n\nThat was the table.\n')
     check_run_with_context_manager('md', '.md', test_action,
@@ -157,7 +157,7 @@ def test_heading_then_table(capsys):
 
     expected = ('## Data Table\n'
                 '\n| Col1 | Col2 |\n'
-                '---------------\n'
+                '|------|------|\n'
                 '| A    | B    |\n\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
@@ -175,7 +175,7 @@ def test_table_with_three_columns(capsys):
     # Note: separator width based on first row widths [4, 3, 4]
     # Subsequent rows can be wider
     expected = ('\n| Name | Age | City |\n'
-                '---------------------\n'
+                '|------|-----|------|\n'
                 '| Alice | 30  | NYC  |\n'
                 '| Bob   | 25  | LA   |\n\n')
     check_run_with_context_manager('md', '.md', test_action,

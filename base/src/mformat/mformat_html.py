@@ -178,7 +178,7 @@ class MultiFormatHtml(MultiFormatTextBased):
         """Start a table."""
         assert self.file is not None
         assert isinstance(num_columns, int)
-        self.file.write('<table>\n')
+        self.file.write('<table border="1">\n')
 
     def _end_table(self, num_columns: int, num_rows: int) -> None:
         """End a table."""
