@@ -12,8 +12,23 @@ from test_helpers import (
     run_protected_method,
     check_run_with_context_manager
 )
-from mformat.mformat_md import MultiFormatMd
+from mformat.mformat_md import MultiFormatMd, split_whitespace
 from mformat.mformat import FormatterDescriptor, MultiFormatState
+
+
+@pytest.mark.parametrize('text, expected',
+                         [('', ('', '', '')),
+                          (' ', (' ', '', '')),
+                          ('text', ('', 'text', '')),
+                          ('  text  ', ('  ', 'text', '  ')),
+                          ('  text ', ('  ', 'text', ' ')),
+                          (' text  ', (' ', 'text', '  ')),
+                          ('text  ', ('', 'text', '  ')),
+                          ('  text', ('  ', 'text', '')),
+                          ('  text  ', ('  ', 'text', '  '))])
+def test_split_whitespace(text, expected):
+    """Test the split_whitespace function."""
+    assert split_whitespace(text) == expected
 
 
 def test_file_name_extension(capsys):
@@ -49,7 +64,16 @@ def test_get_arg_desciption(capsys):
                             False, True), '*italic*'),
                           ('_write_text',
                            ('both', MultiFormatState.PARAGRAPH,
-                            True, True), '***both***')])
+                            True, True), '***both***'),
+                          ('_write_text',
+                           (' bold  ', MultiFormatState.PARAGRAPH,
+                            True, False), ' **bold**  '),
+                          ('_write_text',
+                           ('  italic ', MultiFormatState.PARAGRAPH,
+                            False, True), '  *italic* '),
+                          ('_write_text',
+                           ('  both  ', MultiFormatState.PARAGRAPH,
+                            True, True), '  ***both***  ')])
 def test_methods(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
                  method, arg, expected):
     """Test the trivial methods of the MultiFormatMd class."""
@@ -139,15 +163,49 @@ def test_heading_add_text(capsys):
                                    capsys=capsys)
 
 
-def test_heading_add_url(capsys):
+@pytest.mark.parametrize('ws,url,utxt,expected',
+                         [(False, 'http://example.com', 'this link',
+                           '[this link](http://example.com)\n'),
+                          (True, 'http://example.com', 'this link',
+                           ' [this link](http://example.com)\n')])
+def test_ws_add_url(capsys, ws, url, utxt, expected):
+    """Test adding URL with whitespace."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.state = MultiFormatState.HEADING
+        mfd.heading_level = 1
+        mfd.ws_needed_at_append = ws
+        mfd.add_url(url=url, text=utxt)
+
+    check_run_with_context_manager('md', '.md', test_action,
+                                   expected_text=expected,
+                                   capsys=capsys)
+
+
+@pytest.mark.parametrize('htxt, url, utxt, bold, expected',
+                         [('Check ', 'http://example.com', 'this link', False,
+                           '## Check [this link](http://example.com)\n'),
+                          ('Check', 'http://example.com', 'this link', False,
+                           '## Check [this link](http://example.com)\n'),
+                          ('Check ', 'http://example.com', None, False,
+                           '## Check [http://example.com]' +
+                           '(http://example.com)\n'),
+                          ('Check ', 'http://example.com', 'this link', True,
+                           '## Check **[this link](http://example.com)**\n'),
+                          ('Check', 'http://example.com', 'this link', True,
+                           '## Check **[this link](http://example.com)**\n'),
+                          ('Check ', 'http://example.com', None, True,
+                           '## Check **[http://example.com]' +
+                           '(http://example.com)**\n'),])
+def test_heading_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                         htxt, url, utxt, bold, expected):
     """Test adding URL to a heading."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
-        mfd.start_heading(level=2, text='Check ')
-        mfd.add_url(url='http://example.com', text='this link')
+        mfd.start_heading(level=2, text=htxt)
+        mfd.add_url(url=url, text=utxt, bold=bold)
 
     # pylint: disable=duplicate-code
-    expected = '## Check [this link](http://example.com)\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)

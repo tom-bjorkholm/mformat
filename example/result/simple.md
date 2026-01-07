@@ -3,7 +3,7 @@
 With start_paragraph we can start a paragraph. With add_text we can add text to the paragraph.
 ## Sub heading of example where add_text adds text to the sub heading.
 
-Whenever we start a new item type the previous item type is automatically closed. Add text does not automatically close the previous item type, instead it just adds text to that item.*** There is never a need to close an item type.***
+Whenever we start a new item type the previous item type is automatically closed. Add text does not automatically close the previous item type, instead it just adds text to that item. ***There is never a need to close an item type.***
 ## The example is [here](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/simple_complete.py)
 
 As you can see, we can add URLs to both headings and paragraphs. It is also possible to add URLs to text, for instance the URL to the example file is added here. [here](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/simple_complete.py)

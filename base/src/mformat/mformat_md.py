@@ -11,6 +11,20 @@ from mformat.mformat_textbased import MultiFormatTextBased
 from mformat.mformat import FormatterDescriptor, MultiFormatState
 
 
+def split_whitespace(text: str) -> tuple[str, str, str]:
+    """Split a string into leading, stripped, and trailing whitespace."""
+    if not text:
+        return '', '', ''
+    stripped = text.strip()
+    if not stripped:
+        return text, '', ''
+    if stripped == text:
+        return '', stripped, ''
+    leading = text[:len(text) - len(text.lstrip())]
+    trailing = text[len(text.rstrip()):]
+    return leading, stripped, trailing
+
+
 class MultiFormatMd(MultiFormatTextBased):
     """Markdown format class."""
 
@@ -81,11 +95,12 @@ class MultiFormatMd(MultiFormatTextBased):
             italic: If True, the text is italic.
         """
         assert self.file is not None
+        pre, stripped, post = split_whitespace(text)
         if bold:
-            text = f'**{text}**'
+            stripped = f'**{stripped}**'
         if italic:
-            text = f'*{text}*'
-        self.file.write(text)
+            stripped = f'*{stripped}*'
+        self.file.write(pre + stripped + post)
 
     def _write_url(self,  # pylint: disable=unused-argument,too-many-arguments,too-many-positional-arguments # noqa: E501
                    url: str, text: Optional[str],
