@@ -5,6 +5,7 @@
 # MIT License
 #
 
+import io
 from typing import TextIO, Optional, Callable
 from mformat.mformat import MultiFormat
 
@@ -38,7 +39,7 @@ class MultiFormatTextBased(MultiFormat):
         Use as a context manager instead, using a with statement.
         """
         self.file = open(self.file_name,  # pylint: disable=consider-using-with
-                         mode='wt', encoding='utf-8')
+                         mode='w+t', encoding='utf-8')
 
     def _close(self) -> None:
         """Close the file.
@@ -50,3 +51,19 @@ class MultiFormatTextBased(MultiFormat):
             return
         self.file.close()
         self.file = None
+
+    def _get_last_chars_written(self, num_chars: int) -> str:
+        """Get the last characters written to the file.
+
+        Keep the file pointer at the same position, i.e. at the end of the
+        file, so that we can continue writing after the last characters.
+        Returns the last characters written to the file.
+        """
+        assert self.file is not None
+        assert num_chars > 0
+        cur_pos = self.file.tell()
+        number_of_chars = min(num_chars, cur_pos)
+        self.file.seek(cur_pos - number_of_chars, io.SEEK_SET)
+        last_chars = self.file.read(number_of_chars)
+        self.file.seek(cur_pos, io.SEEK_SET)
+        return last_chars
