@@ -66,16 +66,28 @@ class MultiFormatMd(MultiFormatTextBased):
     def _start_paragraph(self) -> None:
         """Start a paragraph."""
         assert self.file is not None
-        self.file.write('\n')
+        self._empty_line_before()
 
     def _end_paragraph(self) -> None:
         """End a paragraph."""
         assert self.file is not None
         self.file.write('\n')
 
+    def _empty_line_before(self) -> None:
+        """Make sure there is an empty line before next item."""
+        assert self.file is not None
+        preceeding = self._get_last_chars_written(num_chars=2)
+        if preceeding in ('\n\n', ''):
+            pass
+        elif preceeding[-1] == '\n':
+            self.file.write('\n')
+        else:
+            self.file.write('\n\n')
+
     def _start_heading(self, level: int) -> None:
         """Start a heading."""
         assert self.file is not None
+        self._empty_line_before()
         self.file.write(f'{"#" * level} ')
 
     def _end_heading(self, level: int) -> None:
@@ -140,6 +152,7 @@ class MultiFormatMd(MultiFormatTextBased):
         """Start a bullet item."""
         assert self.file is not None
         assert isinstance(level, int)
+        self._empty_line_before()
         self.file.write(self._indent(level) + '- ')
 
     def _end_bullet_item(self, level: int) -> None:
@@ -163,6 +176,7 @@ class MultiFormatMd(MultiFormatTextBased):
         assert self.file is not None
         assert isinstance(level, int)
         assert isinstance(num, int)
+        self._empty_line_before()
         self.file.write(self._indent(level) + f'{num}. ')
 
     def _end_numeric_item(self, level: int, num: int) -> None:

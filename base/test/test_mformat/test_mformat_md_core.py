@@ -48,7 +48,7 @@ def test_get_arg_desciption(capsys):
 @pytest.mark.parametrize('method, arg, expected',
                          [('_write_file_prefix', None, ''),
                           ('_write_file_suffix', None, ''),
-                          ('_start_paragraph', None, '\n'),
+                          ('_start_paragraph', None, ''),
                           ('_end_paragraph', None, '\n'),
                           ('_write_text',
                            ('test', MultiFormatState.PARAGRAPH,
@@ -232,7 +232,7 @@ def test_multiple_headings(capsys):
         mfd.start_heading(level=3, text='Subsub')
 
     # pylint: disable=duplicate-code
-    expected = '# Main\n## Sub\n### Subsub\n'
+    expected = '# Main\n\n## Sub\n\n### Subsub\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -246,7 +246,7 @@ def test_heading_paragraph_heading(capsys):
         mfd.start_paragraph('Some content here.')
         mfd.start_heading(level=2, text='Second Heading')
 
-    expected = '# First Heading\n\nSome content here.\n## Second Heading\n'
+    expected = '# First Heading\n\nSome content here.\n\n## Second Heading\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -314,7 +314,7 @@ def test_paragraph_then_code_block(capsys):
         mfd.start_paragraph(text='Here is some code:')
         mfd.write_code_block(text='x = 42', programming_language='python')
 
-    expected = '\nHere is some code:\n\n````python\nx = 42\n````\n'
+    expected = 'Here is some code:\n\n````python\nx = 42\n````\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)

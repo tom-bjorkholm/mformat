@@ -30,7 +30,7 @@ def test_multiple_bullet_items(capsys):
         mfd.start_bullet_item(text='Second item')
         mfd.start_bullet_item(text='Third item')
 
-    expected = '- First item\n- Second item\n- Third item\n'
+    expected = '- First item\n\n- Second item\n\n- Third item\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -56,7 +56,7 @@ def test_nested_bullet_items_level2(capsys):
         mfd.start_bullet_item(text='Level 1', level=1)
         mfd.start_bullet_item(text='Level 2', level=2)
 
-    expected = '- Level 1\n  - Level 2\n'
+    expected = '- Level 1\n\n  - Level 2\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -70,7 +70,7 @@ def test_nested_bullet_items_level3(capsys):
         mfd.start_bullet_item(text='Level 2', level=2)
         mfd.start_bullet_item(text='Level 3', level=3)
 
-    expected = '- Level 1\n  - Level 2\n    - Level 3\n'
+    expected = '- Level 1\n\n  - Level 2\n\n    - Level 3\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -84,7 +84,7 @@ def test_bullet_list_back_to_level1(capsys):
         mfd.start_bullet_item(text='Level 2', level=2)
         mfd.start_bullet_item(text='Level 1 second', level=1)
 
-    expected = ('- Level 1 first\n  - Level 2\n'
+    expected = ('- Level 1 first\n\n  - Level 2\n\n'
                 '- Level 1 second\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
@@ -99,7 +99,7 @@ def test_bullet_list_formatting(capsys):
         mfd.start_bullet_item(text='Italic item', italic=True)
         mfd.start_bullet_item(text='Both', bold=True, italic=True)
 
-    expected = ('- **Bold item**\n- *Italic item*\n'
+    expected = ('- **Bold item**\n\n- *Italic item*\n\n'
                 '- ***Both***\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
@@ -114,7 +114,7 @@ def test_paragraph_then_bullet_list(capsys):
         mfd.start_bullet_item(text='First item')
         mfd.start_bullet_item(text='Second item')
 
-    expected = '\nIntro paragraph\n- First item\n- Second item\n'
+    expected = 'Intro paragraph\n\n- First item\n\n- Second item\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -128,7 +128,7 @@ def test_bullet_list_then_paragraph(capsys):
         mfd.start_bullet_item(text='Second item')
         mfd.start_paragraph(text='Concluding paragraph')
 
-    expected = '- First item\n- Second item\n\nConcluding paragraph\n'
+    expected = '- First item\n\n- Second item\n\nConcluding paragraph\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -143,7 +143,7 @@ def test_heading_then_bullet_list(capsys):
         mfd.start_bullet_item(text='Second item')
 
     # pylint: disable=duplicate-code
-    expected = '# Main Title\n- First item\n- Second item\n'
+    expected = '# Main Title\n\n- First item\n\n- Second item\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -155,8 +155,8 @@ def test_complex_nested_structure(capsys):
         assert type(mfd).__name__ == 'MultiFormatMd'
         action_complex_nested_bullet_structure(mfd)
 
-    expected = ('- Item 1\n  - Item 1.1\n  - Item 1.2\n'
-                '- Item 2\n  - Item 2.1\n')
+    expected = ('- Item 1\n\n  - Item 1.1\n\n  - Item 1.2\n\n'
+                '- Item 2\n\n  - Item 2.1\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -185,7 +185,7 @@ def test_multiple_numbered_items(capsys):
         mfd.start_numbered_point_item(text='Second item')
         mfd.start_numbered_point_item(text='Third item')
 
-    expected = '1. First item\n2. Second item\n3. Third item\n'
+    expected = '1. First item\n\n2. Second item\n\n3. Third item\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -224,7 +224,7 @@ def test_nested_numbered_items_level2(capsys):
         mfd.start_numbered_point_item(text='Level 1', level=1)
         mfd.start_numbered_point_item(text='Level 2', level=2)
 
-    expected = '1. Level 1\n  1. Level 2\n'
+    expected = '1. Level 1\n\n  1. Level 2\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -238,7 +238,7 @@ def test_nested_numbered_items_level3(capsys):
         mfd.start_numbered_point_item(text='Level 2', level=2)
         mfd.start_numbered_point_item(text='Level 3', level=3)
 
-    expected = '1. Level 1\n  1. Level 2\n    1. Level 3\n'
+    expected = '1. Level 1\n\n  1. Level 2\n\n    1. Level 3\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -252,7 +252,7 @@ def test_numbered_list_back_to_level1(capsys):
         mfd.start_numbered_point_item(text='Level 2', level=2)
         mfd.start_numbered_point_item(text='Level 1 second', level=1)
 
-    expected = ('1. Level 1 first\n  1. Level 2\n'
+    expected = ('1. Level 1 first\n\n  1. Level 2\n\n'
                 '2. Level 1 second\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
@@ -267,7 +267,7 @@ def test_numbered_list_formatting(capsys):
         mfd.start_numbered_point_item(text='Italic item', italic=True)
         mfd.start_numbered_point_item(text='Both', bold=True, italic=True)
 
-    expected = ('1. **Bold item**\n2. *Italic item*\n'
+    expected = ('1. **Bold item**\n\n2. *Italic item*\n\n'
                 '3. ***Both***\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
@@ -282,7 +282,7 @@ def test_paragraph_then_numbered_list(capsys):
         mfd.start_numbered_point_item(text='First item')
         mfd.start_numbered_point_item(text='Second item')
 
-    expected = '\nIntro paragraph\n1. First item\n2. Second item\n'
+    expected = 'Intro paragraph\n\n1. First item\n\n2. Second item\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -296,7 +296,7 @@ def test_numbered_list_then_paragraph(capsys):
         mfd.start_numbered_point_item(text='Second item')
         mfd.start_paragraph(text='Concluding paragraph')
 
-    expected = '1. First item\n2. Second item\n\nConcluding paragraph\n'
+    expected = '1. First item\n\n2. Second item\n\nConcluding paragraph\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -311,7 +311,7 @@ def test_heading_then_numbered_list(capsys):
         mfd.start_numbered_point_item(text='Second item')
 
     # pylint: disable=duplicate-code
-    expected = '# Main Title\n1. First item\n2. Second item\n'
+    expected = '# Main Title\n\n1. First item\n\n2. Second item\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -326,8 +326,8 @@ def test_mixed_bullet_and_numbered_lists(capsys):
         mfd.start_numbered_point_item(text='Numbered 1', level=1)
         mfd.start_numbered_point_item(text='Numbered 2', level=1)
 
-    expected = ('- Bullet 1\n- Bullet 2\n'
-                '1. Numbered 1\n2. Numbered 2\n')
+    expected = ('- Bullet 1\n\n- Bullet 2\n\n'
+                '1. Numbered 1\n\n2. Numbered 2\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -342,7 +342,7 @@ def test_nested_mixed_lists(capsys):
         mfd.start_numbered_point_item(text='Numbered 1.2', level=2)
         mfd.start_bullet_item(text='Bullet 2', level=1)
 
-    expected = ('- Bullet 1\n  1. Numbered 1.1\n  2. Numbered 1.2\n'
+    expected = ('- Bullet 1\n\n  1. Numbered 1.1\n\n  2. Numbered 1.2\n\n'
                 '- Bullet 2\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,

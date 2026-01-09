@@ -17,8 +17,8 @@ from mformat.factory import create_mf
 
 
 @pytest.mark.parametrize('text, expected',
-                         [('test', '\ntest\n'),
-                          ('test\ntest', '\ntest\ntest\n')])
+                         [('test', 'test\n'),
+                          ('test\ntest', 'test\ntest\n')])
 def test_start_paragraph(capsys, text, expected):
     """Test the start_paragraph method."""
     with TemporaryDirectory() as tmp_dir:
@@ -34,9 +34,9 @@ def test_start_paragraph(capsys, text, expected):
 
 
 @pytest.mark.parametrize('text, bold, italic, expected',
-                         [('bold text', True, False, '\n**bold text**\n'),
-                          ('italic text', False, True, '\n*italic text*\n'),
-                          ('both', True, True, '\n***both***\n')])
+                         [('bold text', True, False, '**bold text**\n'),
+                          ('italic text', False, True, '*italic text*\n'),
+                          ('both', True, True, '***both***\n')])
 def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
                                     text, bold, italic, expected):
     """Test the start_paragraph method with bold and italic."""
@@ -54,9 +54,9 @@ def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-argument
 @pytest.mark.parametrize('bold', [True, False])
 @pytest.mark.parametrize('italic', [True, False])
 @pytest.mark.parametrize('text, expected',
-                         [('', '\n\n'),
-                          (' ', '\n \n'),
-                          ('   ', '\n   \n')])
+                         [('', '\n'),
+                          (' ', ' \n'),
+                          ('   ', '   \n')])
 def test_start_paragraph_space(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
                                text, bold, italic, expected):
     """Test the start_paragraph method with bold and italic."""
@@ -95,9 +95,9 @@ def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positi
 
 @pytest.mark.parametrize('url, text, expected',
                          [('http://example.com', None,
-                           '\n[http://example.com](http://example.com)\n'),
+                           '[http://example.com](http://example.com)\n'),
                           ('http://test.org', 'link text',
-                           '\n[link text](http://test.org)\n')])
+                           '[link text](http://test.org)\n')])
 def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                  url, text, expected):
     """Test the add_url method."""
@@ -113,9 +113,9 @@ def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-position
 
 @pytest.mark.parametrize('url, text, expected',
                          [('http://example.com', None,
-                           '\nhttp://example.com\n'),
+                           'http://example.com\n'),
                           ('http://test.org', 'See here',
-                           '\nSee here http://test.org\n')])
+                           'See here http://test.org\n')])
 def test_add_url_as_text(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                          url, text, expected):
     """Test the add_url method with url_as_text=True."""

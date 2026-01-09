@@ -38,7 +38,7 @@ def multi_format_example(format_name: str,  # pylint: disable=too-many-statement
         # Write a sub heading.
         mf.start_heading(level=2, text='Sub heading of example')
         # Add text to the sub heading.
-        mf.add_text('where add_text adds text to the sub heading.')
+        mf.add_text('where add_text adds text to the sub heading')
         # Start a new paragraph.
         mf.start_paragraph('Whenever we start a new item type the')
         # Add text to the paragraph.
@@ -49,11 +49,11 @@ def multi_format_example(format_name: str,  # pylint: disable=too-many-statement
         mf.add_text('There is never a need to close an item type.',
                     bold=True, italic=True)
         # Starting a heading automatically closes the paragraph.
-        mf.start_heading(level=2, text='The example is')
+        mf.start_heading(level=2, text='Heading with URL to')
         # Add a URL to the heading.
         url = 'https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
         url += 'example/src/simple_complete.py'
-        mf.add_url(url=url, text='here')
+        mf.add_url(url=url, text='the example file')
         # Start a new paragraph.
         mf.start_paragraph('As you can see, we can add URLs to both')
         mf.add_text('headings and paragraphs.')
@@ -61,7 +61,7 @@ def multi_format_example(format_name: str,  # pylint: disable=too-many-statement
         mf.add_text('for instance the URL to the example file is added')
         mf.add_text('here.')
         # Add a URL to the text.
-        mf.add_url(url=url, text='here')
+        mf.add_url(url=url, text='The same example file')
         mf.start_paragraph('URLs can (depending on the format) be formatted ' +
                            'as clickable URLs or as text.')
         mf.add_text('To force URLs to be formatted as text, ' +
@@ -101,7 +101,8 @@ def multi_format_example(format_name: str,  # pylint: disable=too-many-statement
         mf.start_numbered_point_item('Item 4', level=1)
         # Then a simple demo of a table, written row by row.
         mf.start_heading(level=2, text='A simple table')
-        mf.start_table(first_row=['Name', 'Street', 'City'],
+        mf.start_table(first_row=['Full Name', 'Street and Number',
+                                  'City or Town'],
                        bold=True)
         mf.add_table_row(['John Doe', '123 Main St', 'Anytown'],
                          italic=True)

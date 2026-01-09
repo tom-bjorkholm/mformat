@@ -121,7 +121,7 @@ def test_paragraph_then_table(capsys):
         mfd.start_table(first_row=['A', 'B'])
         mfd.add_table_row(row=['1', '2'])
 
-    expected = ('\nHere is a table:\n'
+    expected = ('Here is a table:\n'
                 '\n| A | B |\n'
                 '|---|---|\n'
                 '| 1 | 2 |\n\n')
@@ -141,7 +141,7 @@ def test_table_then_paragraph(capsys):
     expected = ('\n| X | Y |\n'
                 '|---|---|\n'
                 '| 1 | 2 |\n'
-                '\n\nThat was the table.\n')
+                '\nThat was the table.\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
