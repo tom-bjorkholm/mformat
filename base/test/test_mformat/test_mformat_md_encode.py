@@ -48,6 +48,17 @@ class TestEncodeTextCodeBlock:
                 assert result == 'code with \\`\\`\\` backticks'
         check_capsys(capsys)
 
+    def test_code_block_quadruple_backticks(self, capsys):
+        """Test that quadruple backticks are escaped in code blocks."""
+        with TemporaryDirectory() as tmp_dir:
+            fname = tmp_dir + '/test.md'
+            with MultiFormatMd(file_name=fname) as mfd:
+                # Set CODE_BLOCK state to test the branch
+                mfd.state = MultiFormatState.CODE_BLOCK
+                result = mfd._encode_text('code with ```` backticks')
+                assert result == 'code with \\`\\`\\`\\` backticks'
+        check_capsys(capsys)
+
     def test_code_block_other_chars_not_escaped(self, capsys):
         """Test that other special chars are NOT escaped in code blocks."""
         with TemporaryDirectory() as tmp_dir:
@@ -68,6 +79,17 @@ class TestEncodeTextCodeBlock:
                 mfd.state = MultiFormatState.CODE_BLOCK
                 result = mfd._encode_text('``` and ```')
                 assert result == '\\`\\`\\` and \\`\\`\\`'
+        check_capsys(capsys)
+
+    def test_code_block_multiple_quadruple_backticks(self, capsys):
+        """Test multiple occurrences of quadruple backticks."""
+        with TemporaryDirectory() as tmp_dir:
+            fname = tmp_dir + '/test.md'
+            with MultiFormatMd(file_name=fname) as mfd:
+                # Set CODE_BLOCK state to test the branch
+                mfd.state = MultiFormatState.CODE_BLOCK
+                result = mfd._encode_text('```` and ````')
+                assert result == '\\`\\`\\`\\` and \\`\\`\\`\\`'
         check_capsys(capsys)
 
 

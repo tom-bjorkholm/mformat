@@ -83,6 +83,18 @@ class MultiFormatMd(MultiFormatTextBased):
         assert self.file is not None
         self.file.write('\n')
 
+    @staticmethod
+    def _format_text(text: str, bold: bool, italic: bool) -> str:
+        """Format text with bold and italic."""
+        pre, stripped, post = split_whitespace(text)
+        if not stripped:
+            return text
+        if bold:
+            stripped = f'**{stripped}**'
+        if italic:
+            stripped = f'*{stripped}*'
+        return pre + stripped + post
+
     def _write_text(self,  # pylint: disable=unused-argument,too-many-arguments,too-many-positional-arguments # noqa: E501
                     text: str, state: MultiFormatState,
                     bold: bool, italic: bool) -> None:
@@ -95,12 +107,7 @@ class MultiFormatMd(MultiFormatTextBased):
             italic: If True, the text is italic.
         """
         assert self.file is not None
-        pre, stripped, post = split_whitespace(text)
-        if bold:
-            stripped = f'**{stripped}**'
-        if italic:
-            stripped = f'*{stripped}*'
-        self.file.write(pre + stripped + post)
+        self.file.write(self._format_text(text, bold, italic))
 
     def _write_url(self,  # pylint: disable=unused-argument,too-many-arguments,too-many-positional-arguments # noqa: E501
                    url: str, text: Optional[str],
@@ -111,11 +118,7 @@ class MultiFormatMd(MultiFormatTextBased):
         if not text:
             text = url
         text = f'[{text}]({url})'
-        if bold:
-            text = f'**{text}**'
-        if italic:
-            text = f'*{text}*'
-        self.file.write(text)
+        self.file.write(self._format_text(text, bold, italic))
 
     def _start_bullet_list(self, level: int) -> None:
         """Start a bullet list."""
@@ -226,12 +229,10 @@ class MultiFormatMd(MultiFormatTextBased):
             raise ValueError(err)
         # Make a copy of the row to avoid modifying the original row.
         local_row = deepcopy(row)
-        if bold:
-            local_row = [f'**{cell}**' for cell in local_row]
-        if italic:
-            local_row = [f'*{cell}*' for cell in local_row]
-        # Update column widths to account for formatted text
         if bold or italic:
+            local_row = [self._format_text(cell, bold, italic)
+                         for cell in local_row]
+        # Update column widths to account for formatted text
             self._update_table_column_widths(row=local_row)
         local_row = [cell.ljust(width) for cell, width in
                      zip(local_row, self.table.column_widths)]
@@ -247,7 +248,9 @@ class MultiFormatMd(MultiFormatTextBased):
         if not text:
             return text
         if self.state == MultiFormatState.CODE_BLOCK:
-            return text.replace('```', '\\`\\`\\`')
+            return text.replace('````',
+                                '\\`\\`\\`\\`').replace('```',
+                                                        '\\`\\`\\`')
         result: list[str] = []
         n = len(text)
         for i, char in enumerate(text):

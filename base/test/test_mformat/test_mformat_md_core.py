@@ -358,3 +358,30 @@ def test_multiple_code_blocks(capsys):
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
+
+
+@pytest.mark.parametrize('bold', [True, False])
+@pytest.mark.parametrize('italic', [True, False])
+@pytest.mark.parametrize('text, expected',
+                         [('', ''),
+                          (' ', ' '),
+                          ('   ', '   ')])
+def test_format_text_space(capsys, bold, italic, text, expected):
+    """Test the format_text method with space."""
+    # pylint: disable=protected-access
+    assert MultiFormatMd._format_text(text, bold, italic) == expected
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('text, bold, italic, expected',
+                         [('bold text', True, False, '**bold text**'),
+                          ('italic text', False, True, '*italic text*'),
+                          ('both', True, True, '***both***'),
+                          ('  bold text', True, False, '  **bold text**'),
+                          ('italic text  ', False, True, '*italic text*  '),
+                          (' both ', True, True, ' ***both*** ')])
+def test_format_text_formatting(capsys, text, bold, italic, expected):
+    """Test the format_text method with formatting."""
+    # pylint: disable=protected-access
+    assert MultiFormatMd._format_text(text, bold, italic) == expected
+    check_capsys(capsys)

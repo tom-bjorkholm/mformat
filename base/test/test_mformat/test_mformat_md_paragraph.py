@@ -51,6 +51,27 @@ def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-argument
                                    capsys=capsys)
 
 
+@pytest.mark.parametrize('bold', [True, False])
+@pytest.mark.parametrize('italic', [True, False])
+@pytest.mark.parametrize('text, expected',
+                         [('', '\n\n'),
+                          (' ', '\n \n'),
+                          ('   ', '\n   \n')])
+def test_start_paragraph_space(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+                               text, bold, italic, expected):
+    """Test the start_paragraph method with bold and italic."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        assert mfd.state == MultiFormatState.EMPTY
+        mfd.start_paragraph(text=text, bold=bold, italic=italic,
+                            smart_ws=False)
+        assert mfd.state == MultiFormatState.PARAGRAPH
+
+    check_run_with_context_manager('md', '.md', test_action,
+                                   expected_text=expected,
+                                   capsys=capsys)
+
+
 @pytest.mark.parametrize('url, text, bold, italic, expected',
                          [('http://example.com', None, False, False,
                            '[http://example.com](http://example.com)'),
