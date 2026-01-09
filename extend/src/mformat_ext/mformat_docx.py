@@ -211,15 +211,18 @@ class MultiFormatDocx(MultiFormat):
         # In python-docx, lists are created by setting paragraph styles
         # No explicit list start/end is needed
 
-    def _start_numeric_item(self, level: int, num: int) -> None:
+    def _start_numeric_item(self, level: int, num: int,
+                            full_number: str) -> None:
         """Start a numeric item.
 
         Args:
             level: The level of the numeric item (1-9).
             num: The number of the item.
+            full_number: The full number of the item including all levels.
         """
         assert isinstance(level, int)
         assert isinstance(num, int)
+        assert isinstance(full_number, str)
         self.current_paragraph = self.doc.add_paragraph(
             style='List Number')
         # Set the indentation level for nested lists

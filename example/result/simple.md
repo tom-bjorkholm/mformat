@@ -32,7 +32,7 @@ You may have noticed that we have not worried about about the whitespace between
 
 3. Item 3
 
-  1. Item 3.1
+  3.1. Item 3.1
 
     - Item 3.1.1
 

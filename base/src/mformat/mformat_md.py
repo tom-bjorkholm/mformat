@@ -171,13 +171,14 @@ class MultiFormatMd(MultiFormatTextBased):
         assert self.file is not None
         assert isinstance(level, int)
 
-    def _start_numeric_item(self, level: int, num: int) -> None:
+    def _start_numeric_item(self, level: int, num: int,
+                            full_number: str) -> None:
         """Start a numeric item."""
         assert self.file is not None
         assert isinstance(level, int)
         assert isinstance(num, int)
         self._empty_line_before()
-        self.file.write(self._indent(level) + f'{num}. ')
+        self.file.write(self._indent(level) + full_number + ' ')
 
     def _end_numeric_item(self, level: int, num: int) -> None:
         """End a numeric item."""

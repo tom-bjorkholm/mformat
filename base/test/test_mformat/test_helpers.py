@@ -362,10 +362,12 @@ class MultiFormat10(MultiFormat3):
         assert isinstance(level, int)
         self.inc_count('_end_numeric_list')
 
-    def _start_numeric_item(self, level: int, num: int) -> None:
+    def _start_numeric_item(self, level: int, num: int,
+                            full_number: str) -> None:
         """Start a numeric item."""
         assert isinstance(level, int)
         assert isinstance(num, int)
+        assert isinstance(full_number, str)
         self.inc_count('_start_numeric_item')
 
     def _end_numeric_item(self, level: int, num: int) -> None:

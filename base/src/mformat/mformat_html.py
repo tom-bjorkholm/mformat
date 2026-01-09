@@ -160,11 +160,13 @@ class MultiFormatHtml(MultiFormatTextBased):
         assert isinstance(level, int)
         self.file.write('</ol>\n')
 
-    def _start_numeric_item(self, level: int, num: int) -> None:
+    def _start_numeric_item(self, level: int, num: int,
+                            full_number: str) -> None:
         """Start a numeric item."""
         assert self.file is not None
         assert isinstance(level, int)
         assert isinstance(num, int)
+        assert isinstance(full_number, str)
         self.file.write('<li>')
 
     def _end_numeric_item(self, level: int, num: int) -> None:

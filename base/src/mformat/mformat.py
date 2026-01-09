@@ -538,6 +538,16 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         # would have returned True and this code would not be executed.
         return False  # pragma: no cover
 
+    def _full_number_of_list_item(self, num: int) -> str:
+        """Get the full number of the current item."""
+        full_number = ''
+        assert isinstance(num, int)
+        assert self.point_list_stack
+        assert self.point_list_stack[-1]['number_at_level'] == num
+        for stack_item in self.point_list_stack:
+            full_number += f'{stack_item["number_at_level"]}.'
+        return full_number
+
     def _add_item_to_current_list(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
             self, text: str, smart_ws: bool,
             bold: bool, italic: bool,
@@ -556,7 +566,9 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
                 self._end_numeric_item(level=lev, num=num)
             self.point_list_stack[-1]['number_at_level'] += 1
             num = self.point_list_stack[-1]['number_at_level']
-            self._start_numeric_item(level=lev, num=num)
+            full_number = self._full_number_of_list_item(num=num)
+            self._start_numeric_item(level=lev, num=num,
+                                     full_number=full_number)
             self.state = MultiFormatState.NUMERIC_LIST_ITEM
         self._write_text(
             self._to_write(text, smart_ws, False),
@@ -601,7 +613,9 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             self.state = MultiFormatState.NUMERIC_LIST_ITEM
             self.point_list_stack[-1]['number_at_level'] += 1
             num = self.point_list_stack[-1]['number_at_level']
-            self._start_numeric_item(level=lev, num=num)
+            full_number = self._full_number_of_list_item(num=num)
+            self._start_numeric_item(level=lev, num=num,
+                                     full_number=full_number)
         self._write_text(
             self._to_write(text, smart_ws, False),
             self.state, bold, italic)
@@ -794,10 +808,18 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         err = self._must_be_overridden('_start_numeric_list')
         raise NotImplementedError(err)
 
-    def _start_numeric_item(self, level: int, num: int) -> None:
-        """Start a numeric item."""
+    def _start_numeric_item(self, level: int, num: int,
+                            full_number: str) -> None:
+        """Start a numeric item.
+
+        Args:
+            level: The level of the item.
+            num: The number of the item at this level.
+            full_number: The full number of the item including all levels.
+        """
         assert isinstance(level, int)
         assert isinstance(num, int)
+        assert isinstance(full_number, str)
         err = self._must_be_overridden('_start_numeric_item')
         raise NotImplementedError(err)
 
