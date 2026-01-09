@@ -148,29 +148,29 @@ class MultiFormatHtml(MultiFormatTextBased):
         assert isinstance(level, int)
         self.file.write('</li>\n')
 
-    def _start_numeric_list(self, level: int) -> None:
-        """Start a numeric list."""
+    def _start_numbered_list(self, level: int) -> None:
+        """Start a numbered list."""
         assert self.file is not None
         assert isinstance(level, int)
         self.file.write('<ol>\n')
 
-    def _end_numeric_list(self, level: int) -> None:
-        """End a numeric list."""
+    def _end_numbered_list(self, level: int) -> None:
+        """End a numbered list."""
         assert self.file is not None
         assert isinstance(level, int)
         self.file.write('</ol>\n')
 
-    def _start_numeric_item(self, level: int, num: int,
-                            full_number: str) -> None:
-        """Start a numeric item."""
+    def _start_numbered_item(self, level: int, num: int,
+                             full_number: str) -> None:
+        """Start a numbered item."""
         assert self.file is not None
         assert isinstance(level, int)
         assert isinstance(num, int)
         assert isinstance(full_number, str)
         self.file.write('<li>')
 
-    def _end_numeric_item(self, level: int, num: int) -> None:
-        """End a numeric item."""
+    def _end_numbered_item(self, level: int, num: int) -> None:
+        """End a numbered item."""
         assert self.file is not None
         assert isinstance(level, int)
         assert isinstance(num, int)

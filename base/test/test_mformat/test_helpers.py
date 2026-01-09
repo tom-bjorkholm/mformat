@@ -352,29 +352,29 @@ class MultiFormat10(MultiFormat3):
         assert isinstance(level, int)
         self.inc_count('_end_bullet_item')
 
-    def _start_numeric_list(self, level: int) -> None:
-        """Start a numeric list."""
+    def _start_numbered_list(self, level: int) -> None:
+        """Start a numbered list."""
         assert isinstance(level, int)
-        self.inc_count('_start_numeric_list')
+        self.inc_count('_start_numbered_list')
 
-    def _end_numeric_list(self, level: int) -> None:
-        """End a numeric list."""
+    def _end_numbered_list(self, level: int) -> None:
+        """End a numbered list."""
         assert isinstance(level, int)
-        self.inc_count('_end_numeric_list')
+        self.inc_count('_end_numbered_list')
 
-    def _start_numeric_item(self, level: int, num: int,
-                            full_number: str) -> None:
-        """Start a numeric item."""
+    def _start_numbered_item(self, level: int, num: int,
+                             full_number: str) -> None:
+        """Start a numbered item."""
         assert isinstance(level, int)
         assert isinstance(num, int)
         assert isinstance(full_number, str)
-        self.inc_count('_start_numeric_item')
+        self.inc_count('_start_numbered_item')
 
-    def _end_numeric_item(self, level: int, num: int) -> None:
-        """End a numeric item."""
+    def _end_numbered_item(self, level: int, num: int) -> None:
+        """End a numbered item."""
         assert isinstance(level, int)
         assert isinstance(num, int)
-        self.inc_count('_end_numeric_item')
+        self.inc_count('_end_numbered_item')
 
     def _start_heading(self, level: int) -> None:
         """Start a heading."""

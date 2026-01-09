@@ -71,8 +71,8 @@ def test_add_text_error(capsys,  # pylint: disable=too-many-arguments,too-many-p
                            MultiFormatState.BULLET_LIST_ITEM,
                            {'_encode_text': 1, '_write_text': 1},
                            'def'),
-                          (MultiFormatState.NUMERIC_LIST_ITEM,
-                           MultiFormatState.NUMERIC_LIST_ITEM,
+                          (MultiFormatState.NUMBERED_LIST_ITEM,
+                           MultiFormatState.NUMBERED_LIST_ITEM,
                            {'_encode_text': 1, '_write_text': 1},
                            'ghi')])
 def test_add_text(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501

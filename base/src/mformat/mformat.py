@@ -29,8 +29,8 @@ class MultiFormatState(IntEnum):
     PARAGRAPH_END = auto()
     BULLET_LIST = auto()
     BULLET_LIST_ITEM = auto()
-    NUMERIC_LIST = auto()
-    NUMERIC_LIST_ITEM = auto()
+    NUMBERED_LIST = auto()
+    NUMBERED_LIST_ITEM = auto()
     TABLE = auto()
     CODE_BLOCK = auto()
     CLOSED = auto()
@@ -40,7 +40,7 @@ class PointListType(IntEnum):
     """Enum for the type of point list."""
 
     BULLET = auto()
-    NUMERIC = auto()
+    NUMBERED = auto()
 
 
 class PointStackItem(TypedDict):
@@ -273,7 +273,7 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         self._start_list_item_impl(
             text=text, level=level, smart_ws=smart_ws,
             bold=bold, italic=italic,
-            point_list_type=PointListType.NUMERIC)
+            point_list_type=PointListType.NUMBERED)
 
     def add_text(self, text: str, smart_ws: bool = True,
                  bold: bool = False, italic: bool = False) -> None:
@@ -290,7 +290,7 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         if self.state not in (MultiFormatState.HEADING,
                               MultiFormatState.PARAGRAPH,
                               MultiFormatState.BULLET_LIST_ITEM,
-                              MultiFormatState.NUMERIC_LIST_ITEM):
+                              MultiFormatState.NUMBERED_LIST_ITEM):
             err = f'Cannot add text to state {self.state.name}'
             raise RuntimeError(err)
         self._write_text(self._to_write(text, smart_ws, True),
@@ -314,7 +314,7 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         if self.state not in (MultiFormatState.HEADING,
                               MultiFormatState.PARAGRAPH,
                               MultiFormatState.BULLET_LIST_ITEM,
-                              MultiFormatState.NUMERIC_LIST_ITEM):
+                              MultiFormatState.NUMBERED_LIST_ITEM):
             err = f'Cannot add URL to state {self.state.name}'
             raise RuntimeError(err)
         if self.url_as_text:
@@ -464,7 +464,7 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             smart_ws: If True, leading and trailing whitespace are collapsed.
             bold: If True, the text is bold.
             italic: If True, the text is italic.
-            point_list_type: The type of point list (bullet or numeric).
+            point_list_type: The type of point list (bullet or numbered).
         """
         target_level = level if level else (len(self.point_list_stack) or 1)
         self._validate_list_level(target_level, point_list_type)
@@ -586,27 +586,27 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         if point_list_type == PointListType.BULLET:
             return (MultiFormatState.BULLET_LIST,
                     MultiFormatState.BULLET_LIST_ITEM)
-        return (MultiFormatState.NUMERIC_LIST,
-                MultiFormatState.NUMERIC_LIST_ITEM)
+        return (MultiFormatState.NUMBERED_LIST,
+                MultiFormatState.NUMBERED_LIST_ITEM)
 
     def _get_point_list_type_name(
             self, point_list_type: PointListType) -> str:
         """Get the name of a point list type for error messages."""
         if point_list_type == PointListType.BULLET:
             return 'bullet'
-        return 'numeric'
+        return 'numbered'
 
     def _is_in_list_state(self) -> bool:
         """Check if currently in any list state (list or item)."""
         return self.state in (MultiFormatState.BULLET_LIST,
                               MultiFormatState.BULLET_LIST_ITEM,
-                              MultiFormatState.NUMERIC_LIST,
-                              MultiFormatState.NUMERIC_LIST_ITEM)
+                              MultiFormatState.NUMBERED_LIST,
+                              MultiFormatState.NUMBERED_LIST_ITEM)
 
     def _is_in_item_state(self) -> bool:
         """Check if currently in any list item state."""
         return self.state in (MultiFormatState.BULLET_LIST_ITEM,
-                              MultiFormatState.NUMERIC_LIST_ITEM)
+                              MultiFormatState.NUMBERED_LIST_ITEM)
 
     def _dispatch_start_list(
             self, level: int, point_list_type: PointListType) -> None:
@@ -614,7 +614,7 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         if point_list_type == PointListType.BULLET:
             self._start_bullet_list(level=level)
         else:
-            self._start_numeric_list(level=level)
+            self._start_numbered_list(level=level)
 
     def _dispatch_end_list(
             self, level: int, point_list_type: PointListType) -> None:
@@ -622,7 +622,7 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         if point_list_type == PointListType.BULLET:
             self._end_bullet_list(level=level)
         else:
-            self._end_numeric_list(level=level)
+            self._end_numbered_list(level=level)
 
     def _dispatch_start_item(
             self, level: int, point_list_type: PointListType) -> None:
@@ -632,8 +632,8 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         else:
             num = self.point_list_stack[-1]['number_at_level']
             full_number = self._full_number_of_list_item(num=num)
-            self._start_numeric_item(level=level, num=num,
-                                     full_number=full_number)
+            self._start_numbered_item(level=level, num=num,
+                                      full_number=full_number)
 
     def _dispatch_end_item(
             self, level: int, point_list_type: PointListType) -> None:
@@ -642,7 +642,7 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             self._end_bullet_item(level=level)
         else:
             num = self.point_list_stack[-1]['number_at_level']
-            self._end_numeric_item(level=level, num=num)
+            self._end_numbered_item(level=level, num=num)
 
     def _close(self) -> None:
         """Close the file.
@@ -683,8 +683,8 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             self.state = MultiFormatState.PARAGRAPH_END
         elif self.state in (MultiFormatState.BULLET_LIST_ITEM,
                             MultiFormatState.BULLET_LIST,
-                            MultiFormatState.NUMERIC_LIST_ITEM,
-                            MultiFormatState.NUMERIC_LIST):
+                            MultiFormatState.NUMBERED_LIST_ITEM,
+                            MultiFormatState.NUMBERED_LIST):
             while self.point_list_stack:
                 self._end_list_state()
             self.state = MultiFormatState.PARAGRAPH_END
@@ -813,28 +813,28 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         err = self._must_be_overridden('_end_bullet_item')
         raise NotImplementedError(err)
 
-    def _end_numeric_item(self, level: int, num: int) -> None:
-        """End a numeric item."""
+    def _end_numbered_item(self, level: int, num: int) -> None:
+        """End a numbered item."""
         assert isinstance(level, int)
         assert isinstance(num, int)
-        err = self._must_be_overridden('_end_numeric_item')
+        err = self._must_be_overridden('_end_numbered_item')
         raise NotImplementedError(err)
 
-    def _end_numeric_list(self, level: int) -> None:
-        """End a numeric list."""
+    def _end_numbered_list(self, level: int) -> None:
+        """End a numbered list."""
         assert isinstance(level, int)
-        err = self._must_be_overridden('_end_numeric_list')
+        err = self._must_be_overridden('_end_numbered_list')
         raise NotImplementedError(err)
 
-    def _start_numeric_list(self, level: int) -> None:
-        """Start a numeric list."""
+    def _start_numbered_list(self, level: int) -> None:
+        """Start a numbered list."""
         assert isinstance(level, int)
-        err = self._must_be_overridden('_start_numeric_list')
+        err = self._must_be_overridden('_start_numbered_list')
         raise NotImplementedError(err)
 
-    def _start_numeric_item(self, level: int, num: int,
-                            full_number: str) -> None:
-        """Start a numeric item.
+    def _start_numbered_item(self, level: int, num: int,
+                             full_number: str) -> None:
+        """Start a numbered item.
 
         Args:
             level: The level of the item.
@@ -844,7 +844,7 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         assert isinstance(level, int)
         assert isinstance(num, int)
         assert isinstance(full_number, str)
-        err = self._must_be_overridden('_start_numeric_item')
+        err = self._must_be_overridden('_start_numbered_item')
         raise NotImplementedError(err)
 
     def _update_table_column_widths(self, row: list[str]) -> None:
@@ -897,8 +897,8 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         if point_list_type == PointListType.BULLET:
             self.state = MultiFormatState.BULLET_LIST
             return
-        if point_list_type == PointListType.NUMERIC:
-            self.state = MultiFormatState.NUMERIC_LIST
+        if point_list_type == PointListType.NUMBERED:
+            self.state = MultiFormatState.NUMBERED_LIST
             return
         err = 'Unknown point list type ' + \
             f'{self.point_list_stack[-1]["point_list_type"]}'

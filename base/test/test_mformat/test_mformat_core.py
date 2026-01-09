@@ -104,7 +104,7 @@ def test_cls_method_not_overridden(capsys, method_name):
 @pytest.mark.parametrize('method_name',
                          ['_start_heading', '_end_heading',
                           '_start_bullet_list', '_end_bullet_list',
-                          '_start_numeric_list', '_end_numeric_list',
+                          '_start_numbered_list', '_end_numbered_list',
                           '_start_bullet_item', '_end_bullet_item',
                           '_start_table'])
 def test_cls_method_not_overridden2(capsys, method_name):
@@ -118,7 +118,7 @@ def test_cls_method_not_overridden2(capsys, method_name):
 
 
 @pytest.mark.parametrize('method_name',
-                         ['_end_table', '_end_numeric_item'])
+                         ['_end_table', '_end_numbered_item'])
 def test_cls_method_not_overridden3(capsys, method_name):
     """Test that the class method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
@@ -130,12 +130,12 @@ def test_cls_method_not_overridden3(capsys, method_name):
 
 
 def test_start_num_item_not_impl(capsys):
-    """Test that the start_numeric_item method is not overridden."""
+    """Test that the start_numbered_item method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
         # pylint: disable=protected-access
-        mfmt._start_numeric_item(2, 7, '1.7')
-    assert exc.value.args[0] == '_start_numeric_item must be ' + \
+        mfmt._start_numbered_item(2, 7, '1.7')
+    assert exc.value.args[0] == '_start_numbered_item must be ' + \
         'overridden by a subclass MultiFormat2'
     check_capsys(capsys)
 

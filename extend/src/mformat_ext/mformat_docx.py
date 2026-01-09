@@ -191,32 +191,32 @@ class MultiFormatDocx(MultiFormat):
         assert isinstance(level, int)
         self.current_paragraph = None
 
-    def _start_numeric_list(self, level: int) -> None:
-        """Start a numeric list.
+    def _start_numbered_list(self, level: int) -> None:
+        """Start a numbered list.
 
         Args:
-            level: The level of the numeric list (1-9).
+            level: The level of the numbered list (1-9).
         """
         assert isinstance(level, int)
         # In python-docx, lists are created by setting paragraph styles
         # No explicit list start/end is needed
 
-    def _end_numeric_list(self, level: int) -> None:
-        """End a numeric list.
+    def _end_numbered_list(self, level: int) -> None:
+        """End a numbered list.
 
         Args:
-            level: The level of the numeric list (1-9).
+            level: The level of the numbered list (1-9).
         """
         assert isinstance(level, int)
         # In python-docx, lists are created by setting paragraph styles
         # No explicit list start/end is needed
 
-    def _start_numeric_item(self, level: int, num: int,
-                            full_number: str) -> None:
-        """Start a numeric item.
+    def _start_numbered_item(self, level: int, num: int,
+                             full_number: str) -> None:
+        """Start a numbered item.
 
         Args:
-            level: The level of the numeric item (1-9).
+            level: The level of the numbered item (1-9).
             num: The number of the item.
             full_number: The full number of the item including all levels.
         """
@@ -230,11 +230,11 @@ class MultiFormatDocx(MultiFormat):
             self.current_paragraph.paragraph_format.left_indent = \
                 Inches(0.5 * (level - 1))
 
-    def _end_numeric_item(self, level: int, num: int) -> None:
-        """End a numeric item.
+    def _end_numbered_item(self, level: int, num: int) -> None:
+        """End a numbered item.
 
         Args:
-            level: The level of the numeric item (1-9).
+            level: The level of the numbered item (1-9).
             num: The number of the item.
         """
         assert isinstance(level, int)
