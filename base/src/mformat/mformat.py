@@ -234,7 +234,7 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             italic: If True, the text is italic.
         """
         assert level is None or level > 0
-        self._start_point_list_item(
+        self._start_list_item_impl(
             text=text, level=level, smart_ws=smart_ws,
             bold=bold, italic=italic,
             point_list_type=PointListType.BULLET)
@@ -270,7 +270,7 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             italic: If True, the text is italic.
         """
         assert level is None or level > 0
-        self._start_point_list_item(
+        self._start_list_item_impl(
             text=text, level=level, smart_ws=smart_ws,
             bold=bold, italic=italic,
             point_list_type=PointListType.NUMERIC)
@@ -443,100 +443,124 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
         self._end_code_block(programming_language=programming_language)
         self.state = MultiFormatState.PARAGRAPH_END
 
-    def _start_point_list_item(  # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals # noqa: E501
+    def _start_list_item_impl(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
             self, text: str, level: Optional[int],
             smart_ws: bool, bold: bool, italic: bool,
             point_list_type: PointListType) -> None:
-        """Start a new point list item (bullet or numeric).
+        """Start a list item of any type.
+
+        Handle the full state machine for list items with a clear,
+        linear flow:
+        1. Calculate the effective target level
+        2. Validate the level
+        3. Exit any non-list state
+        4. Adjust to the target level and type
+        5. Start the new item
+        6. Write the text
 
         Args:
             text: The text to write in the list item.
-            level: The level of the list item.
+            level: The level of the list item (None = current or 1).
             smart_ws: If True, leading and trailing whitespace are collapsed.
             bold: If True, the text is bold.
             italic: If True, the text is italic.
             point_list_type: The type of point list (bullet or numeric).
         """
-        if self._should_end_lists_to_reach_level(level):
-            while level and len(self.point_list_stack) > level:
-                self._end_list_state()
-            self._start_point_list_item(
-                text=text, level=level, smart_ws=smart_ws,
-                bold=bold, italic=italic,
-                point_list_type=point_list_type)
-            return
-        if self._can_add_item_to_current_list(level, point_list_type):
-            self._add_item_to_current_list(
-                text=text, smart_ws=smart_ws,
-                bold=bold, italic=italic,
-                point_list_type=point_list_type)
-            return
-        needs_switch = self._needs_to_switch_list_type(
-            level, point_list_type)
-        if needs_switch:
-            self._end_list_state()
-        # End current state if not in a list state
-        if self.state not in (MultiFormatState.BULLET_LIST,
-                              MultiFormatState.BULLET_LIST_ITEM,
-                              MultiFormatState.NUMERIC_LIST,
-                              MultiFormatState.NUMERIC_LIST_ITEM,
-                              MultiFormatState.PARAGRAPH_END):
+        target_level = level if level else (len(self.point_list_stack) or 1)
+        self._validate_list_level(target_level, point_list_type)
+        if not self._is_in_list_state():
             self._end_state()
-        self._start_new_list_with_item(
-            text=text, level=level, smart_ws=smart_ws,
-            bold=bold, italic=italic,
-            point_list_type=point_list_type)
+        self._adjust_to_list_level(target_level, point_list_type)
+        self._start_item_in_list(point_list_type)
+        self.ws_needed_at_append = False
+        self._write_text(self._to_write(text, smart_ws, False),
+                         self.state, bold, italic)
 
-    def _should_end_lists_to_reach_level(
-            self, level: Optional[int]) -> bool:
-        """Check if lists need to be ended to reach target level."""
-        if level and level < len(self.point_list_stack):
-            assert self.state in (
-                MultiFormatState.BULLET_LIST_ITEM,
-                MultiFormatState.BULLET_LIST,
-                MultiFormatState.NUMERIC_LIST_ITEM,
-                MultiFormatState.NUMERIC_LIST)
-            return True
-        return False
+    def _validate_list_level(
+            self, target_level: int,
+            point_list_type: PointListType) -> None:
+        """Validate that the target level is reachable.
 
-    def _can_add_item_to_current_list(
-            self, level: Optional[int],
-            point_list_type: PointListType) -> bool:
-        """Check if item can be added to current list."""
-        if not level or level == len(self.point_list_stack):
-            if point_list_type == PointListType.BULLET:
-                return self.state in (
-                    MultiFormatState.BULLET_LIST_ITEM,
-                    MultiFormatState.BULLET_LIST)
-            if point_list_type == PointListType.NUMERIC:
-                return self.state in (
-                    MultiFormatState.NUMERIC_LIST_ITEM,
-                    MultiFormatState.NUMERIC_LIST)
-        return False
-
-    def _needs_to_switch_list_type(
-            self, level: Optional[int],
-            point_list_type: PointListType) -> bool:
-        """Check if list type needs to be switched at current level.
-
-        Only returns True if we're switching list types at the same level,
-        not when nesting to a different level.
+        Args:
+            target_level: The level to validate.
+            point_list_type: The type of list (for error message).
+        Raises:
+            RuntimeError: If the target level skips a level.
         """
-        # If adding at a nested level, don't switch - nest instead
-        if level and level > len(self.point_list_stack):
-            return False
-        # Check if we need to switch list type at current level
-        if point_list_type == PointListType.BULLET:
-            return self.state in (
-                MultiFormatState.NUMERIC_LIST,
-                MultiFormatState.NUMERIC_LIST_ITEM)
-        if point_list_type == PointListType.NUMERIC:
-            return self.state in (
-                MultiFormatState.BULLET_LIST,
-                MultiFormatState.BULLET_LIST_ITEM)
-        # This is unreachable code as _can_add_item_to_current_list
-        # would have returned True and this code would not be executed.
-        return False  # pragma: no cover
+        if target_level > len(self.point_list_stack) + 1:
+            type_name = self._get_point_list_type_name(point_list_type)
+            raise RuntimeError(
+                f'start_{type_name}_item called with level={target_level}, '
+                f'but level {target_level-1} does not exist.')
+
+    def _adjust_to_list_level(
+            self, target_level: int,
+            point_list_type: PointListType) -> None:
+        """Adjust the list stack to the target level with the right type.
+
+        This method handles three operations in sequence:
+        1. Decrease depth: End lists until at or below target level
+        2. Switch type: End list at target level if type doesn't match
+        3. Increase depth: Start new lists until at target level
+
+        Args:
+            target_level: The level to reach.
+            point_list_type: The type of list needed at target level.
+        """
+        # Step 1: Decrease depth if needed
+        while len(self.point_list_stack) > target_level:
+            self._end_list_state()
+        # Step 2: Switch type at target level if needed
+        if len(self.point_list_stack) == target_level:
+            if self.point_list_stack[-1]['point_list_type'] != point_list_type:
+                self._end_list_state()
+        # Step 3: Increase depth if needed
+        while len(self.point_list_stack) < target_level:
+            self._end_item_before_nesting()
+            self._push_and_start_list(point_list_type)
+
+    def _end_item_before_nesting(self) -> None:
+        """End the current item before starting a nested list.
+
+        Transitions from item state to list state. Does nothing if not
+        currently in an item state or if no list exists.
+        """
+        if not self.point_list_stack or not self._is_in_item_state():
+            return
+        current_type = self.point_list_stack[-1]['point_list_type']
+        list_state, _ = self._get_list_states(current_type)
+        self._dispatch_end_item(len(self.point_list_stack), current_type)
+        self.state = list_state
+
+    def _push_and_start_list(self, point_list_type: PointListType) -> None:
+        """Push a new list onto the stack and start it.
+
+        Args:
+            point_list_type: The type of list to start.
+        """
+        stack_item = PointStackItem(
+            point_list_type=point_list_type,
+            number_at_level=0)
+        self.point_list_stack.append(stack_item)
+        list_state, _ = self._get_list_states(point_list_type)
+        self.state = list_state
+        self._dispatch_start_list(len(self.point_list_stack), point_list_type)
+
+    def _start_item_in_list(self, point_list_type: PointListType) -> None:
+        """Start a new item in the current list.
+
+        Ends the current item if in item state, then starts a new one.
+
+        Args:
+            point_list_type: The type of list item to start.
+        """
+        _, item_state = self._get_list_states(point_list_type)
+        lev = len(self.point_list_stack)
+        if self.state == item_state:
+            self._dispatch_end_item(lev, point_list_type)
+        self.point_list_stack[-1]['number_at_level'] += 1
+        self._dispatch_start_item(lev, point_list_type)
+        self.state = item_state
 
     def _full_number_of_list_item(self, num: int) -> str:
         """Get the full number of the current item."""
@@ -548,77 +572,77 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
             full_number += f'{stack_item["number_at_level"]}.'
         return full_number
 
-    def _add_item_to_current_list(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-            self, text: str, smart_ws: bool,
-            bold: bool, italic: bool,
-            point_list_type: PointListType) -> None:
-        """Add item to the current list."""
-        lev = len(self.point_list_stack)
-        if point_list_type == PointListType.BULLET:
-            if self.state == MultiFormatState.BULLET_LIST_ITEM:
-                self._end_bullet_item(level=lev)
-            self.point_list_stack[-1]['number_at_level'] += 1
-            self._start_bullet_item(level=lev)
-            self.state = MultiFormatState.BULLET_LIST_ITEM
-        else:  # PointListType.NUMERIC
-            if self.state == MultiFormatState.NUMERIC_LIST_ITEM:
-                num = self.point_list_stack[-1]['number_at_level']
-                self._end_numeric_item(level=lev, num=num)
-            self.point_list_stack[-1]['number_at_level'] += 1
-            num = self.point_list_stack[-1]['number_at_level']
-            full_number = self._full_number_of_list_item(num=num)
-            self._start_numeric_item(level=lev, num=num,
-                                     full_number=full_number)
-            self.state = MultiFormatState.NUMERIC_LIST_ITEM
-        self._write_text(
-            self._to_write(text, smart_ws, False),
-            self.state, bold, italic)
+    def _get_list_states(
+            self,
+            point_list_type: PointListType
+    ) -> tuple[MultiFormatState, MultiFormatState]:
+        """Get the list and item states for a point list type.
 
-    def _start_new_list_with_item(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-            self, text: str, level: Optional[int],
-            smart_ws: bool, bold: bool, italic: bool,
-            point_list_type: PointListType) -> None:
-        """Start a new list and add the first item."""
-        if level and level > len(self.point_list_stack) + 1:
-            list_type_name = ('bullet' if point_list_type ==
-                              PointListType.BULLET else 'numeric')
-            raise RuntimeError(
-                f'start_{list_type_name}_item called with level={level}, '
-                f'but level {level-1} does not exist.')
-        assert not level or level == len(self.point_list_stack) + 1
-        # If starting a nested list, end the current item first
-        if self.point_list_stack:
-            if self.state == MultiFormatState.BULLET_LIST_ITEM:
-                self._end_bullet_item(level=len(self.point_list_stack))
-                self.state = MultiFormatState.BULLET_LIST
-            elif self.state == MultiFormatState.NUMERIC_LIST_ITEM:
-                num = self.point_list_stack[-1]['number_at_level']
-                self._end_numeric_item(level=len(self.point_list_stack),
-                                       num=num)
-                self.state = MultiFormatState.NUMERIC_LIST
-        stack_item = PointStackItem(
-            point_list_type=point_list_type,
-            number_at_level=0)
-        self.point_list_stack.append(stack_item)
-        lev = len(self.point_list_stack)
+        Args:
+            point_list_type: The type of point list.
+        Returns:
+            A tuple of (list_state, item_state).
+        """
         if point_list_type == PointListType.BULLET:
-            self.state = MultiFormatState.BULLET_LIST
-            self._start_bullet_list(level=lev)
-            self.state = MultiFormatState.BULLET_LIST_ITEM
-            self.point_list_stack[-1]['number_at_level'] += 1
-            self._start_bullet_item(level=lev)
-        else:  # PointListType.NUMERIC
-            self.state = MultiFormatState.NUMERIC_LIST
-            self._start_numeric_list(level=lev)
-            self.state = MultiFormatState.NUMERIC_LIST_ITEM
-            self.point_list_stack[-1]['number_at_level'] += 1
+            return (MultiFormatState.BULLET_LIST,
+                    MultiFormatState.BULLET_LIST_ITEM)
+        return (MultiFormatState.NUMERIC_LIST,
+                MultiFormatState.NUMERIC_LIST_ITEM)
+
+    def _get_point_list_type_name(
+            self, point_list_type: PointListType) -> str:
+        """Get the name of a point list type for error messages."""
+        if point_list_type == PointListType.BULLET:
+            return 'bullet'
+        return 'numeric'
+
+    def _is_in_list_state(self) -> bool:
+        """Check if currently in any list state (list or item)."""
+        return self.state in (MultiFormatState.BULLET_LIST,
+                              MultiFormatState.BULLET_LIST_ITEM,
+                              MultiFormatState.NUMERIC_LIST,
+                              MultiFormatState.NUMERIC_LIST_ITEM)
+
+    def _is_in_item_state(self) -> bool:
+        """Check if currently in any list item state."""
+        return self.state in (MultiFormatState.BULLET_LIST_ITEM,
+                              MultiFormatState.NUMERIC_LIST_ITEM)
+
+    def _dispatch_start_list(
+            self, level: int, point_list_type: PointListType) -> None:
+        """Call the appropriate _start_*_list method."""
+        if point_list_type == PointListType.BULLET:
+            self._start_bullet_list(level=level)
+        else:
+            self._start_numeric_list(level=level)
+
+    def _dispatch_end_list(
+            self, level: int, point_list_type: PointListType) -> None:
+        """Call the appropriate _end_*_list method."""
+        if point_list_type == PointListType.BULLET:
+            self._end_bullet_list(level=level)
+        else:
+            self._end_numeric_list(level=level)
+
+    def _dispatch_start_item(
+            self, level: int, point_list_type: PointListType) -> None:
+        """Call the appropriate _start_*_item method."""
+        if point_list_type == PointListType.BULLET:
+            self._start_bullet_item(level=level)
+        else:
             num = self.point_list_stack[-1]['number_at_level']
             full_number = self._full_number_of_list_item(num=num)
-            self._start_numeric_item(level=lev, num=num,
+            self._start_numeric_item(level=level, num=num,
                                      full_number=full_number)
-        self._write_text(
-            self._to_write(text, smart_ws, False),
-            self.state, bold, italic)
+
+    def _dispatch_end_item(
+            self, level: int, point_list_type: PointListType) -> None:
+        """Call the appropriate _end_*_item method."""
+        if point_list_type == PointListType.BULLET:
+            self._end_bullet_item(level=level)
+        else:
+            num = self.point_list_stack[-1]['number_at_level']
+            self._end_numeric_item(level=level, num=num)
 
     def _close(self) -> None:
         """Close the file.
@@ -883,21 +907,14 @@ class MultiFormat:  # pylint: disable=too-many-instance-attributes
     def _end_list_state(self) -> None:
         """End a list state."""
         assert self.point_list_stack
-        if self.state == MultiFormatState.BULLET_LIST_ITEM:
-            self._end_bullet_item(level=len(self.point_list_stack))
-            self.state = MultiFormatState.BULLET_LIST
-        if self.state == MultiFormatState.BULLET_LIST:
-            self._end_bullet_list(level=len(self.point_list_stack))
-            self.point_list_stack.pop()
-            self._state_from_point_list()
-            return
-        if self.state == MultiFormatState.NUMERIC_LIST_ITEM:
-            num = self.point_list_stack[-1]['number_at_level']
-            self._end_numeric_item(level=len(self.point_list_stack),
-                                   num=num)
-            self.state = MultiFormatState.NUMERIC_LIST
-        if self.state == MultiFormatState.NUMERIC_LIST:
-            self._end_numeric_list(level=len(self.point_list_stack))
+        point_list_type = self.point_list_stack[-1]['point_list_type']
+        list_state, item_state = self._get_list_states(point_list_type)
+        lev = len(self.point_list_stack)
+        if self.state == item_state:
+            self._dispatch_end_item(level=lev, point_list_type=point_list_type)
+            self.state = list_state
+        if self.state == list_state:
+            self._dispatch_end_list(level=lev, point_list_type=point_list_type)
             self.point_list_stack.pop()
             self._state_from_point_list()
 
