@@ -12,7 +12,8 @@ from test_helpers import (
     MultiFormat2, MultiFormat3, MultiFormat5,
     MultiFormat8, MultiFormat9
 )
-from mformat.mformat import MultiFormat, MultiFormatState, PointStackItem
+from mformat.mformat import MultiFormat, MultiFormatState
+from mformat.mformat_lists import PointStackItem
 
 
 @pytest.mark.parametrize('file_name, extension, res',

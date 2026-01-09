@@ -80,12 +80,12 @@ done
 rm -rf ${FLAKEOUTDIR}
 mkdir -p ${FLAKEOUTDIR}
 set +eE
+${PYTHON} -m pylint example/src/*.py example/test/*.py 2>&1 | tee ${PYTESTLOG}
+${PYTHON} -m mypy example/src --strict --html-report ${MYPYOUTDIR} 2>&1 | tee ${MYPYOUTFILE}
 ${PYTHON} -m flake8 --format=html --htmldir=${FLAKEOUTDIR} base/src base/test extend/src extend/test example/src 2>&1 | tee ${FLAKEOUTFILE}
 ${PYTHON} -m mypy base/src extend/src --strict --html-report ${MYPYOUTDIR} 2>&1 | tee ${MYPYOUTFILE}
-${PYTHON} -m mypy example/src --strict --html-report ${MYPYOUTDIR} 2>&1 | tee ${MYPYOUTFILE}
 set -eE
 pytest --pylint ${pytestflag} --pylint-jobs=16 --html=${DOCOUTDIR}/pytest_report.html --cov=${PKG1} --cov=${PKG2} --cov-report=html:${DOCOUTDIR}/coverage 2>&1 | tee ${PYTESTLOG}
-${PYTHON} -m pylint example/src/*.py example/test/*.py 2>&1 | tee ${PYTESTLOG}
 testStatus=$?
 set +v
 rm -rf example/result || true 2>&1 | tee -a ${BUILDLOG}
