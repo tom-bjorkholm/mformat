@@ -18,6 +18,24 @@ class PointListType(IntEnum):
     NUMBERED = auto()
 
 
+POINT_LIST_TYPE_NAMES = {
+    PointListType.BULLET: 'bullet',
+    PointListType.NUMBERED: 'numbered'
+}
+POINT_LIST_TYPE_STATES = {
+    PointListType.BULLET: (MultiFormatState.BULLET_LIST,
+                           MultiFormatState.BULLET_LIST_ITEM),
+    PointListType.NUMBERED: (MultiFormatState.NUMBERED_LIST,
+                             MultiFormatState.NUMBERED_LIST_ITEM)
+}
+LIST_STATES = (MultiFormatState.BULLET_LIST,
+               MultiFormatState.BULLET_LIST_ITEM,
+               MultiFormatState.NUMBERED_LIST,
+               MultiFormatState.NUMBERED_LIST_ITEM)
+LIST_ITEM_STATES = (MultiFormatState.BULLET_LIST_ITEM,
+                    MultiFormatState.NUMBERED_LIST_ITEM)
+
+
 class PointStackItem(TypedDict):
     """Item in the point list stack."""
 
@@ -106,23 +124,15 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
         This method handles three operations in sequence:
         1. Decrease depth: End lists until at or below target level
         2. Switch type: End list at target level if type doesn't match
-        3. Increase depth: Start new lists until at target level
+        3. Increase depth: Start new list at target level if needed
 
         Args:
             target_level: The level to reach.
             point_list_type: The type of list needed at target level.
         """
-        # Step 1: Decrease depth if needed
-        while len(self.point_list_stack) > target_level:
-            self._end_list_state()
-        # Step 2: Switch type at target level if needed
-        if len(self.point_list_stack) == target_level:
-            if self.point_list_stack[-1]['point_list_type'] != point_list_type:
-                self._end_list_state()
-        # Step 3: Increase depth if needed
-        while len(self.point_list_stack) < target_level:
-            self._end_item_before_nesting()
-            self._push_and_start_list(point_list_type)
+        self._decrease_list_depth(target_level)
+        self._switch_list_type_at_level(target_level, point_list_type)
+        self._increase_list_depth(target_level, point_list_type)
 
     def _end_item_before_nesting(self) -> None:
         """End the current item before starting a nested list.
@@ -177,6 +187,27 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
             full_number += f'{stack_item["number_at_level"]}.'
         return full_number
 
+    def _decrease_list_depth(self, target_level: int) -> None:
+        """Decrease depth: End lists until at or below target level."""
+        while len(self.point_list_stack) > target_level:
+            self._end_list_state()
+
+    def _switch_list_type_at_level(self, target_level: int,
+                                   point_list_type: PointListType) -> None:
+        """Switch type: End list at target level if type doesn't match."""
+        if len(self.point_list_stack) == target_level:
+            if self.point_list_stack[-1]['point_list_type'] != point_list_type:
+                self._end_list_state()
+
+    def _increase_list_depth(self, target_level: int,
+                             point_list_type: PointListType) -> None:
+        """Increase depth: Start new list at target level if needed."""
+        if len(self.point_list_stack) < target_level:
+            self._end_item_before_nesting()
+            self._push_and_start_list(point_list_type)
+        # Previously we checked that max one level was missing
+        assert len(self.point_list_stack) == target_level
+
     # =========================================================================
     # Helper methods for list type handling
     # =========================================================================
@@ -190,30 +221,20 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
         Returns:
             A tuple of (list_state, item_state).
         """
-        if point_list_type == PointListType.BULLET:
-            return (MultiFormatState.BULLET_LIST,
-                    MultiFormatState.BULLET_LIST_ITEM)
-        return (MultiFormatState.NUMBERED_LIST,
-                MultiFormatState.NUMBERED_LIST_ITEM)
+        return POINT_LIST_TYPE_STATES[point_list_type]
 
     def _get_point_list_type_name(self,
                                   point_list_type: PointListType) -> str:
         """Get the name of a point list type for error messages."""
-        if point_list_type == PointListType.BULLET:
-            return 'bullet'
-        return 'numbered'
+        return POINT_LIST_TYPE_NAMES[point_list_type]
 
     def _is_in_list_state(self) -> bool:
         """Check if currently in any list state (list or item)."""
-        return self.state in (MultiFormatState.BULLET_LIST,
-                              MultiFormatState.BULLET_LIST_ITEM,
-                              MultiFormatState.NUMBERED_LIST,
-                              MultiFormatState.NUMBERED_LIST_ITEM)
+        return self.state in LIST_STATES
 
     def _is_in_list_item_state(self) -> bool:
         """Check if currently in any list item state."""
-        return self.state in (MultiFormatState.BULLET_LIST_ITEM,
-                              MultiFormatState.NUMBERED_LIST_ITEM)
+        return self.state in LIST_ITEM_STATES
 
     # =========================================================================
     # Dispatch methods - call the appropriate derived class method
