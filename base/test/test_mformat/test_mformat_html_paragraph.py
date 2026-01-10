@@ -14,7 +14,7 @@ from test_mformat_html_core import (
     args_for_file_prefix,
 )
 from mformat.mformat_html import MultiFormatHtml
-from mformat.mformat import MultiFormatState
+from mformat.mformat_state import MultiFormatState, Formatting
 
 
 def test_start_paragraph(capsys):
@@ -91,7 +91,8 @@ def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positi
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
         mfd._write_url(url=url,  # pylint: disable=protected-access
-                       text=text, bold=bold, italic=italic,
+                       text=text,
+                       formatting=Formatting(bold=bold, italic=italic),
                        state=MultiFormatState.PARAGRAPH)
 
     check_run_with_context_manager('html', '.html', test_action,

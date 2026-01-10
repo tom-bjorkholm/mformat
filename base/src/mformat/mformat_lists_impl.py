@@ -6,10 +6,9 @@
 #
 
 from enum import IntEnum, auto
-from typing import TYPE_CHECKING, TypedDict, Optional
-
-if TYPE_CHECKING:
-    from mformat.mformat import MultiFormatState
+from typing import TypedDict, Optional
+from mformat.mformat_state import MultiFormatState, FormattingWithWS, \
+    Formatting
 
 
 class PointListType(IntEnum):
@@ -41,13 +40,9 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
     - Abstract methods for derived classes to implement
     """
 
-    def _get_start_state(self) -> MultiFormatState:
-        """Get the start state for self.state from derived class."""
-        raise NotImplementedError('_get_start_state must be overridden')
-
     def __init__(self) -> None:
         """Initialize the ListHandlerMixin."""
-        self.state: MultiFormatState = self._get_start_state()
+        self.state: MultiFormatState = MultiFormatState.EMPTY
         self.point_list_stack: list[PointStackItem] = []
         self.ws_needed_at_append: bool = False
 
@@ -55,10 +50,9 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
     # List state machine implementation
     # =========================================================================
 
-    def _start_list_item_impl(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-            self, text: str, level: Optional[int],
-            smart_ws: bool, bold: bool, italic: bool,
-            point_list_type: PointListType) -> None:
+    def _start_list_item_impl(self, text: str, level: Optional[int],
+                              formatting: FormattingWithWS,
+                              point_list_type: PointListType) -> None:
         """Start a list item of any type.
 
         Handle the full state machine for list items with a clear,
@@ -85,12 +79,11 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
         self._adjust_to_list_level(target_level, point_list_type)
         self._start_item_in_list(point_list_type)
         self.ws_needed_at_append = False
-        to_write = self._to_write(text, smart_ws, False)
-        self._write_text(to_write, self.state, bold, italic)
+        to_write = self._to_write(text, formatting.smart_ws, False)
+        self._write_text(to_write, self.state, formatting.formatting)
 
-    def _validate_list_level(
-            self, target_level: int,
-            point_list_type: PointListType) -> None:
+    def _validate_list_level(self, target_level: int,
+                             point_list_type: PointListType) -> None:
         """Validate that the target level is reachable.
 
         Args:
@@ -137,10 +130,10 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
         Transitions from item state to list state. Does nothing if not
         currently in an item state or if no list exists.
         """
-        if not self.point_list_stack or not self._is_in_item_state():
+        if not self.point_list_stack or not self._is_in_list_item_state():
             return
         current_type = self.point_list_stack[-1]['point_list_type']
-        list_state, _ = self._get_list_states(current_type)
+        list_state, _ = self._get_states_of_pltype(current_type)
         self._dispatch_end_item(len(self.point_list_stack), current_type)
         self.state = list_state
 
@@ -154,7 +147,7 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
             point_list_type=point_list_type,
             number_at_level=0)
         self.point_list_stack.append(stack_item)
-        list_state, _ = self._get_list_states(point_list_type)
+        list_state, _ = self._get_states_of_pltype(point_list_type)
         self.state = list_state
         self._dispatch_start_list(len(self.point_list_stack), point_list_type)
 
@@ -166,7 +159,7 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
         Args:
             point_list_type: The type of list item to start.
         """
-        _, item_state = self._get_list_states(point_list_type)
+        _, item_state = self._get_states_of_pltype(point_list_type)
         lev = len(self.point_list_stack)
         if self.state == item_state:
             self._dispatch_end_item(lev, point_list_type)
@@ -188,10 +181,8 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
     # Helper methods for list type handling
     # =========================================================================
 
-    def _get_list_states(
-            self,
-            point_list_type: PointListType
-    ) -> tuple['MultiFormatState', 'MultiFormatState']:
+    def _get_states_of_pltype(self, point_list_type: PointListType) -> \
+            tuple[MultiFormatState, MultiFormatState]:
         """Get the list and item states for a point list type.
 
         Args:
@@ -199,16 +190,14 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
         Returns:
             A tuple of (list_state, item_state).
         """
-        # pylint: disable=import-outside-toplevel
-        from mformat.mformat import MultiFormatState
         if point_list_type == PointListType.BULLET:
             return (MultiFormatState.BULLET_LIST,
                     MultiFormatState.BULLET_LIST_ITEM)
         return (MultiFormatState.NUMBERED_LIST,
                 MultiFormatState.NUMBERED_LIST_ITEM)
 
-    def _get_point_list_type_name(
-            self, point_list_type: PointListType) -> str:
+    def _get_point_list_type_name(self,
+                                  point_list_type: PointListType) -> str:
         """Get the name of a point list type for error messages."""
         if point_list_type == PointListType.BULLET:
             return 'bullet'
@@ -216,17 +205,13 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
 
     def _is_in_list_state(self) -> bool:
         """Check if currently in any list state (list or item)."""
-        # pylint: disable=import-outside-toplevel
-        from mformat.mformat import MultiFormatState
         return self.state in (MultiFormatState.BULLET_LIST,
                               MultiFormatState.BULLET_LIST_ITEM,
                               MultiFormatState.NUMBERED_LIST,
                               MultiFormatState.NUMBERED_LIST_ITEM)
 
-    def _is_in_item_state(self) -> bool:
+    def _is_in_list_item_state(self) -> bool:
         """Check if currently in any list item state."""
-        # pylint: disable=import-outside-toplevel
-        from mformat.mformat import MultiFormatState
         return self.state in (MultiFormatState.BULLET_LIST_ITEM,
                               MultiFormatState.NUMBERED_LIST_ITEM)
 
@@ -234,24 +219,24 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
     # Dispatch methods - call the appropriate derived class method
     # =========================================================================
 
-    def _dispatch_start_list(
-            self, level: int, point_list_type: PointListType) -> None:
+    def _dispatch_start_list(self, level: int,
+                             point_list_type: PointListType) -> None:
         """Call the appropriate _start_*_list method."""
         if point_list_type == PointListType.BULLET:
             self._start_bullet_list(level=level)
         else:
             self._start_numbered_list(level=level)
 
-    def _dispatch_end_list(
-            self, level: int, point_list_type: PointListType) -> None:
+    def _dispatch_end_list(self, level: int,
+                           point_list_type: PointListType) -> None:
         """Call the appropriate _end_*_list method."""
         if point_list_type == PointListType.BULLET:
             self._end_bullet_list(level=level)
         else:
             self._end_numbered_list(level=level)
 
-    def _dispatch_start_item(
-            self, level: int, point_list_type: PointListType) -> None:
+    def _dispatch_start_item(self, level: int,
+                             point_list_type: PointListType) -> None:
         """Call the appropriate _start_*_item method."""
         if point_list_type == PointListType.BULLET:
             self._start_bullet_item(level=level)
@@ -261,8 +246,8 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
             self._start_numbered_item(level=level, num=num,
                                       full_number=full_number)
 
-    def _dispatch_end_item(
-            self, level: int, point_list_type: PointListType) -> None:
+    def _dispatch_end_item(self, level: int,
+                           point_list_type: PointListType) -> None:
         """Call the appropriate _end_*_item method."""
         if point_list_type == PointListType.BULLET:
             self._end_bullet_item(level=level)
@@ -276,8 +261,6 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
 
     def _state_from_point_list(self) -> None:
         """Set the state from the point list stack."""
-        # pylint: disable=import-outside-toplevel
-        from mformat.mformat import MultiFormatState
         if not self.point_list_stack:
             self.state = MultiFormatState.PARAGRAPH_END
             return
@@ -296,7 +279,7 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
         """End a list state."""
         assert self.point_list_stack
         point_list_type = self.point_list_stack[-1]['point_list_type']
-        list_state, item_state = self._get_list_states(point_list_type)
+        list_state, item_state = self._get_states_of_pltype(point_list_type)
         lev = len(self.point_list_stack)
         if self.state == item_state:
             self._dispatch_end_item(level=lev, point_list_type=point_list_type)
@@ -319,7 +302,7 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
         raise NotImplementedError('_to_write must be overridden')
 
     def _write_text(self, text: str, state: MultiFormatState,
-                    bold: bool, italic: bool) -> None:
+                    formatting: Formatting) -> None:
         """Write the text."""
         raise NotImplementedError('_write_text must be overridden')
 

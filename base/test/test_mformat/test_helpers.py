@@ -9,7 +9,8 @@ from tempfile import TemporaryDirectory
 from typing import Optional, Any, Callable
 import pytest
 from check_capsys import check_capsys
-from mformat.mformat import MultiFormat, MultiFormatState
+from mformat.mformat import MultiFormat
+from mformat.mformat_state import MultiFormatState, Formatting
 from mformat.factory import create_mf
 
 
@@ -133,17 +134,16 @@ class MultiFormat3(MultiFormat2):
             self.count[func_name] += 1
 
     def _write_text(self, text: str, state: MultiFormatState,
-                    bold: bool, italic: bool) -> None:
+                    formatting: Formatting) -> None:
         """Write text into current item (paragraph, bullet list item, etc.)."""
         assert isinstance(text, str)
         assert isinstance(state, MultiFormatState)
-        assert isinstance(bold, bool)
-        assert isinstance(italic, bool)
+        assert isinstance(formatting, Formatting)
         self.inc_count('_write_text')
 
     def _write_url(self, url: str, text: Optional[str],
                    state: MultiFormatState,
-                   bold: bool, italic: bool) -> None:
+                   formatting: Formatting) -> None:
         """Write a URL into current item.
 
         (paragraph, bullet list item, etc.)
@@ -154,8 +154,7 @@ class MultiFormat3(MultiFormat2):
         if text is not None:
             assert isinstance(text, str)
         assert isinstance(state, MultiFormatState)
-        assert isinstance(bold, bool)
-        assert isinstance(italic, bool)
+        assert isinstance(formatting, Formatting)
         self.inc_count('_write_url')
 
     def _start_paragraph(self) -> None:
@@ -193,12 +192,12 @@ class MultiFormat4(MultiFormat3):
         self.expected_italic: bool = expected_italic
 
     def _write_text(self, text: str, state: MultiFormatState,
-                    bold: bool, italic: bool) -> None:
+                    formatting: Formatting) -> None:
         """Write text into current item (paragraph, bullet list item, etc.)."""
-        super()._write_text(text, state, bold, italic)
+        super()._write_text(text, state, formatting)
         assert text == self.expected_text
-        assert bold == self.expected_bold
-        assert italic == self.expected_italic
+        assert formatting.bold == self.expected_bold
+        assert formatting.italic == self.expected_italic
 
 
 class MultiFormat5(MultiFormat4):
@@ -232,17 +231,17 @@ class MultiFormat6(MultiFormat3):
 
     def _write_url(self, url: str, text: Optional[str],
                    state: MultiFormatState,
-                   bold: bool, italic: bool) -> None:
+                   formatting: Formatting) -> None:
         """Write a URL into current item.
 
         (paragraph, bullet list item, etc.)
         """
         # pylint: disable=too-many-arguments,too-many-positional-arguments
-        super()._write_url(url, text, state, bold, italic)
+        super()._write_url(url, text, state, formatting)
         assert url == self.expected_url
         assert text == self.expected_url_text
-        assert bold == self.expected_bold
-        assert italic == self.expected_italic
+        assert formatting.bold == self.expected_bold
+        assert formatting.italic == self.expected_italic
 
 
 class MultiFormat7(MultiFormat4):
@@ -288,12 +287,12 @@ class MultiFormat8(MultiFormat3):
         # is called automatically when transitioning to other states
 
     def _write_text(self, text: str, state: MultiFormatState,
-                    bold: bool, italic: bool) -> None:
+                    formatting: Formatting) -> None:
         """Write text into current item (paragraph, bullet list item, etc.)."""
-        super()._write_text(text, state, bold, italic)
+        super()._write_text(text, state, formatting)
         assert text == self.expected_text
-        assert bold == self.expected_bold
-        assert italic == self.expected_italic
+        assert formatting.bold == self.expected_bold
+        assert formatting.italic == self.expected_italic
 
 
 class MultiFormat9(MultiFormat8):
@@ -316,17 +315,17 @@ class MultiFormat9(MultiFormat8):
 
     def _write_url(self, url: str, text: Optional[str],
                    state: MultiFormatState,
-                   bold: bool, italic: bool) -> None:
+                   formatting: Formatting) -> None:
         """Write a URL into current item.
 
         (paragraph, bullet list item, etc.)
         """
         # pylint: disable=too-many-arguments,too-many-positional-arguments
-        super()._write_url(url, text, state, bold, italic)
+        super()._write_url(url, text, state, formatting)
         assert url == self.expected_url
         assert text == self.expected_url_text
-        assert bold == self.expected_bold
-        assert italic == self.expected_italic
+        assert formatting.bold == self.expected_bold
+        assert formatting.italic == self.expected_italic
 
 
 class MultiFormat10(MultiFormat3):

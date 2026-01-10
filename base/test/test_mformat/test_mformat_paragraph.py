@@ -8,7 +8,7 @@
 import pytest
 from check_capsys import check_capsys
 from test_helpers import MultiFormat4, MultiFormat6, MultiFormat7
-from mformat.mformat import MultiFormatState
+from mformat.mformat_state import MultiFormatState
 
 
 @pytest.mark.parametrize('from_state, to_state, count, text',

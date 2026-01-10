@@ -6,11 +6,12 @@
 #
 
 from types import TracebackType
-from enum import IntEnum, auto
 from typing import NamedTuple, Callable, Optional
 import sys
 import os
-from mformat.mformat_lists import ListHandlerMixin, PointListType
+from mformat.mformat_lists_impl import ListHandlerMixin, PointListType
+from mformat.mformat_state import MultiFormatState, FormattingWithWS, \
+    Formatting
 
 
 class FormatterDescriptor(NamedTuple):
@@ -19,22 +20,6 @@ class FormatterDescriptor(NamedTuple):
     name: str
     mandatory_args: list[str]
     optional_args: list[str]
-
-
-class MultiFormatState(IntEnum):
-    """Enum for the state of the multi file format."""
-
-    EMPTY = auto()
-    HEADING = auto()
-    PARAGRAPH = auto()
-    PARAGRAPH_END = auto()
-    BULLET_LIST = auto()
-    BULLET_LIST_ITEM = auto()
-    NUMBERED_LIST = auto()
-    NUMBERED_LIST_ITEM = auto()
-    TABLE = auto()
-    CODE_BLOCK = auto()
-    CLOSED = auto()
 
 
 class TableInformation:  # pylint: disable=too-few-public-methods
@@ -49,10 +34,6 @@ class TableInformation:  # pylint: disable=too-few-public-methods
 
 class MultiFormat(ListHandlerMixin):
     """Base class for all multi file format classes."""
-
-    def _get_start_state(self) -> MultiFormatState:
-        """Get the start state for self.state for use by ListHandlerMixin."""
-        return MultiFormatState.EMPTY
 
     def __init__(self, file_name: str,
                  url_as_text: bool = False,
@@ -174,8 +155,9 @@ class MultiFormat(ListHandlerMixin):
         self.state = MultiFormatState.HEADING
         self.heading_level = level
         self.ws_needed_at_append = False
+        formatting = Formatting(bold=bold, italic=italic)
         self._write_text(self._to_write(text, smart_ws, False),
-                         self.state, bold, italic)
+                         self.state, formatting)
 
     def start_paragraph(self, text: str, smart_ws: bool = True,
                         bold: bool = False, italic: bool = False) -> None:
@@ -193,8 +175,9 @@ class MultiFormat(ListHandlerMixin):
             self._end_state()
         self._start_paragraph()
         self.state = MultiFormatState.PARAGRAPH
+        formatting = Formatting(bold=bold, italic=italic)
         self._write_text(self._to_write(text, smart_ws, False),
-                         self.state, bold, italic)
+                         self.state, formatting)
 
     def add_text(self, text: str, smart_ws: bool = True,
                  bold: bool = False, italic: bool = False) -> None:
@@ -214,8 +197,9 @@ class MultiFormat(ListHandlerMixin):
                               MultiFormatState.NUMBERED_LIST_ITEM):
             err = f'Cannot add text to state {self.state.name}'
             raise RuntimeError(err)
+        formatting = Formatting(bold=bold, italic=italic)
         self._write_text(self._to_write(text, smart_ws, True),
-                         self.state, bold, italic)
+                         self.state, formatting)
 
     def add_url(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                 url: str, text: Optional[str] = None,
@@ -238,17 +222,19 @@ class MultiFormat(ListHandlerMixin):
                               MultiFormatState.NUMBERED_LIST_ITEM):
             err = f'Cannot add URL to state {self.state.name}'
             raise RuntimeError(err)
+        formatting = Formatting(bold=bold, italic=italic)
         if self.url_as_text:
             text_to_write = ''
             if text:
                 assert text is not None
                 text_to_write = self._to_write(text, smart_ws, True) + ' '
             text_to_write += url.strip()
-            self._write_text(text_to_write, self.state, bold, italic)
+            self._write_text(text_to_write, self.state, formatting)
             return
         # Write spacing before URL if needed
         if smart_ws and self.ws_needed_at_append:
-            self._write_text(' ', self.state, False, False)
+            self._write_text(' ', self.state,
+                             Formatting(bold=False, italic=False))
         # Process URL text and update ws_needed_at_append
         processed_text = text.strip() if text and smart_ws else text
         self.ws_needed_at_append = \
@@ -256,7 +242,7 @@ class MultiFormat(ListHandlerMixin):
         self._write_url(url,
                         self._encode_text(processed_text) if processed_text
                         else None,
-                        self.state, bold, italic)
+                        self.state, formatting)
 
     def start_bullet_item(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
             self, text: str, level: Optional[int] = None,
@@ -288,9 +274,11 @@ class MultiFormat(ListHandlerMixin):
             italic: If True, the text is italic.
         """
         assert level is None or level > 0
+        formatting = Formatting(bold=bold, italic=italic)
+        formatting_with_ws = FormattingWithWS(formatting=formatting,
+                                              smart_ws=smart_ws)
         self._start_list_item_impl(
-            text=text, level=level, smart_ws=smart_ws,
-            bold=bold, italic=italic,
+            text=text, level=level, formatting=formatting_with_ws,
             point_list_type=PointListType.BULLET)
 
     def start_numbered_point_item(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
@@ -324,9 +312,11 @@ class MultiFormat(ListHandlerMixin):
             italic: If True, the text is italic.
         """
         assert level is None or level > 0
+        formatting = Formatting(bold=bold, italic=italic)
+        formatting_with_ws = FormattingWithWS(formatting=formatting,
+                                              smart_ws=smart_ws)
         self._start_list_item_impl(
-            text=text, level=level, smart_ws=smart_ws,
-            bold=bold, italic=italic,
+            text=text, level=level, formatting=formatting_with_ws,
             point_list_type=PointListType.NUMBERED)
 
     def start_table(self, first_row: list[str],
@@ -348,9 +338,9 @@ class MultiFormat(ListHandlerMixin):
         self.state = MultiFormatState.TABLE
         self._start_table(num_columns=self.table.number_of_columns)
         encoded_first_row = self._encode_table_row(first_row)
+        formatting = Formatting(bold=bold, italic=italic)
         self._write_table_first_row(first_row=encoded_first_row,
-                                    bold=bold,
-                                    italic=italic)
+                                    formatting=formatting)
         self.table.number_of_rows += 1
 
     def add_table_row(self, row: list[str],
@@ -359,8 +349,7 @@ class MultiFormat(ListHandlerMixin):
 
         Args:
             row: The row to add to the table.
-            bold: If True, the text in each cell in row is bold.
-            italic: If True, the text in each cell in row is italic.
+            formatting: The formatting of the text in each cell in row.
         """
         if self.state != MultiFormatState.TABLE:
             errmsg = f'Cannot add table row to state {self.state.name}'
@@ -371,8 +360,9 @@ class MultiFormat(ListHandlerMixin):
             errmsg += f'{self.table.number_of_columns} columns'
             raise RuntimeError(errmsg)
         self._update_table_column_widths(row=row)
+        formatting = Formatting(bold=bold, italic=italic)
         self._write_table_row(row=self._encode_table_row(row),
-                              bold=bold, italic=italic,
+                              formatting=formatting,
                               row_number=self.table.number_of_rows)
         self.table.number_of_rows += 1
 
@@ -384,10 +374,8 @@ class MultiFormat(ListHandlerMixin):
         Result is same as calling start_table followed by add_table_row
         for each row. Args:
             table: The complete table to add.
-            bold_first_row: If True, the text in each cell in first
-                            row is bold.
-            italic_first_row: If True, the text in each cell in first
-                              row is italic.
+            formatting_first_row: The formatting of the text in each
+                                  cell in first row.
         """
         assert table is not None and isinstance(table, list)
         if len(table) == 0:
@@ -503,26 +491,24 @@ class MultiFormat(ListHandlerMixin):
         raise NotImplementedError(err)
 
     def _write_text(self, text: str, state: MultiFormatState,
-                    bold: bool, italic: bool) -> None:
+                    formatting: Formatting) -> None:
         """Write text into current item (paragraph, bullet list item...)."""
         assert isinstance(text, str)
         assert isinstance(state, MultiFormatState)
-        assert isinstance(bold, bool)
-        assert isinstance(italic, bool)
+        assert isinstance(formatting, Formatting)
         err = self._must_be_overridden('_write_text')
         raise NotImplementedError(err)
 
     def _write_url(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                    url: str, text: Optional[str],
                    state: MultiFormatState,
-                   bold: bool, italic: bool) -> None:
+                   formatting: Formatting) -> None:
         """Write a URL into current item (paragraph, bullet list item...)."""
         assert isinstance(url, str)
         if text is not None:
             assert isinstance(text, str)
         assert isinstance(state, MultiFormatState)
-        assert isinstance(bold, bool)
-        assert isinstance(italic, bool)
+        assert isinstance(formatting, Formatting)
         err = self._must_be_overridden('_write_url')
         raise NotImplementedError(err)
 
@@ -667,20 +653,18 @@ class MultiFormat(ListHandlerMixin):
         raise NotImplementedError(err)
 
     def _write_table_first_row(self, first_row: list[str],
-                               bold: bool, italic: bool) -> None:
+                               formatting: Formatting) -> None:
         """Write the first row of the table."""
         assert isinstance(first_row, list)
-        assert isinstance(bold, bool)
-        assert isinstance(italic, bool)
+        assert isinstance(formatting, Formatting)
         err = self._must_be_overridden('_write_table_first_row')
         raise NotImplementedError(err)
 
-    def _write_table_row(self, row: list[str], bold: bool, italic: bool,
+    def _write_table_row(self, row: list[str], formatting: Formatting,
                          row_number: int) -> None:
         """Write a row of the table."""
         assert isinstance(row, list)
-        assert isinstance(bold, bool)
-        assert isinstance(italic, bool)
+        assert isinstance(formatting, Formatting)
         assert isinstance(row_number, int)
         err = self._must_be_overridden('_write_table_row')
         raise NotImplementedError(err)

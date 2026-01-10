@@ -8,7 +8,8 @@
 from copy import deepcopy
 from typing import Optional, Callable
 from mformat.mformat_textbased import MultiFormatTextBased
-from mformat.mformat import FormatterDescriptor, MultiFormatState
+from mformat.mformat_state import MultiFormatState, Formatting
+from mformat.mformat import FormatterDescriptor
 
 
 def split_whitespace(text: str) -> tuple[str, str, str]:
@@ -96,41 +97,40 @@ class MultiFormatMd(MultiFormatTextBased):
         self.file.write('\n')
 
     @staticmethod
-    def _format_text(text: str, bold: bool, italic: bool) -> str:
+    def _format_text(text: str, formatting: Formatting) -> str:
         """Format text with bold and italic."""
         pre, stripped, post = split_whitespace(text)
         if not stripped:
             return text
-        if bold:
+        if formatting.bold:
             stripped = f'**{stripped}**'
-        if italic:
+        if formatting.italic:
             stripped = f'*{stripped}*'
         return pre + stripped + post
 
     def _write_text(self,  # pylint: disable=unused-argument,too-many-arguments,too-many-positional-arguments # noqa: E501
                     text: str, state: MultiFormatState,
-                    bold: bool, italic: bool) -> None:
+                    formatting: Formatting) -> None:
         """Write text into current item (paragraph, bullet list item, etc.).
 
         Args:
             text: The text to write into the current item.
             state: The state of the current item.
-            bold: If True, the text is bold.
-            italic: If True, the text is italic.
+            formatting: The formatting of the text.
         """
         assert self.file is not None
-        self.file.write(self._format_text(text, bold, italic))
+        self.file.write(self._format_text(text, formatting))
 
     def _write_url(self,  # pylint: disable=unused-argument,too-many-arguments,too-many-positional-arguments # noqa: E501
                    url: str, text: Optional[str],
                    state: MultiFormatState,
-                   bold: bool, italic: bool) -> None:
+                   formatting: Formatting) -> None:
         """Write a URL into current item (paragraph, bullet list item...)."""
         assert self.file is not None
         if not text:
             text = url
         text = f'[{text}]({url})'
-        self.file.write(self._format_text(text, bold, italic))
+        self.file.write(self._format_text(text, formatting))
 
     def _start_bullet_list(self, level: int) -> None:
         """Start a bullet list."""
@@ -223,18 +223,18 @@ class MultiFormatMd(MultiFormatTextBased):
         self.file.write('\n')
 
     def _write_table_first_row(self, first_row: list[str],
-                               bold: bool, italic: bool) -> None:
+                               formatting: Formatting) -> None:
         """Write the first row of a table."""
         assert self.file is not None
         assert self.table is not None
-        self._write_table_row(row=first_row, bold=bold, italic=italic,
+        self._write_table_row(row=first_row, formatting=formatting,
                               row_number=0)
         col_lines = [width*'-' for width in self.table.column_widths]
         line = '|-' + '-|-'.join(col_lines) + '-|'
         self.file.write(line + '\n')
 
     def _write_table_row(self, row: list[str],
-                         bold: bool, italic: bool, row_number: int) -> None:
+                         formatting: Formatting, row_number: int) -> None:
         """Write a row of a table."""
         assert self.file is not None
         assert self.table is not None
@@ -244,8 +244,8 @@ class MultiFormatMd(MultiFormatTextBased):
             raise ValueError(err)
         # Make a copy of the row to avoid modifying the original row.
         local_row = deepcopy(row)
-        if bold or italic:
-            local_row = [self._format_text(cell, bold, italic)
+        if formatting.bold or formatting.italic:
+            local_row = [self._format_text(cell, formatting)
                          for cell in local_row]
         # Update column widths to account for formatted text
             self._update_table_column_widths(row=local_row)

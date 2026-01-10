@@ -13,7 +13,7 @@ from test_helpers import (
     TABLE_DATA_VARIED_WIDTHS,
     TABLE_DATA_WRONG_COLUMNS
 )
-from mformat.mformat import MultiFormatState
+from mformat.mformat_state import MultiFormatState, Formatting
 
 
 class MultiFormat11(MultiFormat3):
@@ -31,19 +31,17 @@ class MultiFormat11(MultiFormat3):
         self.inc_count('_end_table')
 
     def _write_table_first_row(self, first_row: list[str],
-                               bold: bool, italic: bool) -> None:
+                               formatting: Formatting) -> None:
         """Write the first row of a table."""
         assert isinstance(first_row, list)
-        assert isinstance(bold, bool)
-        assert isinstance(italic, bool)
+        assert isinstance(formatting, Formatting)
         self.inc_count('_write_table_first_row')
 
-    def _write_table_row(self, row: list[str], bold: bool, italic: bool,
+    def _write_table_row(self, row: list[str], formatting: Formatting,
                          row_number: int) -> None:
         """Write a row of a table."""
         assert isinstance(row, list)
-        assert isinstance(bold, bool)
-        assert isinstance(italic, bool)
+        assert isinstance(formatting, Formatting)
         assert isinstance(row_number, int)
         self.inc_count('_write_table_row')
 

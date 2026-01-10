@@ -12,7 +12,7 @@ from test_helpers import (
     run_protected_method,
     check_run_with_context_manager,
 )
-from mformat.mformat import MultiFormatState
+from mformat.mformat_state import MultiFormatState, Formatting
 from mformat.factory import create_mf
 
 
@@ -88,7 +88,7 @@ def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positi
     """Test the _write_url method."""
     txt = run_protected_method('md', '.md', '_write_url',
                                (url, text, MultiFormatState.PARAGRAPH,
-                                bold, italic))
+                                Formatting(bold=bold, italic=italic)))
     assert txt == expected
     check_capsys(capsys)
 

@@ -14,7 +14,8 @@ from test_helpers import (
     run_protected_method
 )
 from mformat.mformat_html import MultiFormatHtml
-from mformat.mformat import FormatterDescriptor, MultiFormatState
+from mformat.mformat_state import MultiFormatState, Formatting
+from mformat.mformat import FormatterDescriptor
 
 
 def test_file_name_extension(capsys):
@@ -90,7 +91,7 @@ def test_write_text(capsys,  # pylint: disable=too-many-arguments,too-many-posit
     """Test the _write_text method."""
     txt = run_protected_method('html', '.html', '_write_text',
                                (text, MultiFormatState.PARAGRAPH,
-                                bold, italic))
+                                Formatting(bold=bold, italic=italic)))
     assert txt == expected
     check_capsys(capsys)
 

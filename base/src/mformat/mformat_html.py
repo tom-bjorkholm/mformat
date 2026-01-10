@@ -8,7 +8,8 @@
 from typing import Optional, Callable
 from html import escape
 from mformat.mformat_textbased import MultiFormatTextBased
-from mformat.mformat import FormatterDescriptor, MultiFormatState
+from mformat.mformat_state import MultiFormatState, Formatting
+from mformat.mformat import FormatterDescriptor
 
 
 class MultiFormatHtml(MultiFormatTextBased):
@@ -93,34 +94,33 @@ class MultiFormatHtml(MultiFormatTextBased):
         self.file.write(f'</h{level}>\n')
 
     def _write_text(self, text: str, state: MultiFormatState,
-                    bold: bool, italic: bool) -> None:
+                    formatting: Formatting) -> None:
         """Write text into current item (paragraph, bullet list item, etc.).
 
         Args:
             text: The text to write into the current item.
             state: The state of the current item.
-            bold: If True, the text is bold.
-            italic: If True, the text is italic.
+            formatting: The formatting of the text.
         """
         assert self.file is not None
-        if bold:
+        if formatting.bold:
             text = f'<strong>{text}</strong>'
-        if italic:
+        if formatting.italic:
             text = f'<em>{text}</em>'
         self.file.write(text)
 
     def _write_url(self,  # pylint: disable=unused-argument,too-many-arguments,too-many-positional-arguments # noqa: E501
                    url: str, text: Optional[str],
                    state: MultiFormatState,
-                   bold: bool, italic: bool) -> None:
+                   formatting: Formatting) -> None:
         """Write a URL into current item (paragraph, bullet list item...)."""
         assert self.file is not None
         if not text:
             text = url
         text = f'<a href="{url}">{text}</a>'
-        if bold:
+        if formatting.bold:
             text = f'<strong>{text}</strong>'
-        if italic:
+        if formatting.italic:
             text = f'<em>{text}</em>'
         self.file.write(text)
 
@@ -190,23 +190,23 @@ class MultiFormatHtml(MultiFormatTextBased):
         self.file.write('</table>\n')
 
     def _write_table_first_row(self, first_row: list[str],
-                               bold: bool, italic: bool) -> None:
+                               formatting: Formatting) -> None:
         """Write the first row of a table."""
         assert self.file is not None
         assert self.table is not None
-        self._write_table_row(row=first_row, bold=bold, italic=italic,
+        self._write_table_row(row=first_row, formatting=formatting,
                               row_number=0)
 
     def _write_table_row(self, row: list[str],
-                         bold: bool, italic: bool, row_number: int) -> None:
+                         formatting: Formatting, row_number: int) -> None:
         """Write a row of a table."""
         assert self.file is not None
         assert self.table is not None
         self.file.write('<tr>\n')
         for cell in row:
-            if bold:
+            if formatting.bold:
                 cell = f'<strong>{cell}</strong>'
-            if italic:
+            if formatting.italic:
                 cell = f'<em>{cell}</em>'
             self.file.write(f'<td>{cell}</td>\n')
         self.file.write('</tr>\n')

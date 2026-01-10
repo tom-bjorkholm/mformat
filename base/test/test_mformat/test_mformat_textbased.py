@@ -10,7 +10,7 @@ import os
 import pytest
 from check_capsys import check_capsys
 from mformat.mformat_textbased import MultiFormatTextBased
-from mformat.mformat import MultiFormatState
+from mformat.mformat_state import MultiFormatState
 
 
 class MultiFormatTextBased2(MultiFormatTextBased):

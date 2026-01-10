@@ -12,8 +12,9 @@ from test_helpers import (
     MultiFormat2, MultiFormat3, MultiFormat5,
     MultiFormat8, MultiFormat9
 )
-from mformat.mformat import MultiFormat, MultiFormatState
-from mformat.mformat_lists import PointStackItem
+from mformat.mformat_state import MultiFormatState, Formatting
+from mformat.mformat import MultiFormat
+from mformat.mformat_lists_impl import PointStackItem
 
 
 @pytest.mark.parametrize('file_name, extension, res',
@@ -88,13 +89,14 @@ def test_cls_method_not_overridden(capsys, method_name):
     """Test that the instance method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
+        formatting = Formatting(bold=False, italic=False)
         if method_name == '_write_text':
             _ = getattr(mfmt, method_name)('test', MultiFormatState.PARAGRAPH,
-                                           False, False)
+                                           formatting)
         elif method_name == '_write_url':
             _ = getattr(mfmt, method_name)('http://example.com', 'text',
                                            MultiFormatState.PARAGRAPH,
-                                           False, False)
+                                           formatting)
         else:
             _ = getattr(mfmt, method_name)()
     assert exc.value.args[0] == f'{method_name} must be overridden by a ' + \
@@ -147,7 +149,8 @@ def test_write_table_row_not_impl(capsys):
     with pytest.raises(NotImplementedError) as exc:
         mfmt._write_table_row(  # pylint: disable=protected-access
                               row=['X', 'Y'],
-                              bold=False, italic=False, row_number=2)
+                              formatting=Formatting(bold=False, italic=False),
+                              row_number=2)
     assert exc.value.args[0] == '_write_table_row must be ' + \
         'overridden by a subclass MultiFormat2'
     check_capsys(capsys)
@@ -159,7 +162,8 @@ def test_write_table_frow_not_impl(capsys):
     with pytest.raises(NotImplementedError) as exc:
         mfmt._write_table_first_row(  # pylint: disable=protected-access
                                     first_row=['X', 'Y'],
-                                    bold=False, italic=False)
+                                    formatting=Formatting(bold=False,
+                                                          italic=False))
     assert exc.value.args[0] == '_write_table_first_row must ' + \
         'be overridden by a subclass MultiFormat2'
     check_capsys(capsys)
@@ -203,7 +207,8 @@ def test_write_text(capsys):
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
         mfmt._write_text('test',  # pylint: disable=protected-access
-                         MultiFormatState.PARAGRAPH, False, False)
+                         MultiFormatState.PARAGRAPH,
+                         Formatting(bold=False, italic=False))
     assert exc.value.args[0] == '_write_text must be overridden ' + \
         'by a subclass MultiFormat2'
     check_capsys(capsys)
@@ -215,7 +220,8 @@ def test_write_url(capsys):
     with pytest.raises(NotImplementedError) as exc:
         # pylint: disable=protected-access
         mfmt._write_url('http://example.com', 'text',
-                        MultiFormatState.PARAGRAPH, False, False)
+                        MultiFormatState.PARAGRAPH,
+                        Formatting(bold=False, italic=False))
     assert exc.value.args[0] == '_write_url must be overridden ' + \
         'by a subclass MultiFormat2'
     check_capsys(capsys)

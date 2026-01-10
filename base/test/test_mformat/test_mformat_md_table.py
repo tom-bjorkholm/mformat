@@ -13,6 +13,7 @@ from test_helpers import (
     TABLE_DATA_3X2_SIMPLE
 )
 from check_capsys import check_capsys
+from mformat.mformat_state import Formatting
 
 
 def test_simple_table(capsys):
@@ -203,7 +204,7 @@ def test_table_different_num_cols2(capsys):
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.start_table(first_row=['Name', 'Age', 'City'])
         mfd._write_table_row(row=['Alice', '30'],  # pylint: disable=protected-access # noqa: E501
-                             bold=False, italic=False,
+                             formatting=Formatting(bold=False, italic=False),
                              row_number=2)
         mfd.add_table_row(row=['Bob', '25', 'LA'])
 

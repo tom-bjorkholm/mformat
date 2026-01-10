@@ -8,7 +8,7 @@
 import pytest
 from check_capsys import check_capsys
 from test_helpers import MultiFormat10
-from mformat.mformat import MultiFormatState
+from mformat.mformat_state import MultiFormatState
 
 
 def test_start_bullet_item_from_empty(capsys):

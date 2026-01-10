@@ -13,7 +13,8 @@ from test_helpers import (
     check_run_with_context_manager
 )
 from mformat.mformat_md import MultiFormatMd, split_whitespace
-from mformat.mformat import FormatterDescriptor, MultiFormatState
+from mformat.mformat_state import MultiFormatState, Formatting
+from mformat.mformat import FormatterDescriptor
 
 
 @pytest.mark.parametrize('text, expected',
@@ -52,28 +53,33 @@ def test_get_arg_desciption(capsys):
                           ('_end_paragraph', None, '\n'),
                           ('_write_text',
                            ('test', MultiFormatState.PARAGRAPH,
-                            False, False), 'test'),
+                            Formatting(bold=False, italic=False)), 'test'),
                           ('_write_text',
                            ('test\ntest', MultiFormatState.PARAGRAPH,
-                            False, False), 'test\ntest'),
+                            Formatting(bold=False, italic=False)),
+                           'test\ntest'),
                           ('_write_text',
                            ('bold', MultiFormatState.PARAGRAPH,
-                            True, False), '**bold**'),
+                            Formatting(bold=True, italic=False)), '**bold**'),
                           ('_write_text',
                            ('italic', MultiFormatState.PARAGRAPH,
-                            False, True), '*italic*'),
+                            Formatting(bold=False, italic=True)), '*italic*'),
                           ('_write_text',
                            ('both', MultiFormatState.PARAGRAPH,
-                            True, True), '***both***'),
+                            Formatting(bold=True, italic=True)),
+                           '***both***'),
                           ('_write_text',
                            (' bold  ', MultiFormatState.PARAGRAPH,
-                            True, False), ' **bold**  '),
+                            Formatting(bold=True, italic=False)),
+                           ' **bold**  '),
                           ('_write_text',
                            ('  italic ', MultiFormatState.PARAGRAPH,
-                            False, True), '  *italic* '),
+                            Formatting(bold=False, italic=True)),
+                           '  *italic* '),
                           ('_write_text',
                            ('  both  ', MultiFormatState.PARAGRAPH,
-                            True, True), '  ***both***  ')])
+                            Formatting(bold=True, italic=True)),
+                           '  ***both***  ')])
 def test_methods(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
                  method, arg, expected):
     """Test the trivial methods of the MultiFormatMd class."""
@@ -369,7 +375,8 @@ def test_multiple_code_blocks(capsys):
 def test_format_text_space(capsys, bold, italic, text, expected):
     """Test the format_text method with space."""
     # pylint: disable=protected-access
-    assert MultiFormatMd._format_text(text, bold, italic) == expected
+    formatting = Formatting(bold=bold, italic=italic)
+    assert MultiFormatMd._format_text(text, formatting) == expected
     check_capsys(capsys)
 
 
@@ -383,5 +390,6 @@ def test_format_text_space(capsys, bold, italic, text, expected):
 def test_format_text_formatting(capsys, text, bold, italic, expected):
     """Test the format_text method with formatting."""
     # pylint: disable=protected-access
-    assert MultiFormatMd._format_text(text, bold, italic) == expected
+    formatting = Formatting(bold=bold, italic=italic)
+    assert MultiFormatMd._format_text(text, formatting) == expected
     check_capsys(capsys)

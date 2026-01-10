@@ -10,8 +10,8 @@ from docx import Document
 from docx.document import Document as DocumentObject
 from docx.text.paragraph import Paragraph
 from docx.shared import Inches
-from mformat.mformat import FormatterDescriptor, MultiFormat, \
-    MultiFormatState
+from mformat.mformat import FormatterDescriptor, MultiFormat
+from mformat.mformat_state import MultiFormatState, Formatting
 
 
 class MultiFormatDocx(MultiFormat):
@@ -105,34 +105,32 @@ class MultiFormatDocx(MultiFormat):
         self.current_paragraph = None
 
     def _write_text(self, text: str, state: MultiFormatState,
-                    bold: bool, italic: bool) -> None:
+                    formatting: Formatting) -> None:
         """Write text into current item (paragraph, bullet list item, etc.).
 
         Args:
             text: The text to write into the current item.
             state: The state of the current item.
-            bold: If True, the text is bold.
-            italic: If True, the text is italic.
+            formatting: The formatting of the text.
         """
         if self.current_paragraph is None:
             raise RuntimeError('No current paragraph to write text into')
         run = self.current_paragraph.add_run(text)
-        if bold:
+        if formatting.bold:
             run.bold = True
-        if italic:
+        if formatting.italic:
             run.italic = True
 
     def _write_url(self, url: str, text: Optional[str],
                    state: MultiFormatState,
-                   bold: bool, italic: bool) -> None:
+                   formatting: Formatting) -> None:
         """Write a URL into current item (paragraph, bullet list item, etc.).
 
         Args:
             url: The URL to write into the current item.
             text: The text to display for the URL.
             state: The state of the current item.
-            bold: If True, the text is bold.
-            italic: If True, the text is italic.
+            formatting: The formatting of the text.
         """  # pylint: disable=too-many-arguments,too-many-positional-arguments
         if self.current_paragraph is None:
             raise RuntimeError('No current paragraph to write URL into')
@@ -141,9 +139,9 @@ class MultiFormatDocx(MultiFormat):
         # Note: python-docx doesn't have direct hyperlink
         # support, so we add it as styled text
         run = self.current_paragraph.add_run(text)
-        if bold:
+        if formatting.bold:
             run.bold = True
-        if italic:
+        if formatting.italic:
             run.italic = True
         run.font.color.rgb = None  # Use default color
         # Note: For proper hyperlinks in docx, we would need to manipulate
@@ -266,17 +264,15 @@ class MultiFormatDocx(MultiFormat):
         # No action needed - table is already complete
 
     def _write_table_first_row(self, first_row: list[str],
-                               bold: bool, italic: bool) -> None:
+                               formatting: Formatting) -> None:
         """Write the first row of a table.
 
         Args:
             first_row: The first row of the table.
-            bold: If True, the text in each cell is bold.
-            italic: If True, the text in each cell is italic.
+            formatting: The formatting of the text in each cell.
         """
         assert isinstance(first_row, list)
-        assert isinstance(bold, bool)
-        assert isinstance(italic, bool)
+        assert isinstance(formatting, Formatting)
         # Create the table with the first row
         table = self.doc.add_table(rows=1, cols=len(first_row))
         table.style = 'Table Grid'
@@ -285,24 +281,22 @@ class MultiFormatDocx(MultiFormat):
             cell = table.rows[0].cells[idx]
             para = cell.paragraphs[0]
             run = para.add_run(cell_text)
-            if bold:
+            if formatting.bold:
                 run.bold = True
-            if italic:
+            if formatting.italic:
                 run.italic = True
 
-    def _write_table_row(self, row: list[str], bold: bool, italic: bool,
+    def _write_table_row(self, row: list[str], formatting: Formatting,
                          row_number: int) -> None:
         """Write a row of a table.
 
         Args:
             row: The row to add to the table.
-            bold: If True, the text in each cell is bold.
-            italic: If True, the text in each cell is italic.
+            formatting: The formatting of the text in each cell.
             row_number: The row number (0-based).
         """
         assert isinstance(row, list)
-        assert isinstance(bold, bool)
-        assert isinstance(italic, bool)
+        assert isinstance(formatting, Formatting)
         assert isinstance(row_number, int)
         # Get the last table in the document
         table = self.doc.tables[-1]
@@ -313,9 +307,9 @@ class MultiFormatDocx(MultiFormat):
             cell = new_row.cells[idx]
             para = cell.paragraphs[0]
             run = para.add_run(cell_text)
-            if bold:
+            if formatting.bold:
                 run.bold = True
-            if italic:
+            if formatting.italic:
                 run.italic = True
 
     def _start_code_block(self, programming_language: Optional[str]) -> None:
