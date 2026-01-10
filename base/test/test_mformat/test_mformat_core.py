@@ -537,10 +537,9 @@ def test_invalid_state_plist(capsys):
     """Test the handling of invalid state for point lists."""
     mfmt = MultiFormat12(file_name='test')
     mfmt.state = MultiFormatState.BULLET_LIST_ITEM
-    with pytest.raises(RuntimeError) as exc:
+    with pytest.raises(KeyError):
         psi = PointStackItem(point_list_type=17,
                              number_at_level=1)
         mfmt.point_list_stack.append(psi)
         mfmt._state_from_point_list()  # pylint: disable=protected-access # noqa: E501
-    assert 'Unknown point list type' in exc.value.args[0]
     check_capsys(capsys)

@@ -296,15 +296,8 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
             self.state = MultiFormatState.PARAGRAPH_END
             return
         point_list_type = self.point_list_stack[-1]['point_list_type']
-        if point_list_type == PointListType.BULLET:
-            self.state = MultiFormatState.BULLET_LIST
-            return
-        if point_list_type == PointListType.NUMBERED:
-            self.state = MultiFormatState.NUMBERED_LIST
-            return
-        err = 'Unknown point list type ' + \
-            f'{self.point_list_stack[-1]["point_list_type"]}'
-        raise RuntimeError(err)
+        list_state, _ = self._get_states_of_pltype(point_list_type)
+        self.state = list_state
 
     def _end_list_state(self) -> None:
         """End a list state."""
