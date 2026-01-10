@@ -6,7 +6,7 @@
 #
 
 from enum import IntEnum, auto
-from typing import TypedDict, Optional
+from typing import TypedDict, Optional, Protocol
 from mformat.mformat_state import MultiFormatState, FormattingWithWS, \
     Formatting
 
@@ -36,6 +36,12 @@ LIST_ITEM_STATES = (MultiFormatState.BULLET_LIST_ITEM,
                     MultiFormatState.NUMBERED_LIST_ITEM)
 
 
+class LevelFunc(Protocol):  # pylint: disable=too-few-public-methods
+    """Function that takes a level and returns None."""
+
+    def __call__(self, level: int) -> None: ...  # noqa: D102
+
+
 class PointStackItem(TypedDict):
     """Item in the point list stack."""
 
@@ -63,6 +69,16 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
         self.state: MultiFormatState = MultiFormatState.EMPTY
         self.point_list_stack: list[PointStackItem] = []
         self.ws_needed_at_append: bool = False
+        self._start_list_dispatcher: \
+            dict[PointListType, LevelFunc] = {
+                PointListType.BULLET: self._start_bullet_list,
+                PointListType.NUMBERED: self._start_numbered_list,
+            }
+        self._end_list_dispatcher: \
+            dict[PointListType, LevelFunc] = {
+                PointListType.BULLET: self._end_bullet_list,
+                PointListType.NUMBERED: self._end_numbered_list,
+            }
 
     # =========================================================================
     # List state machine implementation
@@ -243,18 +259,12 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
     def _dispatch_start_list(self, level: int,
                              point_list_type: PointListType) -> None:
         """Call the appropriate _start_*_list method."""
-        if point_list_type == PointListType.BULLET:
-            self._start_bullet_list(level=level)
-        else:
-            self._start_numbered_list(level=level)
+        self._start_list_dispatcher[point_list_type](level=level)
 
     def _dispatch_end_list(self, level: int,
                            point_list_type: PointListType) -> None:
         """Call the appropriate _end_*_list method."""
-        if point_list_type == PointListType.BULLET:
-            self._end_bullet_list(level=level)
-        else:
-            self._end_numbered_list(level=level)
+        self._end_list_dispatcher[point_list_type](level=level)
 
     def _dispatch_start_item(self, level: int,
                              point_list_type: PointListType) -> None:
