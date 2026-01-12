@@ -36,7 +36,7 @@ class MultiFormatOdt(MultiFormat):
         self.current_paragraph: Optional[Paragraph] = None
         self.odt_table: Optional[Table] = None
         self.odt_tablenumber: int = 1
-        self.odt_list: Optional[List] = None
+        self.odt_list: list[List] = []
         self.odt_listitem: Optional[ListItem] = None
         bold_style = Style(name='bold', family='text')
         bold_style.set_attribute('fo:font-weight', 'bold')
@@ -194,8 +194,7 @@ class MultiFormatOdt(MultiFormat):
             level: The level of the bullet list (1-9).
         """
         assert isinstance(level, int)
-        self.odt_list = List(style='bullet')
-        assert self.odt_list is not None
+        self.odt_list.append(List(style='bullet'))
         self.current_paragraph = None
 
     def _end_bullet_list(self, level: int) -> None:
@@ -205,13 +204,12 @@ class MultiFormatOdt(MultiFormat):
             level: The level of the bullet list (1-9).
         """
         assert isinstance(level, int)
-        if self.odt_list is None:
-            print(f'odt_list is None for bullet list {level} '
-                  f'state: {self.state.name}')
-            return  # TODO: Figure out why odt_list is None
-        assert self.odt_list is not None
-        self.doc.body.append(self.odt_list)
-        self.odt_list = None
+        if not self.odt_list or len(self.odt_list) != level:
+            print(f'len(odt_list) = {len(self.odt_list)} for bullet list '
+                  f'level = {level} state: {self.state.name}')
+        assert self.odt_list and len(self.odt_list) == level
+        self.doc.body.append(self.odt_list[-1])
+        self.odt_list.pop()
 
     def _start_bullet_item(self, level: int) -> None:
         """Start a bullet item.
@@ -232,12 +230,7 @@ class MultiFormatOdt(MultiFormat):
         """
         assert isinstance(level, int)
         assert self.odt_listitem is not None
-        if self.odt_list is None:
-            print(f'odt_list is None for bullet item {level} '
-                  f'state: {self.state.name}')
-            return  # TODO: Figure out why odt_list is None
-        assert self.odt_list is not None
-        self.odt_list.append(self.odt_listitem)
+        self.odt_list[-1].append(self.odt_listitem)
         self.odt_listitem = None
         self.current_paragraph = None
 
@@ -248,8 +241,7 @@ class MultiFormatOdt(MultiFormat):
             level: The level of the numbered list (1-9).
         """
         assert isinstance(level, int)
-        self.odt_list = List(style='number')
-        assert self.odt_list is not None
+        self.odt_list.append(List(style='number'))
         self.current_paragraph = None
 
     def _end_numbered_list(self, level: int) -> None:
@@ -259,13 +251,12 @@ class MultiFormatOdt(MultiFormat):
             level: The level of the numbered list (1-9).
         """
         assert isinstance(level, int)
-        if self.odt_list is None:
-            print(f'odt_list is None for numbered list {level} '
-                  f'state: {self.state.name}')
-            return  # TODO: Figure out why odt_list is None
-        assert self.odt_list is not None
-        self.doc.body.append(self.odt_list)
-        self.odt_list = None
+        if not self.odt_list or len(self.odt_list) != level:
+            print(f'len(odt_list) = {len(self.odt_list)} for numbered list '
+                  f'level = {level} state: {self.state.name}')
+        assert self.odt_list and len(self.odt_list) == level
+        self.doc.body.append(self.odt_list[-1])
+        self.odt_list.pop()
 
     def _start_numbered_item(self, level: int, num: int,
                              full_number: str) -> None:
@@ -292,12 +283,11 @@ class MultiFormatOdt(MultiFormat):
         assert isinstance(level, int)
         assert isinstance(num, int)
         assert self.odt_listitem is not None
-        if self.odt_list is None:
-            print(f'odt_list is None for numbered item {level} {num} '
-                  f'state: {self.state.name}')
-            return  # TODO: Figure out why odt_list is None
-        assert self.odt_list is not None
-        self.odt_list.append(self.odt_listitem)
+        if not self.odt_list or len(self.odt_list) != level:
+            print(f'len(odt_list) = {len(self.odt_list)} for numbered item '
+                  f'level = {level} {num} state: {self.state.name}')
+        assert self.odt_list and len(self.odt_list) == level
+        self.odt_list[-1].append(self.odt_listitem)
         self.odt_listitem = None
         self.current_paragraph = None
 
@@ -408,7 +398,7 @@ class MultiFormatOdt(MultiFormat):
             para.text = line
             para.set_span(style='code', offset=0, length=len(line))
             self.doc.body.append(para)
-    
+
     def _encode_text(self, text: str) -> str:
         """Encode text (escape special characters)."""
         # No encoding needed for DOCX
