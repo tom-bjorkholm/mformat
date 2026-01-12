@@ -93,7 +93,7 @@ def test_factory_obj_create_nok(capsys):
                          args={'arg1': 'value1'})
     assert exc.value.args[0] == \
         'Format "something" is not registered. Available formats: ' + \
-        'docx, html, md'
+        'docx, html, md, odt'
     check_capsys(capsys)
 
 
@@ -101,7 +101,7 @@ def test_factory_obj_get_regs(capsys):
     """Test the factory object get_registered_formats method."""
     factory = MultiFormatFactory()
     assert sorted(factory.i_get_registered_formats()) == \
-        ['docx', 'html', 'md']
+        ['docx', 'html', 'md', 'odt']
     check_capsys(capsys)
 
 
@@ -121,7 +121,7 @@ def test_factory_obj_get_usage_nok(capsys):
         factory.i_get_usage('something')
     assert exc.value.args[0] == \
         'Format "something" is not registered. Available formats: ' + \
-        'docx, html, md'
+        'docx, html, md, odt'
     check_capsys(capsys)
 
 
@@ -159,7 +159,7 @@ def test_factory_reg_ok(  # pylint: disable=too-many-arguments,too-many-position
     mf2to4 = create_func('mf2t', 'test.test', url_as_text=True)
     assert mf2to4.arg1 == ''
     assert mf2to4.arg2 == ''
-    assert sorted(list_func()) == ['docx', 'html', 'md', 'mf2t']
+    assert sorted(list_func()) == ['docx', 'html', 'md', 'mf2t', 'odt']
     assert usage_func('mf2t') == \
         FormatterDescriptor(name='mf2t', mandatory_args=[],
                             optional_args=['arg1', 'arg2'])

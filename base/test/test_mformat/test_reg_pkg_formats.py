@@ -42,6 +42,7 @@ def test_register_pkg_formats2(capsys):
     """Test the register_formats_in_pkg function."""
     # pylint: disable=import-outside-toplevel,wrong-import-order
     from mformat_ext.mformat_docx import MultiFormatDocx
+    from mformat_ext.mformat_odt import MultiFormatOdt
     assert register_formats_in_pkg() == \
-        [MultiFormatHtml, MultiFormatMd, MultiFormatDocx]
+        [MultiFormatHtml, MultiFormatMd, MultiFormatDocx, MultiFormatOdt]
     check_capsys(capsys)
