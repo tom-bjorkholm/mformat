@@ -136,16 +136,14 @@ class MultiFormatDocx(MultiFormat):
             raise RuntimeError('No current paragraph to write URL into')
         if not text:
             text = url
-        # Note: python-docx doesn't have direct hyperlink
-        # support, so we add it as styled text
+        # Note: python-docx has docx.text.hyperlink.Hyperlink
+        # class that we need to figure out how to use.
         run = self.current_paragraph.add_run(text)
         if formatting.bold:
             run.bold = True
         if formatting.italic:
             run.italic = True
         run.font.color.rgb = None  # Use default color
-        # Note: For proper hyperlinks in docx, we would need to manipulate
-        # the underlying XML. For now, we just format the text.
 
     def _start_bullet_list(self, level: int) -> None:
         """Start a bullet list.

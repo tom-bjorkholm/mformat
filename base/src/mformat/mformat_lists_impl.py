@@ -228,7 +228,8 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
     # Helper methods for list type handling
     # =========================================================================
 
-    def _get_states_of_pltype(self, point_list_type: PointListType) -> \
+    @staticmethod
+    def _get_states_of_pltype(point_list_type: PointListType) -> \
             tuple[MultiFormatState, MultiFormatState]:
         """Get the list and item states for a point list type.
 
@@ -239,8 +240,8 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
         """
         return POINT_LIST_TYPE_STATES[point_list_type]
 
-    def _get_point_list_type_name(self,
-                                  point_list_type: PointListType) -> str:
+    @staticmethod
+    def _get_point_list_type_name(point_list_type: PointListType) -> str:
         """Get the name of a point list type for error messages."""
         return POINT_LIST_TYPE_NAMES[point_list_type]
 
