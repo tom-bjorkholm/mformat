@@ -5,7 +5,7 @@
 # MIT License
 #
 
-from typing import Optional, Callable, Union
+from typing import Optional, Callable
 from odfdo import Document, Paragraph, Header, Table, Row, Cell, \
     Link, List, ListItem, Style
 from mformat.mformat import FormatterDescriptor, MultiFormat
@@ -30,6 +30,7 @@ class MultiFormatOdt(MultiFormat):
                                   (May for instance save existing file as
                                   backup.)
                                   (Default is to raise an exception.)
+            lang: The language of the document.
         """
         self.doc: Document = Document('text')
         self.doc.set_language(lang)
@@ -38,18 +39,27 @@ class MultiFormatOdt(MultiFormat):
         self.odt_tablenumber: int = 1
         self.odt_list: list[List] = []
         self.odt_listitem: Optional[ListItem] = None
-        bold_style = Style(name='bold', family='text')
-        bold_style.set_attribute('fo:font-weight', 'bold')
+        self.odt_styles: dict[str, Style] = {}
+        bold_style = Style(name='bold', family='text',
+                           display_name='bold', area='text',
+                           bold=True, italic=False)
+        self.odt_styles['bold'] = bold_style
         self.doc.insert_style(bold_style)
-        italic_style = Style(name='italic', family='text')
-        italic_style.set_attribute('fo:font-style', 'italic')
+        italic_style = Style(name='italic', family='text',
+                             display_name='italic', area='text',
+                             italic=True, bold=False)
+        self.odt_styles['italic'] = italic_style
         self.doc.insert_style(italic_style)
-        bold_italic_style = Style(name='bold-italic', family='text')
-        bold_italic_style.set_attribute('fo:font-weight', 'bold')
-        bold_italic_style.set_attribute('fo:font-style', 'italic')
+        bold_italic_style = Style(name='bold-italic', family='text',
+                                  display_name='bold-italic', area='text',
+                                  bold=True, italic=True)
+        self.odt_styles['bold-italic'] = bold_italic_style
         self.doc.insert_style(bold_italic_style)
-        code_style = Style(name='code', family='text')
-        code_style.set_attribute('fo:font-family', 'monospace')
+        code_style = Style(name='code', family='font-face',
+                           display_name='code',
+                           font_family='monospace', font_name='courier new',
+                           bold=False, italic=False)
+        self.odt_styles['code'] = code_style
         self.doc.insert_style(code_style)
         super().__init__(file_name=file_name, url_as_text=url_as_text,
                          file_exists_callback=file_exists_callback)
@@ -125,17 +135,17 @@ class MultiFormatOdt(MultiFormat):
             self.doc.body.append(self.current_paragraph)
         self.current_paragraph = None
 
-    @staticmethod
-    def _apply_formatting(paragraph: Union[Paragraph, ListItem],
-                          formatting: Formatting, text: str) -> None:
+    def _formatted_write(self, paragraph: Paragraph,
+                         formatting: Formatting, text: str) -> None:
         """Apply formatting to a paragraph or list item."""
         assert paragraph is not None
-        assert isinstance(paragraph, (Paragraph, ListItem))
-        style = MultiFormatOdt._style_name_from_formatting(formatting)
+        assert isinstance(paragraph, Paragraph)
+        previous_length = len(paragraph.text)
+        text_length = len(text)
+        paragraph.text += text
+        style = self._style_from_formatting(formatting)
         if style:
-            total_length = len(paragraph.text)
-            text_length = len(text)
-            paragraph.set_span(style=style, offset=total_length - text_length,
+            paragraph.set_span(style=style, offset=previous_length,
                                length=text_length)
 
     def _write_text(self, text: str, state: MultiFormatState,
@@ -150,18 +160,16 @@ class MultiFormatOdt(MultiFormat):
         if self.state in (MultiFormatState.PARAGRAPH,
                           MultiFormatState.HEADING):
             assert self.current_paragraph is not None
-            self.current_paragraph.text += text
-            self._apply_formatting(self.current_paragraph, formatting, text)
-        elif self.state == MultiFormatState.BULLET_LIST_ITEM:
+            self._formatted_write(self.current_paragraph, formatting, text)
+        elif self.state in (MultiFormatState.BULLET_LIST_ITEM,
+                            MultiFormatState.NUMBERED_LIST_ITEM):
             assert self.odt_listitem is not None
-            self.odt_listitem.text += text
-            self._apply_formatting(self.odt_listitem, formatting, text)
-        elif self.state == MultiFormatState.NUMBERED_LIST_ITEM:
-            assert self.odt_listitem is not None
-            self.odt_listitem.text += text
-            self._apply_formatting(self.odt_listitem, formatting, text)
+            assert isinstance(self.odt_listitem.children[-1], Paragraph)
+            self._formatted_write(self.odt_listitem.children[-1],
+                                  formatting, text)
         else:
-            raise RuntimeError(f'Unexpected state: {self.state.name}')
+            raise RuntimeError(f'Unexpected state: {self.state.name} for '
+                               f'writing text: {text}')
 
     def _write_url(self, url: str, text: Optional[str],
                    state: MultiFormatState,
@@ -194,7 +202,7 @@ class MultiFormatOdt(MultiFormat):
             level: The level of the bullet list (1-9).
         """
         assert isinstance(level, int)
-        self.odt_list.append(List(style='bullet'))
+        self.odt_list.append(List(style='bullet-list'))
         self.current_paragraph = None
 
     def _end_bullet_list(self, level: int) -> None:
@@ -208,7 +216,10 @@ class MultiFormatOdt(MultiFormat):
             print(f'len(odt_list) = {len(self.odt_list)} for bullet list '
                   f'level = {level} state: {self.state.name}')
         assert self.odt_list and len(self.odt_list) == level
-        self.doc.body.append(self.odt_list[-1])
+        if len(self.odt_list) > 1:
+            self.odt_list[-2].append(self.odt_list[-1])
+        else:
+            self.doc.body.append(self.odt_list[-1])
         self.odt_list.pop()
 
     def _start_bullet_item(self, level: int) -> None:
@@ -219,6 +230,7 @@ class MultiFormatOdt(MultiFormat):
         """
         assert isinstance(level, int)
         self.odt_listitem = ListItem()
+        self.odt_listitem.text_content = Paragraph(text_or_element=Paragraph())
         assert self.odt_listitem is not None
         self.current_paragraph = None
 
@@ -241,7 +253,7 @@ class MultiFormatOdt(MultiFormat):
             level: The level of the numbered list (1-9).
         """
         assert isinstance(level, int)
-        self.odt_list.append(List(style='number'))
+        self.odt_list.append(List(style='numbered-list'))
         self.current_paragraph = None
 
     def _end_numbered_list(self, level: int) -> None:
@@ -255,7 +267,10 @@ class MultiFormatOdt(MultiFormat):
             print(f'len(odt_list) = {len(self.odt_list)} for numbered list '
                   f'level = {level} state: {self.state.name}')
         assert self.odt_list and len(self.odt_list) == level
-        self.doc.body.append(self.odt_list[-1])
+        if len(self.odt_list) > 1:
+            self.odt_list[-2].append(self.odt_list[-1])
+        else:
+            self.doc.body.append(self.odt_list[-1])
         self.odt_list.pop()
 
     def _start_numbered_item(self, level: int, num: int,
@@ -270,7 +285,7 @@ class MultiFormatOdt(MultiFormat):
         assert isinstance(level, int)
         assert isinstance(num, int)
         assert isinstance(full_number, str)
-        self.odt_listitem = ListItem()
+        self.odt_listitem = ListItem(text_or_element=Paragraph())
         self.current_paragraph = None
 
     def _end_numbered_item(self, level: int, num: int) -> None:
@@ -298,6 +313,7 @@ class MultiFormatOdt(MultiFormat):
             num_columns: The number of columns in the table.
         """
         assert isinstance(num_columns, int)
+        assert num_columns > 0
         self.odt_table = Table(name=f'Table{self.odt_tablenumber}',
                                width=num_columns)
         self.odt_tablenumber += 1
@@ -325,7 +341,7 @@ class MultiFormatOdt(MultiFormat):
         """
         assert isinstance(first_row, list)
         assert isinstance(formatting, Formatting)
-        self._write_table_row(first_row, formatting, 1)
+        self._write_table_row(first_row, formatting, 0)
 
     def _write_table_row(self, row: list[str], formatting: Formatting,
                          row_number: int) -> None:
@@ -343,11 +359,15 @@ class MultiFormatOdt(MultiFormat):
         table_row = Row()
         for cell_text in row:
             cell = Cell(value=cell_text, cell_style='string')
-            style = self._style_name_from_formatting(formatting)
+            style = self._style_from_formatting(formatting)
             if style:
                 cell.style = style
             table_row.append(cell)
-        self.odt_table.append(table_row)
+        if row_number == 0:
+            self.odt_table.insert_row(y=0, row=table_row)
+            self.odt_table.delete_row(y=1)
+        else:
+            self.odt_table.append(table_row)
 
     @staticmethod
     def _style_name_from_formatting(formatting: Formatting) -> str:
@@ -361,6 +381,15 @@ class MultiFormatOdt(MultiFormat):
         elif formatting.italic:
             style = 'italic'
         return style
+
+    def _style_from_formatting(self,
+                               formatting: Formatting) -> Optional[Style]:
+        """Get the style from the formatting."""
+        assert isinstance(formatting, Formatting)
+        style_name = self._style_name_from_formatting(formatting)
+        if style_name:
+            return self.odt_styles[style_name]
+        return None
 
     def _start_code_block(self, programming_language: Optional[str]) -> None:
         """Start a code block.
@@ -394,9 +423,7 @@ class MultiFormatOdt(MultiFormat):
         assert programming_language is None or \
             isinstance(programming_language, str)
         for line in text.split('\n'):
-            para = Paragraph()
-            para.text = line
-            para.set_span(style='code', offset=0, length=len(line))
+            para = Paragraph(text_or_element=line, style='code')
             self.doc.body.append(para)
 
     def _encode_text(self, text: str) -> str:
