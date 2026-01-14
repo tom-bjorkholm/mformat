@@ -5,14 +5,14 @@
 # MIT License
 #
 
-import argparse
-from mformat.factory import create_mf, list_registered_mf
+from e01_paragraph import example_main
+from mformat.factory import create_mf
 
 
 def multi_format_example(format_name: str,  # pylint: disable=too-many-statements # noqa: E501
                          file_name: str) -> None:
     """Write an example file using the multi format class."""
-    # This example demonstrates the basic usage of the multi format class.
+    # This example demonstrates the usage of the multi format class.
     # It shows how to write headings, paragraphs, URLs, bold and italic text,
     # bullet lists, and code blocks.
     # It also shows how to add URLs to text, and how to format URLs as text.
@@ -125,40 +125,6 @@ def multi_format_example(format_name: str,  # pylint: disable=too-many-statement
         mf.write_code_block(text=code, programming_language='python')
 
 
-def multi_format_example_all(file_name: str) -> None:
-    """Write example files for all formats using the multi format class."""
-    #
-    # This demonstrates that the same code can be used to write to
-    # different formats, only by changing the format name.
-    # list_registered_mf() returns a list of all registered format names.
-    # In mformat package we currectly have formats "html" and "md".
-    # If mformat-ext package is installed we will also have formats
-    # "docx" and "odt".
-    #
-    for format_name in list_registered_mf():
-        multi_format_example(format_name, file_name)
-
-
-def example_main() -> None:
-    """Parse command line arguments and run the example."""
-    desc = 'Simple complete example of using package mformat.'
-    parser = argparse.ArgumentParser(description=desc)
-    choices = list_registered_mf()
-    choices.append('all')
-    format_help = 'The name of the format to use. Available formats: ' + \
-        ', '.join(choices)
-    parser.add_argument('-f', '--format', type=str,
-                        help=format_help,
-                        required=True, choices=choices)
-    parser.add_argument('-o', '--output', type=str,
-                        help='The name of the output file to write to.',
-                        required=True)
-    args = parser.parse_args()
-    if args.format == 'all':
-        multi_format_example_all(args.output)
-    else:
-        multi_format_example(args.format, args.output)
-
-
 if __name__ == "__main__":
-    example_main()
+    example_main(example_text='Simple complete',
+                 function=multi_format_example)

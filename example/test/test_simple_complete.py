@@ -14,7 +14,7 @@ _example_test_path = (
     Path(__file__).parent.parent / 'src'
 )
 sys.path.insert(0, str(_example_test_path))
-from simple_complete import multi_format_example  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
+from e99_simple_complete import multi_format_example  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
 
 
 def test_mfe_md():

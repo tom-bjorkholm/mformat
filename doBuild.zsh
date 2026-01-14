@@ -90,7 +90,7 @@ testStatus=$?
 set +v
 rm -rf example/result || true 2>&1 | tee -a ${BUILDLOG}
 mkdir -p example/result 2>&1 | tee -a ${BUILDLOG}
-${PYTHON} example/src/simple_complete.py -f all -o example/result/simple 2>&1 | tee -a ${BUILDLOG}
+(cd example/src; ls *.py | while read file; do ${PYTHON} ${file} -f all -o ../result/${file%.py}; done) 2>&1 | tee -a ${BUILDLOG}
 cat > ${DOCINDEX} <<EOF
 <!DOCTYPE html>
 <html>
