@@ -17,7 +17,8 @@ def paragraph_example(format_name: str,
     # It shows how to start a paragraph and add text to it.
     # We start by getting a formatter from the factory, using the format name
     # and the output file name.
-    # The file extension is automatically added to the file name if not present.
+    # The file extension is automatically added to the file name if not
+    # present.
     # We use a with statement to ensure that the file is closed properly.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
         # Start a paragraph.

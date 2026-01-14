@@ -22,8 +22,8 @@ def paragraphs_smart_ws_example(format_name: str,
         mf.start_paragraph('With start_paragraph we can start a paragraph.')
         # We can also add text to the paragraph in multiple calls
         # using add_text. The default smart whitespace handling is enabled
-        # so we do not need to add whitespace between text fragments from different
-        # calls to add_text or start_paragraph calls.
+        # so we do not need to add whitespace between text fragments from
+        # different calls to add_text or start_paragraph calls.
         mf.add_text('Thanks to smart whitespace handling, we do not need')
         mf.add_text('to add whitespace between text fragments from different')
         mf.add_text('calls to add_text ')
@@ -34,7 +34,8 @@ def paragraphs_smart_ws_example(format_name: str,
         mf.add_text('into a single space.')
         # Start a second paragraph with smart whitespace handling disabled
         # in the start_paragraph call.
-        mf.start_paragraph('With start_paragraph we can start a second paragraph. ',
+        mf.start_paragraph('With start_paragraph we can start another '
+                           'paragraph. ',
                            smart_ws=False)
         # We can also add text to the second paragraph in multiple calls
         # using add_text. The smart whitespace handling is disabled by setting

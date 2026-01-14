@@ -30,18 +30,21 @@ def paragraphs_bold_example(format_name: str,
         mf.add_text('Use add_text to add text in bold and italic.',
                     bold=True, italic=True)
         # Let us add a second paragraph with first sentence in italic.
-        mf.start_paragraph('With start_paragraph we can start a second paragraph '
-                           'with the first sentence in italic.',
+        mf.start_paragraph('With start_paragraph we can start a second '
+                           'paragraph with the first sentence in italic.',
                            italic=True)
         # Add some more text to the second paragraph this time not in italic.
-        mf.add_text('Use add_text to add text without italic to the paragraph.')
+        mf.add_text('Use add_text to add text without italic to the '
+                    'second paragraph.')
         # Add some more text to the second paragraph this time in bold.
-        mf.add_text('Use add_text to add text in bold to the paragraph.',
-                    bold=True)
-        # Add some more text to the second paragraph this time in italic and bold.
-        mf.add_text('Use add_text to add text in italic and bold.',
-                    italic=True, bold=True)
+        mf.add_text('Use add_text to add text in bold to the second '
+                    'paragraph.', bold=True)
+        # Add some more text to the second paragraph this time
+        # in italic and bold.
+        mf.add_text('Use add_text to add text in italic and bold to the '
+                    'second paragraph.', italic=True, bold=True)
 
 
 if __name__ == "__main__":
-    example_main(example_text='Paragraphs bold', function=paragraphs_bold_example)
+    example_main(example_text='Paragraphs bold',
+                 function=paragraphs_bold_example)

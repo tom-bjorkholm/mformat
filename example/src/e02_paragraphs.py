@@ -17,24 +17,22 @@ def paragraphs_example(format_name: str,
     # and the output file name as shown in the example file e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
         # Start a paragraph.
-        # We can add all the text of the paragraph in one go in this call,
-        # or we can have just a little text in this call.
         mf.start_paragraph('With start_paragraph we can start a paragraph.')
         # We can also add text to the paragraph in multiple calls
         # using add_text.
         mf.add_text('With add_text we can add text to the paragraph.')
-        mf.add_text('We can also add text to the paragraph in multiple calls')
-        mf.add_text('using add_text.')
-        # There is no need to close the paragraph, it is closed automatically
-        # when we start something new or when the with statement is exited.
-        # Start a second paragraph - this automatically closes the first paragraph.
-        mf.start_paragraph('With start_paragraph we can start a second paragraph.')
+        mf.add_text('As described in the example file e01_paragraph.py,')
+        # Start a second paragraph - this automatically closes the first
+        # paragraph.
+        mf.start_paragraph('With start_paragraph we can start a second '
+                           'paragraph.')
         # We can also add text to the second paragraph in multiple calls
         # using add_text.
-        mf.add_text('With add_text we can add text to the second paragraph.')
-        mf.add_text('just as we did with the first paragraph.')
-        # There is no need to close the second paragraph, it is closed automatically
-        # when we start something new or when the with statement is exited.
+        mf.add_text('With add_text we can add text to the second')
+        mf.add_text('paragraph just as we did with the first paragraph.')
+        # There is no need to close the second paragraph, it is closed
+        # automatically when we start something new or when the with
+        # statement is exited.
 
 
 if __name__ == "__main__":

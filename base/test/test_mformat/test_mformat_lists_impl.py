@@ -284,3 +284,44 @@ def test_disp_end_item(capsys, lev: int, pltype: PointListType,
     assert list_handler.call_list == call_list
     assert list_handler.call_arg_list == call_arg_list
     check_capsys(capsys)
+
+
+@pytest.mark.parametrize('pltype', [PointListType.BULLET,
+                                    PointListType.NUMBERED])
+@pytest.mark.parametrize('lev, on_stack',
+                         [(1, []),
+                          (2, [PointListType.BULLET]),
+                          (1, [PointListType.BULLET,
+                               PointListType.NUMBERED,
+                               PointListType.BULLET])])
+def test_val_lsit_level_ok(capsys, lev: int,
+                           on_stack: list[PointListType],
+                           pltype: PointListType) -> None:
+    """Test the validate_list_level method for OK cases."""
+    list_handler = ListHandler2(MultiFormatState.EMPTY)
+    for item in on_stack:
+        stack_item = PointStackItem(point_list_type=item, number_at_level=1)
+        list_handler.point_list_stack.append(stack_item)
+    # pylint: disable=protected-access
+    list_handler._validate_list_level(lev, pltype)
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('pltype', [PointListType.BULLET,
+                                    PointListType.NUMBERED])
+@pytest.mark.parametrize('lev, on_stack',
+                         [(4, [PointListType.BULLET]),
+                          (2, [])])
+def test_val_lsit_level_nok(capsys, lev: int,
+                            on_stack: list[PointListType],
+                            pltype: PointListType) -> None:
+    """Test the validate_list_level method for NOK cases."""
+    list_handler = ListHandler2(MultiFormatState.EMPTY)
+    for item in on_stack:
+        stack_item = PointStackItem(point_list_type=item, number_at_level=1)
+        list_handler.point_list_stack.append(stack_item)
+    # pylint: disable=protected-access
+    with pytest.raises(RuntimeError) as exc:
+        list_handler._validate_list_level(lev, pltype)
+    assert f'called with level={lev}, but level {lev-1}' in exc.value.args[0]
+    check_capsys(capsys)

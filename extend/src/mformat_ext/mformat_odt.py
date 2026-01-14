@@ -5,11 +5,23 @@
 # MIT License
 #
 
-from typing import Optional, Callable
+from typing import Optional, Callable, NamedTuple
 from odfdo import Document, Paragraph, Header, Table, Row, Cell, \
     Link, List, ListItem, Style
 from mformat.mformat import FormatterDescriptor, MultiFormat
 from mformat.mformat_state import MultiFormatState, Formatting
+
+
+class OdtStyles(NamedTuple):
+    """Styles for ODT files."""
+
+    text_styles: dict[str, Style]
+    font_styles: dict[str, Style]
+    paragraph_styles: dict[str, Style]
+    bold: Style
+    italic: Style
+    bold_italic: Style
+    code: Style
 
 
 class MultiFormatOdt(MultiFormat):
@@ -39,30 +51,59 @@ class MultiFormatOdt(MultiFormat):
         self.odt_tablenumber: int = 1
         self.odt_list: list[List] = []
         self.odt_listitem: Optional[ListItem] = None
-        self.odt_styles: dict[str, Style] = {}
+        self.odt_styles: OdtStyles = self._create_odt_styles()
+        self._insert_odt_styles()
+        super().__init__(file_name=file_name, url_as_text=url_as_text,
+                         file_exists_callback=file_exists_callback)
+
+    def _insert_odt_styles(self) -> None:
+        """Insert the ODT styles into the document."""
+        for style in self.odt_styles.text_styles.values():
+            self.doc.insert_style(style)
+        for style in self.odt_styles.font_styles.values():
+            self.doc.insert_style(style)
+        for style in self.odt_styles.paragraph_styles.values():
+            self.doc.insert_style(style)
+
+    def _create_odt_styles(self) -> OdtStyles:
+        """Create the ODT styles needed for documents."""
+        text_styles: dict[str, Style] = {}
+        font_styles: dict[str, Style] = {}
+        paragraph_styles: dict[str, Style] = {}
         bold_style = Style(name='bold', family='text',
                            display_name='bold', area='text',
                            bold=True, italic=False)
-        self.odt_styles['bold'] = bold_style
-        self.doc.insert_style(bold_style)
+        text_styles['bold'] = bold_style
         italic_style = Style(name='italic', family='text',
                              display_name='italic', area='text',
                              italic=True, bold=False)
-        self.odt_styles['italic'] = italic_style
-        self.doc.insert_style(italic_style)
+        text_styles['italic'] = italic_style
         bold_italic_style = Style(name='bold-italic', family='text',
                                   display_name='bold-italic', area='text',
                                   bold=True, italic=True)
-        self.odt_styles['bold-italic'] = bold_italic_style
-        self.doc.insert_style(bold_italic_style)
+        text_styles['bold-italic'] = bold_italic_style
         code_style = Style(name='code', family='font-face',
                            display_name='code',
                            font_family='monospace', font_name='courier new',
                            bold=False, italic=False)
-        self.odt_styles['code'] = code_style
-        self.doc.insert_style(code_style)
-        super().__init__(file_name=file_name, url_as_text=url_as_text,
-                         file_exists_callback=file_exists_callback)
+        font_styles['code'] = code_style
+        return OdtStyles(text_styles=text_styles, font_styles=font_styles,
+                         paragraph_styles=paragraph_styles, bold=bold_style,
+                         italic=italic_style, bold_italic=bold_italic_style,
+                         code=code_style)
+
+    @staticmethod
+    def _style_name_from_formatting(formatting: Formatting) -> str:
+        """Get the style name from the formatting."""
+        assert isinstance(formatting, Formatting)
+        style_name = ''
+        if formatting.bold:
+            style_name = 'bold'
+            if formatting.italic:
+                style_name += '-italic'
+        elif formatting.italic:
+            style_name = 'italic'
+        return style_name
 
     @classmethod
     def file_name_extension(cls) -> str:
@@ -143,7 +184,7 @@ class MultiFormatOdt(MultiFormat):
         previous_length = len(paragraph.text)
         text_length = len(text)
         paragraph.text += text
-        style = self._style_from_formatting(formatting)
+        style = self._style_name_from_formatting(formatting)
         if style:
             paragraph.set_span(style=style, offset=previous_length,
                                length=text_length)
@@ -359,37 +400,9 @@ class MultiFormatOdt(MultiFormat):
         table_row = Row()
         for cell_text in row:
             cell = Cell(value=cell_text, cell_style='string')
-            style = self._style_from_formatting(formatting)
-            if style:
-                cell.style = style
+            cell.style = self._style_name_from_formatting(formatting)
             table_row.append(cell)
-        if row_number == 0:
-            self.odt_table.insert_row(y=0, row=table_row)
-            self.odt_table.delete_row(y=1)
-        else:
-            self.odt_table.append(table_row)
-
-    @staticmethod
-    def _style_name_from_formatting(formatting: Formatting) -> str:
-        """Get the style name from the formatting."""
-        assert isinstance(formatting, Formatting)
-        style = ''
-        if formatting.bold:
-            style = 'bold'
-            if formatting.italic:
-                style += '-italic'
-        elif formatting.italic:
-            style = 'italic'
-        return style
-
-    def _style_from_formatting(self,
-                               formatting: Formatting) -> Optional[Style]:
-        """Get the style from the formatting."""
-        assert isinstance(formatting, Formatting)
-        style_name = self._style_name_from_formatting(formatting)
-        if style_name:
-            return self.odt_styles[style_name]
-        return None
+        self.odt_table.append(table_row)
 
     def _start_code_block(self, programming_language: Optional[str]) -> None:
         """Start a code block.
