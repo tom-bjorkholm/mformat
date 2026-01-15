@@ -294,7 +294,7 @@ def test_disp_end_item(capsys, lev: int, pltype: PointListType,
                           (1, [PointListType.BULLET,
                                PointListType.NUMBERED,
                                PointListType.BULLET])])
-def test_val_lsit_level_ok(capsys, lev: int,
+def test_val_list_level_ok(capsys, lev: int,
                            on_stack: list[PointListType],
                            pltype: PointListType) -> None:
     """Test the validate_list_level method for OK cases."""
@@ -312,7 +312,7 @@ def test_val_lsit_level_ok(capsys, lev: int,
 @pytest.mark.parametrize('lev, on_stack',
                          [(4, [PointListType.BULLET]),
                           (2, [])])
-def test_val_lsit_level_nok(capsys, lev: int,
+def test_val_list_level_nok(capsys, lev: int,
                             on_stack: list[PointListType],
                             pltype: PointListType) -> None:
     """Test the validate_list_level method for NOK cases."""
@@ -324,4 +324,37 @@ def test_val_lsit_level_nok(capsys, lev: int,
     with pytest.raises(RuntimeError) as exc:
         list_handler._validate_list_level(lev, pltype)
     assert f'called with level={lev}, but level {lev-1}' in exc.value.args[0]
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('pltype', [PointListType.BULLET,
+                                    PointListType.NUMBERED])
+@pytest.mark.parametrize('num_at_lev, full_num',
+                         [([2, 4, 5], '2.4.5.'),
+                          ([1, 2, 3], '1.2.3.'),
+                          ([1], '1.')])
+def test_ful_nu_of_list_item_ok(capsys, pltype, num_at_lev: list[int],
+                                full_num: str) -> None:
+    """Test the full_number_of_list_item method."""
+    list_handler = ListHandler2(MultiFormatState.EMPTY)
+    for num in num_at_lev:
+        stack_item = PointStackItem(point_list_type=pltype,
+                                    number_at_level=num)
+        list_handler.point_list_stack.append(stack_item)
+    # pylint: disable=protected-access
+    ret = list_handler._full_number_of_list_item(num=num_at_lev[-1])
+    assert ret == full_num
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('pltype', [PointListType.BULLET,
+                                    PointListType.NUMBERED])
+def test_ful_nu_of_list_item_nok(capsys, pltype: PointListType) -> None:
+    """Test the full_number_of_list_item method."""
+    list_handler = ListHandler2(MultiFormatState.EMPTY)
+    list_handler.point_list_stack.append(PointStackItem(point_list_type=pltype,
+                                                        number_at_level=1))
+    with pytest.raises(AssertionError) as _:
+        # pylint: disable=protected-access
+        list_handler._full_number_of_list_item(num=2)
     check_capsys(capsys)
