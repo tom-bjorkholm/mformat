@@ -358,3 +358,95 @@ def test_ful_nu_of_list_item_nok(capsys, pltype: PointListType) -> None:
         # pylint: disable=protected-access
         list_handler._full_number_of_list_item(num=2)
     check_capsys(capsys)
+
+
+@pytest.mark.parametrize('pltype, depth, expected',
+                         [(PointListType.BULLET, 3,
+                           MultiFormatState.BULLET_LIST),
+                          (PointListType.NUMBERED, 2,
+                           MultiFormatState.NUMBERED_LIST),
+                          (PointListType.BULLET, 0,
+                           MultiFormatState.PARAGRAPH_END),
+                          (PointListType.NUMBERED, 0,
+                           MultiFormatState.PARAGRAPH_END)])
+def test_state_from_pl_stack(capsys, pltype: PointListType, depth: int,
+                             expected: MultiFormatState) -> None:
+    """Test the _state_from_point_list method."""
+    list_handler = ListHandler2(MultiFormatState.EMPTY)
+    for _ in range(depth):
+        stack_item = PointStackItem(point_list_type=pltype,
+                                    number_at_level=1)
+        list_handler.point_list_stack.append(stack_item)
+    # pylint: disable=protected-access
+    list_handler._state_from_point_list()
+    assert list_handler.state == expected
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('depth, state',
+                         [(0, MultiFormatState.BULLET_LIST),
+                          (0, MultiFormatState.NUMBERED_LIST),
+                          (0, MultiFormatState.BULLET_LIST_ITEM),
+                          (0, MultiFormatState.NUMBERED_LIST_ITEM),
+                          (3, MultiFormatState.PARAGRAPH_END),
+                          (2, MultiFormatState.PARAGRAPH),
+                          (1, MultiFormatState.HEADING)])
+def test_end_list_state_nok(capsys, depth: int,
+                            state: MultiFormatState) -> None:
+    """Test the _end_list_state method for NOK cases."""
+    list_handler = ListHandler2(state)
+    for _ in range(depth):
+        stack_item = PointStackItem(point_list_type=PointListType.BULLET,
+                                    number_at_level=1)
+        list_handler.point_list_stack.append(stack_item)
+    with pytest.raises(AssertionError) as _:
+        # pylint: disable=protected-access
+        list_handler._end_list_state()
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('stack, state, exp_state, exp_calls',
+                         [([PointListType.BULLET],
+                           MultiFormatState.BULLET_LIST_ITEM,
+                           MultiFormatState.PARAGRAPH_END,
+                           ['_end_bullet_item',
+                            '_end_bullet_list']),
+                          ([PointListType.BULLET],
+                           MultiFormatState.BULLET_LIST,
+                           MultiFormatState.PARAGRAPH_END,
+                           ['_end_bullet_list']),
+                          ([PointListType.NUMBERED],
+                           MultiFormatState.NUMBERED_LIST_ITEM,
+                           MultiFormatState.PARAGRAPH_END,
+                           ['_end_numbered_item',
+                            '_end_numbered_list']),
+                          ([PointListType.NUMBERED],
+                           MultiFormatState.NUMBERED_LIST,
+                           MultiFormatState.PARAGRAPH_END,
+                           ['_end_numbered_list']),
+                          ([PointListType.NUMBERED,
+                            PointListType.BULLET],
+                           MultiFormatState.BULLET_LIST_ITEM,
+                           MultiFormatState.NUMBERED_LIST,
+                           ['_end_bullet_item',
+                            '_end_bullet_list']),
+                          ([PointListType.BULLET,
+                            PointListType.NUMBERED],
+                           MultiFormatState.NUMBERED_LIST,
+                           MultiFormatState.BULLET_LIST,
+                           ['_end_numbered_list'])])
+def test_end_list_state_ok(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                           stack: list[PointListType],
+                           state: MultiFormatState,
+                           exp_state: MultiFormatState,
+                           exp_calls: list[str]) -> None:
+    """Test the _end_list_state method for OK cases."""
+    list_handler = ListHandler2(state)
+    for item in stack:
+        stack_item = PointStackItem(point_list_type=item, number_at_level=1)
+        list_handler.point_list_stack.append(stack_item)
+    # pylint: disable=protected-access
+    list_handler._end_list_state()
+    assert list_handler.state == exp_state
+    assert list_handler.call_list == exp_calls
+    check_capsys(capsys)

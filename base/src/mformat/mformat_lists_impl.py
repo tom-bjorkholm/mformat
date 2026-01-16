@@ -303,6 +303,7 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
     def _end_list_state(self) -> None:
         """End a list state."""
         assert self.point_list_stack
+        assert self._is_in_list_state()
         point_list_type = self.point_list_stack[-1]['point_list_type']
         list_state, item_state = self._get_states_of_pltype(point_list_type)
         lev = len(self.point_list_stack)
