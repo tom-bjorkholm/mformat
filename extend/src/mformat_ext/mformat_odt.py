@@ -382,7 +382,9 @@ class MultiFormatOdt(MultiFormat):
         """
         assert isinstance(first_row, list)
         assert isinstance(formatting, Formatting)
+        assert self.odt_table is not None
         self._write_table_row(first_row, formatting, 0)
+        self.odt_table.delete_row(0)
 
     def _write_table_row(self, row: list[str], formatting: Formatting,
                          row_number: int) -> None:

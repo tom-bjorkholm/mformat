@@ -28,3 +28,4 @@ extend/*.egg-info
 .claudeignore
 example/result/*.docx
 example/result/*.odt
+example/result/.*#
