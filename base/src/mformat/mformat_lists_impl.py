@@ -147,7 +147,7 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
             point_list_type: The type of list needed at target level.
         """
         self._decrease_list_depth(target_level)
-        self._switch_list_type_at_level(target_level, point_list_type)
+        self._end_wrong_list_type_at_lev(target_level, point_list_type)
         self._increase_list_depth(target_level, point_list_type)
 
     def _end_item_before_nesting(self) -> None:
@@ -208,9 +208,9 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
         while len(self.point_list_stack) > target_level:
             self._end_list_state()
 
-    def _switch_list_type_at_level(self, target_level: int,
-                                   point_list_type: PointListType) -> None:
-        """Switch type: End list at target level if type doesn't match."""
+    def _end_wrong_list_type_at_lev(self, target_level: int,
+                                    point_list_type: PointListType) -> None:
+        """End list at target level if type doesn't match."""
         if len(self.point_list_stack) == target_level:
             if self.point_list_stack[-1]['point_list_type'] != point_list_type:
                 self._end_list_state()

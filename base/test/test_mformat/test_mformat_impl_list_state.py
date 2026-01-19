@@ -56,8 +56,10 @@ def check_expected_result(list_handler: ListHandler2,
     """Check the expected result."""
     assert list_handler.state == exp.state
     assert list_handler.call_list == exp.calls
-    assert list_handler.point_list_stack[-1]['number_at_level'] == \
-        exp.number_at_top_level
+    assert len(list_handler.point_list_stack) == len(exp.stack)
+    if list_handler.point_list_stack:
+        assert list_handler.point_list_stack[-1]['number_at_level'] == \
+            exp.number_at_top_level
     for stack_item, exp_pltype in zip(list_handler.point_list_stack,
                                       exp.stack):
         assert stack_item['point_list_type'] == exp_pltype
@@ -69,7 +71,7 @@ def check_expected_result(list_handler: ListHandler2,
                            PointListType.BULLET,
                            ExpectedResult(state=MultiFormatState.BULLET_LIST,
                                           calls=[],
-                                          stack=[],
+                                          stack=[PointListType.BULLET],
                                           number_at_top_level=1)),
                           (MultiFormatState.BULLET_LIST,
                            [PointListType.BULLET], 2,
@@ -93,7 +95,7 @@ def check_expected_result(list_handler: ListHandler2,
                                 number_at_top_level=0))])
 def test_increase_list_depth(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                              state, stack, lev, pltype, exp) -> None:
-    """Test the increase_list_depth method."""
+    """Test the _increase_list_depth method."""
     list_handler = ListHandler2(state=state)
     for item in stack:
         stack_item = PointStackItem(point_list_type=item,
@@ -106,9 +108,85 @@ def test_increase_list_depth(capsys,  # pylint: disable=too-many-arguments,too-m
 
 
 def test_increase_list_depth_nok(capsys) -> None:
-    """Test the increase_list_depth method with a not ok state."""
+    """Test the _increase_list_depth method with a not ok state."""
     list_handler = ListHandler2(state=MultiFormatState.BULLET_LIST)
     with pytest.raises(AssertionError):
         list_handler._increase_list_depth(target_level=2,  # pylint: disable=protected-access # noqa: E501
                                           point_list_type=PointListType.BULLET)
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('state,stack,lev,pltype,exp',
+                         [(MultiFormatState.BULLET_LIST,
+                           [PointListType.BULLET], 1,
+                           PointListType.BULLET,
+                           ExpectedResult(state=MultiFormatState.BULLET_LIST,
+                                          calls=[],
+                                          stack=[PointListType.BULLET],
+                                          number_at_top_level=1)),
+                          (MultiFormatState.NUMBERED_LIST,
+                           [PointListType.NUMBERED], 1,
+                           PointListType.NUMBERED,
+                           ExpectedResult(state=MultiFormatState.NUMBERED_LIST,
+                                          calls=[],
+                                          stack=[PointListType.NUMBERED],
+                                          number_at_top_level=1)),
+                          (MultiFormatState.NUMBERED_LIST,
+                           [PointListType.NUMBERED], 1,
+                           PointListType.BULLET,
+                           ExpectedResult(state=MultiFormatState.PARAGRAPH_END,
+                                          calls=['_end_numbered_list'],
+                                          stack=[],
+                                          number_at_top_level=0)),
+                          (MultiFormatState.BULLET_LIST,
+                           [PointListType.BULLET], 1,
+                           PointListType.NUMBERED,
+                           ExpectedResult(state=MultiFormatState.PARAGRAPH_END,
+                                          calls=['_end_bullet_list'],
+                                          stack=[],
+                                          number_at_top_level=0)),
+                          (MultiFormatState.NUMBERED_LIST_ITEM,
+                           [PointListType.NUMBERED], 1,
+                           PointListType.BULLET,
+                           ExpectedResult(state=MultiFormatState.PARAGRAPH_END,
+                                          calls=['_end_numbered_item',
+                                                 '_end_numbered_list'],
+                                          stack=[],
+                                          number_at_top_level=0)),
+                          (MultiFormatState.BULLET_LIST_ITEM,
+                           [PointListType.BULLET], 1,
+                           PointListType.NUMBERED,
+                           ExpectedResult(state=MultiFormatState.PARAGRAPH_END,
+                                          calls=['_end_bullet_item',
+                                                 '_end_bullet_list'],
+                                          stack=[],
+                                          number_at_top_level=0)),
+                          (MultiFormatState.BULLET_LIST_ITEM,
+                           [PointListType.BULLET, PointListType.BULLET], 2,
+                           PointListType.NUMBERED,
+                           ExpectedResult(state=MultiFormatState.BULLET_LIST,
+                                          calls=['_end_bullet_item',
+                                                 '_end_bullet_list'],
+                                          stack=[PointListType.BULLET],
+                                          number_at_top_level=1)),
+                          (MultiFormatState.BULLET_LIST_ITEM,
+                           [PointListType.BULLET, PointListType.BULLET], 1,
+                           PointListType.NUMBERED,
+                           ExpectedResult(
+                               state=MultiFormatState.BULLET_LIST_ITEM,
+                               calls=[],
+                               stack=[PointListType.BULLET,
+                                      PointListType.BULLET],
+                               number_at_top_level=1))])
+def test_end_wrong_list_type(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                             state, stack, lev, pltype, exp) -> None:
+    """Test the _end_wrong_list_type_at_lev method."""
+    list_handler = ListHandler2(state=state)
+    for item in stack:
+        stack_item = PointStackItem(point_list_type=item,
+                                    number_at_level=1)
+        list_handler.point_list_stack.append(stack_item)
+    list_handler._end_wrong_list_type_at_lev(target_level=lev,  # pylint: disable=protected-access # noqa: E501
+                                             point_list_type=pltype)
+    check_expected_result(list_handler, exp)
     check_capsys(capsys)
