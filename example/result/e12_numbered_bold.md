@@ -1,0 +1,13 @@
+1. This is the first numbered point item. This is not bold or italic. **However, this bold text is added to it.** *And this italic text is added to it.*
+
+2. **This is the bold numbered point item.** This non-bold text is added to it.
+
+3. *This is the italic numbered point item.* This non-italic text is added to it.
+
+4. ***This is the bold and italic item.*** This non-bold and non-italic text is added to it.
+
+  4.1. This is in item in a nested numbered point list. **Bold text added to it.** *And italic text added to it.*
+
+  4.2. ***Second nested numbered point item.*** This non-bold and non-italic text is added to it. **And bold** *and italic text added to it.*
+
+5. The final item is back at level 1. This is the final numbered point item.
