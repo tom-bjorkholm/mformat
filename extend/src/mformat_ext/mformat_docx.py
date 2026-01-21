@@ -275,11 +275,10 @@ class MultiFormatDocx(MultiFormat):
             num_columns: The number of columns in the table.
         """
         assert isinstance(num_columns, int)
-        # In python-docx, we need to know the number of rows in advance
-        # We'll handle this by creating a table with 1 row initially
-        # and adding rows as needed
-        # Note: This is a placeholder - actual table creation happens
-        # in _write_table_first_row
+        # Add an empty paragraph before the table for spacing
+        # This separates the table from previous content
+        self.doc.add_paragraph()
+        # Note: Actual table creation happens in _write_table_first_row
 
     def _end_table(self, num_columns: int, num_rows: int) -> None:
         """End a table.
@@ -290,7 +289,8 @@ class MultiFormatDocx(MultiFormat):
         """
         assert isinstance(num_columns, int)
         assert isinstance(num_rows, int)
-        # No action needed - table is already complete
+        # Add an empty paragraph after the table for spacing
+        self.doc.add_paragraph()
 
     def _write_table_first_row(self, first_row: list[str],
                                formatting: Formatting) -> None:
