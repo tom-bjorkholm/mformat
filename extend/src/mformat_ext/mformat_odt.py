@@ -7,7 +7,7 @@
 
 from typing import Optional, Callable, NamedTuple
 from odfdo import Document, Paragraph, Header, Table, Row, Cell, \
-    Link, List, ListItem, Style
+    Link, List, ListItem, Style, Span
 from mformat.mformat import FormatterDescriptor, MultiFormat
 from mformat.mformat_state import MultiFormatState, Formatting
 
@@ -178,16 +178,37 @@ class MultiFormatOdt(MultiFormat):
 
     def _formatted_write(self, paragraph: Paragraph,
                          formatting: Formatting, text: str) -> None:
-        """Apply formatting to a paragraph or list item."""
+        """Apply formatting to a paragraph or list item.
+
+        In ODF/XML, paragraph.text holds text before any child elements,
+        and each element's tail holds text after that element. To maintain
+        correct text order when mixing formatted and unformatted text, we:
+        - Use Span elements for formatted text (appended as children)
+        - For unformatted text: add to paragraph.text if no children exist,
+          otherwise add to the tail of the last child element.
+        """
         assert paragraph is not None
         assert isinstance(paragraph, Paragraph)
-        previous_length = len(paragraph.text)
-        text_length = len(text)
-        paragraph.text += text
         style = self._style_name_from_formatting(formatting)
         if style:
-            paragraph.set_span(style=style, offset=previous_length,
-                               length=text_length)
+            # Formatted text: create a span with the style and append it
+            span = Span(text=text, style=style)
+            paragraph.append(span)
+        else:
+            # Unformatted text: add to correct position
+            if len(paragraph.children) == 0:
+                # No children yet, add to paragraph.text
+                if paragraph.text:
+                    paragraph.text += text
+                else:
+                    paragraph.text = text
+            else:
+                # Has children, add to the tail of the last child
+                last_child = paragraph.children[-1]
+                if last_child.tail:
+                    last_child.tail += text
+                else:
+                    last_child.tail = text
 
     def _write_text(self, text: str, state: MultiFormatState,
                     formatting: Formatting) -> None:
