@@ -481,6 +481,8 @@ class MultiFormatOdt(MultiFormat):
         """
         assert isinstance(num_columns, int)
         assert num_columns > 0
+        # Add an empty paragraph before the table for spacing
+        self.doc.body.append(Paragraph())
         self.odt_table = Table(name=f'Table{self.odt_tablenumber}',
                                width=num_columns)
         self.odt_tablenumber += 1
@@ -496,6 +498,8 @@ class MultiFormatOdt(MultiFormat):
         assert isinstance(num_rows, int)
         assert self.odt_table is not None
         self.doc.body.append(self.odt_table)
+        # Add an empty paragraph after the table for spacing
+        self.doc.body.append(Paragraph())
         self.odt_table = None
 
     def _write_table_first_row(self, first_row: list[str],
@@ -527,8 +531,18 @@ class MultiFormatOdt(MultiFormat):
         assert self.odt_table is not None
         table_row = Row()
         for cell_text in row:
-            cell = Cell(value=cell_text, cell_style='string')
-            cell.style = self._style_name_from_formatting(formatting)
+            cell = Cell()
+            # Create a paragraph inside the cell with formatted text
+            para = Paragraph()
+            style = self._style_name_from_formatting(formatting)
+            if style:
+                # Use a span with the style for formatted text
+                span = Span(text=cell_text, style=style)
+                para.append(span)
+            else:
+                # No formatting, just set the text directly
+                para.text = cell_text
+            cell.append(para)
             table_row.append(cell)
         self.odt_table.append(table_row)
 
