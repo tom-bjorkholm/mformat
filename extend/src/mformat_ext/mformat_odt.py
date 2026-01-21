@@ -212,6 +212,21 @@ class MultiFormatOdt(MultiFormat):
             raise RuntimeError(f'Unexpected state: {self.state.name} for '
                                f'writing text: {text}')
 
+    def _impl_write_url(self, paragraph: Paragraph,
+                        url: str, text: Optional[str],
+                        formatting: Formatting) -> None:
+        """Implement the writing of a URL into a paragraph or list item."""
+        assert paragraph is not None
+        assert isinstance(paragraph, Paragraph)
+        assert isinstance(formatting, Formatting)
+        if not text:
+            text = url
+        lnk = Link(url=url, text=text)
+        style = self._style_name_from_formatting(formatting)
+        if style:
+            lnk.style = style
+        paragraph.append(lnk)
+
     def _write_url(self, url: str, text: Optional[str],
                    state: MultiFormatState,
                    formatting: Formatting) -> None:
@@ -222,19 +237,21 @@ class MultiFormatOdt(MultiFormat):
             text: The text to display for the URL.
             state: The state of the current item.
             formatting: The formatting of the text.
-        """  # pylint: disable=too-many-arguments,too-many-positional-arguments
-        if self.current_paragraph is None:
-            raise RuntimeError('No current paragraph to write URL into')
-        if not text:
-            text = url
-        lnk = Link(url=url, text=text)
-        if isinstance(self.current_paragraph, ListItem):
-            return  # TODO: Figure out how to add formatting to list items
-        assert isinstance(self.current_paragraph, Paragraph)
-        style = self._style_name_from_formatting(formatting)
-        if style:
-            lnk.style = style
-        self.current_paragraph.append(lnk)
+        """
+        assert state == self.state
+        if self.state in (MultiFormatState.PARAGRAPH,
+                          MultiFormatState.HEADING):
+            assert self.current_paragraph is not None
+            self._impl_write_url(self.current_paragraph, url, text, formatting)
+        elif self.state in (MultiFormatState.BULLET_LIST_ITEM,
+                            MultiFormatState.NUMBERED_LIST_ITEM):
+            assert self.odt_listitem is not None
+            assert isinstance(self.odt_listitem.children[-1], Paragraph)
+            self._impl_write_url(self.odt_listitem.children[-1],
+                                 url, text, formatting)
+        else:
+            raise RuntimeError(f'Unexpected state: {self.state.name} for '
+                               f'writing url: {url} text: {text}')
 
     def _start_bullet_list(self, level: int) -> None:
         """Start a bullet list.
