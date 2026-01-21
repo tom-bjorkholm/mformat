@@ -145,6 +145,37 @@ class MultiFormatOdt(MultiFormat):
             list_style.append(level)
         return list_style
 
+    @staticmethod
+    def _create_link_style(name: str, bold: bool = False,
+                           italic: bool = False) -> Style:
+        """Create a link style with blue color and underline.
+
+        Args:
+            name: The name of the style.
+            bold: Whether the link text should be bold.
+            italic: Whether the link text should be italic.
+
+        Returns:
+            A Style object for links with the specified formatting.
+        """
+        link_color = '#0000ff'  # Blue color for links
+        style = Style(
+            name=name,
+            family='text',
+            display_name=name,
+            area='text',
+            color=link_color,
+            bold=bold,
+            italic=italic
+        )
+        # Add underline to text-properties
+        text_props = style.get_element('style:text-properties')
+        if text_props:
+            text_props.set_attribute('style:text-underline-style', 'solid')
+            text_props.set_attribute('style:text-underline-width', 'auto')
+            text_props.set_attribute('style:text-underline-color', link_color)
+        return style
+
     def _create_odt_styles(self) -> OdtStyles:
         """Create the ODT styles needed for documents."""
         text_styles: dict[str, Style] = {}
@@ -167,6 +198,14 @@ class MultiFormatOdt(MultiFormat):
                            font_family='monospace', font_name='courier new',
                            bold=False, italic=False)
         font_styles['code'] = code_style
+        # Create link styles with blue color and underline
+        text_styles['link'] = self._create_link_style('link')
+        text_styles['link-bold'] = self._create_link_style(
+            'link-bold', bold=True)
+        text_styles['link-italic'] = self._create_link_style(
+            'link-italic', italic=True)
+        text_styles['link-bold-italic'] = self._create_link_style(
+            'link-bold-italic', bold=True, italic=True)
         return OdtStyles(text_styles=text_styles, font_styles=font_styles,
                          paragraph_styles=paragraph_styles, bold=bold_style,
                          italic=italic_style, bold_italic=bold_italic_style,
@@ -183,6 +222,20 @@ class MultiFormatOdt(MultiFormat):
                 style_name += '-italic'
         elif formatting.italic:
             style_name = 'italic'
+        return style_name
+
+    @staticmethod
+    def _link_style_name_from_formatting(formatting: Formatting) -> str:
+        """Get the link style name from the formatting.
+
+        Link styles include blue color and underline to be visible as links.
+        """
+        assert isinstance(formatting, Formatting)
+        style_name = 'link'
+        if formatting.bold:
+            style_name += '-bold'
+        if formatting.italic:
+            style_name += '-italic'
         return style_name
 
     @classmethod
@@ -323,9 +376,8 @@ class MultiFormatOdt(MultiFormat):
         if not text:
             text = url
         lnk = Link(url=url, text=text)
-        style = self._style_name_from_formatting(formatting)
-        if style:
-            lnk.style = style
+        # Use link styles that include blue color and underline
+        lnk.style = self._link_style_name_from_formatting(formatting)
         paragraph.append(lnk)
 
     def _write_url(self, url: str, text: Optional[str],
