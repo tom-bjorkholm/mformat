@@ -7,7 +7,7 @@
 
 from typing import Optional, Callable, NamedTuple
 from odfdo import Document, Paragraph, Header, Table, Row, Cell, \
-    Link, List, ListItem, Style, Span
+    Link, List, ListItem, Style, Span, Element
 from mformat.mformat import FormatterDescriptor, MultiFormat
 from mformat.mformat_state import MultiFormatState, Formatting
 
@@ -64,6 +64,86 @@ class MultiFormatOdt(MultiFormat):
             self.doc.insert_style(style)
         for style in self.odt_styles.paragraph_styles.values():
             self.doc.insert_style(style)
+        # Insert list styles (Element type for list styles, not StyleBase)
+        self.doc.insert_style(
+            self._create_numbered_list_style())  # type: ignore[arg-type]
+        self.doc.insert_style(
+            self._create_bullet_list_style())  # type: ignore[arg-type]
+
+    @staticmethod
+    def _create_list_level_properties(level_num: int) -> Element:
+        """Create list-level-properties element for indentation.
+
+        Args:
+            level_num: The list level number (1-9).
+
+        Returns:
+            An Element representing style:list-level-properties.
+        """
+        # Base indentation values (in cm)
+        base_indent = 0.635  # text indent (negative, for hanging indent)
+        base_margin = 1.27   # margin left per level
+
+        props = Element.from_tag('style:list-level-properties')
+        props.set_attribute('text:list-level-position-and-space-mode',
+                            'label-alignment')
+
+        # Add label alignment with indentation
+        label_align = Element.from_tag('style:list-level-label-alignment')
+        label_align.set_attribute('text:label-followed-by', 'listtab')
+        margin_left = base_margin * level_num
+        label_align.set_attribute('text:list-tab-stop-position',
+                                  f'{margin_left:.2f}cm')
+        label_align.set_attribute('fo:text-indent', f'-{base_indent:.3f}cm')
+        label_align.set_attribute('fo:margin-left', f'{margin_left:.2f}cm')
+
+        props.append(label_align)
+        return props
+
+    @staticmethod
+    def _create_numbered_list_style() -> Element:
+        """Create a numbered list style for ODF documents.
+
+        Returns:
+            An Element representing a text:list-style for numbered lists.
+        """
+        list_style = Element.from_tag('text:list-style')
+        list_style.set_attribute('style:name', 'numbered-list')
+        # Add levels 1-9 for nested numbered lists
+        for level_num in range(1, 10):
+            level = Element.from_tag('text:list-level-style-number')
+            level.set_attribute('text:level', str(level_num))
+            level.set_attribute('style:num-suffix', '.')
+            level.set_attribute('style:num-format', '1')
+            # Add indentation properties
+            level.append(
+                MultiFormatOdt._create_list_level_properties(level_num))
+            list_style.append(level)
+        return list_style
+
+    @staticmethod
+    def _create_bullet_list_style() -> Element:
+        """Create a bullet list style for ODF documents.
+
+        Returns:
+            An Element representing a text:list-style for bullet lists.
+        """
+        list_style = Element.from_tag('text:list-style')
+        list_style.set_attribute('style:name', 'bullet-list')
+        # Bullet characters for different levels (bullet, white bullet, square)
+        bullets = ['\u2022', '\u25e6', '\u25aa',
+                   '\u2022', '\u25e6', '\u25aa',
+                   '\u2022', '\u25e6', '\u25aa']
+        # Add levels 1-9 for nested bullet lists
+        for level_num in range(1, 10):
+            level = Element.from_tag('text:list-level-style-bullet')
+            level.set_attribute('text:level', str(level_num))
+            level.set_attribute('text:bullet-char', bullets[level_num - 1])
+            # Add indentation properties
+            level.append(
+                MultiFormatOdt._create_list_level_properties(level_num))
+            list_style.append(level)
+        return list_style
 
     def _create_odt_styles(self) -> OdtStyles:
         """Create the ODT styles needed for documents."""
