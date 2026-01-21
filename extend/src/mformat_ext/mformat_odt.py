@@ -296,7 +296,11 @@ class MultiFormatOdt(MultiFormat):
                   f'level = {level} state: {self.state.name}')
         assert self.odt_list and len(self.odt_list) == level
         if len(self.odt_list) > 1:
-            self.odt_list[-2].append(self.odt_list[-1])
+            # Nested list: append to the last list item of the parent list
+            # In ODF, nested lists must be inside the parent's list item
+            parent_list = self.odt_list[-2]
+            parent_list_item = parent_list.children[-1]
+            parent_list_item.append(self.odt_list[-1])
         else:
             self.doc.body.append(self.odt_list[-1])
         self.odt_list.pop()
@@ -347,7 +351,11 @@ class MultiFormatOdt(MultiFormat):
                   f'level = {level} state: {self.state.name}')
         assert self.odt_list and len(self.odt_list) == level
         if len(self.odt_list) > 1:
-            self.odt_list[-2].append(self.odt_list[-1])
+            # Nested list: append to the last list item of the parent list
+            # In ODF, nested lists must be inside the parent's list item
+            parent_list = self.odt_list[-2]
+            parent_list_item = parent_list.children[-1]
+            parent_list_item.append(self.odt_list[-1])
         else:
             self.doc.body.append(self.odt_list[-1])
         self.odt_list.pop()
