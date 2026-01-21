@@ -138,14 +138,54 @@ class MultiFormatDocx(MultiFormat):
             raise RuntimeError('No current paragraph to write URL into')
         if not text:
             text = url
-        # Note: python-docx has docx.text.hyperlink.Hyperlink
-        # class that we need to figure out how to use.
-        run = self.current_paragraph.add_run(text)
+        self._add_hyperlink(self.current_paragraph, url, text, formatting)
+
+    def _add_hyperlink(self, paragraph: Paragraph, url: str,
+                       text: str, formatting: Formatting) -> None:
+        """Add a clickable hyperlink to a paragraph.
+
+        Args:
+            paragraph: The paragraph to add the hyperlink to.
+            url: The URL for the hyperlink.
+            text: The display text for the hyperlink.
+            formatting: The formatting (bold/italic) for the text.
+        """
+        # Create relationship for the hyperlink
+        # The relationship type for external hyperlinks
+        rel_type = ('http://schemas.openxmlformats.org/officeDocument/'
+                    '2006/relationships/hyperlink')
+        r_id = self.doc.part.relate_to(url, rel_type, is_external=True)
+        # Create hyperlink element
+        hyperlink = OxmlElement('w:hyperlink')
+        hyperlink.set(qn('r:id'), r_id)
+        # Create run inside hyperlink
+        run_element = OxmlElement('w:r')
+        run_props = OxmlElement('w:rPr')
+        # Add blue color for link appearance
+        color = OxmlElement('w:color')
+        color.set(qn('w:val'), '0000FF')
+        run_props.append(color)
+        # Add underline for link appearance
+        underline = OxmlElement('w:u')
+        underline.set(qn('w:val'), 'single')
+        run_props.append(underline)
+        # Add bold if requested
         if formatting.bold:
-            run.bold = True
+            bold = OxmlElement('w:b')
+            run_props.append(bold)
+        # Add italic if requested
         if formatting.italic:
-            run.italic = True
-        run.font.color.rgb = None  # Use default color
+            italic = OxmlElement('w:i')
+            run_props.append(italic)
+        run_element.append(run_props)
+        # Add text element
+        text_element = OxmlElement('w:t')
+        text_element.text = text
+        run_element.append(text_element)
+        hyperlink.append(run_element)
+        # Append hyperlink to paragraph
+        # pylint: disable=protected-access
+        paragraph._p.append(hyperlink)
 
     def _start_bullet_list(self, level: int) -> None:
         """Start a bullet list.
