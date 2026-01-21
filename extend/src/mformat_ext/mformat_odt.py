@@ -146,6 +146,35 @@ class MultiFormatOdt(MultiFormat):
         return list_style
 
     @staticmethod
+    def _create_code_paragraph_style() -> Style:
+        """Create a code paragraph style with monospace font.
+
+        Returns:
+            A Style object for code blocks with monospace font.
+        """
+        style = Style(
+            name='code',
+            family='paragraph',
+            display_name='code'
+        )
+        # Add text properties for monospace font
+        text_props = Element.from_tag('style:text-properties')
+        text_props.set_attribute('style:font-name', 'Liberation Mono')
+        text_props.set_attribute('fo:font-family', "'Liberation Mono'")
+        text_props.set_attribute('style:font-family-generic', 'modern')
+        text_props.set_attribute('style:font-pitch', 'fixed')
+        # Also set for Asian and Complex text
+        text_props.set_attribute('style:font-name-asian', 'Liberation Mono')
+        text_props.set_attribute('style:font-name-complex', 'Liberation Mono')
+        style.append(text_props)
+        # Add paragraph properties for light gray background
+        para_props = Element.from_tag('style:paragraph-properties')
+        para_props.set_attribute('fo:background-color', '#f0f0f0')
+        para_props.set_attribute('fo:padding', '0.1cm')
+        style.append(para_props)
+        return style
+
+    @staticmethod
     def _create_link_style(name: str, bold: bool = False,
                            italic: bool = False) -> Style:
         """Create a link style with blue color and underline.
@@ -193,11 +222,9 @@ class MultiFormatOdt(MultiFormat):
                                   display_name='bold-italic', area='text',
                                   bold=True, italic=True)
         text_styles['bold-italic'] = bold_italic_style
-        code_style = Style(name='code', family='font-face',
-                           display_name='code',
-                           font_family='monospace', font_name='courier new',
-                           bold=False, italic=False)
-        font_styles['code'] = code_style
+        # Create code paragraph style with monospace font and background
+        code_style = self._create_code_paragraph_style()
+        paragraph_styles['code'] = code_style
         # Create link styles with blue color and underline
         text_styles['link'] = self._create_link_style('link')
         text_styles['link-bold'] = self._create_link_style(

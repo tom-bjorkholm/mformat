@@ -9,11 +9,15 @@ This is a normal paragraph with some text. Paragraphs are not useable for showin
 <p>
 Code blocks are written using the write_code_block() method.</p>
 <pre><code>
-<span class="language-python"><br>
-def hello_world() -&gt; int:<br>
-    print(&quot;Hello, World!&quot;)<br>
-    print(&quot;This is another line of code.&quot;)<br>
-    return 42<br>
+<span class="language-python">
+def hello_world(i: int) -&gt; int:
+    print(&quot;Hello, World!&quot;)
+    if i &gt; 0:
+        print(&quot;i is positive&quot;)
+    else:
+        print(&quot;i is negative&quot;)
+    print(&quot;This is another line of code.&quot;)
+    return 42
 </span>
 </code></pre>
 </body>

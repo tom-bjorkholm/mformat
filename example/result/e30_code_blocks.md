@@ -4,8 +4,12 @@ Code blocks are written using the write_code_block() method.
 
 ````python
 
-def hello_world() -> int:
+def hello_world(i: int) -> int:
     print("Hello, World!")
+    if i > 0:
+        print("i is positive")
+    else:
+        print("i is negative")
     print("This is another line of code.")
     return 42
 

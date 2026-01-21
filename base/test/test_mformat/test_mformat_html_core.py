@@ -273,9 +273,10 @@ def test_code_block_multiline(capsys):
         code = 'def hello():\n    print("Hello")\n    return True'
         mfd.write_code_block(text=code, programming_language='python')
 
+    # <pre> preserves whitespace including newlines, so no <br> needed
     exp = (PF_EN_NT_NC + '<pre><code>\n' +
-           '<span class="language-python">def hello():<br>\n' +
-           '    print(&quot;Hello&quot;)<br>\n' +
+           '<span class="language-python">def hello():\n' +
+           '    print(&quot;Hello&quot;)\n' +
            '    return True</span>\n' +
            '</code></pre>\n' + SFTOT)
     check_run_with_context_manager('html', '.html', test_action,
@@ -288,8 +289,9 @@ def test_code_block_with_special_chars(capsys):
         assert isinstance(mfd, MultiFormatHtml)
         code = 'x = "test <>&"\ny = \'another\''
         mfd.write_code_block(text=code)
+    # <pre> preserves whitespace including newlines, so no <br> needed
     exp = (PF_EN_NT_NC +
-           '<pre><code>\nx = &quot;test &lt;&gt;&amp;&quot;<br>\n' +
+           '<pre><code>\nx = &quot;test &lt;&gt;&amp;&quot;\n' +
            'y = &#x27;another&#x27;</code></pre>\n' + SFTOT)
     check_run_with_context_manager('html', '.html', test_action,
                                    expected_text=exp, capsys=capsys)

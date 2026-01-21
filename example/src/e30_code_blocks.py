@@ -27,8 +27,12 @@ def example_code_blocks(format_name: str, file_name: str) -> None:
         mf.add_text('write_code_block() method.')
         # Then write a code block with Python code.
         code = '''
-def hello_world() -> int:
+def hello_world(i: int) -> int:
     print("Hello, World!")
+    if i > 0:
+        print("i is positive")
+    else:
+        print("i is negative")
     print("This is another line of code.")
     return 42
 '''
