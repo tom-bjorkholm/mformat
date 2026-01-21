@@ -21,7 +21,7 @@ def paragraphs_example(format_name: str,
         # We can also add text to the paragraph in multiple calls
         # using add_text.
         mf.add_text('With add_text we can add text to the paragraph.')
-        mf.add_text('As described in the example file e01_paragraph.py,')
+        mf.add_text('As described in the example file e01_paragraph.py.')
         # Start a second paragraph - this automatically closes the first
         # paragraph.
         mf.start_paragraph('With start_paragraph we can start a second '

@@ -9,7 +9,9 @@ from typing import Optional, Callable
 from docx import Document
 from docx.document import Document as DocumentObject
 from docx.text.paragraph import Paragraph
-from docx.shared import Inches
+from docx.shared import Inches, Twips
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
 from mformat.mformat import FormatterDescriptor, MultiFormat
 from mformat.mformat_state import MultiFormatState, Formatting
 
@@ -219,12 +221,41 @@ class MultiFormatDocx(MultiFormat):
         assert isinstance(level, int)
         assert isinstance(num, int)
         assert isinstance(full_number, str)
-        self.current_paragraph = self.doc.add_paragraph(
-            style='List Number')
-        # Set the indentation level for nested lists
-        if level > 1:
-            self.current_paragraph.paragraph_format.left_indent = \
-                Inches(0.5 * (level - 1))
+        # Use regular paragraph with manual numbering for hierarchical numbers
+        # The 'List Number' style only supports simple sequential numbering
+        self.current_paragraph = self.doc.add_paragraph()
+        # Set up hanging indent with tab stop for proper text alignment
+        # Using twips: 720 twips = 0.5 inches
+        number_width_twips = 720  # Space reserved for the number
+        base_indent_twips = 720 * (level - 1)  # Additional indent per level
+        text_position_twips = base_indent_twips + number_width_twips
+        self.current_paragraph.paragraph_format.left_indent = \
+            Twips(text_position_twips)
+        self.current_paragraph.paragraph_format.first_line_indent = \
+            Twips(-number_width_twips)
+        # Add tab stop at text position so text after number aligns with
+        # wrapped lines (both start at the same position)
+        self._add_tab_stop(self.current_paragraph, text_position_twips)
+        # Add the hierarchical number followed by tab (not space)
+        self.current_paragraph.add_run(full_number)
+        self.current_paragraph.add_run('\t')
+
+    @staticmethod
+    def _add_tab_stop(paragraph: Paragraph, position_twips: int) -> None:
+        """Add a left-aligned tab stop to a paragraph.
+
+        Args:
+            paragraph: The paragraph to add the tab stop to.
+            position_twips: The position of the tab stop in twips.
+        """
+        # pylint: disable=protected-access
+        p_pr = paragraph._p.get_or_add_pPr()
+        tabs = OxmlElement('w:tabs')
+        tab = OxmlElement('w:tab')
+        tab.set(qn('w:val'), 'left')
+        tab.set(qn('w:pos'), str(position_twips))
+        tabs.append(tab)
+        p_pr.append(tabs)
 
     def _end_numbered_item(self, level: int, num: int) -> None:
         """End a numbered item.
