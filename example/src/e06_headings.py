@@ -11,7 +11,7 @@ from mformat.factory import create_mf
 
 def headings_example(format_name: str,
                      file_name: str) -> None:
-    """Write an example file with headings."""
+    """Write an example file with several headings."""
     # This example demonstrates the basic usage of the multi format class.
     # It shows how to write multiple headings at different levels.
     # We start by getting a formatter from the factory, using the format name

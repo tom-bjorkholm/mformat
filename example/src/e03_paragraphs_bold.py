@@ -11,7 +11,7 @@ from mformat.factory import create_mf
 
 def paragraphs_bold_example(format_name: str,
                             file_name: str) -> None:
-    """Write an example file with several paragraphs."""
+    """Write an example file with several paragraphs and bold text."""
     # This example demonstrates the basic usage of the multi format class.
     # It shows how to add bold and italic text to paragraphs.
     # We start by getting a formatter from the factory, using the format name

@@ -11,7 +11,7 @@ from mformat.factory import create_mf
 
 def bullets_example(format_name: str,
                     file_name: str) -> None:
-    """Write an example file with a bullet list."""
+    """Write an example file with a nestedbullet list."""
     # This example demonstrates the basic usage of the multi format class.
     # It shows how to write nested bullet lists.
     # We start by getting a formatter from the factory, using the format name

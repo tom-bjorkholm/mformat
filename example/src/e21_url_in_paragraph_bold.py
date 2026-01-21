@@ -11,7 +11,7 @@ from mformat.factory import create_mf
 
 
 def example_url_in_paragraph_bold(format_name: str, file_name: str) -> None:
-    """Show how to write a URL in a paragraph."""
+    """Show how to write a bold and italic URL in a paragraph."""
     # We start by getting the MultiFormat class from the factory
     # as a context manager as we did in exampe e01_paragraph.py.
     # We can pass additional arguments to the MultiFormat constructor

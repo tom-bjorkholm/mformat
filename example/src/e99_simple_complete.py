@@ -11,7 +11,7 @@ from mformat.factory import create_mf
 
 def multi_format_example(format_name: str,  # pylint: disable=too-many-statements # noqa: E501
                          file_name: str) -> None:
-    """Write an example file using the multi format class."""
+    """Write an example file with most features of the multi format class."""
     # This example demonstrates the usage of the multi format class.
     # It shows how to write headings, paragraphs, URLs, bold and italic text,
     # bullet lists, and code blocks.

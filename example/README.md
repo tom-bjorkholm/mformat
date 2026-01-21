@@ -36,7 +36,7 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
       - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e02_paragraphs.odt)
 
-  - Write an example file with several paragraphs.
+  - Write an example file with several paragraphs and bold text.
 
     - Source: [e03_paragraphs_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e03_paragraphs_bold.py)
 
@@ -80,7 +80,7 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
       - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e05_heading.odt)
 
-  - Write an example file with headings.
+  - Write an example file with several headings.
 
     - Source: [e06_headings.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e06_headings.py)
 
@@ -110,7 +110,7 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
       - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e07_bullet_list.odt)
 
-  - Write an example file with a bullet list.
+  - Write an example file with a nestedbullet list.
 
     - Source: [e08_bullet_nested.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e08_bullet_nested.py)
 
@@ -272,7 +272,7 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
       - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e20_url_in_paragraph.odt)
 
-  - Show how to write a URL in a paragraph.
+  - Show how to write a bold and italic URL in a paragraph.
 
     - Source: [e21_url_in_paragraph_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e21_url_in_paragraph_bold.py)
 
@@ -314,7 +314,7 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
       - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e23_url_in_numbered_list.odt)
 
-  - Show how to write a URL in a heading.
+  - Show how to write a URL in a heading, both italic and bold.
 
     - Source: [e24_url_in_heading.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e24_url_in_heading.py)
 
@@ -360,7 +360,7 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - **Complete Example**
 
-  - Write an example file using the multi format class.
+  - Write an example file with most features of the multi format class.
 
     - Source: [e99_simple_complete.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e99_simple_complete.py)
 

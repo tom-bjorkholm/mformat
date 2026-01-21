@@ -11,7 +11,7 @@ from mformat.factory import create_mf
 
 
 def example_url_in_heading(format_name: str, file_name: str) -> None:
-    """Show how to write a URL in a heading."""
+    """Show how to write a URL in a heading, both italic and bold."""
     # We start by getting the MultiFormat class from the factory
     # as a context manager as we did in exampe e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
