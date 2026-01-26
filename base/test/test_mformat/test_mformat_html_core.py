@@ -32,8 +32,8 @@ def test_get_arg_desciption(capsys):
     check_capsys(capsys)
 
 
-PFDT = '<!DOCTYPE html encoding="utf-8">\n<html lang="'
-PTAL = '">\n<head>\n<title>'
+PFDT = '<!DOCTYPE html>\n<html lang="'
+PTAL = '">\n<head>\n<meta charset="utf-8">\n<title>'
 PFAT = '</title>\n'
 PFCSS = '<link rel="stylesheet" href="'
 PFCSSE = '">\n'

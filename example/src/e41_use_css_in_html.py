@@ -8,11 +8,10 @@
 from e01_paragraph import example_main
 from mformat.factory import create_mf, OptArgs
 
-# Raw Bitbucket URL for the example CSS file (used in <link href="...">).
-CSS_RAW_URL = (
-    'https://bitbucket.org/tom-bjorkholm/mformat/raw/master/example/css/'
-    'e41_styles.css'
-)
+# Relative path from result/ to example CSS; works when viewing HTML locally.
+# Raw Bitbucket URL:
+# https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/css/e41_styles.css  # noqa: E501
+CSS_PATH = '../css/e41_styles.css'
 
 
 def use_css_in_html_example(format_name: str, file_name: str) -> None:
@@ -21,7 +20,7 @@ def use_css_in_html_example(format_name: str, file_name: str) -> None:
     if format_name == 'html':
         # css_file and lang are HTML-only; pass via OptArgs to create_mf.
         opt_args = {
-            'css_file': CSS_RAW_URL,
+            'css_file': CSS_PATH,
             'lang': 'de',
         }
     with create_mf(format_name=format_name, file_name=file_name,
@@ -35,8 +34,8 @@ def use_css_in_html_example(format_name: str, file_name: str) -> None:
         )
         mf.start_paragraph(
             text='Die CSS-Datei liegt unter example/css/ und wird per '
-            'Raw-URL von Bitbucket eingebunden. Die Ausgabe ist auf '
-            'Deutsch; lang="de" steht im erzeugten <html>-Tag.'
+            'relativem Pfad eingebunden (für lokale Anzeige). Die Ausgabe '
+            'ist auf Deutsch; lang="de" steht im erzeugten <html>-Tag.'
         )
 
 

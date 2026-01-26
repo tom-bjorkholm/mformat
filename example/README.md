@@ -358,6 +358,36 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
     - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e30_code_blocks.odt)
 
+## Passing extra arguments
+
+- Show a callback function to handle an existing file.
+
+  - Source: [e40_handle_existing_file.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e40_handle_existing_file.py)
+
+  - Results:
+
+    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e40_handle_existing_file.html)
+
+    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e40_handle_existing_file.md)
+
+    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e40_handle_existing_file.docx)
+
+    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e40_handle_existing_file.odt)
+
+- Show how to use a CSS file and set document language in HTML.
+
+  - Source: [e41_use_css_in_html.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e41_use_css_in_html.py)
+
+  - Results:
+
+    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e41_use_css_in_html.html)
+
+    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e41_use_css_in_html.md)
+
+    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e41_use_css_in_html.docx)
+
+    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e41_use_css_in_html.odt)
+
 ## Complete Example
 
 - Write an example file with most features of the multi format class.

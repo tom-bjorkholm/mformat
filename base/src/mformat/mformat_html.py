@@ -57,9 +57,10 @@ class MultiFormatHtml(MultiFormatTextBased):
     def _write_file_prefix(self) -> None:
         """Write the file prefix."""
         assert self.file is not None
-        self.file.write('<!DOCTYPE html encoding="utf-8">\n')
+        self.file.write('<!DOCTYPE html>\n')
         self.file.write(f'<html lang="{self.lang}">\n')
         self.file.write('<head>\n')
+        self.file.write('<meta charset="utf-8">\n')
         self.file.write(f'<title>{self.title}</title>\n')
         if self.css_file is not None:
             self.file.write('<link rel="stylesheet" ' +
