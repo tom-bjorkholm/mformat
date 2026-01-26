@@ -91,18 +91,57 @@ def get_example_directories(script_dir: Path) -> tuple[Path, Path]:
 
 
 def extract_function_docstring(source_path: Path) -> str:
-    """Extract the first function's docstring from a Python file."""
+    """Extract description from a Python file.
+
+    If there's a class before the first function, use the class docstring.
+    Otherwise, use the first function's docstring.
+    Returns only the first line/sentence of the docstring for use as a
+    bullet point.
+    """
     try:
         source_code = source_path.read_text(encoding='utf-8')
         tree = ast.parse(source_code)
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef):
+        # Iterate through the module body in order (not using ast.walk
+        # which doesn't preserve order)
+        for node in tree.body:
+            # Check for class definitions first
+            if isinstance(node, ast.ClassDef):
                 docstring = ast.get_docstring(node)
                 if docstring:
-                    return docstring
+                    # Return only the first line/sentence
+                    return _extract_first_line(docstring)
+            # Check for function definitions
+            elif isinstance(node, ast.FunctionDef):
+                docstring = ast.get_docstring(node)
+                if docstring:
+                    # Return only the first line/sentence
+                    return _extract_first_line(docstring)
     except (SyntaxError, FileNotFoundError, UnicodeDecodeError) as e:
         print(f'Warning: Could not parse {source_path}: {e}')
     return 'No description available.'
+
+
+def _extract_first_line(docstring: str) -> str:
+    """Extract the first line or sentence from a docstring.
+
+    Returns the first line, or the first sentence if it ends with a period
+    and is shorter than the first line.
+    """
+    if not docstring:
+        return ''
+    # Get the first line (strip leading/trailing whitespace)
+    first_line = docstring.split('\n')[0].strip()
+    # If the first line ends with a period, return it
+    if first_line.endswith('.'):
+        return first_line
+    # Otherwise, try to find the first sentence
+    # Look for the first period followed by space or end of line
+    sentences = first_line.split('. ')
+    if len(sentences) > 1:
+        # Return first sentence with period
+        return sentences[0] + '.'
+    # If no period found, return the first line as-is
+    return first_line
 
 
 def discover_examples(src_dir: Path,

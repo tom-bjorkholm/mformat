@@ -406,16 +406,7 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 ## Extend with own formats
 
-- Write an example file demonstrating the custom tree format.
-
-This function demonstrates how to register and then use the custom
-format (or any format) to write a document. The same code works
-for all formats registered with the framework.
-
-Args:
-    format_name: The name of the format to use (e.g., 'tree', 'html',
-                 'md').
-    file_name: The name of the output file.
+- A custom tree format class that extends MultiFormatTextBased.
 
   - Source: [e60_custom_format.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e60_custom_format.py)
 
