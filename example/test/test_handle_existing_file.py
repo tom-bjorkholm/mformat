@@ -1,0 +1,65 @@
+#! /usr/local/bin/python3
+"""Test the handle existing file example module."""
+
+# Copyright (c) 2025 - 2026 Tom Björkholm
+# MIT License
+#
+
+import sys
+from pathlib import Path
+from tempfile import TemporaryDirectory
+import pytest
+# Add example/src to path for shared test utilities
+# pylint: disable=duplicate-code
+_example_test_path = (
+    Path(__file__).parent.parent / 'src'
+)
+sys.path.insert(0, str(_example_test_path))
+from e40_handle_existing_file import existing_file_example # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
+
+def test_existing_file_example1(capsys):
+    """Test the existing file example."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name =  tmp_dir + '/test.md'
+        existing_file_example(format_name="md", file_name=file_name)
+        with open(file_name, "rt", encoding="utf-8") as file:
+            content = file.read()
+        assert 'Existing File Example' in content
+    out, err = capsys.readouterr()
+    assert '' == out
+    assert '' == err
+
+
+@pytest.mark.parametrize('env_var, txt_out',
+                         [('overwrite', 'Overwriting file'),
+                          ('backup', 'Backed up file')])
+def test_existing_file_example2(capsys, monkeypatch, env_var, txt_out):
+    """Test the existing file example."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name =  tmp_dir + '/test.md'
+        monkeypatch.setenv('MFORMAT_FILE_EXISTS', env_var)
+        with open(file=file_name, mode='wt', encoding='utf-8') as file:
+            file.write('Some old content.')
+        existing_file_example(format_name="md", file_name=file_name)
+        with open(file_name, "rt", encoding="utf-8") as file:
+            content = file.read()
+        assert 'Existing File Example' in content
+    out, err = capsys.readouterr()
+    assert txt_out in err
+    assert file_name in err
+    assert '' == out
+
+
+def test_existing_file_example3(capsys, monkeypatch):
+    """Test the existing file example."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name =  tmp_dir + '/test.md'
+        monkeypatch.delenv('MFORMAT_FILE_EXISTS', raising=False)
+        with open(file=file_name, mode='wt', encoding='utf-8') as file:
+            file.write('Some old content.')
+        with pytest.raises(FileExistsError):
+            existing_file_example(format_name="md", file_name=file_name)
+    out, err = capsys.readouterr()
+    assert '' == out
+    assert 'File ' + file_name + ' already exists' in err
+    assert 'Not overwriting file ' + file_name in err
