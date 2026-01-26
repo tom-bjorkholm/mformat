@@ -190,3 +190,47 @@ def test_end_wrong_list_type(capsys,  # pylint: disable=too-many-arguments,too-m
                                              point_list_type=pltype)
     check_expected_result(list_handler, exp)
     check_capsys(capsys)
+
+
+@pytest.mark.parametrize('state,stack,lev,exp',
+                         [(MultiFormatState.BULLET_LIST,
+                           [PointListType.BULLET], 1,
+                           ExpectedResult(state=MultiFormatState.BULLET_LIST,
+                                          calls=[],
+                                          stack=[PointListType.BULLET],
+                                          number_at_top_level=1)),
+                          (MultiFormatState.NUMBERED_LIST,
+                           [PointListType.NUMBERED], 1,
+                           ExpectedResult(state=MultiFormatState.NUMBERED_LIST,
+                                          calls=[],
+                                          stack=[PointListType.NUMBERED],
+                                          number_at_top_level=1)),
+                          (MultiFormatState.NUMBERED_LIST,
+                           [PointListType.NUMBERED,
+                            PointListType.BULLET,
+                            PointListType.NUMBERED], 1,
+                           ExpectedResult(state=MultiFormatState.NUMBERED_LIST,
+                                          calls=['_end_numbered_list',
+                                                 '_end_bullet_list'],
+                                          stack=[PointListType.NUMBERED],
+                                          number_at_top_level=1)),
+                          (MultiFormatState.BULLET_LIST_ITEM,
+                           [PointListType.BULLET,
+                            PointListType.NUMBERED,
+                            PointListType.BULLET], 1,
+                           ExpectedResult(state=MultiFormatState.BULLET_LIST,
+                                          calls=['_end_bullet_item',
+                                                 '_end_bullet_list',
+                                                 '_end_numbered_list'],
+                                          stack=[PointListType.BULLET],
+                                          number_at_top_level=1))])
+def test_decrease_list_depth(capsys, state, stack, lev, exp) -> None:
+    """Test the _decrease_list_depth method."""
+    list_handler = ListHandler2(state=state)
+    for item in stack:
+        stack_item = PointStackItem(point_list_type=item,
+                                    number_at_level=1)
+        list_handler.point_list_stack.append(stack_item)
+    list_handler._decrease_list_depth(target_level=lev)  # pylint: disable=protected-access # noqa: E501
+    check_expected_result(list_handler, exp)
+    check_capsys(capsys)
