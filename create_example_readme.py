@@ -49,7 +49,9 @@ CATEGORIES: list[tuple[str, list[str]]] = [
     ('Tables', ['14', '15', '16', '17']),
     ('URLs', ['20', '21', '22', '23', '24', '25']),
     ('Code Blocks', ['30']),
-    ('Complete Example', ['99']),
+    ('Passing extra arguments', ['40', '41']),
+    ('Complete Example', ['50']),
+    ('Extend with own formats', ['60']),
 ]
 
 # Result file extensions to include (in order)
@@ -186,25 +188,25 @@ def write_readme(examples: list[ExampleInfo], readme_path: Path) -> None:
         for category in ordered_categories:
             category_examples = grouped[category]
             # Category header (level 1 bullet, bold)
-            mf.start_bullet_item(text=category, level=1, bold=True)
+            mf.start_heading(level=2, text=category)
             for example in category_examples:
                 # Example description (level 2 bullet)
-                mf.start_bullet_item(text=example.description, level=2)
+                mf.start_bullet_item(text=example.description, level=1)
                 # Source code link (level 3 bullet)
                 source_url = generate_bitbucket_url(f'src/{example.name}.py')
-                mf.start_bullet_item(text='Source: ', level=3)
+                mf.start_bullet_item(text='Source: ', level=2)
                 mf.add_url(text=f'{example.name}.py', url=source_url)
                 # Result files (level 3 bullet header, level 4 for each file)
                 if not example.result_files:
                     continue
-                mf.start_bullet_item(text='Results:', level=3)
+                mf.start_bullet_item(text='Results:', level=2)
                 for ext in RESULT_EXTENSIONS:
                     if ext not in example.result_files:
                         continue
                     result_url = generate_bitbucket_url(
                         f'result/{example.name}{ext}')
                     ext_name = EXTENSION_NAMES.get(ext, ext)
-                    mf.start_bullet_item(text='', level=4)
+                    mf.start_bullet_item(text='', level=3)
                     mf.add_url(text=ext_name, url=result_url)
 
 
