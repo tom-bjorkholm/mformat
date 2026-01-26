@@ -10,6 +10,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 # import pytest
 # Add example/src to path for shared test utilities
+# pylint: disable=duplicate-code
 _example_test_path = (
     Path(__file__).parent.parent / 'src'
 )
