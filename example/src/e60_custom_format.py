@@ -363,7 +363,8 @@ class MultiFormatTree(MultiFormatTextBased):
         Args:
             num_columns: The number of columns in the table.
         """
-        assert isinstance(num_columns, int)
+        assert self.file is not None
+        _ = num_columns  # pylint: disable=unused-variable
         # Ensure we have a blank line before the table
         last_chars = self._get_last_chars_written(num_chars=2)
         if last_chars != '\n\n' and last_chars[-1:] != '\n':
@@ -379,8 +380,9 @@ class MultiFormatTree(MultiFormatTextBased):
             num_columns: The number of columns in the table.
             num_rows: The number of rows in the table.
         """
-        assert isinstance(num_columns, int)
-        assert isinstance(num_rows, int)
+        assert self.file is not None
+        _ = num_columns  # pylint: disable=unused-variable
+        _ = num_rows  # pylint: disable=unused-variable
         self.file.write('\n')
 
     def _write_table_first_row(self, first_row: list[str],
@@ -395,6 +397,7 @@ class MultiFormatTree(MultiFormatTextBased):
             first_row: The cells of the first row (already encoded).
             formatting: Formatting information for the row.
         """
+        assert self.file is not None
         # For the tree format, we write the header row with a special marker
         # We'll use '|' to separate columns
         formatted_row = []
@@ -432,7 +435,7 @@ class MultiFormatTree(MultiFormatTextBased):
         assert self.file is not None
         assert self.table is not None
         # Format each cell
-        formatted_row = []
+        formatted_row: list[str] = []
         for cell in row:
             # Apply formatting if needed
             formatted_cell = cell
