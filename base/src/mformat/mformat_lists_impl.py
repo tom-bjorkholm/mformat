@@ -101,9 +101,7 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
         Args:
             text: The text to write in the list item.
             level: The level of the list item (None = current or 1).
-            smart_ws: If True, leading and trailing whitespace are collapsed.
-            bold: If True, the text is bold.
-            italic: If True, the text is italic.
+            formatting: The formatting of the text.
             point_list_type: The type of point list (bullet or numbered).
         """
         target_level = level if level else (len(self.point_list_stack) or 1)
