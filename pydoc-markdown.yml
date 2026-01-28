@@ -1,0 +1,22 @@
+# pydoc-markdown.yml
+loaders:
+  - type: python
+    # Where to search for Python packages/modules
+    search_path:
+      - ./base/src
+      - ./extend/src
+    # Packages (directories with __init__.py) to document
+    packages:
+      - mformat
+      - mformat_ext
+
+processors:
+  - type: filter
+    # Optional: skip private members, etc.
+    skip_empty_modules: true
+  - type: smart
+  - type: crossref
+
+renderer:
+  type: markdown
+  filename: ./doc/api.md

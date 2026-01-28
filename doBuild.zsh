@@ -73,6 +73,8 @@ if [[ ! -a dist/${WHL2} ]] ; then
 fi
 ${PYTHON} -m pip uninstall -y ${WHLBASE2} 2>&1 | tee -a ${BUILDLOG}
 ${PYTHON} -m pip install dist/${WHL2} 2>&1 | tee -a ${BUILDLOG}
+./venv/bin/pydoc-markdown --render-toc ./pydoc-markdown.yml 2>&1 | tee -a ${BUILDLOG}
+./venv/bin/pydoc-markdown --render-toc ./pydoc-markdown_protected.yml 2>&1 | tee -a ${BUILDLOG}
 date +'Build ready %Y-%m-%d %H:%M:%S %Z' 2>&1 | tee -a ${BUILDLOG}
 for i in 1 2 3 4 5 ; do
   echo " "
