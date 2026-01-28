@@ -47,7 +47,7 @@ for pkg in pytest pytest-html flake8 flake8-html pytest-flake8 \
     pytest-skip-slow flake8-docstrings pytest-pylint pytest-cov \
     wheel pypi-simple requests types-requests argcomplete \
     pylint mypy coverage build setuptools wheel lxml \
-    python-docx odfdo mammoth
+    python-docx odfdo mammoth odfpy
 do
     ${PYTHON} -m pip install --upgrade ${pkg}
 done
