@@ -277,3 +277,39 @@ def test_start_item_in_list(capsys, state, stack, exp) -> None:
     list_handler._start_item_in_list(point_list_type=stack[-1])  # pylint: disable=protected-access # noqa: E501
     check_expected_result(list_handler, exp)
     check_capsys(capsys)
+
+
+@pytest.mark.parametrize('state,stack,pltype,exp',
+                         [(MultiFormatState.BULLET_LIST,
+                           [PointListType.BULLET],
+                           PointListType.BULLET,
+                           ExpectedResult(state=MultiFormatState.BULLET_LIST,
+                                          calls=['_start_bullet_list'],
+                                          stack=[PointListType.BULLET,
+                                                 PointListType.BULLET],
+                                          number_at_top_level=0)),
+                          (MultiFormatState.PARAGRAPH_END,
+                           [],
+                           PointListType.NUMBERED,
+                           ExpectedResult(state=MultiFormatState.NUMBERED_LIST,
+                                          calls=['_start_numbered_list'],
+                                          stack=[PointListType.NUMBERED],
+                                          number_at_top_level=0)),
+                          (MultiFormatState.BULLET_LIST,
+                           [PointListType.BULLET],
+                           PointListType.NUMBERED,
+                           ExpectedResult(state=MultiFormatState.NUMBERED_LIST,
+                                          calls=['_start_numbered_list'],
+                                          stack=[PointListType.BULLET,
+                                                 PointListType.NUMBERED],
+                                          number_at_top_level=0)),])
+def test_push_and_start_list(capsys, state, stack, pltype, exp) -> None:
+    """Test the _push_and_start_list method."""
+    list_handler = ListHandler2(state=state)
+    for item in stack:
+        stack_item = PointStackItem(point_list_type=item,
+                                    number_at_level=1)
+        list_handler.point_list_stack.append(stack_item)
+    list_handler._push_and_start_list(point_list_type=pltype)  # pylint: disable=protected-access # noqa: E501
+    check_expected_result(list_handler, exp)
+    check_capsys(capsys)
