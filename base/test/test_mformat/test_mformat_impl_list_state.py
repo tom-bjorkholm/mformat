@@ -9,7 +9,8 @@ from typing import NamedTuple
 import pytest
 from test_mformat_lists_impl import ListHandler2
 from check_capsys import check_capsys
-from mformat.mformat_state import MultiFormatState
+from mformat.mformat_state import (
+    MultiFormatState, FormattingWithWS, Formatting)
 from mformat.mformat_lists_impl import (
     PointStackItem, PointListType)
 
@@ -354,6 +355,79 @@ def test_adjust_to_list_level(capsys,  # pylint: disable=too-many-arguments,too-
                                     number_at_level=1)
         list_handler.point_list_stack.append(stack_item)
     list_handler._adjust_to_list_level(target_level=lev,  # pylint: disable=protected-access # noqa: E501
+                                       point_list_type=pltype)
+    check_expected_result(list_handler, exp)
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('state,stack,txt,lev,pltype,exp',
+                         [(MultiFormatState.BULLET_LIST,
+                           [PointListType.BULLET], 'Item 1', 1,
+                           PointListType.BULLET,
+                           ExpectedResult(
+                               state=MultiFormatState.BULLET_LIST_ITEM,
+                               calls=['_start_bullet_item',
+                                      '_to_write',
+                                      '_write_text'],
+                               stack=[PointListType.BULLET],
+                               number_at_top_level=2)),
+                          (MultiFormatState.NUMBERED_LIST_ITEM,
+                           [PointListType.NUMBERED, PointListType.BULLET,
+                            PointListType.NUMBERED],
+                           'Item 1', 1,
+                           PointListType.BULLET,
+                           ExpectedResult(
+                               state=MultiFormatState.BULLET_LIST_ITEM,
+                               calls=['_end_numbered_item',
+                                      '_end_numbered_list',
+                                      '_end_bullet_list',
+                                      '_end_numbered_list',
+                                      '_start_bullet_list',
+                                      '_start_bullet_item',
+                                      '_to_write',
+                                      '_write_text'],
+                               stack=[PointListType.BULLET],
+                               number_at_top_level=1)),
+                          (MultiFormatState.PARAGRAPH_END,
+                           [],
+                           'Item 1', 1,
+                           PointListType.BULLET,
+                           ExpectedResult(
+                               state=MultiFormatState.BULLET_LIST_ITEM,
+                               calls=['_end_state',
+                                      '_start_bullet_list',
+                                      '_start_bullet_item',
+                                      '_to_write',
+                                      '_write_text'],
+                               stack=[PointListType.BULLET],
+                               number_at_top_level=1)),
+                          (MultiFormatState.PARAGRAPH,
+                           [],
+                           'Item 1', 1,
+                           PointListType.NUMBERED,
+                           ExpectedResult(
+                               state=MultiFormatState.NUMBERED_LIST_ITEM,
+                               calls=['_end_state',
+                                      '_start_numbered_list',
+                                      '_start_numbered_item',
+                                      '_to_write',
+                                      '_write_text'],
+                               stack=[PointListType.NUMBERED],
+                               number_at_top_level=1))])
+def test_start_list_item_impl(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                              state, stack, txt, lev, pltype,
+                              exp) -> None:
+    """Test the _start_list_item_impl method."""
+    list_handler = ListHandler2(state=state)
+    for item in stack:
+        stack_item = PointStackItem(point_list_type=item,
+                                    number_at_level=1)
+        list_handler.point_list_stack.append(stack_item)
+    form = FormattingWithWS(smart_ws=True,
+                            formatting=Formatting(bold=False, italic=False))
+    list_handler._start_list_item_impl(text=txt,  # pylint: disable=protected-access # noqa: E501
+                                       level=lev,
+                                       formatting=form,
                                        point_list_type=pltype)
     check_expected_result(list_handler, exp)
     check_capsys(capsys)
