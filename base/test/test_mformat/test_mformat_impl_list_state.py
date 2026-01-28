@@ -234,3 +234,46 @@ def test_decrease_list_depth(capsys, state, stack, lev, exp) -> None:
     list_handler._decrease_list_depth(target_level=lev)  # pylint: disable=protected-access # noqa: E501
     check_expected_result(list_handler, exp)
     check_capsys(capsys)
+
+
+@pytest.mark.parametrize('state,stack,exp',
+                         [(MultiFormatState.BULLET_LIST,
+                           [PointListType.BULLET],
+                           ExpectedResult(
+                               state=MultiFormatState.BULLET_LIST_ITEM,
+                               calls=['_start_bullet_item'],
+                               stack=[PointListType.BULLET],
+                               number_at_top_level=2)),
+                          (MultiFormatState.NUMBERED_LIST,
+                           [PointListType.NUMBERED],
+                           ExpectedResult(
+                               state=MultiFormatState.NUMBERED_LIST_ITEM,
+                               calls=['_start_numbered_item'],
+                               stack=[PointListType.NUMBERED],
+                               number_at_top_level=2)),
+                          (MultiFormatState.BULLET_LIST_ITEM,
+                           [PointListType.BULLET],
+                           ExpectedResult(
+                               state=MultiFormatState.BULLET_LIST_ITEM,
+                               calls=['_end_bullet_item',
+                                      '_start_bullet_item'],
+                               stack=[PointListType.BULLET],
+                               number_at_top_level=2)),
+                          (MultiFormatState.NUMBERED_LIST_ITEM,
+                           [PointListType.NUMBERED],
+                           ExpectedResult(
+                               state=MultiFormatState.NUMBERED_LIST_ITEM,
+                               calls=['_end_numbered_item',
+                                      '_start_numbered_item'],
+                               stack=[PointListType.NUMBERED],
+                               number_at_top_level=2))])
+def test_start_item_in_list(capsys, state, stack, exp) -> None:
+    """Test the _start_item_in_list method."""
+    list_handler = ListHandler2(state=state)
+    for item in stack:
+        stack_item = PointStackItem(point_list_type=item,
+                                    number_at_level=1)
+        list_handler.point_list_stack.append(stack_item)
+    list_handler._start_item_in_list(point_list_type=stack[-1])  # pylint: disable=protected-access # noqa: E501
+    check_expected_result(list_handler, exp)
+    check_capsys(capsys)
