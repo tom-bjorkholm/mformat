@@ -25,7 +25,10 @@ def test_single_bullet_item(capsys):
     def func(mfd: MultiFormatDocx) -> None:
         mfd.start_bullet_item(text='First item')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<ul>' in html
+    assert '<li>First item</li>' in html
+    assert '</ul>' in html
 
 
 def test_multiple_bullet_items(capsys):
@@ -35,7 +38,11 @@ def test_multiple_bullet_items(capsys):
         mfd.start_bullet_item(text='Second item')
         mfd.start_bullet_item(text='Third item')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<ul>' in html
+    assert '<li>First item</li>' in html
+    assert '<li>Second item</li>' in html
+    assert '<li>Third item</li>' in html
 
 
 def test_bullet_item_with_add_text(capsys):
@@ -44,7 +51,9 @@ def test_bullet_item_with_add_text(capsys):
         mfd.start_bullet_item(text='First item')
         mfd.add_text(text=' with more text')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<ul>' in html
+    assert '<li>First item with more text</li>' in html
 
 
 def test_bullet_item_with_url(capsys):
@@ -53,7 +62,10 @@ def test_bullet_item_with_url(capsys):
         mfd.start_bullet_item(text='Check ')
         mfd.add_url(url='http://example.com', text='this link')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<ul>' in html
+    assert 'Check' in html
+    assert '<a href="http://example.com">this link</a>' in html
 
 
 def test_nested_bullet_items_level2(capsys):
@@ -62,7 +74,10 @@ def test_nested_bullet_items_level2(capsys):
         mfd.start_bullet_item(text='Level 1', level=1)
         mfd.start_bullet_item(text='Level 2', level=2)
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<ul>' in html
+    assert 'Level 1' in html
+    assert 'Level 2' in html
 
 
 def test_nested_bullet_items_level3(capsys):
@@ -72,7 +87,11 @@ def test_nested_bullet_items_level3(capsys):
         mfd.start_bullet_item(text='Level 2', level=2)
         mfd.start_bullet_item(text='Level 3', level=3)
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<ul>' in html
+    assert 'Level 1' in html
+    assert 'Level 2' in html
+    assert 'Level 3' in html
 
 
 def test_bullet_list_back_to_level1(capsys):
@@ -82,7 +101,11 @@ def test_bullet_list_back_to_level1(capsys):
         mfd.start_bullet_item(text='Level 2', level=2)
         mfd.start_bullet_item(text='Level 1 second', level=1)
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<ul>' in html
+    assert 'Level 1 first' in html
+    assert 'Level 2' in html
+    assert 'Level 1 second' in html
 
 
 def test_bullet_list_formatting(capsys):
@@ -92,7 +115,11 @@ def test_bullet_list_formatting(capsys):
         mfd.start_bullet_item(text='Italic item', italic=True)
         mfd.start_bullet_item(text='Both', bold=True, italic=True)
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<ul>' in html
+    assert '<strong>Bold item</strong>' in html
+    assert '<em>Italic item</em>' in html
+    assert 'Both' in html
 
 
 def test_paragraph_then_bullet_list(capsys):
@@ -102,7 +129,11 @@ def test_paragraph_then_bullet_list(capsys):
         mfd.start_bullet_item(text='First item')
         mfd.start_bullet_item(text='Second item')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<p>Intro paragraph</p>' in html
+    assert '<ul>' in html
+    assert '<li>First item</li>' in html
+    assert '<li>Second item</li>' in html
 
 
 def test_bullet_list_then_paragraph(capsys):
@@ -112,7 +143,11 @@ def test_bullet_list_then_paragraph(capsys):
         mfd.start_bullet_item(text='Second item')
         mfd.start_paragraph(text='Concluding paragraph')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<ul>' in html
+    assert '<li>First item</li>' in html
+    assert '<li>Second item</li>' in html
+    assert '<p>Concluding paragraph</p>' in html
 
 
 def test_heading_then_bullet_list(capsys):
@@ -122,7 +157,11 @@ def test_heading_then_bullet_list(capsys):
         mfd.start_bullet_item(text='First item')
         mfd.start_bullet_item(text='Second item')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<h1>Main Title</h1>' in html
+    assert '<ul>' in html
+    assert '<li>First item</li>' in html
+    assert '<li>Second item</li>' in html
 
 
 def test_complex_nested_structure(capsys):
@@ -130,7 +169,12 @@ def test_complex_nested_structure(capsys):
     def func(mfd: MultiFormatDocx) -> None:
         action_complex_nested_bullet_structure(mfd)
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    # Verify at least the outer list structure and some content
+    assert '<ul>' in html
+    assert 'Item 1' in html
+    assert 'Item 1.1' in html
+    assert 'Item 2' in html
 
 
 # Tests for numbered point lists
@@ -141,7 +185,9 @@ def test_single_numbered_item(capsys):
     def func(mfd: MultiFormatDocx) -> None:
         mfd.start_numbered_point_item(text='First item')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '1.' in html
+    assert 'First item' in html
 
 
 def test_multiple_numbered_items(capsys):
@@ -151,7 +197,13 @@ def test_multiple_numbered_items(capsys):
         mfd.start_numbered_point_item(text='Second item')
         mfd.start_numbered_point_item(text='Third item')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '1.' in html
+    assert 'First item' in html
+    assert '2.' in html
+    assert 'Second item' in html
+    assert '3.' in html
+    assert 'Third item' in html
 
 
 def test_numbered_item_with_add_text(capsys):
@@ -160,7 +212,10 @@ def test_numbered_item_with_add_text(capsys):
         mfd.start_numbered_point_item(text='First item')
         mfd.add_text(text=' with more text')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '1.' in html
+    assert 'First item' in html
+    assert 'with more text' in html
 
 
 def test_numbered_item_with_url(capsys):
@@ -169,7 +224,10 @@ def test_numbered_item_with_url(capsys):
         mfd.start_numbered_point_item(text='Check ')
         mfd.add_url(url='http://example.com', text='this link')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '1.' in html
+    assert 'Check' in html
+    assert '<a href="http://example.com">this link</a>' in html
 
 
 def test_nested_numbered_items_level2(capsys):
@@ -178,7 +236,11 @@ def test_nested_numbered_items_level2(capsys):
         mfd.start_numbered_point_item(text='Level 1', level=1)
         mfd.start_numbered_point_item(text='Level 2', level=2)
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '1.' in html
+    assert 'Level 1' in html
+    assert '1.1.' in html
+    assert 'Level 2' in html
 
 
 def test_nested_numbered_items_level3(capsys):
@@ -188,7 +250,13 @@ def test_nested_numbered_items_level3(capsys):
         mfd.start_numbered_point_item(text='Level 2', level=2)
         mfd.start_numbered_point_item(text='Level 3', level=3)
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '1.' in html
+    assert 'Level 1' in html
+    assert '1.1.' in html
+    assert 'Level 2' in html
+    assert '1.1.1.' in html
+    assert 'Level 3' in html
 
 
 def test_numbered_list_back_to_level1(capsys):
@@ -198,7 +266,13 @@ def test_numbered_list_back_to_level1(capsys):
         mfd.start_numbered_point_item(text='Level 2', level=2)
         mfd.start_numbered_point_item(text='Level 1 second', level=1)
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '1.' in html
+    assert 'Level 1 first' in html
+    assert '1.1.' in html
+    assert 'Level 2' in html
+    assert '2.' in html
+    assert 'Level 1 second' in html
 
 
 def test_numbered_list_formatting(capsys):
@@ -208,7 +282,10 @@ def test_numbered_list_formatting(capsys):
         mfd.start_numbered_point_item(text='Italic item', italic=True)
         mfd.start_numbered_point_item(text='Both', bold=True, italic=True)
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<strong>Bold item</strong>' in html
+    assert '<em>Italic item</em>' in html
+    assert 'Both' in html
 
 
 def test_paragraph_then_numbered_list(capsys):
@@ -218,7 +295,12 @@ def test_paragraph_then_numbered_list(capsys):
         mfd.start_numbered_point_item(text='First item')
         mfd.start_numbered_point_item(text='Second item')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<p>Intro paragraph</p>' in html
+    assert '1.' in html
+    assert 'First item' in html
+    assert '2.' in html
+    assert 'Second item' in html
 
 
 def test_numbered_list_then_paragraph(capsys):
@@ -228,7 +310,12 @@ def test_numbered_list_then_paragraph(capsys):
         mfd.start_numbered_point_item(text='Second item')
         mfd.start_paragraph(text='Concluding paragraph')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '1.' in html
+    assert 'First item' in html
+    assert '2.' in html
+    assert 'Second item' in html
+    assert '<p>Concluding paragraph</p>' in html
 
 
 def test_heading_then_numbered_list(capsys):
@@ -238,7 +325,12 @@ def test_heading_then_numbered_list(capsys):
         mfd.start_numbered_point_item(text='First item')
         mfd.start_numbered_point_item(text='Second item')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<h1>Main Title</h1>' in html
+    assert '1.' in html
+    assert 'First item' in html
+    assert '2.' in html
+    assert 'Second item' in html
 
 
 def test_mixed_bullet_and_numbered_lists(capsys):
@@ -249,7 +341,14 @@ def test_mixed_bullet_and_numbered_lists(capsys):
         mfd.start_numbered_point_item(text='Numbered 1', level=1)
         mfd.start_numbered_point_item(text='Numbered 2', level=1)
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<ul>' in html
+    assert '<li>Bullet 1</li>' in html
+    assert '<li>Bullet 2</li>' in html
+    assert '1.' in html
+    assert 'Numbered 1' in html
+    assert '2.' in html
+    assert 'Numbered 2' in html
 
 
 def test_nested_mixed_lists(capsys):
@@ -260,4 +359,9 @@ def test_nested_mixed_lists(capsys):
         mfd.start_numbered_point_item(text='Numbered 1.2', level=2)
         mfd.start_bullet_item(text='Bullet 2', level=1)
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<ul>' in html
+    assert 'Bullet 1' in html
+    assert 'Numbered 1.1' in html
+    assert 'Numbered 1.2' in html
+    assert 'Bullet 2' in html

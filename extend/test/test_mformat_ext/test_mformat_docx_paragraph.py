@@ -20,12 +20,14 @@ from mformat_ext.mformat_docx import MultiFormatDocx
 
 
 def test_add_url(capsys):
-    """Test the add_url method creates a docx file."""
+    """Test the add_url method creates a docx file with URL content."""
     def func(mfd: MultiFormatDocx) -> None:
         mfd.start_paragraph('Check this link:')
         mfd.add_url(url='http://example.com', text='Example')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert 'Check this link:' in html
+    assert '<a href="http://example.com">Example</a>' in html
 
 
 def test_add_url_as_text(capsys):
@@ -34,4 +36,6 @@ def test_add_url_as_text(capsys):
         mfd.start_paragraph('Check this:')
         mfd.add_url(url='http://example.com', text='Here')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert 'Check this:' in html
+    assert '<a href="http://example.com">Here</a>' in html

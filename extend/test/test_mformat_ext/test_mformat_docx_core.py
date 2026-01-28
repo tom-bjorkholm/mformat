@@ -108,7 +108,8 @@ def test_heading_with_text(capsys):
         mfd.start_heading(level=1, text='Main Title')
         mfd.add_text(text=' - Extended')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<h1>Main Title - Extended</h1>' in html
 
 
 def test_heading_with_url(capsys):
@@ -117,7 +118,10 @@ def test_heading_with_url(capsys):
         mfd.start_heading(level=2, text='Check ')
         mfd.add_url(url='http://example.com', text='this link')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<h2>' in html
+    assert 'Check' in html
+    assert '<a href="http://example.com">this link</a>' in html
 
 
 def test_heading_then_paragraph(capsys):
@@ -126,7 +130,9 @@ def test_heading_then_paragraph(capsys):
         mfd.start_heading(level=1, text='Title')
         mfd.start_paragraph('Some text')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<h1>Title</h1>' in html
+    assert '<p>Some text</p>' in html
 
 
 def test_multiple_headings(capsys):
@@ -135,7 +141,11 @@ def test_multiple_headings(capsys):
         mfd.start_heading(level=1, text='Main')
         mfd.start_heading(level=2, text='Sub')
         mfd.start_heading(level=3, text='Subsub')
-    silent_docx_create(capsys, func=func)
+
+    html = silent_docx_create(capsys, func=func)
+    assert '<h1>Main</h1>' in html
+    assert '<h2>Sub</h2>' in html
+    assert '<h3>Subsub</h3>' in html
 
 
 def test_heading_paragraph_heading(capsys):
@@ -145,7 +155,10 @@ def test_heading_paragraph_heading(capsys):
         mfd.start_paragraph('Some content here.')
         mfd.start_heading(level=2, text='Second Heading')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<h1>First Heading</h1>' in html
+    assert '<p>Some content here.</p>' in html
+    assert '<h2>Second Heading</h2>' in html
 
 
 @pytest.mark.parametrize('bold, italic',
@@ -158,7 +171,13 @@ def test_heading_formatting(capsys, bold, italic):
         mfd.start_heading(level=1, text='Formatted Title',
                           bold=bold, italic=italic)
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<h1>' in html
+    assert 'Formatted Title' in html
+    if bold:
+        assert '<strong>' in html
+    if italic:
+        assert '<em>' in html
 
 
 # Tests for code blocks
@@ -169,7 +188,10 @@ def test_simple_code_block(capsys):
     def func(mfd: MultiFormatDocx) -> None:
         mfd.write_code_block(text='print("Hello, World!")')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    # Mammoth HTML-escapes double quotes
+    assert 'print(' in html
+    assert 'Hello, World!' in html
 
 
 def test_code_block_with_language(capsys):
@@ -178,7 +200,10 @@ def test_code_block_with_language(capsys):
         mfd.write_code_block(text='print("Hello")',
                              programming_language='python')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    # Mammoth HTML-escapes double quotes
+    assert 'print(' in html
+    assert 'Hello' in html
 
 
 def test_code_block_multiline(capsys):
@@ -187,7 +212,11 @@ def test_code_block_multiline(capsys):
         code = 'def hello():\n    print("Hello")\n    return True'
         mfd.write_code_block(text=code, programming_language='python')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert 'def hello():' in html
+    # Mammoth HTML-escapes double quotes
+    assert 'print(' in html
+    assert 'return True' in html
 
 
 def test_code_block_with_special_chars(capsys):
@@ -196,7 +225,12 @@ def test_code_block_with_special_chars(capsys):
         code = 'x = "test <>&"\ny = \'another\''
         mfd.write_code_block(text=code)
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    # Special characters are HTML-escaped in mammoth output
+    # Quotes become &quot;, < becomes &lt;, > becomes &gt;, & becomes &amp;
+    assert 'x =' in html
+    assert 'test' in html
+    assert "y = 'another'" in html
 
 
 def test_paragraph_then_code_block(capsys):
@@ -205,7 +239,9 @@ def test_paragraph_then_code_block(capsys):
         mfd.start_paragraph(text='Here is some code:')
         mfd.write_code_block(text='x = 42', programming_language='python')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<p>Here is some code:</p>' in html
+    assert 'x = 42' in html
 
 
 def test_code_block_then_paragraph(capsys):
@@ -214,7 +250,9 @@ def test_code_block_then_paragraph(capsys):
         mfd.write_code_block(text='x = 42')
         mfd.start_paragraph(text='That was the code.')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert 'x = 42' in html
+    assert '<p>That was the code.</p>' in html
 
 
 def test_heading_then_code_block(capsys):
@@ -223,7 +261,9 @@ def test_heading_then_code_block(capsys):
         mfd.start_heading(level=2, text='Code Example')
         mfd.write_code_block(text='example()', programming_language='python')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<h2>Code Example</h2>' in html
+    assert 'example()' in html
 
 
 def test_multiple_code_blocks(capsys):
@@ -232,4 +272,6 @@ def test_multiple_code_blocks(capsys):
         mfd.write_code_block(text='x = 1', programming_language='python')
         mfd.write_code_block(text='y = 2', programming_language='python')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert 'x = 1' in html
+    assert 'y = 2' in html

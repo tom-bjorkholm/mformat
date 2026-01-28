@@ -26,7 +26,16 @@ def test_simple_table(capsys):
         mfd.add_table_row(row=['A', 'B'])
         mfd.add_table_row(row=['C', 'D'])
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<table>' in html
+    assert '<tr>' in html
+    assert '<td>' in html
+    assert 'Col1' in html
+    assert 'Col2' in html
+    assert 'A' in html
+    assert 'B' in html
+    assert 'C' in html
+    assert 'D' in html
 
 
 def test_table_with_bold_header(capsys):
@@ -36,7 +45,14 @@ def test_table_with_bold_header(capsys):
         mfd.add_table_row(row=['Alice', '30'])
         mfd.add_table_row(row=['Bob', '25'])
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<table>' in html
+    assert '<strong>Name</strong>' in html
+    assert '<strong>Age</strong>' in html
+    assert 'Alice' in html
+    assert '30' in html
+    assert 'Bob' in html
+    assert '25' in html
 
 
 def test_table_with_italic_header(capsys):
@@ -45,7 +61,12 @@ def test_table_with_italic_header(capsys):
         mfd.start_table(first_row=['Name', 'Age'], italic=True)
         mfd.add_table_row(row=['Alice', '30'])
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<table>' in html
+    assert '<em>Name</em>' in html
+    assert '<em>Age</em>' in html
+    assert 'Alice' in html
+    assert '30' in html
 
 
 def test_write_complete_table(capsys):
@@ -58,7 +79,14 @@ def test_write_complete_table(capsys):
         ]
         mfd.write_complete_table(table=table_data)
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<table>' in html
+    assert 'Header1' in html
+    assert 'Header2' in html
+    assert 'Row1Col1' in html
+    assert 'Row1Col2' in html
+    assert 'Row2Col1' in html
+    assert 'Row2Col2' in html
 
 
 def test_write_complete_table_with_bold_header(capsys):
@@ -71,7 +99,14 @@ def test_write_complete_table_with_bold_header(capsys):
         ]
         mfd.write_complete_table(table=table_data, bold_first_row=True)
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<table>' in html
+    assert '<strong>Name</strong>' in html
+    assert '<strong>Value</strong>' in html
+    assert 'Alpha' in html
+    assert '1' in html
+    assert 'Beta' in html
+    assert '2' in html
 
 
 def test_paragraph_then_table(capsys):
@@ -81,7 +116,13 @@ def test_paragraph_then_table(capsys):
         mfd.start_table(first_row=['A', 'B'])
         mfd.add_table_row(row=['1', '2'])
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<p>Here is a table:</p>' in html
+    assert '<table>' in html
+    assert 'A' in html
+    assert 'B' in html
+    assert '1' in html
+    assert '2' in html
 
 
 def test_table_then_paragraph(capsys):
@@ -91,7 +132,13 @@ def test_table_then_paragraph(capsys):
         mfd.add_table_row(row=['1', '2'])
         mfd.start_paragraph(text='That was the table.')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<table>' in html
+    assert 'X' in html
+    assert 'Y' in html
+    assert '1' in html
+    assert '2' in html
+    assert '<p>That was the table.</p>' in html
 
 
 def test_heading_then_table(capsys):
@@ -101,7 +148,13 @@ def test_heading_then_table(capsys):
         mfd.start_table(first_row=['Col1', 'Col2'])
         mfd.add_table_row(row=['A', 'B'])
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<h2>Data Table</h2>' in html
+    assert '<table>' in html
+    assert 'Col1' in html
+    assert 'Col2' in html
+    assert 'A' in html
+    assert 'B' in html
 
 
 def test_table_with_three_columns(capsys):
@@ -111,4 +164,14 @@ def test_table_with_three_columns(capsys):
         mfd.add_table_row(row=['Alice', '30', 'NYC'])
         mfd.add_table_row(row=['Bob', '25', 'LA'])
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert '<table>' in html
+    assert 'Name' in html
+    assert 'Age' in html
+    assert 'City' in html
+    assert 'Alice' in html
+    assert '30' in html
+    assert 'NYC' in html
+    assert 'Bob' in html
+    assert '25' in html
+    assert 'LA' in html
