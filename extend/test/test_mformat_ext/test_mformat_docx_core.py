@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import pytest
+import mammoth
 from mformat_ext.mformat_docx import MultiFormatDocx
 from mformat.mformat import FormatterDescriptor
 from mformat.factory import create_mf
@@ -45,13 +46,15 @@ def test_get_arg_desciption(capsys):
 
 def silent_docx_create(capsys,
                        func: Callable[[MultiFormatDocx], None],
-                       fname: str = 'test.docx') -> None:
+                       fname: str = 'test.docx') -> str:
     """Check that func can write to a docx file silently.
 
     func is expected to write to the file silently.
     Check that the file is created and that there are no output on
     stdout or stderr. We also check that the file exist and is not empty
     after func has been called.
+    Returns:
+        The content of the created file converted to HTML.
     """
     with TemporaryDirectory() as tmp_dir:
         fpath = tmp_dir + '/' + fname
@@ -60,6 +63,11 @@ def silent_docx_create(capsys,
         assert os.path.exists(fpath)
         assert os.path.getsize(fpath) > 0
         check_capsys(capsys)
+        with open(fpath, 'rb') as f:
+            content = mammoth.convert_to_html(f)
+            for msg in content.messages:
+                assert msg.type == 'warning'
+            return content.value
 
 
 @pytest.mark.parametrize('fname', ['test.docx', 'other.docx'])
@@ -90,7 +98,8 @@ def test_heading_creation(capsys, level):
     def func(mfd: MultiFormatDocx) -> None:
         mfd.start_heading(level=level, text=f'Heading Level {level}')
 
-    silent_docx_create(capsys, func=func)
+    html = silent_docx_create(capsys, func=func)
+    assert f'<h{level}>Heading Level {level}</h{level}>' in html
 
 
 def test_heading_with_text(capsys):
