@@ -14,9 +14,9 @@ setup(
   package_dir={'mformat': 'src/mformat'},
   package_data={'mformat': ['src/py.typed']},
   install_requires=[  # pylint: disable=duplicate-code
-    'pip >= 25.3',
-    'setuptools >= 80.9.0',
-    'build >= 1.3.0',
-    'wheel>=0.45.1'
+    'pip',
+    'setuptools',
+    'build',
+    'wheel'
   ]
 )

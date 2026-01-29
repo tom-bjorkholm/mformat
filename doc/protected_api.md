@@ -878,7 +878,7 @@ Initialize the factory with an empty registry.
 
 ```python
 @staticmethod
-def i_get_factory() -> MultiFormatFactory
+def i_get_factory() -> 'MultiFormatFactory'
 ```
 
 Internally get the factory instance.

@@ -10,7 +10,7 @@ from mformat.mformat import MultiFormat, FormatterDescriptor
 from mformat.reg_pkg_formats import register_formats_in_pkg
 
 
-_the_factory: Optional[MultiFormatFactory] = None  # pylint: disable=invalid-name # noqa: E501
+_the_factory: Optional['MultiFormatFactory'] = None  # pylint: disable=invalid-name # noqa: E501
 
 
 class OptArgsDict(TypedDict, total=False):
@@ -37,7 +37,7 @@ class MultiFormatFactory:
             self.i_register(format_class)
 
     @staticmethod
-    def i_get_factory() -> MultiFormatFactory:
+    def i_get_factory() -> 'MultiFormatFactory':
         """Internally get the factory instance."""
         global _the_factory  # pylint: disable=global-statement # noqa: E501
         if _the_factory is None:
