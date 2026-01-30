@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
   name='mformat',
-  version='0.2.1',
+  version='0.2.2',
   description='Uniform way to write simple text to different file formats',
   author='Tom Björkholm',
   author_email='klausuler_linnet0q@icloud.com',

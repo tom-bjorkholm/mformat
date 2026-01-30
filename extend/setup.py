@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
   name='mformat_ext',
-  version='0.2.1',
+  version='0.2.2',
   description='Uniform way to write simple text extended with DOCX and ODT files',
   author='Tom Björkholm',
   author_email='klausuler_linnet0q@icloud.com',
@@ -14,7 +14,7 @@ setup(
   package_dir={'mformat_ext': 'src/mformat_ext'},
   package_data={'mformat_ext': ['src/py.typed']},
   install_requires=[  # pylint: disable=duplicate-code
-    'mformat >= 0.2.1',
+    'mformat >= 0.2.2',
     'python-docx >= 1.2.0',
     'odfpy >= 1.4.1',
     'msl-odt >= 1.0',
