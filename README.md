@@ -59,7 +59,7 @@ After running `doBuild.zsh` you can open `reports/index.html` to see all test re
 
 ## Test summary
 
-* Test result: 916 passed in 17s
+* Test result: 916 passed in 15s
 * No Flake8 warnings.
 * No mypy errors found.
-* 0.2 built and tested using python version: Python 3.12.6
+* 0.2 built and tested using python version: Python 3.13.7
