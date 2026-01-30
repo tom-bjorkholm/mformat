@@ -89,6 +89,7 @@ Even though some may like reading API documentation, the [example programs](http
 
 | Version | Date        | Python version  | Description                         |
 |---------|-------------|-----------------|-------------------------------------|
+| 0.2.1   | 30 Jan 2026 | 3.12 or newer   | Minor documentation fix             |
 | 0.2     | 30 Jan 2026 | 3.12 or newer   | First released version              |
 
 ## Output file formats
@@ -107,4 +108,4 @@ The following table provides information about in which version support for a fo
 * Test result: 916 passed in 10s
 * No Flake8 warnings.
 * No mypy errors found.
-* 0.2 built and tested using python version: Python 3.14.2
+* 0.2.1 built and tested using python version: Python 3.14.2
