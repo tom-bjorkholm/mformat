@@ -104,7 +104,7 @@ The following table provides information about in which version support for a fo
 
 ## Test summary
 
-* Test result: 916 passed in 15s
+* Test result: 916 passed in 10s
 * No Flake8 warnings.
 * No mypy errors found.
-* 0.2 built and tested using python version: Python 3.13.7
+* 0.2 built and tested using python version: Python 3.14.2
