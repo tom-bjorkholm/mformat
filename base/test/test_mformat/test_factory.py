@@ -175,6 +175,14 @@ def test_factory_reg_ok(  # pylint: disable=too-many-arguments,too-many-position
     check_capsys(capsys)
 
 
+@pytest.mark.parametrize('format_name',
+                         ['html', 'md', 'docx', 'odt'])
+def test_list_registered_mf(capsys, format_name):
+    """Test the list_registered_mf function."""
+    assert format_name in list_registered_mf()
+    check_capsys(capsys)
+
+
 def test_create_ok(capsys):
     """Test the shortcut create function with an OK class."""
     mfh = create_mf('html', 'test.html', url_as_text=True,
