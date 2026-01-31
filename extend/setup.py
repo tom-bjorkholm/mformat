@@ -16,8 +16,7 @@ setup(
   install_requires=[  # pylint: disable=duplicate-code
     'mformat >= 0.2.2',
     'python-docx >= 1.2.0',
-    'odfpy >= 1.4.1',
-    'msl-odt >= 1.0',
+    'odfdo >= 3.19.0',
     'pip >= 25.3',
     'setuptools >= 80.10.2',
     'build >= 1.4.0',
