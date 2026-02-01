@@ -5,11 +5,14 @@
 # MIT License
 #
 
+from tempfile import TemporaryDirectory
+from io import StringIO
+import sys
 import pytest
 from check_capsys import check_capsys
 from mformat.factory import MultiFormatFactory
 from mformat.factory import create_mf, register_mf, \
-    list_registered_mf, usage_mf
+    list_registered_mf, usage_mf, OptArgs
 from mformat.mformat import MultiFormat, FormatterDescriptor
 
 
@@ -200,3 +203,134 @@ def test_create_nok(capsys):
                   args={'title': 'Test title', 'css_file': 'test.css'})
     assert 'Format "something" is not registered.' in exc.value.args[0]
     check_capsys(capsys)
+
+
+class FileExistsCB:  # pylint: disable=too-few-public-methods
+    """Callback function to ask user what to do if the file exists."""
+
+    def __init__(self, ask_user: bool = True, overwrite: bool = False):
+        """Initialize the FileExistsCB class."""
+        self.file_name: str = ''
+        self.num_calls: int = 0
+        self.ask_user: bool = ask_user
+        self.overwrite: bool = overwrite
+
+    def __call__(self, file_name: str) -> None:
+        """Ask user what to do if the file exists.
+
+        Return if OK to overwrite the file.
+        Raise an exception to prevent the file from being overwritten.
+        Args:
+            file_name: The name of the file that already exists.
+        """
+        self.file_name = file_name
+        self.num_calls += 1
+        if self.ask_user:
+            question = f'File {file_name} already exists. Overwrite? (y/n)'
+            answer = input(question)
+            if answer.lower() == 'y':
+                self.overwrite = True
+            else:
+                self.overwrite = False
+        if not self.overwrite:
+            raise FileExistsError(f'File {file_name} already exists.')
+
+
+@pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt'])
+def test_create_file_exists_y(capsys, fmt):
+    """Test the create function with file exists and overwrite OK."""
+    file_exists_cb = FileExistsCB(ask_user=False, overwrite=True)
+    args: OptArgs = {'file_exists_callback': file_exists_cb}
+    with TemporaryDirectory() as tmp_dir:
+        file_name = tmp_dir + '/test.' + fmt
+        with open(file_name, 'w', encoding='utf-8') as f:
+            f.write('Original content')
+        with create_mf(format_name=fmt, file_name=file_name,
+                       args=args) as mf:
+            mf.start_heading(1, 'Test heading')
+        if fmt in ['html', 'md']:
+            with open(file_name, 'r', encoding='utf-8') as f:
+                content = f.read()
+                assert 'Original content' not in content
+                assert 'Test heading' in content
+        else:
+            with open(file_name, 'rb') as f:
+                content = f.read()
+                assert b'Original content' not in content
+    assert file_exists_cb.num_calls == 1
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt'])
+def test_create_file_exists_ay(capsys, monkeypatch, fmt):
+    """Test the create function with file exists and overwrite OK."""
+    file_exists_cb = FileExistsCB(ask_user=True, overwrite=False)
+    mock_input = StringIO('y\ny\n')
+    monkeypatch.setattr(sys, 'stdin', mock_input)
+    args: OptArgs = {'file_exists_callback': file_exists_cb}
+    with TemporaryDirectory() as tmp_dir:
+        file_name = tmp_dir + '/test.' + fmt
+        with open(file_name, 'w', encoding='utf-8') as f:
+            f.write('Original content')
+        with create_mf(format_name=fmt, file_name=file_name,
+                       args=args) as mf:
+            mf.start_heading(1, 'Test heading')
+        if fmt in ['html', 'md']:
+            with open(file_name, 'r', encoding='utf-8') as f:
+                content = f.read()
+                assert 'Original content' not in content
+                assert 'Test heading' in content
+        else:
+            with open(file_name, 'rb') as f:
+                content = f.read()
+                assert b'Original content' not in content
+    assert file_exists_cb.num_calls == 1
+    assert file_exists_cb.file_name == file_name
+    outmsg = [f'File {file_name} already exists. Overwrite? (y/n)']
+    check_capsys(capsys, out_msgs=outmsg)
+
+
+@pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt'])
+def test_create_file_exists_n(capsys, fmt):
+    """Test the create function with file exists and no overwrite."""
+    file_exists_cb = FileExistsCB(ask_user=False, overwrite=False)
+    args: OptArgs = {'file_exists_callback': file_exists_cb}
+    with TemporaryDirectory() as tmp_dir:
+        file_name = tmp_dir + '/test.' + fmt
+        with open(file_name, 'w', encoding='utf-8') as f:
+            f.write('Original content')
+        with pytest.raises(FileExistsError) as exc:
+            with create_mf(format_name=fmt, file_name=file_name,
+                           args=args) as mf:
+                mf.start_heading(1, 'Test heading')
+        assert exc.value.args[0] == f'File {file_name} already exists.'
+        with open(file_name, 'r', encoding='utf-8') as f:
+            content = f.read()
+            assert 'Original content' in content
+    assert file_exists_cb.num_calls == 1
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt'])
+def test_create_file_exists_an(capsys, monkeypatch, fmt):
+    """Test the create function with file exists and no overwrite."""
+    file_exists_cb = FileExistsCB(ask_user=True, overwrite=False)
+    mock_input = StringIO('n\n')
+    monkeypatch.setattr(sys, 'stdin', mock_input)
+    args: OptArgs = {'file_exists_callback': file_exists_cb}
+    with TemporaryDirectory() as tmp_dir:
+        file_name = tmp_dir + '/test.' + fmt
+        with open(file_name, 'w', encoding='utf-8') as f:
+            f.write('Original content')
+        with pytest.raises(FileExistsError) as exc:
+            with create_mf(format_name=fmt, file_name=file_name,
+                           args=args) as mf:
+                mf.start_heading(1, 'Test heading')
+        assert exc.value.args[0] == f'File {file_name} already exists.'
+        with open(file_name, 'r', encoding='utf-8') as f:
+            content = f.read()
+            assert 'Original content' in content
+    assert file_exists_cb.num_calls == 1
+    assert file_exists_cb.file_name == file_name
+    outmsg = [f'File {file_name} already exists. Overwrite? (y/n)']
+    check_capsys(capsys, out_msgs=outmsg)

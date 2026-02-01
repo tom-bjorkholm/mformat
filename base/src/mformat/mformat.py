@@ -68,7 +68,6 @@ class MultiFormat(ListHandlerMixin):
 
     def __enter__(self) -> 'MultiFormat':
         """Enter the context manager."""
-        self._file_exists_check()
         self.open()
         return self
 

@@ -41,7 +41,7 @@ def test_file_exists_overwrite(format_name, file_name):
         with create_mf(format_name=format_name, file_name=full_file_name,
                        args=args) as _:
             pass
-        assert file_exists_callback.count == 2
+        assert file_exists_callback.count == 1
 
 
 @pytest.mark.parametrize('format_name, file_name',
