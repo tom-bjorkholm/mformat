@@ -36,6 +36,8 @@ EXPECTED_MD_TEXT = [
 def test_mfe_md(capsys):
     """Test the multi_format_example function with the md format."""
     expected_txt = EXPECTED_MD_TEXT
-    expected_error = ['MD029']
+    # MD046: Deeply nested lists (4+ spaces) trigger false positive for
+    # indented code blocks. Real code blocks in output use fenced style.
+    expected_error = ['MD029', 'MD046']
     check_markdown_func(multi_format_example, expected_txt, expected_error)
     check_capsys_silent(capsys)

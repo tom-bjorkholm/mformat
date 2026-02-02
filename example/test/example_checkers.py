@@ -5,6 +5,7 @@
 # MIT License
 #
 
+from pathlib import Path
 from typing import Callable
 import sys
 from tempfile import TemporaryDirectory
@@ -65,6 +66,11 @@ def print_md_errors(scanfailures: list[PyMarkdownScanFailure],
     print('\n', file=sys.stderr)
 
 
+def _get_pymarkdown_config_path() -> str:
+    """Get the path to the .pymarkdown config file."""
+    return str(Path(__file__).parent.parent.parent / '.pymarkdown')
+
+
 def check_markdown_func(func: Callable[[str, str], None],
                         expected_txt: list[str],
                         expected_error: list[str]) -> None:
@@ -72,16 +78,18 @@ def check_markdown_func(func: Callable[[str, str], None],
 
     Args:
         func: The function to check.
-        expected_txt: Fragments of the expected text in the order they 
+        expected_txt: Fragments of the expected text in the order they
                       should appear.
-        expected_error: Rules   to be suppressed.
+        expected_error: Rules to be suppressed.
     """
     with TemporaryDirectory() as tmp_dir:
         file_name = tmp_dir + '/test.md'
         func(format_name='md', file_name=file_name)
         try:
+            config_path = _get_pymarkdown_config_path()
             scan_result: PyMarkdownScanPathResult = \
-                PyMarkdownApi().log_error_and_above().scan_path(file_name)
+                PyMarkdownApi().configuration_file_path(config_path) \
+                .log_error_and_above().scan_path(file_name)
             unexpected_errors = [error for error in scan_result.scan_failures
                                  if error.rule_id not in expected_error]
             if unexpected_errors:
@@ -119,7 +127,7 @@ def check_rst_func(func: Callable[[str, str], None],
 
     Args:
         func: The function to check.
-        expected_txt: Fragments of the expected text in the order they 
+        expected_txt: Fragments of the expected text in the order they
                       should appear.
         expected_error: Expected error messages to suppress.
     """
