@@ -25,6 +25,10 @@ def check_capsys_silent(capsys: pytest.CaptureFixture[str]) -> None:
 def check_text_in_order(text: str, expected_txts: list[str]) -> None:
     """Check that the text contains expected text in the expected order."""
     for expected_txt in expected_txts:
+        if expected_txt not in text:
+            print(f'Expected text: "{expected_txt}" not found in text.',
+                  file=sys.stderr)
+            print(f'Text: "{text}"', file=sys.stderr)
         assert expected_txt in text
     start = 0
     for num, expected_txt in enumerate(expected_txts):

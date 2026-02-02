@@ -1,5 +1,5 @@
 #! /usr/local/bin/python3
-"""Test the simple_complete module."""
+"""Test the e50_simple_complete example."""
 
 # Copyright (c) 2025 - 2026 Tom Björkholm
 # MIT License
@@ -9,8 +9,7 @@ import sys
 from pathlib import Path
 import pytest  # pylint: disable=unused-import
 from example_checkers import check_markdown_func, check_capsys_silent
-# import pytest
-# Add example/src to path for shared test utilities
+# Add example/src to path
 # pylint: disable=duplicate-code
 _example_test_path = (
     Path(__file__).parent.parent / 'src'
@@ -18,20 +17,23 @@ _example_test_path = (
 sys.path.insert(0, str(_example_test_path))
 from e50_simple_complete import multi_format_example  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
 
+
 EXPECTED_MD_TEXT = [
     '# Main heading of example',
     'With start_paragraph we can start a paragraph.',
-    'With add_text we can add text to the paragraph.',
+    'With add_text we can add text to',
+    'the paragraph.',
     '## Sub heading of example',
-    '***There is never a need to close an item type.***'
+    '***There is never a need to close an item type.***',
     '[the example file](',
     '- Item 1',
     '- Item 2',
-    '  - Item 2.1'
+    '  - Item 2.1',
     '1. Item 1',
-    '  3.1 Item 3.1',
+    '  3.1. Item 3.1',
     '4. Item 4'
 ]
+
 
 def test_mfe_md(capsys):
     """Test the multi_format_example function with the md format."""

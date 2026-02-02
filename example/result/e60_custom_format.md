@@ -1,6 +1,8 @@
 # Custom Format Example
 
-This example demonstrates how to create and use a custom format in the mformat framework. The same code can be used to write to different formats, just by changing the format name.
+This example demonstrates how to create and use a custom format in the mformat
+framework. The same code can be used to write to different formats, just by
+changing the format name.
 
 ## Features
 

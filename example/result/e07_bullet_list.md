@@ -1,5 +1,6 @@
 - This is the first bullet point item.
 
-- This is the second bullet point item. We can add text to the bullet point items with add_text(), just as we can add text to paragraphs.
+- This is the second bullet point item. We can add text to the bullet point
+  items with add_text(), just as we can add text to paragraphs.
 
 - This is the third bullet point item.

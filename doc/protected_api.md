@@ -47,6 +47,12 @@
     * [open](#mformat.mformat_textbased.MultiFormatTextBased.open)
     * [\_close](#mformat.mformat_textbased.MultiFormatTextBased._close)
     * [\_get\_last\_chars\_written](#mformat.mformat_textbased.MultiFormatTextBased._get_last_chars_written)
+    * [\_reset\_line\_state](#mformat.mformat_textbased.MultiFormatTextBased._reset_line_state)
+    * [\_write\_line\_break](#mformat.mformat_textbased.MultiFormatTextBased._write_line_break)
+    * [\_wrap\_and\_write](#mformat.mformat_textbased.MultiFormatTextBased._wrap_and_write)
+    * [\_write\_word\_with\_wrapping](#mformat.mformat_textbased.MultiFormatTextBased._write_word_with_wrapping)
+    * [\_write\_pending\_whitespace](#mformat.mformat_textbased.MultiFormatTextBased._write_pending_whitespace)
+    * [\_wrap\_and\_write\_atomic](#mformat.mformat_textbased.MultiFormatTextBased._wrap_and_write_atomic)
 * [mformat.factory](#mformat.factory)
   * [\_the\_factory](#mformat.factory._the_factory)
   * [OptArgsDict](#mformat.factory.OptArgsDict)
@@ -829,6 +835,98 @@ Get the last characters written to the file.
 Keep the file pointer at the same position, i.e. at the end of the
 file, so that we can continue writing after the last characters.
 Returns the last characters written to the file.
+
+<a id="mformat.mformat_textbased.MultiFormatTextBased._reset_line_state"></a>
+
+#### \_reset\_line\_state
+
+```python
+def _reset_line_state(continuation_indent: str = '') -> None
+```
+
+Reset line tracking state for new wrappable content.
+
+Call this when starting a new paragraph or list item.
+
+**Arguments**:
+
+- `continuation_indent` - Indent string for wrapped continuation lines.
+
+<a id="mformat.mformat_textbased.MultiFormatTextBased._write_line_break"></a>
+
+#### \_write\_line\_break
+
+```python
+def _write_line_break() -> None
+```
+
+Write a line break, discarding any pending whitespace.
+
+Call this when ending a paragraph or list item.
+Pending whitespace is discarded to avoid trailing spaces.
+
+<a id="mformat.mformat_textbased.MultiFormatTextBased._wrap_and_write"></a>
+
+#### \_wrap\_and\_write
+
+```python
+def _wrap_and_write(text: str, max_line_length: int) -> None
+```
+
+Wrap text to fit within max line length and write to file.
+
+Wraps text at word boundaries to keep lines within the specified
+maximum length. Handles whitespace at wrap points by collapsing
+multiple spaces/newlines into the line break.
+
+**Arguments**:
+
+- `text` - The text to write (may be wrapped).
+- `max_line_length` - Maximum characters per line.
+
+<a id="mformat.mformat_textbased.MultiFormatTextBased._write_word_with_wrapping"></a>
+
+#### \_write\_word\_with\_wrapping
+
+```python
+def _write_word_with_wrapping(word: str, max_line_length: int,
+                              indent_len: int) -> None
+```
+
+Write a word, wrapping to new line if needed.
+
+**Arguments**:
+
+- `word` - The word to write (non-whitespace token).
+- `max_line_length` - Maximum characters per line.
+- `indent_len` - Length of continuation indent.
+
+<a id="mformat.mformat_textbased.MultiFormatTextBased._write_pending_whitespace"></a>
+
+#### \_write\_pending\_whitespace
+
+```python
+def _write_pending_whitespace() -> None
+```
+
+Write any pending whitespace and clear it.
+
+<a id="mformat.mformat_textbased.MultiFormatTextBased._wrap_and_write_atomic"></a>
+
+#### \_wrap\_and\_write\_atomic
+
+```python
+def _wrap_and_write_atomic(text: str, max_line_length: int) -> None
+```
+
+Write text as atomic unit (no breaking), wrapping before if needed.
+
+Use for URLs or other content that should not be broken across lines.
+
+**Arguments**:
+
+- `text` - The text to write (will not be broken).
+- `max_line_length` - Maximum characters per line.
 
 <a id="mformat.factory"></a>
 

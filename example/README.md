@@ -2,15 +2,21 @@
 
 This folder contains simple examples illustrating how to use the mformat API.
 
-The examples demonstrate various features of the mformat package, including paragraphs, headings, lists, tables, URLs, and code blocks. Each example shows how to create output in multiple formats (HTML, Markdown, Word, and ODT) using the same code.
+The examples demonstrate various features of the mformat package, including
+paragraphs, headings, lists, tables, URLs, and code blocks. Each example shows
+how to create output in multiple formats (HTML, Markdown, Word, and ODT) using
+the same code.
 
-Notice that the first example file e01_paragraph.py is a complete example including the command line parsing. This is imported and used by the other examples. Simpler examples are listed earlier, to help you get started.
+Notice that the first example file e01_paragraph.py is a complete example
+including the command line parsing. This is imported and used by the other
+examples. Simpler examples are listed earlier, to help you get started.
 
 ## Paragraphs
 
 - Write an example file with a paragraph.
 
-  - Source: [e01_paragraph.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e01_paragraph.py)
+  - Source:
+    [e01_paragraph.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e01_paragraph.py)
 
   - Results:
 
@@ -24,7 +30,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Write an example file with several paragraphs.
 
-  - Source: [e02_paragraphs.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e02_paragraphs.py)
+  - Source:
+    [e02_paragraphs.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e02_paragraphs.py)
 
   - Results:
 
@@ -38,7 +45,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Write an example file with several paragraphs and bold text.
 
-  - Source: [e03_paragraphs_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e03_paragraphs_bold.py)
+  - Source:
+    [e03_paragraphs_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e03_paragraphs_bold.py)
 
   - Results:
 
@@ -52,7 +60,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Write an example file with smart whitespace handling.
 
-  - Source: [e04_paragraphs_smart_ws.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e04_paragraphs_smart_ws.py)
+  - Source:
+    [e04_paragraphs_smart_ws.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e04_paragraphs_smart_ws.py)
 
   - Results:
 
@@ -68,7 +77,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Write an example file with a heading.
 
-  - Source: [e05_heading.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e05_heading.py)
+  - Source:
+    [e05_heading.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e05_heading.py)
 
   - Results:
 
@@ -82,7 +92,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Write an example file with several headings.
 
-  - Source: [e06_headings.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e06_headings.py)
+  - Source:
+    [e06_headings.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e06_headings.py)
 
   - Results:
 
@@ -98,7 +109,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Write an example file with a bullet list.
 
-  - Source: [e07_bullet_list.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e07_bullet_list.py)
+  - Source:
+    [e07_bullet_list.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e07_bullet_list.py)
 
   - Results:
 
@@ -112,7 +124,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Write an example file with a nestedbullet list.
 
-  - Source: [e08_bullet_nested.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e08_bullet_nested.py)
+  - Source:
+    [e08_bullet_nested.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e08_bullet_nested.py)
 
   - Results:
 
@@ -126,7 +139,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Write an example file with a bullet list with bold text.
 
-  - Source: [e09_bullet_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e09_bullet_bold.py)
+  - Source:
+    [e09_bullet_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e09_bullet_bold.py)
 
   - Results:
 
@@ -142,7 +156,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Write an example file with a numbered list.
 
-  - Source: [e10_numbered_list.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e10_numbered_list.py)
+  - Source:
+    [e10_numbered_list.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e10_numbered_list.py)
 
   - Results:
 
@@ -156,7 +171,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Write an example file with a nested numbered list.
 
-  - Source: [e11_numbered_nested.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e11_numbered_nested.py)
+  - Source:
+    [e11_numbered_nested.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e11_numbered_nested.py)
 
   - Results:
 
@@ -170,7 +186,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Write an example file with a numbered point list with bold text.
 
-  - Source: [e12_numbered_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e12_numbered_bold.py)
+  - Source:
+    [e12_numbered_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e12_numbered_bold.py)
 
   - Results:
 
@@ -186,7 +203,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Show how to nest numbered points with bullet points.
 
-  - Source: [e13_numbered_bullet_nested.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e13_numbered_bullet_nested.py)
+  - Source:
+    [e13_numbered_bullet_nested.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e13_numbered_bullet_nested.py)
 
   - Results:
 
@@ -202,7 +220,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Show how to write a complete table in one call.
 
-  - Source: [e14_table_at_once.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e14_table_at_once.py)
+  - Source:
+    [e14_table_at_once.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e14_table_at_once.py)
 
   - Results:
 
@@ -216,7 +235,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Show how to write a complete table in one call with bold first row.
 
-  - Source: [e15_table_at_once_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e15_table_at_once_bold.py)
+  - Source:
+    [e15_table_at_once_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e15_table_at_once_bold.py)
 
   - Results:
 
@@ -230,7 +250,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Show how to write a table row by row.
 
-  - Source: [e16_table_row_by_row.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e16_table_row_by_row.py)
+  - Source:
+    [e16_table_row_by_row.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e16_table_row_by_row.py)
 
   - Results:
 
@@ -244,7 +265,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Show how to write a table row by row with bold and italic text.
 
-  - Source: [e17_table_row_by_row_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e17_table_row_by_row_bold.py)
+  - Source:
+    [e17_table_row_by_row_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e17_table_row_by_row_bold.py)
 
   - Results:
 
@@ -260,7 +282,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Show how to write a URL in a paragraph.
 
-  - Source: [e20_url_in_paragraph.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e20_url_in_paragraph.py)
+  - Source:
+    [e20_url_in_paragraph.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e20_url_in_paragraph.py)
 
   - Results:
 
@@ -274,7 +297,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Show how to write a bold and italic URL in a paragraph.
 
-  - Source: [e21_url_in_paragraph_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e21_url_in_paragraph_bold.py)
+  - Source:
+    [e21_url_in_paragraph_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e21_url_in_paragraph_bold.py)
 
   - Results:
 
@@ -288,7 +312,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Show how to write a URL in a bullet list.
 
-  - Source: [e22_url_in_bullet_list.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e22_url_in_bullet_list.py)
+  - Source:
+    [e22_url_in_bullet_list.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e22_url_in_bullet_list.py)
 
   - Results:
 
@@ -302,7 +327,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Show how to write a URL in a numbered point list.
 
-  - Source: [e23_url_in_numbered_list.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e23_url_in_numbered_list.py)
+  - Source:
+    [e23_url_in_numbered_list.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e23_url_in_numbered_list.py)
 
   - Results:
 
@@ -316,7 +342,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Show how to write a URL in a heading, both italic and bold.
 
-  - Source: [e24_url_in_heading.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e24_url_in_heading.py)
+  - Source:
+    [e24_url_in_heading.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e24_url_in_heading.py)
 
   - Results:
 
@@ -330,7 +357,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Show how to force URLs to be shown as text.
 
-  - Source: [e25_url_as_text.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e25_url_as_text.py)
+  - Source:
+    [e25_url_as_text.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e25_url_as_text.py)
 
   - Results:
 
@@ -346,7 +374,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Show how to write code blocks.
 
-  - Source: [e30_code_blocks.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e30_code_blocks.py)
+  - Source:
+    [e30_code_blocks.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e30_code_blocks.py)
 
   - Results:
 
@@ -362,7 +391,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Show a callback function to handle an existing file.
 
-  - Source: [e40_handle_existing_file.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e40_handle_existing_file.py)
+  - Source:
+    [e40_handle_existing_file.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e40_handle_existing_file.py)
 
   - Results:
 
@@ -376,7 +406,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Show how to use a CSS file and set document language in HTML.
 
-  - Source: [e41_use_css_in_html.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e41_use_css_in_html.py)
+  - Source:
+    [e41_use_css_in_html.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e41_use_css_in_html.py)
 
   - Results:
 
@@ -392,7 +423,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - Write an example file with most features of the multi format class.
 
-  - Source: [e50_simple_complete.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e50_simple_complete.py)
+  - Source:
+    [e50_simple_complete.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e50_simple_complete.py)
 
   - Results:
 
@@ -408,7 +440,8 @@ Notice that the first example file e01_paragraph.py is a complete example includ
 
 - A custom tree format class that extends MultiFormatTextBased.
 
-  - Source: [e60_custom_format.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e60_custom_format.py)
+  - Source:
+    [e60_custom_format.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e60_custom_format.py)
 
   - Results:
 

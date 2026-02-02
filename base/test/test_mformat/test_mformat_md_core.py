@@ -53,33 +53,33 @@ def test_get_arg_desciption(capsys):
                           ('_end_paragraph', None, '\n'),
                           ('_write_text',
                            ('test', MultiFormatState.PARAGRAPH,
-                            Formatting(bold=False, italic=False)), 'test'),
+                            Formatting(bold=False, italic=False)), 'test.'),
                           ('_write_text',
                            ('test\ntest', MultiFormatState.PARAGRAPH,
                             Formatting(bold=False, italic=False)),
-                           'test\ntest'),
+                           'test\ntest.'),
                           ('_write_text',
                            ('bold', MultiFormatState.PARAGRAPH,
-                            Formatting(bold=True, italic=False)), '**bold**'),
+                            Formatting(bold=True, italic=False)), '**bold**.'),
                           ('_write_text',
                            ('italic', MultiFormatState.PARAGRAPH,
-                            Formatting(bold=False, italic=True)), '*italic*'),
+                            Formatting(bold=False, italic=True)), '*italic*.'),
                           ('_write_text',
                            ('both', MultiFormatState.PARAGRAPH,
                             Formatting(bold=True, italic=True)),
-                           '***both***'),
+                           '***both***.'),
                           ('_write_text',
                            (' bold  ', MultiFormatState.PARAGRAPH,
                             Formatting(bold=True, italic=False)),
-                           ' **bold**  '),
+                           ' **bold**  .'),
                           ('_write_text',
                            ('  italic ', MultiFormatState.PARAGRAPH,
                             Formatting(bold=False, italic=True)),
-                           '  *italic* '),
+                           '  *italic* .'),
                           ('_write_text',
                            ('  both  ', MultiFormatState.PARAGRAPH,
                             Formatting(bold=True, italic=True)),
-                           '  ***both***  ')])
+                           '  ***both***  .')])
 def test_methods(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
                  method, arg, expected):
     """Test the trivial methods of the MultiFormatMd class."""
@@ -96,6 +96,11 @@ def test_methods(capsys,  # pylint: disable=too-many-arguments, too-many-positio
             else:
                 getattr(mfd, method)()
             assert mfd.state == MultiFormatState.EMPTY
+            if method == '_write_text':
+                mfd._write_text(text='.',  # pylint: disable=protected-access
+                                state=MultiFormatState.PARAGRAPH,
+                                formatting=Formatting(bold=False,
+                                                      italic=False))
         with open(fname, 'rt', encoding='utf-8') as file:
             assert file.read() == expected
         check_capsys(capsys)

@@ -1,1 +1,4 @@
-This is a paragraph with a URL: *[This italic URL link to the examples](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example)* and **[this bold URL link to the example source code.](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)**
+This is a paragraph with a URL:
+*[This italic URL link to the examples](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example)*
+and
+**[this bold URL link to the example source code.](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)**

@@ -29,6 +29,8 @@ def split_whitespace(text: str) -> tuple[str, str, str]:
 class MultiFormatMd(MultiFormatTextBased):
     """Markdown format class."""
 
+    MAX_LINE_LENGTH = 80
+
     def __init__(self, file_name: str, url_as_text: bool = False,
                  file_exists_callback: Optional[Callable[[str], None]] = None):
         """Initialize the MdFormat class.
@@ -66,13 +68,12 @@ class MultiFormatMd(MultiFormatTextBased):
 
     def _start_paragraph(self) -> None:
         """Start a paragraph."""
-        assert self.file is not None
         self._empty_line_before()
+        self._reset_line_state()
 
     def _end_paragraph(self) -> None:
         """End a paragraph."""
-        assert self.file is not None
-        self.file.write('\n')
+        self._write_line_break()
 
     def _empty_line_before(self) -> None:
         """Make sure there is an empty line before next item."""
@@ -119,7 +120,13 @@ class MultiFormatMd(MultiFormatTextBased):
             formatting: The formatting of the text.
         """
         assert self.file is not None
-        self.file.write(self._format_text(text, formatting))
+        formatted_text = self._format_text(text, formatting)
+        if state in (MultiFormatState.PARAGRAPH,
+                     MultiFormatState.BULLET_LIST_ITEM,
+                     MultiFormatState.NUMBERED_LIST_ITEM):
+            self._wrap_and_write(formatted_text, self.MAX_LINE_LENGTH)
+        else:
+            self.file.write(formatted_text)
 
     def _write_url(self,  # pylint: disable=unused-argument,too-many-arguments,too-many-positional-arguments # noqa: E501
                    url: str, text: Optional[str],
@@ -129,8 +136,15 @@ class MultiFormatMd(MultiFormatTextBased):
         assert self.file is not None
         if not text:
             text = url
-        text = f'[{text}]({url})'
-        self.file.write(self._format_text(text, formatting))
+        url_text = f'[{text}]({url})'
+        formatted_url = self._format_text(url_text, formatting)
+
+        if state in (MultiFormatState.PARAGRAPH,
+                     MultiFormatState.BULLET_LIST_ITEM,
+                     MultiFormatState.NUMBERED_LIST_ITEM):
+            self._wrap_and_write_atomic(formatted_url, self.MAX_LINE_LENGTH)
+        else:
+            self.file.write(formatted_url)
 
     def _start_bullet_list(self, level: int) -> None:
         """Start a bullet list."""
@@ -153,13 +167,17 @@ class MultiFormatMd(MultiFormatTextBased):
         assert self.file is not None
         assert isinstance(level, int)
         self._empty_line_before()
-        self.file.write(self._indent(level) + '- ')
+        indent = self._indent(level)
+        marker = '- '
+        self.file.write(indent + marker)
+        # Continuation indent aligns with text after marker
+        self._reset_line_state(continuation_indent=indent + '  ')
+        self._current_column = len(indent) + len(marker)
 
     def _end_bullet_item(self, level: int) -> None:
         """End a bullet item."""
-        assert self.file is not None
         assert isinstance(level, int)
-        self.file.write('\n')
+        self._write_line_break()
 
     def _start_numbered_list(self, level: int) -> None:
         """Start a numbered list."""
@@ -178,14 +196,18 @@ class MultiFormatMd(MultiFormatTextBased):
         assert isinstance(level, int)
         assert isinstance(num, int)
         self._empty_line_before()
-        self.file.write(self._indent(level) + full_number + ' ')
+        indent = self._indent(level)
+        marker = full_number + ' '
+        self.file.write(indent + marker)
+        # Continuation indent aligns with text after marker
+        self._reset_line_state(continuation_indent=indent + ' ' * len(marker))
+        self._current_column = len(indent) + len(marker)
 
     def _end_numbered_item(self, level: int, num: int) -> None:
         """End a numbered item."""
-        assert self.file is not None
         assert isinstance(level, int)
         assert isinstance(num, int)
-        self.file.write('\n')
+        self._write_line_break()
 
     def _start_code_block(self, programming_language: Optional[str]) -> None:
         """Start a code block."""

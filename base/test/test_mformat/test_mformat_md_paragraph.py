@@ -55,8 +55,8 @@ def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-argument
 @pytest.mark.parametrize('italic', [True, False])
 @pytest.mark.parametrize('text, expected',
                          [('', '\n'),
-                          (' ', ' \n'),
-                          ('   ', '   \n')])
+                          (' ', '\n'),
+                          ('   ', '\n')])
 def test_start_paragraph_space(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
                                text, bold, italic, expected):
     """Test the start_paragraph method with bold and italic."""
