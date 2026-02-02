@@ -13,6 +13,8 @@ import pytest
 from pymarkdown.api import PyMarkdownApi, PyMarkdownApiException, \
     PyMarkdownScanPathResult, PyMarkdownScanFailure, PyMarkdownPragmaError
 import restructuredtext_lint
+from html5lib import HTMLParser
+from html5lib.html5parser import ParseError
 
 
 def check_capsys_silent(capsys: pytest.CaptureFixture[str]) -> None:
@@ -147,3 +149,26 @@ def check_rst_func(func: Callable[[str, str], None],
         with open(file_name, 'r', encoding='utf-8') as file:
             text = file.read()
             check_text_in_order(text, expected_txt)
+
+
+def check_html_func(func: Callable[[str, str], None],
+                    expected_txt: list[str]) -> None:
+    """Check that function produces expected text.
+
+    Args:
+        func: The function to check.
+        expected_txt: Fragments of the expected text in the order they
+                      should appear.
+    """
+    with TemporaryDirectory() as tmp_dir:
+        file_name = tmp_dir + '/test.html'
+        func(format_name='html', file_name=file_name)
+        with open(file_name, 'r', encoding='utf-8') as file:
+            html = file.read()
+        try:
+            parser = HTMLParser(strict=True)
+            _ = parser.parse(html)
+        except ParseError as exc:
+            print(str(exc))
+            assert False, 'HTML parse error'
+        check_text_in_order(html, expected_txt)
