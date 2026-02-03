@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest  # pylint: disable=unused-import
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
-    check_docx_func)
+    check_docx_func, check_odt_func)
 # Add example/src to path
 # pylint: disable=duplicate-code
 _example_test_path = (
@@ -35,9 +35,20 @@ EXPECTED_MD_TEXT = [
     '  3.1. Item 3.1',
     '4. Item 4'
 ]
-
-
-EXPECTED_DOCX_TEXT = [
+EXPECTED_HTML_PRE = [
+    '<!DOCTYPE html>',
+    '<html lang="en">',
+    '<head>',
+    '<meta charset="utf-8">',
+    '<title>HTML file</title>',
+    '</head>',
+    '<body>'
+]
+EXPECTED_HTML_POST = [
+    '</body>',
+    '</html>'
+]
+EXPECTED_HTML_BODY_TEXT = [
     '<h1>',
     'Main heading of example',
     '</h1>',
@@ -53,25 +64,44 @@ EXPECTED_DOCX_TEXT = [
     'Item 1</li>',
     'Item 2</li>',
     'Item 2.1</li>',
-    '</ul>'
+    '</ul>',
 ]
-
-EXPECTED_HTML_TEXT = [
-    '<!DOCTYPE html>',
-    '<html lang="en">',
+EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_ODT_PRE = [
+    '<!DOCTYPE html PUBLIC ',
+    '<html xmlns="http://www.w3.org/1999/xhtml">',
     '<head>',
-    '<meta charset="utf-8">',
-    '<title>HTML file</title>',
+    '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>',
+    '<title></title>',
     '</head>',
-    '<body>'] + EXPECTED_DOCX_TEXT + [
-    '<ol>',
-    'Item 1</li>',
-    '</ol>',
-    '</body>',
-    '</html>']
+    '<body>'
+]
+EXPECTED_ODT_BODY_TEXT = [
+    '<h1 class="P-">',
+    'Main heading of example',
+    '</h1>',
+    'With start_paragraph we can start a paragraph.',
+    'With add_text we can add text to',
+    'the paragraph.',
+    '<h2 class="P-">',
+    'Sub heading of example',
+    '</h2>',
+    'There is never a need to close an item type.',
+    'the example file</a>',
+    '<ul',
+    '<li>', '<p>', 'Item 1', '</p>', '</li>',
+    '<li>', '<p>', 'Item 2',
+    '<li>', '<p>', 'Item 2.1', '</p>', '</li>',
+    '</ul>',
+    '<ol',
+    '<li>', '<p>', 'Item 1', '</p>', '</li>',
+    '</ol>'
+]
+EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
-def test_mfe_md(capsys):
+
+def test_e50_simple_complete_md(capsys):
     """Test the multi_format_example function with the md format."""
     expected_txt = EXPECTED_MD_TEXT
     # MD046: Deeply nested lists (4+ spaces) trigger false positive for
@@ -81,16 +111,23 @@ def test_mfe_md(capsys):
     check_capsys_silent(capsys)
 
 
-def test_mfe_html(capsys):
+def test_e50_simple_complete_html(capsys):
     """Test the multi_format_example function with the html format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_html_func(multi_format_example, expected_txt)
     check_capsys_silent(capsys)
 
 
-def test_mfe_docx(capsys):
+def test_e50_simple_complete_docx(capsys):
     """Test the multi_format_example function with the docx format."""
-    expected_txt = EXPECTED_DOCX_TEXT
+    expected_txt = EXPECTED_HTML_BODY_TEXT
     expected_warnings = []
     check_docx_func(multi_format_example, expected_txt, expected_warnings)
+    check_capsys_silent(capsys)
+
+
+def test_e50_simple_complete_odt(capsys):
+    """Test the multi_format_example function with the odt format."""
+    expected_txt = EXPECTED_ODT_TEXT
+    check_odt_func(multi_format_example, expected_txt)
     check_capsys_silent(capsys)

@@ -16,6 +16,8 @@ import restructuredtext_lint
 from html5lib import HTMLParser
 from html5lib.html5parser import ParseError
 import mammoth
+from odf.opendocument import load as odf_load
+from odf.odf2xhtml import ODF2XHTML
 
 
 def check_capsys_silent(capsys: pytest.CaptureFixture[str]) -> None:
@@ -25,13 +27,28 @@ def check_capsys_silent(capsys: pytest.CaptureFixture[str]) -> None:
     assert err == ''
 
 
+def print_text(text: str) -> None:
+    """Print the text."""
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+    for line in lines[:500]:
+        print(f'{line[:100]}', file=sys.stderr)
+
+
+def print_line_col_of_pos(text: str, pos: int) -> None:
+    """Print the line number and column number of the position in the text."""
+    lines = text[:pos].split('\n')
+    print(f'Position: {pos} is line: {len(lines)}, column: {len(lines[-1])}',
+          file=sys.stderr)
+
+
 def check_text_in_order(text: str, expected_txts: list[str]) -> None:
     """Check that the text contains expected text in the expected order."""
     for expected_txt in expected_txts:
         if expected_txt not in text:
             print(f'Expected text: "{expected_txt}" not found in text.',
                   file=sys.stderr)
-            print(f'Text: "{text}"', file=sys.stderr)
+            print('Text:', file=sys.stderr)
+            print_text(text)
         assert expected_txt in text
     start = 0
     for num, expected_txt in enumerate(expected_txts):
@@ -41,8 +58,10 @@ def check_text_in_order(text: str, expected_txts: list[str]) -> None:
                   f' position {start} in text.', file=sys.stderr)
             print(f'Expected text with index {num} not found in text '
                   f'starting at position {start}.', file=sys.stderr)
+            print_line_col_of_pos(text, start)
             print(f'Failing expected text: {expected_txt}', file=sys.stderr)
-            print(f'Text from position {start}: {text[start:]}', file=sys.stderr)
+            print(f'Text from position {start}:', file=sys.stderr)
+            print_text(text[start:])
         assert pos != -1
         start = pos + len(expected_txt)
 
@@ -206,3 +225,22 @@ def check_docx_func(func: Callable[[str, str], None],
             for msg in content.messages:
                 assert msg.message in all_expected_warnings
             check_text_in_order(content.value, expected_txt)
+
+
+def check_odt_func(func: Callable[[str, str], None],
+                   expected_txt: list[str]) -> None:
+    """Check that function produces expected text.
+
+    Args:
+        func: The function to check.
+        expected_txt: Fragments of the expected text in the order they
+                      should appear.
+    """
+    with TemporaryDirectory() as tmp_dir:
+        file_name = tmp_dir + '/test.odt'
+        func(format_name='odt', file_name=file_name)
+        with open(file_name, 'rb') as file:
+            _ = odf_load(file)  #  test if loads without raising exception
+            converter = ODF2XHTML()
+            html = converter.odf2xhtml(file)
+            check_text_in_order(html, expected_txt)
