@@ -15,6 +15,7 @@ from pymarkdown.api import PyMarkdownApi, PyMarkdownApiException, \
 import restructuredtext_lint
 from html5lib import HTMLParser
 from html5lib.html5parser import ParseError
+import mammoth
 
 
 def check_capsys_silent(capsys: pytest.CaptureFixture[str]) -> None:
@@ -172,3 +173,25 @@ def check_html_func(func: Callable[[str, str], None],
             print(str(exc))
             assert False, 'HTML parse error'
         check_text_in_order(html, expected_txt)
+
+
+def check_docx_func(func: Callable[[str, str], None],
+                    expected_txt: list[str],
+                    expected_warnings: list[str]) -> None:
+    """Check that function produces expected text.
+
+    Args:
+        func: The function to check.
+        expected_txt: Fragments of the expected text in the order they
+                      should appear.
+        expected_warnings: Expected warnings to suppress.
+    """
+    with TemporaryDirectory() as tmp_dir:
+        file_name = tmp_dir + '/test.docx'
+        func(format_name='docx', file_name=file_name)
+        with open(file_name, 'rb') as f:
+            content = mammoth.convert_to_html(f)
+            for msg in content.messages:
+                assert msg.type == 'warning'
+                assert msg.message in expected_warnings
+            check_text_in_order(content.value, expected_txt)
