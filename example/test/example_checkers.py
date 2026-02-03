@@ -175,6 +175,12 @@ def check_html_func(func: Callable[[str, str], None],
         check_text_in_order(html, expected_txt)
 
 
+
+COMMON_EXPECTED_DOCX_WARNINGS = [
+    'Unrecognised paragraph style: No Spacing (Style ID: NoSpacing)'
+]
+
+
 def check_docx_func(func: Callable[[str, str], None],
                     expected_txt: list[str],
                     expected_warnings: list[str]) -> None:
@@ -186,6 +192,7 @@ def check_docx_func(func: Callable[[str, str], None],
                       should appear.
         expected_warnings: Expected warnings to suppress.
     """
+    all_expected_warnings = COMMON_EXPECTED_DOCX_WARNINGS + expected_warnings
     with TemporaryDirectory() as tmp_dir:
         file_name = tmp_dir + '/test.docx'
         func(format_name='docx', file_name=file_name)
@@ -193,5 +200,9 @@ def check_docx_func(func: Callable[[str, str], None],
             content = mammoth.convert_to_html(f)
             for msg in content.messages:
                 assert msg.type == 'warning'
-                assert msg.message in expected_warnings
+                if msg.message not in all_expected_warnings:
+                    print(f'Unexpected warning: {msg.message}',
+                          file=sys.stderr)
+            for msg in content.messages:
+                assert msg.message in all_expected_warnings
             check_text_in_order(content.value, expected_txt)

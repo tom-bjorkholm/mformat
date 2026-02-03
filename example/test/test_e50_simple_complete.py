@@ -9,7 +9,8 @@ import sys
 from pathlib import Path
 import pytest  # pylint: disable=unused-import
 from example_checkers import (
-    check_markdown_func, check_capsys_silent, check_html_func)
+    check_markdown_func, check_capsys_silent, check_html_func,
+    check_docx_func)
 # Add example/src to path
 # pylint: disable=duplicate-code
 _example_test_path = (
@@ -36,14 +37,7 @@ EXPECTED_MD_TEXT = [
 ]
 
 
-EXPECTED_HTML_TEXT = [
-    '<!DOCTYPE html>',
-    '<html lang="en">',
-    '<head>',
-    '<meta charset="utf-8">',
-    '<title>HTML file</title>',
-    '</head>',
-    '<body>',
+EXPECTED_DOCX_TEXT = [
     '<h1>',
     'Main heading of example',
     '</h1>',
@@ -59,13 +53,23 @@ EXPECTED_HTML_TEXT = [
     'Item 1</li>',
     'Item 2</li>',
     'Item 2.1</li>',
-    '</ul>',
+    '</ul>'
+]
+
+EXPECTED_HTML_TEXT = [
+    '<!DOCTYPE html>',
+    '<html lang="en">',
+    '<head>',
+    '<meta charset="utf-8">',
+    '<title>HTML file</title>',
+    '</head>',
+    '<body>'] + EXPECTED_DOCX_TEXT + [
     '<ol>',
     'Item 1</li>',
     '</ol>',
     '</body>',
-    '</html>'
-]
+    '</html>']
+
 
 def test_mfe_md(capsys):
     """Test the multi_format_example function with the md format."""
@@ -81,4 +85,12 @@ def test_mfe_html(capsys):
     """Test the multi_format_example function with the html format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_html_func(multi_format_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_mfe_docx(capsys):
+    """Test the multi_format_example function with the docx format."""
+    expected_txt = EXPECTED_DOCX_TEXT
+    expected_warnings = []
+    check_docx_func(multi_format_example, expected_txt, expected_warnings)
     check_capsys_silent(capsys)
