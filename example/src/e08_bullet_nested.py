@@ -18,6 +18,8 @@ def bullets_example(format_name: str,
     # and the output file name as in e01_paragraph.py.
     # We use a with statement to ensure that the file is closed properly.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
+        # See example e05_heading.py for how to write a heading.
+        mf.start_heading(level=1, text='Nested bullet list example')
         # To start a bullet list we simple start a bullet point item.
         mf.start_bullet_item('This is the first bullet point item.')
         mf.add_text('at level 1.')

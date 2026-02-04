@@ -5,7 +5,7 @@
 # MIT License
 #
 
-from e01_paragraph import example_main
+from e01_paragraph import example_main, NO_HEADING_TEXT
 from mformat.factory import create_mf
 
 
@@ -53,6 +53,7 @@ def paragraphs_smart_ws_example(format_name: str,
         mf.add_text('by ommitting the smart_ws=False argument,')
         # Naturally we can also explicitly set smart_ws=True.
         mf.add_text('or by explicitly setting smart_ws=True.', smart_ws=True)
+        mf.start_paragraph(NO_HEADING_TEXT, bold=True)
 
 
 if __name__ == "__main__":

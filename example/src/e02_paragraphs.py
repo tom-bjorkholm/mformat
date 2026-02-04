@@ -5,7 +5,7 @@
 # MIT License
 #
 
-from e01_paragraph import example_main
+from e01_paragraph import example_main, NO_HEADING_TEXT
 from mformat.factory import create_mf
 
 
@@ -30,6 +30,7 @@ def paragraphs_example(format_name: str,
         # using add_text.
         mf.add_text('With add_text we can add text to the second')
         mf.add_text('paragraph just as we did with the first paragraph.')
+        mf.start_paragraph(NO_HEADING_TEXT)
         # There is no need to close the second paragraph, it is closed
         # automatically when we start something new or when the with
         # statement is exited.

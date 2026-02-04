@@ -8,6 +8,7 @@
 import sys
 from pathlib import Path
 import pytest  # pylint: disable=unused-import
+from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_docx_func, check_odt_func)
@@ -18,6 +19,7 @@ _example_test_path = (
 )
 sys.path.insert(0, str(_example_test_path))
 from e50_simple_complete import multi_format_example  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
+
 
 
 EXPECTED_MD_TEXT = [
@@ -34,19 +36,6 @@ EXPECTED_MD_TEXT = [
     '1. Item 1',
     '  3.1. Item 3.1',
     '4. Item 4'
-]
-EXPECTED_HTML_PRE = [
-    '<!DOCTYPE html>',
-    '<html lang="en">',
-    '<head>',
-    '<meta charset="utf-8">',
-    '<title>HTML file</title>',
-    '</head>',
-    '<body>'
-]
-EXPECTED_HTML_POST = [
-    '</body>',
-    '</html>'
 ]
 EXPECTED_HTML_BODY_TEXT = [
     '<h1>',
@@ -67,15 +56,6 @@ EXPECTED_HTML_BODY_TEXT = [
     '</ul>',
 ]
 EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
-EXPECTED_ODT_PRE = [
-    '<!DOCTYPE html PUBLIC ',
-    '<html xmlns="http://www.w3.org/1999/xhtml">',
-    '<head>',
-    '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>',
-    '<title></title>',
-    '</head>',
-    '<body>'
-]
 EXPECTED_ODT_BODY_TEXT = [
     '<h1 class="P-">',
     'Main heading of example',

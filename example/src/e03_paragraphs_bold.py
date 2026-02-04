@@ -5,7 +5,7 @@
 # MIT License
 #
 
-from e01_paragraph import example_main
+from e01_paragraph import example_main, NO_HEADING_TEXT
 from mformat.factory import create_mf
 
 
@@ -43,6 +43,7 @@ def paragraphs_bold_example(format_name: str,
         # in italic and bold.
         mf.add_text('Use add_text to add text in italic and bold to the '
                     'second paragraph.', italic=True, bold=True)
+        mf.start_paragraph(NO_HEADING_TEXT, bold=True)
 
 
 if __name__ == "__main__":

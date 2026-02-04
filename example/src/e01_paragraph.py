@@ -10,6 +10,12 @@ import argparse
 from mformat.factory import create_mf, list_registered_mf
 
 
+NO_HEADING_TEXT = '(As this example does not have a heading the ' \
+    'generated markdown file will not have a heading. If markdownlint ' \
+    'is used on the generated markdown file it will report an error ' \
+    'for the missing heading.)'
+
+
 def paragraph_example(format_name: str,
                       file_name: str) -> None:
     """Write an example file with a paragraph."""
@@ -30,6 +36,7 @@ def paragraph_example(format_name: str,
         mf.add_text('With add_text we can add text to the paragraph.')
         mf.add_text('We can also add text to the paragraph in multiple calls')
         mf.add_text('using add_text.')
+        mf.add_text(NO_HEADING_TEXT)
         # There is no need to close the paragraph, it is closed automatically
         # when we start something new or when the with statement is exited.
 
