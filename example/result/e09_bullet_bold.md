@@ -1,3 +1,5 @@
+# Bullet list with bold text example
+
 - This is the first bullet point item. This is not bold or italic. **However,
   this bold text is added to it.** *And this italic text is added to it.*
 

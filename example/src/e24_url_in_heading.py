@@ -15,6 +15,8 @@ def example_url_in_heading(format_name: str, file_name: str) -> None:
     # We start by getting the MultiFormat class from the factory
     # as a context manager as we did in exampe e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
+        # See example e05_heading.py for how to write a heading.
+        mf.start_heading(level=1, text='URL in heading example')
         # Start a heading with a URL.
         mf.start_heading(text='A heading with a URL:', level=1)
         # Add a URL to the heading.

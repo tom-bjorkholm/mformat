@@ -14,6 +14,8 @@ def example_code_blocks(format_name: str, file_name: str) -> None:
     # We start by getting the MultiFormat class from the factory
     # as a context manager as we did in exampe e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
+        # See example e05_heading.py for how to write a heading.
+        mf.start_heading(level=1, text='Code blocks example')
         # First a paragraph to show the difference between code blocks and
         # paragraphs.
         mf.start_paragraph(text='This is a normal paragraph with some text.')

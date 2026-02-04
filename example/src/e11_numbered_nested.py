@@ -17,6 +17,8 @@ def numbered_nested_example(format_name: str,
     # We start by getting a formatter from the factory, using the format name
     # and the output file name as in e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
+        # See example e05_heading.py for how to write a heading.
+        mf.start_heading(level=1, text='Nested numbered list example')
         # To start a numbered list we simple start a numbered list item.
         mf.start_numbered_point_item('This is the first numbered item.')
         mf.add_text('If we do not specify the level, it is at the same')

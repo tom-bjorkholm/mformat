@@ -7,3 +7,7 @@ italic.***
 italic.* Use add_text to add text without italic to the second paragraph. **Use
 add_text to add text in bold to the second paragraph.** ***Use add_text to add
 text in italic and bold to the second paragraph.***
+
+**(As this example does not have a heading the generated markdown file will not
+have a heading. If markdownlint is used on the generated markdown file it will
+report an error for the missing heading.)**

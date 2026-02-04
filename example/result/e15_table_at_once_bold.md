@@ -1,3 +1,5 @@
+# Table in one call with bold first row example
+
 This is a table with bold text in first row.
 
 | **Name** | **Age** | **City**    |

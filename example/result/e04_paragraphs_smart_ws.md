@@ -8,3 +8,7 @@ whitespace between text fragments will be preserved.So we can have no whitespae
 or multiple spaces between text fragments if we want to. We can at any time
 switch on smart whitespace handling by ommitting the smart_ws=False argument, or
 by explicitly setting smart_ws=True.
+
+**(As this example does not have a heading the generated markdown file will not
+have a heading. If markdownlint is used on the generated markdown file it will
+report an error for the missing heading.)**

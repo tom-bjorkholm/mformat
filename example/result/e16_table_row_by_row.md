@@ -1,3 +1,4 @@
+# Table row by row example
 
 | Name | Age | City |
 |------|-----|------|

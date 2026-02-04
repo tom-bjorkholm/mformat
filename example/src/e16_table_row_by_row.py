@@ -22,6 +22,8 @@ def example_table_row_by_row(format_name: str, file_name: str) -> None:
     # We start by getting the MultiFormat class from the factory
     # as a context manager as we did in exampe e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
+        # See example e05_heading.py for how to write a heading.
+        mf.start_heading(level=1, text='Table row by row example')
         # Start a table.
         mf.start_table(first_row=['Name', 'Age', 'City'])
         # Add a row.

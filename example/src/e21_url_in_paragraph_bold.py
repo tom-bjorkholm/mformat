@@ -17,6 +17,9 @@ def example_url_in_paragraph_bold(format_name: str, file_name: str) -> None:
     # We can pass additional arguments to the MultiFormat constructor
     # using the args parameter. This will be shown in e25_url_as_text.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
+        # See example e05_heading.py for how to write a heading.
+        mf.start_heading(level=1,
+                         text='URL in paragraph with bold & italic example')
         # Start a paragraph.
         mf.start_paragraph(text='This is a paragraph with a URL: ')
         # add an italic URL.

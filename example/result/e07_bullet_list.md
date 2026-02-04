@@ -1,3 +1,5 @@
+# Bullet list example
+
 - This is the first bullet point item.
 
 - This is the second bullet point item. We can add text to the bullet point

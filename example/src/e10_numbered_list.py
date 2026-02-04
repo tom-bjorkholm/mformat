@@ -17,6 +17,8 @@ def numbered_list_example(format_name: str,
     # We start by getting a formatter from the factory, using the format name
     # and the output file name as in e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
+        # See example e05_heading.py for how to write a heading.
+        mf.start_heading(level=1, text='Numbered list example')
         # To start a numbered list we simple start a numbered list item.
         mf.start_numbered_point_item('This is the first numbered item.')
         mf.add_text('We can add text to the numbered items with add_text(),')

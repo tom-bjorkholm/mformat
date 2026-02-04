@@ -1,3 +1,4 @@
+# Table in one call example
 
 | Name | Age | City        |
 |------|-----|-------------|

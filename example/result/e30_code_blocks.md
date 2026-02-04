@@ -1,3 +1,5 @@
+# Code blocks example
+
 This is a normal paragraph with some text. Paragraphs are not useable for
 showing code as the text is usually shown in variable width fonts, and line
 wrapping is not easy to control. Code blocks on the other hand are designed to

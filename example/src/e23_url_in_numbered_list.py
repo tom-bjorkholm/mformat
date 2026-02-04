@@ -15,6 +15,8 @@ def example_url_in_numbered_list(format_name: str, file_name: str) -> None:
     # We start by getting the MultiFormat class from the factory
     # as a context manager as we did in exampe e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
+        # See example e05_heading.py for how to write a heading.
+        mf.start_heading(level=1, text='URL in numbered point list example')
         # Start a numbered point list with an item containing a URL.
         mf.start_numbered_point_item(text='A numbered point with a URL:')
         # Add a URL to the item.

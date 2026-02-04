@@ -22,6 +22,8 @@ def example_url_in_paragraph(format_name: str, file_name: str,
     # using the args parameter. This will be shown in e25_url_as_text.py.
     with create_mf(format_name=format_name, file_name=file_name,
                    url_as_text=url_as_text) as mf:
+        # See example e05_heading.py for how to write a heading.
+        mf.start_heading(level=1, text='URL in paragraph example')
         # Start a paragraph.
         mf.start_paragraph(text='This is a paragraph with a URL: ')
         # add a URL.

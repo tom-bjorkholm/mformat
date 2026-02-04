@@ -1,3 +1,5 @@
 With start_paragraph we can start a paragraph. With add_text we can add text to
 the paragraph. We can also add text to the paragraph in multiple calls using
-add_text.
+add_text. (As this example does not have a heading the generated markdown file
+will not have a heading. If markdownlint is used on the generated markdown file
+it will report an error for the missing heading.)

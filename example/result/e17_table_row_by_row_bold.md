@@ -1,3 +1,4 @@
+# Table row by row with bold & italic example
 
 | **City** | **Country** | **Size** |
 |----------|-------------|----------|

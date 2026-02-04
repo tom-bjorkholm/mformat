@@ -13,6 +13,8 @@ def example_nest_numbers_bullets(format_name: str, file_name: str) -> None:
     # We start by getting the MultiFormat class from the factory
     # as a context manager as we did in exampe e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
+        # See example e05_heading.py for how to write a heading.
+        mf.start_heading(level=1, text='Nesting points example')
         # First a few numbered point list items.
         # The lists are created as needed for the items.
         mf.start_numbered_point_item('First item')

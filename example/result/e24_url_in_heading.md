@@ -1,3 +1,5 @@
+# URL in heading example
+
 # A heading with a URL: [This URL link to the examples.](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example)
 
 ## A heading with a bold URL: **[This bold URL link to the example source code.](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)**

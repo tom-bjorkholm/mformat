@@ -1,3 +1,5 @@
+# Numbered list with bold text example
+
 1. This is the first numbered point item. This is not bold or italic. **However,
    this bold text is added to it.** *And this italic text is added to it.*
 

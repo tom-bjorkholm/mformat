@@ -18,6 +18,8 @@ def numbered_bold_example(format_name: str,
     # and the output file name as in e01_paragraph.py.
     # We use a with statement to ensure that the file is closed properly.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
+        # See example e05_heading.py for how to write a heading.
+        mf.start_heading(level=1, text='Numbered list with bold text example')
         # To start a numbered point list we simple start a numbered point item.
         # It will not be bold or italic unless we specify it.
         mf.start_numbered_point_item('This is the first numbered point item.')
