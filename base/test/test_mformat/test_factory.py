@@ -91,7 +91,7 @@ def test_factory_obj_create_ok(capsys, args, arg1, arg2):
 def test_factory_obj_create_nok(capsys):
     """Test the factory object create method with a not OK class."""
     factory = MultiFormatFactory()
-    with pytest.raises(ValueError) as exc:
+    with pytest.raises(KeyError) as exc:
         factory.i_create('something', 'test.test', url_as_text=True,
                          args={'arg1': 'value1'})
     assert exc.value.args[0] == \
@@ -120,7 +120,7 @@ def test_factory_obj_get_usage(capsys):
 def test_factory_obj_get_usage_nok(capsys):
     """Test the factory object get_usage method with a not OK class."""
     factory = MultiFormatFactory()
-    with pytest.raises(ValueError) as exc:
+    with pytest.raises(KeyError) as exc:
         factory.i_get_usage('something')
     assert exc.value.args[0] == \
         'Format "something" is not registered. Available formats: ' + \
@@ -138,8 +138,11 @@ def test_factory_obj_get_usage_nok(capsys):
 @pytest.mark.parametrize('reg_func',
                          [MultiFormatFactory.register, register_mf])
 def test_factory_reg_ok(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                        capsys, reg_func, create_func, list_func, usage_func):
+                        capsys, monkeypatch,
+                        reg_func, create_func, list_func, usage_func):
     """Test the factory register method with an OK class."""
+    # Reset factory to get a new instance
+    monkeypatch.setattr('mformat.factory._the_factory', None)
     reg_func(MultiFormat2T)
     assert 'mf2t' in list_func()
     assert MultiFormatFactory.get_usage('mf2t') == \
@@ -198,7 +201,7 @@ def test_create_ok(capsys):
 
 def test_create_nok(capsys):
     """Test the shortcut create function with a not OK class."""
-    with pytest.raises(ValueError) as exc:
+    with pytest.raises(KeyError) as exc:
         create_mf('something', 'test.html', url_as_text=True,
                   args={'title': 'Test title', 'css_file': 'test.css'})
     assert 'Format "something" is not registered.' in exc.value.args[0]
@@ -334,3 +337,85 @@ def test_create_file_exists_an(capsys, monkeypatch, fmt):
     assert file_exists_cb.file_name == file_name
     outmsg = [f'File {file_name} already exists. Overwrite? (y/n)']
     check_capsys(capsys, out_msgs=outmsg)
+
+
+class MultiFormatCase1(MultiFormat):
+    """Test class for the factory module."""
+
+    def __init__(self, file_name: str, url_as_text: bool = False):
+        """Initialize the MultiFormatCase1 class."""
+        super().__init__(file_name=file_name, url_as_text=url_as_text)
+
+    @classmethod
+    def file_name_extension(cls) -> str:
+        """Test the file_name_extension method."""
+        return '.case1'
+
+    @classmethod
+    def get_arg_desciption(cls) -> FormatterDescriptor:
+        """Test the get_arg_desciption method."""
+        return FormatterDescriptor(name='Case1', mandatory_args=[],
+                                   optional_args=[])
+
+
+class MultiFormatCase1Upper(MultiFormat):
+    """Test class for the factory module."""
+
+    def __init__(self, file_name: str, url_as_text: bool = False):
+        """Initialize the MultiFormatCase1Upper class."""
+        super().__init__(file_name=file_name, url_as_text=url_as_text)
+
+    @classmethod
+    def file_name_extension(cls) -> str:
+        """Test the file_name_extension method."""
+        return '.CaSe1'
+
+    @classmethod
+    def get_arg_desciption(cls) -> FormatterDescriptor:
+        """Test the get_arg_desciption method."""
+        return FormatterDescriptor(name='CaSE1', mandatory_args=[],
+                                   optional_args=[])
+
+
+def test_factory_reg_ident1(capsys):
+    """Test the factory register method with identical names."""
+    factory = MultiFormatFactory()
+    factory.i_register(MultiFormatCase1)
+    with pytest.raises(KeyError) as exc:
+        factory.i_register(MultiFormatCase1)
+    assert exc.value.args[0] == 'Format "Case1" is already registered.'
+    check_capsys(capsys)
+
+
+def test_factory_reg_ident2(capsys):
+    """Test the factory register method with case different names."""
+    factory = MultiFormatFactory()
+    factory.i_register(MultiFormatCase1)
+    with pytest.raises(KeyError) as exc:
+        factory.i_register(MultiFormatCase1Upper)
+    assert exc.value.args[0] == 'Cannot register format "CaSE1" as ' + \
+        '"Case1" is already registered.'
+    check_capsys(capsys)
+
+
+def test_factory_reg_ident3(capsys, monkeypatch):
+    """Test the register function with identical names."""
+    # Reset factory to get a new instance
+    monkeypatch.setattr('mformat.factory._the_factory', None)
+    register_mf(MultiFormatCase1)
+    with pytest.raises(KeyError) as exc:
+        register_mf(MultiFormatCase1)
+    assert exc.value.args[0] == 'Format "Case1" is already registered.'
+    check_capsys(capsys)
+
+
+def test_factory_reg_ident4(capsys, monkeypatch):
+    """Test the register function with case different names."""
+    # Reset factory to get a new instance
+    monkeypatch.setattr('mformat.factory._the_factory', None)
+    register_mf(MultiFormatCase1)
+    with pytest.raises(KeyError) as exc:
+        register_mf(MultiFormatCase1Upper)
+    assert exc.value.args[0] == 'Cannot register format "CaSE1" as ' + \
+        '"Case1" is already registered.'
+    check_capsys(capsys)

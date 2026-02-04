@@ -992,6 +992,15 @@ def register(format_class: type[MultiFormat]) -> None
 
 Register a MultiFormat subclass with the factory.
 
+**Arguments**:
+
+- `format_class` - The MultiFormat subclass to register.
+
+**Raises**:
+
+- `ValueError` - If the format_class is not a subclass of MultiFormat.
+- `KeyError` - If the format_name is already registered.
+
 <a id="mformat.factory.MultiFormatFactory.i_register"></a>
 
 #### i\_register
@@ -1030,7 +1039,7 @@ Create an instance of a registered MultiFormat subclass.
 
 **Raises**:
 
-- `ValueError` - If the format_name is not registered.
+- `KeyError` - If the format_name is not registered.
 
 <a id="mformat.factory.MultiFormatFactory.i_create"></a>
 
@@ -1081,6 +1090,19 @@ def get_usage(format_name: str) -> FormatterDescriptor
 
 Get the usage information for a registered format.
 
+**Arguments**:
+
+- `format_name` - The name identifier of the format class to get
+  the usage information for.
+
+**Returns**:
+
+  The usage information for the requested format.
+
+**Raises**:
+
+- `KeyError` - If the format_name is not registered.
+
 <a id="mformat.factory.MultiFormatFactory.i_get_usage"></a>
 
 #### i\_get\_usage
@@ -1120,7 +1142,7 @@ This is a shortcut for MultiFormatFactory.create().
 
 **Raises**:
 
-- `ValueError` - If the format_name is not registered.
+- `KeyError` - If the format_name is not registered.
 
 <a id="mformat.factory.list_registered_mf"></a>
 
@@ -1150,6 +1172,19 @@ Get the usage information for a registered format.
 
 This is a shortcut for MultiFormatFactory.get_usage().
 
+**Arguments**:
+
+- `format_name` - The name identifier of the format class to get the
+  usage information for.
+
+**Returns**:
+
+  The usage information for the requested format.
+
+**Raises**:
+
+- `KeyError` - If the format_name is not registered.
+
 <a id="mformat.factory.register_mf"></a>
 
 #### register\_mf
@@ -1169,6 +1204,7 @@ This is a shortcut for MultiFormatFactory.register().
 **Raises**:
 
 - `ValueError` - If the format_class is not a subclass of MultiFormat.
+- `KeyError` - If the format_name is already registered.
 
 <a id="mformat.mformat_md"></a>
 

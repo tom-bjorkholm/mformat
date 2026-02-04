@@ -32,6 +32,7 @@ class MultiFormatFactory:
         """Initialize the factory with an empty registry."""
         self._registry: dict[str, type[MultiFormat]] = {}
         self._usage: dict[str, FormatterDescriptor] = {}
+        self._lower2correct: dict[str, str] = {}  # Lower case to correct case
         formats: list[type[MultiFormat]] = register_formats_in_pkg()
         for format_class in formats:
             self.i_register(format_class)
@@ -46,7 +47,14 @@ class MultiFormatFactory:
 
     @staticmethod
     def register(format_class: type[MultiFormat]) -> None:
-        """Register a MultiFormat subclass with the factory."""
+        """Register a MultiFormat subclass with the factory.
+
+        Args:
+            format_class: The MultiFormat subclass to register.
+        Raises:
+            ValueError: If the format_class is not a subclass of MultiFormat.
+            KeyError: If the format_name is already registered.
+        """
         factory = MultiFormatFactory.i_get_factory()
         factory.i_register(format_class=format_class)
 
@@ -56,8 +64,16 @@ class MultiFormatFactory:
             err = f'{format_class.__name__} must be a subclass of MultiFormat'
             raise ValueError(err)
         desc: FormatterDescriptor = format_class.get_arg_desciption()
+        if desc.name in self._registry:
+            raise KeyError(f'Format "{desc.name}" is already registered.')
+        if desc.name.lower() in self._lower2correct:
+            msg = f'Cannot register format "{desc.name}" as ' + \
+                f'"{self._lower2correct[desc.name.lower()]}" ' + \
+                'is already registered.'
+            raise KeyError(msg)
         self._registry[desc.name] = format_class
         self._usage[desc.name] = desc
+        self._lower2correct[desc.name.lower()] = desc.name
 
     @staticmethod
     def create(format_name: str, file_name: str,
@@ -74,7 +90,7 @@ class MultiFormatFactory:
             An instance of the requested MultiFormat subclass.
             Intended to be used as context manager, using a with statement.
         Raises:
-            ValueError: If the format_name is not registered.
+            KeyError: If the format_name is not registered.
         """
         factory = MultiFormatFactory.i_get_factory()
         return factory.i_create(format_name=format_name,
@@ -86,13 +102,19 @@ class MultiFormatFactory:
                  url_as_text: bool = False,
                  args: OptArgs = None) -> MultiFormat:
         """Internally create an instance of a registered subclass."""
-        if format_name not in self._registry:
-            raise ValueError(
+        correct_name: Optional[str] = None
+        if format_name in self._registry:
+            correct_name = format_name
+        elif format_name.lower() in self._lower2correct:
+            correct_name = self._lower2correct[format_name.lower()]
+        else:
+            raise KeyError(
                 f'Format "{format_name}" is not registered. ' +
                 'Available formats: ' +
                 f'{", ".join(sorted(list(self._registry.keys())))}'
             )
-        format_class = self._registry[format_name]
+        assert correct_name is not None
+        format_class = self._registry[correct_name]
         if args is None:
             return format_class(file_name=file_name, url_as_text=url_as_text)
         assert args is not None
@@ -117,19 +139,31 @@ class MultiFormatFactory:
 
     @staticmethod
     def get_usage(format_name: str) -> FormatterDescriptor:
-        """Get the usage information for a registered format."""
+        """Get the usage information for a registered format.
+
+        Args:
+            format_name: The name identifier of the format class to get
+                         the usage information for.
+        Returns:
+            The usage information for the requested format.
+        Raises:
+            KeyError: If the format_name is not registered.
+        """
         factory = MultiFormatFactory.i_get_factory()
         return factory.i_get_usage(format_name=format_name)
 
     def i_get_usage(self, format_name: str) -> FormatterDescriptor:
         """Internally get the usage information for a registered format."""
-        if format_name not in self._usage:
-            raise ValueError(
+        if format_name in self._usage:
+            return self._usage[format_name]
+        if format_name.lower() not in self._lower2correct:
+            raise KeyError(
                 f'Format "{format_name}" is not registered. ' +
                 'Available formats: ' +
                 f'{", ".join(sorted(list(self._registry.keys())))}'
             )
-        return self._usage[format_name]
+        correct_name = self._lower2correct[format_name.lower()]
+        return self._usage[correct_name]
 
 
 def create_mf(format_name: str, file_name: str,
@@ -147,7 +181,7 @@ def create_mf(format_name: str, file_name: str,
     Returns:
         An instance of the requested MultiFormat subclass.
     Raises:
-        ValueError: If the format_name is not registered.
+        KeyError: If the format_name is not registered.
     """
     return MultiFormatFactory.create(format_name=format_name,
                                      file_name=file_name,
@@ -169,6 +203,13 @@ def usage_mf(format_name: str) -> FormatterDescriptor:
     """Get the usage information for a registered format.
 
     This is a shortcut for MultiFormatFactory.get_usage().
+    Args:
+        format_name: The name identifier of the format class to get the
+                     usage information for.
+    Returns:
+        The usage information for the requested format.
+    Raises:
+        KeyError: If the format_name is not registered.
     """
     return MultiFormatFactory.get_usage(format_name=format_name)
 
@@ -181,5 +222,6 @@ def register_mf(format_class: type[MultiFormat]) -> None:
         format_class: The MultiFormat subclass to register.
     Raises:
         ValueError: If the format_class is not a subclass of MultiFormat.
+        KeyError: If the format_name is already registered.
     """
     MultiFormatFactory.register(format_class=format_class)
