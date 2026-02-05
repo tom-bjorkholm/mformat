@@ -452,3 +452,20 @@ examples. Simpler examples are listed earlier, to help you get started.
     - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e60_custom_format.docx)
 
     - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e60_custom_format.odt)
+
+## Other
+
+- Show filtering of arguments to match the format used.
+
+  - Source:
+    [e42_filter_args_for_format.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e42_filter_args_for_format.py)
+
+  - Results:
+
+    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e42_filter_args_for_format.html)
+
+    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e42_filter_args_for_format.md)
+
+    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e42_filter_args_for_format.docx)
+
+    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e42_filter_args_for_format.odt)

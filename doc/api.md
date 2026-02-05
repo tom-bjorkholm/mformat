@@ -23,11 +23,14 @@
     * [i\_register](#mformat.factory.MultiFormatFactory.i_register)
     * [create](#mformat.factory.MultiFormatFactory.create)
     * [i\_create](#mformat.factory.MultiFormatFactory.i_create)
+    * [filter\_args](#mformat.factory.MultiFormatFactory.filter_args)
+    * [i\_filter\_args](#mformat.factory.MultiFormatFactory.i_filter_args)
     * [get\_registered\_formats](#mformat.factory.MultiFormatFactory.get_registered_formats)
     * [i\_get\_registered\_formats](#mformat.factory.MultiFormatFactory.i_get_registered_formats)
     * [get\_usage](#mformat.factory.MultiFormatFactory.get_usage)
     * [i\_get\_usage](#mformat.factory.MultiFormatFactory.i_get_usage)
   * [create\_mf](#mformat.factory.create_mf)
+  * [filter\_args\_mf](#mformat.factory.filter_args_mf)
   * [list\_registered\_mf](#mformat.factory.list_registered_mf)
   * [usage\_mf](#mformat.factory.usage_mf)
   * [register\_mf](#mformat.factory.register_mf)
@@ -359,16 +362,71 @@ def i_create(format_name: str,
 
 Internally create an instance of a registered subclass.
 
+<a id="mformat.factory.MultiFormatFactory.filter_args"></a>
+
+#### filter\_args
+
+```python
+@staticmethod
+def filter_args(args: OptArgs, format_name: str) -> OptArgs
+```
+
+Filter the arguments for a registered format.
+
+Filter the arguments to only include the arguments that are valid for
+the given format name. This is useful when the args dictionary
+includes arguments for several formats, and not all of them are valid
+for the given format name. (The risk of using this function is that
+a misspelled arguement will be silently ignored, and the programming
+error will not be detected.)
+
+**Arguments**:
+
+- `args` - The arguments to filter.
+- `format_name` - The name identifier of the format class to filter
+  the arguments for.
+
+**Returns**:
+
+  The filtered arguments.
+
+**Raises**:
+
+- `KeyError` - If the format_name is not registered.
+
+<a id="mformat.factory.MultiFormatFactory.i_filter_args"></a>
+
+#### i\_filter\_args
+
+```python
+def i_filter_args(args: OptArgs, format_name: str) -> OptArgs
+```
+
+Internally filter the arguments for a registered format.
+
 <a id="mformat.factory.MultiFormatFactory.get_registered_formats"></a>
 
 #### get\_registered\_formats
 
 ```python
 @staticmethod
-def get_registered_formats() -> list[str]
+def get_registered_formats(lower: bool = False,
+                           upper: bool = False) -> list[str]
 ```
 
 Get a list of all registered format names.
+
+Always includes the correct case for the format names in the returned
+list. If lower or upper is True, also includes those cases of the
+format names in the returned list. (Including lower case and upper
+case variants is probably not a good idea when printint the list
+for a human user, but it is useful when checking if a format name
+is in the allowed list of format names.)
+
+**Arguments**:
+
+- `lower` - If True, also include the format name in lower case.
+- `upper` - If True, also include the format name in upper case.
 
 **Returns**:
 
@@ -379,7 +437,8 @@ Get a list of all registered format names.
 #### i\_get\_registered\_formats
 
 ```python
-def i_get_registered_formats() -> list[str]
+def i_get_registered_formats(lower: bool = False,
+                             upper: bool = False) -> list[str]
 ```
 
 Internally get a list of registered format names.
@@ -449,17 +508,60 @@ This is a shortcut for MultiFormatFactory.create().
 
 - `KeyError` - If the format_name is not registered.
 
+<a id="mformat.factory.filter_args_mf"></a>
+
+#### filter\_args\_mf
+
+```python
+def filter_args_mf(args: OptArgs, format_name: str) -> OptArgs
+```
+
+Filter the arguments for a registered format.
+
+This is a shortcut for MultiFormatFactory.filter_args().
+Filter the arguments to only include the arguments that are valid for
+the given format name. This is useful when the args dictionary includes
+arguments for several formats, and not all of them are valid for the given
+format name. (The risk of using this function is that a misspelled
+arguement will be silently ignored, and the programming error will not be
+detected.)
+
+**Arguments**:
+
+- `args` - The arguments to filter.
+- `format_name` - The name identifier of the format class to filter
+  the arguments for.
+
+**Returns**:
+
+  The filtered arguments.
+
+**Raises**:
+
+- `KeyError` - If the format_name is not registered.
+
 <a id="mformat.factory.list_registered_mf"></a>
 
 #### list\_registered\_mf
 
 ```python
-def list_registered_mf() -> list[str]
+def list_registered_mf(lower: bool = False, upper: bool = False) -> list[str]
 ```
 
 Get a list of all registered format names.
 
 This is a shortcut for MultiFormatFactory.get_registered_formats().
+Always includes the correct case for the format names in the returned
+list. If lower or upper is True, also includes those cases of the
+format names in the returned list. (Including lower case and upper
+case variants is probably not a good idea when printint the list
+for a human user, but it is useful when checking if a format name
+is in the allowed list of format names.)
+
+**Arguments**:
+
+- `lower` - If True, also include the format name in lower case.
+- `upper` - If True, also include the format name in upper case.
 
 **Returns**:
 

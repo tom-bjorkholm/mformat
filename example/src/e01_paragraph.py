@@ -60,10 +60,15 @@ def example_main(example_text: str,
     """Parse command line arguments and run the example."""
     desc = f'{example_text} example of using package mformat.'
     parser = argparse.ArgumentParser(description=desc)
-    choices = list_registered_mf()
-    choices.append('all')
+    # Show the correct case for the format names in the help message.
+    help_choices = list_registered_mf()
+    help_choices.append('all')
     format_help = 'The name of the format to use. Available formats: ' + \
-        ', '.join(choices)
+        ', '.join(help_choices)
+    # Allow user to also use lower case or upper case format names in the
+    # command line.
+    choices = list_registered_mf(lower=True, upper=True)
+    choices.append('all')
     parser.add_argument('-f', '--format', type=str,
                         help=format_help,
                         required=True, choices=choices)

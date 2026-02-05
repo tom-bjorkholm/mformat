@@ -24,6 +24,8 @@ class OptArgsDict(TypedDict, total=False):
 
 type OptArgs = Optional[OptArgsDict]
 
+COMMON_ARGS = ['file_exists_callback']
+
 
 class MultiFormatFactory:
     """Factory class for creating instances of MultiFormat subclasses."""
@@ -124,18 +126,75 @@ class MultiFormatFactory:
         # cannot know which arguments are valid.
 
     @staticmethod
-    def get_registered_formats() -> list[str]:
+    def filter_args(args: OptArgs, format_name: str) -> OptArgs:
+        """Filter the arguments for a registered format.
+
+        Filter the arguments to only include the arguments that are valid for
+        the given format name. This is useful when the args dictionary
+        includes arguments for several formats, and not all of them are valid
+        for the given format name. (The risk of using this function is that
+        a misspelled arguement will be silently ignored, and the programming
+        error will not be detected.)
+        Args:
+            args: The arguments to filter.
+            format_name: The name identifier of the format class to filter
+                         the arguments for.
+        Returns:
+            The filtered arguments.
+        Raises:
+            KeyError: If the format_name is not registered.
+        """
+        factory = MultiFormatFactory.i_get_factory()
+        return factory.i_filter_args(args=args, format_name=format_name)
+
+    def i_filter_args(self, args: OptArgs, format_name: str) -> OptArgs:
+        """Internally filter the arguments for a registered format."""
+        format_usage = self.i_get_usage(format_name=format_name)
+        if args is None:
+            return None
+        assert args is not None
+        ret: OptArgsDict = {}
+        for arg_name in args:
+            if arg_name in format_usage.mandatory_args:
+                ret[arg_name] = args[arg_name]  # type: ignore[literal-required] # noqa: E501
+            elif arg_name in format_usage.optional_args:
+                ret[arg_name] = args[arg_name]  # type: ignore[literal-required] # noqa: E501
+            elif arg_name in COMMON_ARGS:
+                ret[arg_name] = args[arg_name]  # type: ignore[literal-required] # noqa: E501
+        return ret
+
+    @staticmethod
+    def get_registered_formats(lower: bool = False,
+                               upper: bool = False) -> list[str]:
         """Get a list of all registered format names.
 
+        Always includes the correct case for the format names in the returned
+        list. If lower or upper is True, also includes those cases of the
+        format names in the returned list. (Including lower case and upper
+        case variants is probably not a good idea when printint the list
+        for a human user, but it is useful when checking if a format name
+        is in the allowed list of format names.)
+        Args:
+            lower: If True, also include the format name in lower case.
+            upper: If True, also include the format name in upper case.
         Returns:
             A list of registered format name strings.
         """
         factory = MultiFormatFactory.i_get_factory()
-        return factory.i_get_registered_formats()
+        return factory.i_get_registered_formats(lower=lower, upper=upper)
 
-    def i_get_registered_formats(self) -> list[str]:
+    def i_get_registered_formats(self, lower: bool = False,
+                                 upper: bool = False) -> list[str]:
         """Internally get a list of registered format names."""
-        return sorted(list(self._registry.keys()))
+        sorted_names = sorted(list(self._registry.keys()))
+        ret: list[str] = []
+        for name in sorted_names:
+            ret.append(name)
+            if lower and name != name.lower():
+                ret.append(name.lower())
+            if upper and name != name.upper():
+                ret.append(name.upper())
+        return ret
 
     @staticmethod
     def get_usage(format_name: str) -> FormatterDescriptor:
@@ -189,14 +248,47 @@ def create_mf(format_name: str, file_name: str,
                                      args=args)
 
 
-def list_registered_mf() -> list[str]:
+def filter_args_mf(args: OptArgs, format_name: str) -> OptArgs:
+    """Filter the arguments for a registered format.
+
+    This is a shortcut for MultiFormatFactory.filter_args().
+    Filter the arguments to only include the arguments that are valid for
+    the given format name. This is useful when the args dictionary includes
+    arguments for several formats, and not all of them are valid for the given
+    format name. (The risk of using this function is that a misspelled
+    arguement will be silently ignored, and the programming error will not be
+    detected.)
+    Args:
+        args: The arguments to filter.
+        format_name: The name identifier of the format class to filter
+                     the arguments for.
+    Returns:
+        The filtered arguments.
+    Raises:
+        KeyError: If the format_name is not registered.
+    """
+    return MultiFormatFactory.filter_args(args=args, format_name=format_name)
+
+
+def list_registered_mf(lower: bool = False,
+                       upper: bool = False) -> list[str]:
     """Get a list of all registered format names.
 
     This is a shortcut for MultiFormatFactory.get_registered_formats().
+    Always includes the correct case for the format names in the returned
+    list. If lower or upper is True, also includes those cases of the
+    format names in the returned list. (Including lower case and upper
+    case variants is probably not a good idea when printint the list
+    for a human user, but it is useful when checking if a format name
+    is in the allowed list of format names.)
+    Args:
+        lower: If True, also include the format name in lower case.
+        upper: If True, also include the format name in upper case.
     Returns:
         A list of registered format name strings.
     """
-    return MultiFormatFactory.get_registered_formats()
+    return MultiFormatFactory.get_registered_formats(lower=lower,
+                                                     upper=upper)
 
 
 def usage_mf(format_name: str) -> FormatterDescriptor:
