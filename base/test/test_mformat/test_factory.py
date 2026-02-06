@@ -419,3 +419,56 @@ def test_factory_reg_ident4(capsys, monkeypatch):
     assert exc.value.args[0] == 'Cannot register format "CaSE1" as ' + \
         '"Case1" is already registered.'
     check_capsys(capsys)
+
+
+def wrap_i_get_reg_formats(lower: bool, upper: bool) -> list[str]:
+    """Wrap the i_get_reg_formats method."""
+    factory = MultiFormatFactory()
+    factory.i_register(MultiFormatCase1)
+    return factory.i_get_registered_formats(lower=lower, upper=upper)
+
+
+def wrap_get_reg_formats(lower: bool, upper: bool) -> list[str]:
+    """Wrap the get_reg_formats method."""
+    MultiFormatFactory.register(MultiFormatCase1)
+    return MultiFormatFactory.get_registered_formats(lower=lower, upper=upper)
+
+
+def wrap_list_reg_mf(lower: bool, upper: bool) -> list[str]:
+    """Wrap the list_registered_mf method."""
+    MultiFormatFactory.register(MultiFormatCase1)
+    return list_registered_mf(lower=lower, upper=upper)
+
+
+@pytest.mark.parametrize('wrap_func',
+                         [wrap_i_get_reg_formats,
+                          wrap_get_reg_formats,
+                          wrap_list_reg_mf])
+@pytest.mark.parametrize('lower, upper, expected',
+                         [(False, False,
+                           ['Case1', 'docx', 'html', 'md', 'odt']),
+                          (False, True,
+                           ['Case1', 'CASE1',
+                            'docx', 'DOCX',
+                            'html', 'HTML',
+                            'md', 'MD',
+                            'odt', 'ODT']),
+                          (True, False,
+                           ['Case1', 'case1',
+                            'docx', 'html', 'md', 'odt']),
+                          (True, True,
+                           ['Case1', 'case1', 'CASE1',
+                            'docx', 'DOCX', 'html', 'HTML',
+                            'md', 'MD', 'odt', 'ODT'])])
+def test_factory_reg_ident5(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                            monkeypatch, wrap_func, lower, upper, expected):
+    """Test the factory register method with identical names."""
+    # Reset factory to get a new instance
+    monkeypatch.setattr('mformat.factory._the_factory', None)
+    assert wrap_func(lower=lower, upper=upper) == expected
+    check_capsys(capsys)
+
+
+# TODO: Add tests for the get_usage functions with lower and upper case names.
+# TODO: Add tests for the create functions with lower and upper case names.
+# TODO: Add tests for the filter args functions with lower and upper case names.
