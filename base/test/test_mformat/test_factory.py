@@ -10,10 +10,13 @@ from io import StringIO
 import sys
 import pytest
 from check_capsys import check_capsys
+from mformat_ext.mformat_docx import MultiFormatDocx
 from mformat.factory import MultiFormatFactory
 from mformat.factory import create_mf, register_mf, \
-    list_registered_mf, usage_mf, OptArgs
+    list_registered_mf, usage_mf, OptArgs, filter_args_mf
 from mformat.mformat import MultiFormat, FormatterDescriptor
+from mformat.mformat_html import MultiFormatHtml
+from mformat.mformat_md import MultiFormatMd
 
 
 class MultiFormat2T(MultiFormat):
@@ -342,9 +345,11 @@ def test_create_file_exists_an(capsys, monkeypatch, fmt):
 class MultiFormatCase1(MultiFormat):
     """Test class for the factory module."""
 
-    def __init__(self, file_name: str, url_as_text: bool = False):
+    def __init__(self, file_name: str, lang: str,
+                 url_as_text: bool = False):
         """Initialize the MultiFormatCase1 class."""
         super().__init__(file_name=file_name, url_as_text=url_as_text)
+        self.lang: str = lang
 
     @classmethod
     def file_name_extension(cls) -> str:
@@ -354,7 +359,7 @@ class MultiFormatCase1(MultiFormat):
     @classmethod
     def get_arg_desciption(cls) -> FormatterDescriptor:
         """Test the get_arg_desciption method."""
-        return FormatterDescriptor(name='Case1', mandatory_args=[],
+        return FormatterDescriptor(name='Case1', mandatory_args=['lang'],
                                    optional_args=[])
 
 
@@ -469,6 +474,282 @@ def test_factory_reg_ident5(capsys,  # pylint: disable=too-many-arguments,too-ma
     check_capsys(capsys)
 
 
-# TODO: Add tests for the get_usage functions with lower and upper case names.
-# TODO: Add tests for the create functions with lower and upper case names.
-# TODO: Add tests for the filter args functions with lower and upper case names.
+def wrap_i_get_usage(format_name: str) -> FormatterDescriptor:
+    """Wrap the i_get_usage method."""
+    factory = MultiFormatFactory()
+    factory.i_register(MultiFormatCase1)
+    return factory.i_get_usage(format_name)
+
+
+def wrap_get_usage(format_name: str) -> FormatterDescriptor:
+    """Wrap the get_usage method."""
+    MultiFormatFactory.register(MultiFormatCase1)
+    return MultiFormatFactory.get_usage(format_name)
+
+
+def wrap_usage_mf(format_name: str) -> FormatterDescriptor:
+    """Wrap the usage_mf function."""
+    register_mf(MultiFormatCase1)
+    return usage_mf(format_name)
+
+
+@pytest.mark.parametrize('wrap_func',
+                         [wrap_i_get_usage, wrap_get_usage, wrap_usage_mf])
+@pytest.mark.parametrize('format_name, usage',
+                         [('Case1',
+                           FormatterDescriptor(name='Case1',
+                                               mandatory_args=['lang'],
+                                               optional_args=[])),
+                          ('case1',
+                           FormatterDescriptor(name='Case1',
+                                               mandatory_args=['lang'],
+                                               optional_args=[])),
+                          ('CASE1',
+                           FormatterDescriptor(name='Case1',
+                                               mandatory_args=['lang'],
+                                               optional_args=[])),
+                          ('docx',
+                           FormatterDescriptor(name='docx',
+                                               mandatory_args=[],
+                                               optional_args=[])),
+                          ('html',
+                           FormatterDescriptor(name='html',
+                                               mandatory_args=[],
+                                               optional_args=['title',
+                                                              'css_file',
+                                                              'lang'])),
+                          ('Docx',
+                           FormatterDescriptor(name='docx',
+                                               mandatory_args=[],
+                                               optional_args=[])),
+                          ('HTML',
+                           FormatterDescriptor(name='html',
+                                               mandatory_args=[],
+                                               optional_args=['title',
+                                                              'css_file',
+                                                              'lang']))])
+def test_get_usage_wrap(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                        monkeypatch, wrap_func, format_name, usage):
+    """Test the get_usage functions with lower and upper case names."""
+    # Reset factory to get a new instance
+    monkeypatch.setattr('mformat.factory._the_factory', None)
+    assert wrap_func(format_name) == usage
+    check_capsys(capsys)
+
+
+def wrap_filter_args(args: OptArgs, format_name: str) -> OptArgs:
+    """Wrap the filter_args function."""
+    MultiFormatFactory.register(MultiFormatCase1)
+    return MultiFormatFactory.filter_args(args=args, format_name=format_name)
+
+
+def wrap_i_filter_args(args: OptArgs, format_name: str) -> OptArgs:
+    """Wrap the i_filter_args function."""
+    factory = MultiFormatFactory()
+    factory.i_register(MultiFormatCase1)
+    return factory.i_filter_args(args=args, format_name=format_name)
+
+
+def wrap_filter_args_mf(args: OptArgs, format_name: str) -> OptArgs:
+    """Wrap the filter_args_mf function."""
+    register_mf(MultiFormatCase1)
+    return filter_args_mf(args=args, format_name=format_name)
+
+
+def dummy_file_exists_cb(file_name: str) -> None:
+    """Handle existing file in dummy way."""
+
+
+OPTARG_EMPTY = {}
+OPTARG_FILE_EXISTS_CALLBACK = {
+    'file_exists_callback': dummy_file_exists_cb}
+OPTARG_TITLE = {'title': 'Test Title'}
+OPTARG_CSS_FILE = {'css_file': 'test.css'}
+OPTARG_LANG = {'lang': 'en'}
+OPTARG_LANG_EXISTS = {'file_exists_callback': dummy_file_exists_cb,
+                      'lang': 'en'}
+OPTARG_TITLE_CSS_FILE_LANG = {'title': 'Test Title',
+                              'css_file': 'test.css',
+                              'lang': 'en'}
+OPTARG_ODT = {'lang': 'en', 'file_exists_callback': dummy_file_exists_cb}
+OPTARG_ALL = {'file_exists_callback': dummy_file_exists_cb,
+              'title': 'Test Title',
+              'css_file': 'test.css',
+              'lang': 'en'}
+
+
+@pytest.mark.parametrize('wrap_func',
+                         [wrap_filter_args,
+                          wrap_i_filter_args,
+                          wrap_filter_args_mf])
+@pytest.mark.parametrize('args, format_name, expected',
+                         [(OPTARG_EMPTY, 'caSE1', OPTARG_EMPTY),
+                          (OPTARG_EMPTY, 'case1', OPTARG_EMPTY),
+                          (OPTARG_EMPTY, 'CASE1', OPTARG_EMPTY),
+                          (OPTARG_EMPTY, 'Case1', OPTARG_EMPTY),
+                          (OPTARG_EMPTY, 'md', OPTARG_EMPTY),
+                          (OPTARG_EMPTY, 'MD', OPTARG_EMPTY),
+                          (OPTARG_EMPTY, 'mD', OPTARG_EMPTY),
+                          (OPTARG_EMPTY, 'Md', OPTARG_EMPTY),
+                          (OPTARG_FILE_EXISTS_CALLBACK, 'case1',
+                           OPTARG_FILE_EXISTS_CALLBACK),
+                          (OPTARG_FILE_EXISTS_CALLBACK, 'CASE1',
+                           OPTARG_FILE_EXISTS_CALLBACK),
+                          (OPTARG_FILE_EXISTS_CALLBACK, 'caSE1',
+                           OPTARG_FILE_EXISTS_CALLBACK),
+                          (OPTARG_FILE_EXISTS_CALLBACK, 'Case1',
+                           OPTARG_FILE_EXISTS_CALLBACK),
+                          (OPTARG_FILE_EXISTS_CALLBACK, 'md',
+                           OPTARG_FILE_EXISTS_CALLBACK),
+                          (OPTARG_FILE_EXISTS_CALLBACK, 'MD',
+                           OPTARG_FILE_EXISTS_CALLBACK),
+                          (OPTARG_FILE_EXISTS_CALLBACK, 'Md',
+                           OPTARG_FILE_EXISTS_CALLBACK),
+                          (OPTARG_FILE_EXISTS_CALLBACK, 'mD',
+                           OPTARG_FILE_EXISTS_CALLBACK),
+                          (OPTARG_ALL, 'case1', OPTARG_LANG_EXISTS),
+                          (OPTARG_ALL, 'CASE1', OPTARG_LANG_EXISTS),
+                          (OPTARG_ALL, 'CAsE1', OPTARG_LANG_EXISTS),
+                          (OPTARG_ALL, 'Case1', OPTARG_LANG_EXISTS),
+                          (OPTARG_ALL, 'md', OPTARG_FILE_EXISTS_CALLBACK),
+                          (OPTARG_ALL, 'MD', OPTARG_FILE_EXISTS_CALLBACK),
+                          (OPTARG_ALL, 'mD', OPTARG_FILE_EXISTS_CALLBACK),
+                          (OPTARG_ALL, 'Md', OPTARG_FILE_EXISTS_CALLBACK),
+                          (OPTARG_ALL, 'html', OPTARG_ALL),
+                          (OPTARG_ALL, 'HTML', OPTARG_ALL),
+                          (OPTARG_ALL, 'HtmL', OPTARG_ALL),
+                          (OPTARG_ALL, 'Html', OPTARG_ALL),
+                          (OPTARG_TITLE, 'html', OPTARG_TITLE),
+                          (OPTARG_TITLE, 'MD', OPTARG_EMPTY),
+                          (OPTARG_TITLE, 'Docx', OPTARG_EMPTY),
+                          (OPTARG_TITLE, 'ODT', OPTARG_EMPTY),
+                          (OPTARG_CSS_FILE, 'Html', OPTARG_CSS_FILE),
+                          (OPTARG_CSS_FILE, 'md', OPTARG_EMPTY),
+                          (OPTARG_CSS_FILE, 'DOCX', OPTARG_EMPTY),
+                          (OPTARG_CSS_FILE, 'Odt', OPTARG_EMPTY),
+                          (OPTARG_LANG, 'html', OPTARG_LANG),
+                          (OPTARG_LANG, 'MD', OPTARG_EMPTY),
+                          (OPTARG_LANG, 'Docx', OPTARG_EMPTY),
+                          (OPTARG_LANG, 'ODT', OPTARG_LANG),
+                          (OPTARG_TITLE_CSS_FILE_LANG, 'html',
+                           OPTARG_TITLE_CSS_FILE_LANG),
+                          (OPTARG_TITLE_CSS_FILE_LANG, 'MD', OPTARG_EMPTY),
+                          (OPTARG_TITLE_CSS_FILE_LANG, 'Docx', OPTARG_EMPTY),
+                          (OPTARG_TITLE_CSS_FILE_LANG, 'ODT', OPTARG_LANG),
+                          (OPTARG_TITLE_CSS_FILE_LANG, 'Html',
+                           OPTARG_TITLE_CSS_FILE_LANG),
+                          (OPTARG_ALL, 'DOCX', OPTARG_FILE_EXISTS_CALLBACK),
+                          (OPTARG_ALL, 'Odt', OPTARG_ODT),
+                          (None, 'html', None),
+                          (None, 'MD', None),
+                          (None, 'Docx', None),
+                          (None, 'ODT', None),
+                          (None, 'Html', None),
+                          (None, 'md', None),
+                          (None, 'case1', None),
+                          (None, 'odt', None)])
+def test_filter_args_wrap(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                          monkeypatch, wrap_func, args, format_name,
+                          expected):
+    """Test the filter_args functions with lower and upper case names."""
+    # Reset factory to get a new instance
+    monkeypatch.setattr('mformat.factory._the_factory', None)
+    assert wrap_func(args=args, format_name=format_name) == expected
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('wrap_func',
+                         [wrap_filter_args,
+                          wrap_i_filter_args,
+                          wrap_filter_args_mf])
+@pytest.mark.parametrize('args, format_name',
+                         [(OPTARG_EMPTY, 'MDS'),
+                          (OPTARG_EMPTY, 'docxx'),
+                          (OPTARG_EMPTY, 'oodt'),
+                          (OPTARG_EMPTY, 'invalid'),
+                          (None, 'hmtlx')])
+def test_filter_args_wrap_nok(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                              monkeypatch, wrap_func, args, format_name):
+    """Test the filter_args functions with invalid format name."""
+    # Reset factory to get a new instance
+    monkeypatch.setattr('mformat.factory._the_factory', None)
+    with pytest.raises(KeyError) as exc:
+        wrap_func(args=args, format_name=format_name)
+    assert f'Format "{format_name}" is not registered.' in exc.value.args[0]
+    check_capsys(capsys)
+
+
+def wrap_i_create(format_name: str, file_name: str,
+                  url_as_text: bool, args: OptArgs) -> MultiFormat:
+    """Wrap the i_create method."""
+    factory = MultiFormatFactory()
+    factory.i_register(MultiFormatCase1)
+    return factory.i_create(format_name=format_name, file_name=file_name,
+                            url_as_text=url_as_text, args=args)
+
+
+def wrap_create(format_name: str, file_name: str, url_as_text: bool,
+                args: OptArgs) -> MultiFormat:
+    """Wrap the create method."""
+    MultiFormatFactory.register(MultiFormatCase1)
+    return MultiFormatFactory.create(format_name=format_name,
+                                     file_name=file_name,
+                                     url_as_text=url_as_text,
+                                     args=args)
+
+
+def wrap_create_mf(format_name: str, file_name: str, url_as_text: bool,
+                   args: OptArgs) -> MultiFormat:
+    """Wrap the create_mf function."""
+    register_mf(MultiFormatCase1)
+    return create_mf(format_name=format_name, file_name=file_name,
+                     url_as_text=url_as_text, args=args)
+
+
+@pytest.mark.parametrize('wrap_func',
+                         [wrap_i_create, wrap_create, wrap_create_mf])
+@pytest.mark.parametrize('url_as_text', [True, False])
+@pytest.mark.parametrize('file_name', ['/tmp/a', '/tmp/b'])
+@pytest.mark.parametrize('format_name,args, expected_cls',
+                         [('Case1', OPTARG_LANG, MultiFormatCase1),
+                          ('case1', OPTARG_LANG, MultiFormatCase1),
+                          ('CASE1', OPTARG_LANG, MultiFormatCase1),
+                          ('md', OPTARG_EMPTY, MultiFormatMd),
+                          ('MD', OPTARG_EMPTY, MultiFormatMd),
+                          ('mD', OPTARG_EMPTY, MultiFormatMd),
+                          ('Md', OPTARG_EMPTY, MultiFormatMd),
+                          ('html', OPTARG_ALL, MultiFormatHtml),
+                          ('HTML', OPTARG_ALL, MultiFormatHtml),
+                          ('HtmL', OPTARG_ALL, MultiFormatHtml),
+                          ('Html', OPTARG_ALL, MultiFormatHtml),
+                          ('docx', OPTARG_FILE_EXISTS_CALLBACK,
+                           MultiFormatDocx),
+                          ('DOCX', OPTARG_FILE_EXISTS_CALLBACK,
+                           MultiFormatDocx)])
+def test_create_wrap(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                     monkeypatch, wrap_func, url_as_text, file_name,
+                     format_name, args, expected_cls):
+    """Test the create functions with lower and upper case names."""
+    # Reset factory to get a new instance
+    monkeypatch.setattr('mformat.factory._the_factory', None)
+    result = wrap_func(format_name=format_name, file_name=file_name,
+                       url_as_text=url_as_text, args=args)
+    assert isinstance(result, expected_cls)
+    assert result.file_name[:len(file_name)] == file_name
+    assert result.url_as_text == url_as_text
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('wrap_func',
+                         [wrap_i_create, wrap_create, wrap_create_mf])
+@pytest.mark.parametrize('format_name', ['invalid', 'INVALID', 'Invalid',
+                                         'invalid', 'hmtlx'])
+def test_create_wrap_nok(capsys, monkeypatch, wrap_func, format_name):
+    """Test the create functions with invalid format name."""
+    # Reset factory to get a new instance
+    monkeypatch.setattr('mformat.factory._the_factory', None)
+    with pytest.raises(KeyError) as exc:
+        wrap_func(format_name=format_name, file_name='/tmp/a',
+                  url_as_text=False, args=None)
+    assert f'Format "{format_name}" is not registered.' in exc.value.args[0]
+    check_capsys(capsys)
