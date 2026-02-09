@@ -40,6 +40,17 @@ pip3 install --upgrade mformat
 pip install --upgrade mformat
 ````
 
+## Installing mformat-ext (extended package, this package)
+
+The extended package contains support also for output formats that require some
+additional dependencies. Use this if you want the full selection of output
+formats.
+
+If you want to use it, install it using pip from
+[https://pypi.org/project/mformat-ext](https://pypi.org/project/mformat-ext) .
+There is no need to download anything from Bitbucket to write Python programs
+that use the library.
+
 ### Installing extended mformat on mac and Linux
 
 ````sh

@@ -233,6 +233,12 @@ def _write_installing(mft: MultiFormat, readme_type: ReadmeType) -> None:
     mft.start_heading(level=3, text=H3_INSTALLING_B_WINDOWS)
     mft.write_code_block(text=COMMAND_INSTALLING_B_WINDOWS,
                          programming_language='sh')
+    mft.start_heading(level=2,
+                      text=DISPATCHER['installing_extend'][readme_type])
+    mft.start_paragraph(text=EXTEND_P1)
+    mft.start_paragraph(text=EXTEND_P2_1)
+    mft.add_url(url=EXTEND_URL)
+    mft.add_text(text=EXTEND_P2_2)
     mft.start_heading(level=3, text=H3_INSTALLING_E_LINUX)
     mft.write_code_block(text=COMMAND_INSTALLING_E_LINUX,
                          programming_language='sh')
@@ -287,7 +293,6 @@ def create_pypi_readme(readme_type: ReadmeType, path: Path) -> None:
         mft.start_heading(level=2, text='Test summary')
     print(f'Created {str(path)} file for {readme_type.name}',
           file=sys.stderr)
-
 
 
 def get_version_in_file(path: Path) -> str:
