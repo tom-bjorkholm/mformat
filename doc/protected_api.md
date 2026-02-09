@@ -90,6 +90,7 @@
     * [\_format\_text](#mformat.mformat_md.MultiFormatMd._format_text)
     * [\_write\_text](#mformat.mformat_md.MultiFormatMd._write_text)
     * [\_write\_url](#mformat.mformat_md.MultiFormatMd._write_url)
+    * [\_write\_code\_in\_text](#mformat.mformat_md.MultiFormatMd._write_code_in_text)
     * [\_start\_bullet\_list](#mformat.mformat_md.MultiFormatMd._start_bullet_list)
     * [\_end\_bullet\_list](#mformat.mformat_md.MultiFormatMd._end_bullet_list)
     * [\_indent](#mformat.mformat_md.MultiFormatMd._indent)
@@ -129,6 +130,7 @@
     * [start\_heading](#mformat.mformat.MultiFormat.start_heading)
     * [start\_paragraph](#mformat.mformat.MultiFormat.start_paragraph)
     * [add\_text](#mformat.mformat.MultiFormat.add_text)
+    * [add\_code\_in\_text](#mformat.mformat.MultiFormat.add_code_in_text)
     * [add\_url](#mformat.mformat.MultiFormat.add_url)
     * [start\_bullet\_item](#mformat.mformat.MultiFormat.start_bullet_item)
     * [start\_numbered\_point\_item](#mformat.mformat.MultiFormat.start_numbered_point_item)
@@ -146,6 +148,7 @@
     * [\_end\_heading](#mformat.mformat.MultiFormat._end_heading)
     * [\_write\_text](#mformat.mformat.MultiFormat._write_text)
     * [\_write\_url](#mformat.mformat.MultiFormat._write_url)
+    * [\_write\_code\_in\_text](#mformat.mformat.MultiFormat._write_code_in_text)
     * [file\_name\_with\_extension](#mformat.mformat.MultiFormat.file_name_with_extension)
     * [\_must\_be\_overridden](#mformat.mformat.MultiFormat._must_be_overridden)
     * [\_file\_exists\_check](#mformat.mformat.MultiFormat._file_exists_check)
@@ -1489,6 +1492,16 @@ def _write_url(url: str, text: Optional[str], state: MultiFormatState,
 
 Write a URL into current item (paragraph, bullet list item...).
 
+<a id="mformat.mformat_md.MultiFormatMd._write_code_in_text"></a>
+
+#### \_write\_code\_in\_text
+
+```python
+def _write_code_in_text(text: str, state: MultiFormatState) -> None
+```
+
+Write code into current item (paragraph, bullet list item...).
+
 <a id="mformat.mformat_md.MultiFormatMd._start_bullet_list"></a>
 
 #### \_start\_bullet\_list
@@ -2000,6 +2013,28 @@ Add text to the current item (paragraph, bullet list item, etc.).
 - `bold` - If True, the text is bold.
 - `italic` - If True, the text is italic.
 
+<a id="mformat.mformat.MultiFormat.add_code_in_text"></a>
+
+#### add\_code\_in\_text
+
+```python
+def add_code_in_text(text: str, smart_ws: bool = True) -> None
+```
+
+Add single or few words of code in the current text item.
+
+This is used to add a function name, a variable name,
+formattten as code into the current text item (paragraph,
+bullet list item, etc.). This cannot be used to add lines of code,
+use write_code_block for that.
+
+**Arguments**:
+
+- `text` - The text to add to the current item.
+- `smart_ws` - If True, leading and trailing whitespace are collapsed
+  and a single space is inserted between texts (from
+  add_code_in_text or add_text).
+
 <a id="mformat.mformat.MultiFormat.add_url"></a>
 
 #### add\_url
@@ -2282,6 +2317,16 @@ def _write_url(url: str, text: Optional[str], state: MultiFormatState,
 ```
 
 Write a URL into current item (paragraph, bullet list item...).
+
+<a id="mformat.mformat.MultiFormat._write_code_in_text"></a>
+
+#### \_write\_code\_in\_text
+
+```python
+def _write_code_in_text(text: str, state: MultiFormatState) -> None
+```
+
+Write code into current item (paragraph, bullet list item...).
 
 <a id="mformat.mformat.MultiFormat.file_name_with_extension"></a>
 

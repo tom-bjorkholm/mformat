@@ -146,6 +146,20 @@ class MultiFormatMd(MultiFormatTextBased):
         else:
             self.file.write(formatted_url)
 
+    def _write_code_in_text(self, text: str,
+                            state: MultiFormatState) -> None:
+        """Write code into current item (paragraph, bullet list item...)."""
+        assert self.file is not None
+        assert isinstance(text, str)
+        assert isinstance(state, MultiFormatState)
+        formatted_text = f'`{text}`'
+        if state in (MultiFormatState.PARAGRAPH,
+                     MultiFormatState.BULLET_LIST_ITEM,
+                     MultiFormatState.NUMBERED_LIST_ITEM):
+            self._wrap_and_write_atomic(formatted_text, self.MAX_LINE_LENGTH)
+        else:
+            self.file.write(formatted_text)
+
     def _start_bullet_list(self, level: int) -> None:
         """Start a bullet list."""
         assert self.file is not None

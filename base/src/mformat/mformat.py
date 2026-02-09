@@ -200,6 +200,32 @@ class MultiFormat(ListHandlerMixin):
         self._write_text(self._to_write(text, smart_ws, True),
                          self.state, formatting)
 
+    def add_code_in_text(self, text: str, smart_ws: bool = True) -> None:
+        """Add single or few words of code in the current text item.
+
+        This is used to add a function name, a variable name,
+        formattten as code into the current text item (paragraph,
+        bullet list item, etc.). This cannot be used to add lines of code,
+        use write_code_block for that.
+        Args:
+            text: The text to add to the current item.
+            smart_ws: If True, leading and trailing whitespace are collapsed
+                      and a single space is inserted between texts (from
+                      add_code_in_text or add_text).
+        """
+        if self.state not in (MultiFormatState.HEADING,
+                              MultiFormatState.PARAGRAPH,
+                              MultiFormatState.BULLET_LIST_ITEM,
+                              MultiFormatState.NUMBERED_LIST_ITEM):
+            err = f'Cannot add code in text to state {self.state.name}'
+            raise RuntimeError(err)
+        if '\n' in text:
+            err = 'Cannot add code in text with line breaks. '
+            err += 'Use write_code_block for that.'
+            raise RuntimeError(err)
+        self._write_code_in_text(text=self._to_write(text, smart_ws, True),
+                                 state=self.state)
+
     def add_url(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                 url: str, text: Optional[str] = None,
                 smart_ws: bool = True,
@@ -509,6 +535,14 @@ class MultiFormat(ListHandlerMixin):
         assert isinstance(state, MultiFormatState)
         assert isinstance(formatting, Formatting)
         err = self._must_be_overridden('_write_url')
+        raise NotImplementedError(err)
+
+    def _write_code_in_text(self, text: str,
+                            state: MultiFormatState) -> None:
+        """Write code into current item (paragraph, bullet list item...)."""
+        assert isinstance(text, str)
+        assert isinstance(state, MultiFormatState)
+        err = self._must_be_overridden('_write_code_in_text')
         raise NotImplementedError(err)
 
     @staticmethod
