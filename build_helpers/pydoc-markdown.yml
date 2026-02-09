@@ -3,8 +3,8 @@ loaders:
   - type: python
     # Where to search for Python packages/modules
     search_path:
-      - ./base/src
-      - ./extend/src
+      - ./../base/src
+      - ./../extend/src
     # Packages (directories with __init__.py) to document
     packages:
       - mformat

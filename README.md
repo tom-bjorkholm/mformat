@@ -47,19 +47,26 @@ The scripts are all zsh. zsh is available by default on modern macs. zsh can eas
 
 ### Building application
 
-There are 3 main scripts for building the application:
+There are 3 main scripts (and 2 extra convinience scripts) for building the application:
 
 * `setup_build_environment.zsh` Run this script first to get the environment set up for building
 * `doBuild.zsh` Run this script to build an installation package (.whl) and to run the tests on it in a venv (virtual environment).
 * `clean.zsh` Deletes all files that was produced by the build to start over from a clean state.
+* `cleanBuild.zsh` Combines the use of `clean.zsh`, `setup_build_environment.zsh` and `doBuild.zsh` into one script. Pylint discover some duplicate code warnings only on a clean build so this is useful.
+* `doPypiBuild.zsh` Builds for PyPI upload and can do the upload too.
 
 The "testing" includes pytest, pylint, flake8 and mypy.
 
 After running `doBuild.zsh` you can open `reports/index.html` to see all test reports.
 
+### The readme files for PyPI
+
+The script `build_helpers/create_pypi_readme.py` creates the 2 readme files for PyPI:
+`base/README_pypi.md` and `extend/README_pypi.org`.
+
 ## Test summary
 
-* Test result: 1344 passed in 12s
+* Test result: 1344 passed in 13s
 * No Flake8 warnings.
 * No mypy errors found.
 * 0.2.3 built and tested using python version: Python 3.14.2

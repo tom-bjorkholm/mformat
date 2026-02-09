@@ -86,7 +86,7 @@ def get_script_directory() -> Path:
 
 def get_example_directories(script_dir: Path) -> tuple[Path, Path]:
     """Return the paths to the example source and result directories."""
-    example_dir = script_dir / 'example'
+    example_dir = script_dir / '..' / 'example'
     return example_dir / 'src', example_dir / 'result'
 
 
@@ -267,7 +267,7 @@ def main() -> None:
         return
     print(f'Found {len(examples)} example files.')
     # Generate and write README
-    readme_path = script_dir / 'example' / 'README.md'
+    readme_path = script_dir / '..' / 'example' / 'README.md'
     write_readme(examples, readme_path)
     print(f'Generated: {readme_path}')
 
