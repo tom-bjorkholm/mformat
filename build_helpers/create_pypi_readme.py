@@ -285,6 +285,9 @@ def create_pypi_readme(readme_type: ReadmeType, path: Path) -> None:
         mft.start_paragraph(text=P1_FORMATS)
         mft.write_complete_table(table=FORMATS)
         mft.start_heading(level=2, text='Test summary')
+    print(f'Created {str(path)} file for {readme_type.name}',
+          file=sys.stderr)
+
 
 
 def get_version_in_file(path: Path) -> str:

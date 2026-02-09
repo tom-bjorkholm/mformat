@@ -152,7 +152,8 @@ class MultiFormatMd(MultiFormatTextBased):
         assert self.file is not None
         assert isinstance(text, str)
         assert isinstance(state, MultiFormatState)
-        formatted_text = f'`{text}`'
+        pre, stripped, post = split_whitespace(text)
+        formatted_text = pre + f'`{stripped}`' + post
         if state in (MultiFormatState.PARAGRAPH,
                      MultiFormatState.BULLET_LIST_ITEM,
                      MultiFormatState.NUMBERED_LIST_ITEM):

@@ -40,17 +40,6 @@ pip3 install --upgrade mformat
 pip install --upgrade mformat
 ````
 
-## Installing mformat-ext (extended package, this package)
-
-The extended package contains support also for output formats that require some
-additional dependencies. Use this if you want the full selection of output
-formats.
-
-If you want to use it, install it using pip from
-[https://pypi.org/project/mformat-ext](https://pypi.org/project/mformat-ext) .
-There is no need to download anything from Bitbucket to write Python programs
-that use the library.
-
 ### Installing extended mformat on mac and Linux
 
 ````sh
@@ -95,37 +84,37 @@ formats are:
 
 It is recommended that the ouput function(s) of the a Python program using
 mformat should have a with-clause getting the formatting object from the factory
-(easiest with *with create_mf(file_format=fmt, file_name=output_file_name) as*
+(easiest with `with create_mf(file_format=fmt, file_name=output_file_name) as`
 ).
 
 In the context of the with-clause the programmer just calls a minimum of member
 functions:
 
-- *start_paragraph* to start a new paragraph with some provided text content.
+- `start_paragraph` to start a new paragraph with some provided text content.
 
-- *start_heading* to start a new heading with some provided text content.
+- `start_heading` to start a new heading with some provided text content.
 
-- *start_bullet_item* to start a new bullet point list item with some provided
+- `start_bullet_item` to start a new bullet point list item with some provided
   text content, and if needed to start the bullet point list with the bullet
   point item.
 
-- *start_numbered_point_item* to start a new numbered point list item with some
+- `start_numbered_point_item` to start a new numbered point list item with some
   provided text content, and if needed to start the numbered point list with the
   number point list item.
 
-- *add_text* to add more text to an already started paragraph, heading, bullet
+- `add_text` to add more text to an already started paragraph, heading, bullet
   point list item or numbered point list item.
 
-- *add_url* to add a URL (link) to an already started paragraph, heading, bullet
+- `add_url` to add a URL (link) to an already started paragraph, heading, bullet
   point list item or numbered point list item.
 
-- *start_table* to start a new table with the provided first row.
+- `start_table` to start a new table with the provided first row.
 
-- *add_table_row* to add another row to an already started table.
+- `add_table_row` to add another row to an already started table.
 
-- *write_complete_table* to write a table all at once.
+- `write_complete_table` to write a table all at once.
 
-- *write_code_block* to write some preformatted text as a code block
+- `write_code_block` to write some preformatted text as a code block
 
 There are no member functions to end or close any document item. Each document
 item is automatically closed as another docuemnt item is started (or when
@@ -176,7 +165,7 @@ format was introduced.
 
 ## Test summary
 
-* Test result: 1345 passed in 12s
+* Test result: 1345 passed in 11s
 * No Flake8 warnings.
 * No mypy errors found.
 * 0.2.3 built and tested using python version: Python 3.14.3
