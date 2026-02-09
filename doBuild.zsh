@@ -25,7 +25,7 @@ if [ ${#} -gt 0 ]; then
     fi
 fi
 if [[ ! -v PYTHON ]]; then
-    PYTHON=`./bestInstalledPython.zsh`
+    PYTHON=`./build_helpers/bestInstalledPython.zsh`
 fi
 echo 'Using PYTHON' ${PYTHON} 
 VENVOKMARK=(./venv/lib/python*/site-packages(NnOn))
@@ -73,8 +73,8 @@ if [[ ! -a dist/${WHL2} ]] ; then
 fi
 ${PYTHON} -m pip uninstall -y ${WHLBASE2} 2>&1 | tee -a ${BUILDLOG}
 ${PYTHON} -m pip install dist/${WHL2} 2>&1 | tee -a ${BUILDLOG}
-./venv/bin/pydoc-markdown --render-toc ./pydoc-markdown.yml 2>&1 | tee -a ${BUILDLOG}
-./venv/bin/pydoc-markdown --render-toc ./pydoc-markdown_protected.yml 2>&1 | tee -a ${BUILDLOG}
+./venv/bin/pydoc-markdown --render-toc ./build_helpers/pydoc-markdown.yml 2>&1 | tee -a ${BUILDLOG}
+./venv/bin/pydoc-markdown --render-toc ./build_helpers/pydoc-markdown_protected.yml 2>&1 | tee -a ${BUILDLOG}
 date +'Build ready %Y-%m-%d %H:%M:%S %Z' 2>&1 | tee -a ${BUILDLOG}
 for i in 1 2 3 4 5 ; do
   echo " "
@@ -93,7 +93,7 @@ set +v
 rm -rf example/result || true 2>&1 | tee -a ${BUILDLOG}
 mkdir -p example/result 2>&1 | tee -a ${BUILDLOG}
 (cd example/src; ls *.py | while read file; do ${PYTHON} ${file} -f all -o ../result/${file%.py}; done) 2>&1 | tee -a ${BUILDLOG}
-${PYTHON} ./create_example_readme.py 2>&1 | tee -a ${BUILDLOG}
+${PYTHON} ./build_helpers/create_example_readme.py 2>&1 | tee -a ${BUILDLOG}
 cat > ${DOCINDEX} <<EOF
 <!DOCTYPE html>
 <html>

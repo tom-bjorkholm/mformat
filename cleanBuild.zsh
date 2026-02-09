@@ -20,7 +20,7 @@ if [ ${#} -gt 0 ] ; then
   done
 fi
 if [[ -z "${PYVER}" ]] ; then
-  PYVER=`./bestInstalledPython.zsh`
+  PYVER=`./build_helpers/bestInstalledPython.zsh`
   echo "Python version not found in arguments. Using default: ${PYVER}"
 fi
 ./clean.zsh

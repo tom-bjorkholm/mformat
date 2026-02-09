@@ -19,7 +19,7 @@ if [ ${#} -gt 0 ]; then
     fi
 fi
 if [[ ! -v PYTHON ]]; then
-    PYTHON=`./bestInstalledPython.zsh`
+    PYTHON=`./build_helpers/bestInstalledPython.zsh`
 fi
 echo 'Using PYTHON' ${PYTHON} 
 set -eE
