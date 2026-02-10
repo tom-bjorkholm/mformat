@@ -26,15 +26,25 @@ def example_code_blocks(format_name: str, file_name: str) -> None:
         mf.add_text('in a monospace font, and line wrapping is easy to')
         mf.add_text('control.')
         mf.start_paragraph(text='Code blocks are written using the')
-        mf.add_text('write_code_block() method.')
+        #
+        # In the paragraph we can use add_code_in_text() to some word(s)
+        # to be shown as code in a monospace font with the add_code_in_text()
+        # method.
+        mf.add_code_in_text(text='write_code_block()')
+        mf.add_text(' method. The function names mentioned in this paragraph')
+        mf.add_text('are written using the')
+        mf.add_code_in_text(text='add_code_in_text()')
+        mf.add_text(' method.')
         # Then write a code block with Python code.
         code = '''
 def hello_world(i: int) -> int:
     print("Hello, World!")
     if i > 0:
         print("i is positive")
-    else:
+    elif i < 0:
         print("i is negative")
+    else:
+        print("i is zero")
     print("This is another line of code.")
     return 42
 '''

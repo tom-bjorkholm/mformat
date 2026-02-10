@@ -146,6 +146,20 @@ class MultiFormatOdt(MultiFormat):
         return list_style
 
     @staticmethod
+    def _set_code_text_properties(style: Style) -> None:
+        """Set the text properties for code blocks."""
+        # Add text properties for monospace font
+        text_props = Element.from_tag('style:text-properties')
+        text_props.set_attribute('style:font-name', 'Liberation Mono')
+        text_props.set_attribute('fo:font-family', "'Liberation Mono'")
+        text_props.set_attribute('style:font-family-generic', 'modern')
+        text_props.set_attribute('style:font-pitch', 'fixed')
+        # Also set for Asian and Complex text
+        text_props.set_attribute('style:font-name-asian', 'Liberation Mono')
+        text_props.set_attribute('style:font-name-complex', 'Liberation Mono')
+        style.append(text_props)
+
+    @staticmethod
     def _create_code_paragraph_style() -> Style:
         """Create a code paragraph style with monospace font.
 
@@ -158,20 +172,23 @@ class MultiFormatOdt(MultiFormat):
             display_name='code'
         )
         # Add text properties for monospace font
-        text_props = Element.from_tag('style:text-properties')
-        text_props.set_attribute('style:font-name', 'Liberation Mono')
-        text_props.set_attribute('fo:font-family', "'Liberation Mono'")
-        text_props.set_attribute('style:font-family-generic', 'modern')
-        text_props.set_attribute('style:font-pitch', 'fixed')
-        # Also set for Asian and Complex text
-        text_props.set_attribute('style:font-name-asian', 'Liberation Mono')
-        text_props.set_attribute('style:font-name-complex', 'Liberation Mono')
-        style.append(text_props)
+        MultiFormatOdt._set_code_text_properties(style)
         # Add paragraph properties for light gray background
         para_props = Element.from_tag('style:paragraph-properties')
         para_props.set_attribute('fo:background-color', '#f0f0f0')
         para_props.set_attribute('fo:padding', '0.1cm')
         style.append(para_props)
+        return style
+
+    @staticmethod
+    def _create_code_text_style() -> Style:
+        """Create a code text style with monospace font."""
+        style = Style(
+            name='code-text',
+            family='text',
+            display_name='code-text'
+        )
+        MultiFormatOdt._set_code_text_properties(style)
         return style
 
     @staticmethod
@@ -233,6 +250,7 @@ class MultiFormatOdt(MultiFormat):
             'link-italic', italic=True)
         text_styles['link-bold-italic'] = self._create_link_style(
             'link-bold-italic', bold=True, italic=True)
+        text_styles['code-text'] = self._create_code_text_style()
         return OdtStyles(text_styles=text_styles, font_styles=font_styles,
                          paragraph_styles=paragraph_styles, bold=bold_style,
                          italic=italic_style, bold_italic=bold_italic_style,
@@ -432,6 +450,32 @@ class MultiFormatOdt(MultiFormat):
         else:
             raise RuntimeError(f'Unexpected state: {self.state.name} for '
                                f'writing url: {url} text: {text}')
+
+    def _write_code_in_text(self, text: str,
+                            state: MultiFormatState) -> None:
+        """Write code into text.
+
+        Args:
+            text: The text to write into the current item.
+            state: The state of the current item.
+        """
+        assert state == self.state
+        paragraph: Optional[Paragraph] = None
+        if self.state in (MultiFormatState.PARAGRAPH,
+                          MultiFormatState.HEADING):
+            assert self.current_paragraph is not None
+            paragraph = self.current_paragraph
+        elif self.state in (MultiFormatState.BULLET_LIST_ITEM,
+                            MultiFormatState.NUMBERED_LIST_ITEM):
+            assert self.odt_listitem is not None
+            assert isinstance(self.odt_listitem.children[-1], Paragraph)
+            paragraph = self.odt_listitem.children[-1]
+        else:
+            raise RuntimeError(f'Unexpected state: {self.state.name} for '
+                               f'writing code text: {text}')
+        assert paragraph is not None
+        span = Span(text=text, style='code-text')
+        paragraph.append(span)
 
     def _start_bullet_list(self, level: int) -> None:
         """Start a bullet list.

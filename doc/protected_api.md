@@ -42,6 +42,7 @@
   * [Formatting](#mformat.mformat_state.Formatting)
   * [FormattingWithWS](#mformat.mformat_state.FormattingWithWS)
 * [mformat.mformat\_textbased](#mformat.mformat_textbased)
+  * [split\_whitespace](#mformat.mformat_textbased.split_whitespace)
   * [MultiFormatTextBased](#mformat.mformat_textbased.MultiFormatTextBased)
     * [\_\_init\_\_](#mformat.mformat_textbased.MultiFormatTextBased.__init__)
     * [open](#mformat.mformat_textbased.MultiFormatTextBased.open)
@@ -75,7 +76,6 @@
   * [usage\_mf](#mformat.factory.usage_mf)
   * [register\_mf](#mformat.factory.register_mf)
 * [mformat.mformat\_md](#mformat.mformat_md)
-  * [split\_whitespace](#mformat.mformat_md.split_whitespace)
   * [MultiFormatMd](#mformat.mformat_md.MultiFormatMd)
     * [\_\_init\_\_](#mformat.mformat_md.MultiFormatMd.__init__)
     * [file\_name\_extension](#mformat.mformat_md.MultiFormatMd.file_name_extension)
@@ -185,6 +185,7 @@
     * [\_end\_heading](#mformat.mformat_html.MultiFormatHtml._end_heading)
     * [\_write\_text](#mformat.mformat_html.MultiFormatHtml._write_text)
     * [\_write\_url](#mformat.mformat_html.MultiFormatHtml._write_url)
+    * [\_write\_code\_in\_text](#mformat.mformat_html.MultiFormatHtml._write_code_in_text)
     * [\_start\_bullet\_list](#mformat.mformat_html.MultiFormatHtml._start_bullet_list)
     * [\_end\_bullet\_list](#mformat.mformat_html.MultiFormatHtml._end_bullet_list)
     * [\_start\_bullet\_item](#mformat.mformat_html.MultiFormatHtml._start_bullet_item)
@@ -211,7 +212,9 @@
     * [\_create\_list\_level\_properties](#mformat_ext.mformat_odt.MultiFormatOdt._create_list_level_properties)
     * [\_create\_numbered\_list\_style](#mformat_ext.mformat_odt.MultiFormatOdt._create_numbered_list_style)
     * [\_create\_bullet\_list\_style](#mformat_ext.mformat_odt.MultiFormatOdt._create_bullet_list_style)
+    * [\_set\_code\_text\_properties](#mformat_ext.mformat_odt.MultiFormatOdt._set_code_text_properties)
     * [\_create\_code\_paragraph\_style](#mformat_ext.mformat_odt.MultiFormatOdt._create_code_paragraph_style)
+    * [\_create\_code\_text\_style](#mformat_ext.mformat_odt.MultiFormatOdt._create_code_text_style)
     * [\_create\_link\_style](#mformat_ext.mformat_odt.MultiFormatOdt._create_link_style)
     * [\_create\_odt\_styles](#mformat_ext.mformat_odt.MultiFormatOdt._create_odt_styles)
     * [\_style\_name\_from\_formatting](#mformat_ext.mformat_odt.MultiFormatOdt._style_name_from_formatting)
@@ -230,6 +233,7 @@
     * [\_write\_text](#mformat_ext.mformat_odt.MultiFormatOdt._write_text)
     * [\_impl\_write\_url](#mformat_ext.mformat_odt.MultiFormatOdt._impl_write_url)
     * [\_write\_url](#mformat_ext.mformat_odt.MultiFormatOdt._write_url)
+    * [\_write\_code\_in\_text](#mformat_ext.mformat_odt.MultiFormatOdt._write_code_in_text)
     * [\_start\_bullet\_list](#mformat_ext.mformat_odt.MultiFormatOdt._start_bullet_list)
     * [\_end\_bullet\_list](#mformat_ext.mformat_odt.MultiFormatOdt._end_bullet_list)
     * [\_start\_bullet\_item](#mformat_ext.mformat_odt.MultiFormatOdt._start_bullet_item)
@@ -262,6 +266,7 @@
     * [\_write\_text](#mformat_ext.mformat_docx.MultiFormatDocx._write_text)
     * [\_write\_url](#mformat_ext.mformat_docx.MultiFormatDocx._write_url)
     * [\_add\_hyperlink](#mformat_ext.mformat_docx.MultiFormatDocx._add_hyperlink)
+    * [\_write\_code\_in\_text](#mformat_ext.mformat_docx.MultiFormatDocx._write_code_in_text)
     * [\_start\_bullet\_list](#mformat_ext.mformat_docx.MultiFormatDocx._start_bullet_list)
     * [\_end\_bullet\_list](#mformat_ext.mformat_docx.MultiFormatDocx._end_bullet_list)
     * [\_start\_bullet\_item](#mformat_ext.mformat_docx.MultiFormatDocx._start_bullet_item)
@@ -767,6 +772,16 @@ Formatting information with whitespace.
 # mformat.mformat\_textbased
 
 Base class for all text based format classes.
+
+<a id="mformat.mformat_textbased.split_whitespace"></a>
+
+#### split\_whitespace
+
+```python
+def split_whitespace(text: str) -> tuple[str, str, str]
+```
+
+Split a string into leading, stripped, and trailing whitespace.
 
 <a id="mformat.mformat_textbased.MultiFormatTextBased"></a>
 
@@ -1316,16 +1331,6 @@ This is a shortcut for MultiFormatFactory.register().
 # mformat.mformat\_md
 
 Markdown format class.
-
-<a id="mformat.mformat_md.split_whitespace"></a>
-
-#### split\_whitespace
-
-```python
-def split_whitespace(text: str) -> tuple[str, str, str]
-```
-
-Split a string into leading, stripped, and trailing whitespace.
 
 <a id="mformat.mformat_md.MultiFormatMd"></a>
 
@@ -2741,6 +2746,16 @@ def _write_url(url: str, text: Optional[str], state: MultiFormatState,
 
 Write a URL into current item (paragraph, bullet list item...).
 
+<a id="mformat.mformat_html.MultiFormatHtml._write_code_in_text"></a>
+
+#### \_write\_code\_in\_text
+
+```python
+def _write_code_in_text(text: str, state: MultiFormatState) -> None
+```
+
+Write code in text.
+
 <a id="mformat.mformat_html.MultiFormatHtml._start_bullet_list"></a>
 
 #### \_start\_bullet\_list
@@ -3031,6 +3046,17 @@ Create a bullet list style for ODF documents.
 
   An Element representing a text:list-style for bullet lists.
 
+<a id="mformat_ext.mformat_odt.MultiFormatOdt._set_code_text_properties"></a>
+
+#### \_set\_code\_text\_properties
+
+```python
+@staticmethod
+def _set_code_text_properties(style: Style) -> None
+```
+
+Set the text properties for code blocks.
+
 <a id="mformat_ext.mformat_odt.MultiFormatOdt._create_code_paragraph_style"></a>
 
 #### \_create\_code\_paragraph\_style
@@ -3045,6 +3071,17 @@ Create a code paragraph style with monospace font.
 **Returns**:
 
   A Style object for code blocks with monospace font.
+
+<a id="mformat_ext.mformat_odt.MultiFormatOdt._create_code_text_style"></a>
+
+#### \_create\_code\_text\_style
+
+```python
+@staticmethod
+def _create_code_text_style() -> Style
+```
+
+Create a code text style with monospace font.
 
 <a id="mformat_ext.mformat_odt.MultiFormatOdt._create_link_style"></a>
 
@@ -3289,6 +3326,21 @@ Write a URL into current item (paragraph, bullet list item, etc.).
 - `text` - The text to display for the URL.
 - `state` - The state of the current item.
 - `formatting` - The formatting of the text.
+
+<a id="mformat_ext.mformat_odt.MultiFormatOdt._write_code_in_text"></a>
+
+#### \_write\_code\_in\_text
+
+```python
+def _write_code_in_text(text: str, state: MultiFormatState) -> None
+```
+
+Write code into text.
+
+**Arguments**:
+
+- `text` - The text to write into the current item.
+- `state` - The state of the current item.
 
 <a id="mformat_ext.mformat_odt.MultiFormatOdt._start_bullet_list"></a>
 
@@ -3734,6 +3786,24 @@ Add a clickable hyperlink to a paragraph.
 - `url` - The URL for the hyperlink.
 - `text` - The display text for the hyperlink.
 - `formatting` - The formatting (bold/italic) for the text.
+
+<a id="mformat_ext.mformat_docx.MultiFormatDocx._write_code_in_text"></a>
+
+#### \_write\_code\_in\_text
+
+```python
+def _write_code_in_text(text: str, state: MultiFormatState) -> None
+```
+
+Write code in text.
+
+Write code text into the current paragraph, heading, bullet list item
+or numbered point list item.
+
+**Arguments**:
+
+- `text` - The text to add to the code block.
+- `state` - The state of the current item.
 
 <a id="mformat_ext.mformat_docx.MultiFormatDocx._start_bullet_list"></a>
 

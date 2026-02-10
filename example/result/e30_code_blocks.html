@@ -10,15 +10,17 @@ Code blocks example</h1>
 <p>
 This is a normal paragraph with some text. Paragraphs are not useable for showing code as the text is usually shown in variable width fonts, and line wrapping is not easy to control. Code blocks on the other hand are designed to show code in a monospace font, and line wrapping is easy to control.</p>
 <p>
-Code blocks are written using the write_code_block() method.</p>
+Code blocks are written using the <code>write_code_block()</code> method. The function names mentioned in this paragraph are written using the <code>add_code_in_text()</code> method.</p>
 <pre><code>
 <span class="language-python">
 def hello_world(i: int) -&gt; int:
     print(&quot;Hello, World!&quot;)
     if i &gt; 0:
         print(&quot;i is positive&quot;)
-    else:
+    elif i &lt; 0:
         print(&quot;i is negative&quot;)
+    else:
+        print(&quot;i is zero&quot;)
     print(&quot;This is another line of code.&quot;)
     return 42
 </span>

@@ -151,6 +151,10 @@ B_DESIGN_OF_USE = [
     ['add_url',
      'to add a URL (link) to an already started paragraph, heading, '
      'bullet point list item or numbered point list item.'],
+    ['add_code_in_text',
+     'to add some short text (function name, variable name, etc.) ' \
+     'as code to an already started paragraph, heading, bullet point ' \
+     'list item or numbered point list item.'],
     ['start_table', 'to start a new table with the provided first row.'],
     ['add_table_row', 'to add another row to an already started table.'],
     ['write_complete_table', 'to write a table all at once.'],

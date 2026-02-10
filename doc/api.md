@@ -11,6 +11,7 @@
   * [Formatting](#mformat.mformat_state.Formatting)
   * [FormattingWithWS](#mformat.mformat_state.FormattingWithWS)
 * [mformat.mformat\_textbased](#mformat.mformat_textbased)
+  * [split\_whitespace](#mformat.mformat_textbased.split_whitespace)
   * [MultiFormatTextBased](#mformat.mformat_textbased.MultiFormatTextBased)
     * [\_\_init\_\_](#mformat.mformat_textbased.MultiFormatTextBased.__init__)
     * [open](#mformat.mformat_textbased.MultiFormatTextBased.open)
@@ -35,7 +36,6 @@
   * [usage\_mf](#mformat.factory.usage_mf)
   * [register\_mf](#mformat.factory.register_mf)
 * [mformat.mformat\_md](#mformat.mformat_md)
-  * [split\_whitespace](#mformat.mformat_md.split_whitespace)
   * [MultiFormatMd](#mformat.mformat_md.MultiFormatMd)
     * [\_\_init\_\_](#mformat.mformat_md.MultiFormatMd.__init__)
     * [file\_name\_extension](#mformat.mformat_md.MultiFormatMd.file_name_extension)
@@ -195,6 +195,16 @@ Formatting information with whitespace.
 # mformat.mformat\_textbased
 
 Base class for all text based format classes.
+
+<a id="mformat.mformat_textbased.split_whitespace"></a>
+
+#### split\_whitespace
+
+```python
+def split_whitespace(text: str) -> tuple[str, str, str]
+```
+
+Split a string into leading, stripped, and trailing whitespace.
 
 <a id="mformat.mformat_textbased.MultiFormatTextBased"></a>
 
@@ -619,16 +629,6 @@ This is a shortcut for MultiFormatFactory.register().
 # mformat.mformat\_md
 
 Markdown format class.
-
-<a id="mformat.mformat_md.split_whitespace"></a>
-
-#### split\_whitespace
-
-```python
-def split_whitespace(text: str) -> tuple[str, str, str]
-```
-
-Split a string into leading, stripped, and trailing whitespace.
 
 <a id="mformat.mformat_md.MultiFormatMd"></a>
 

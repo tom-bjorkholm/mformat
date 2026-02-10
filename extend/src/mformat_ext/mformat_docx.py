@@ -187,6 +187,29 @@ class MultiFormatDocx(MultiFormat):
         # pylint: disable=protected-access
         paragraph._p.append(hyperlink)
 
+    def _write_code_in_text(self, text: str,
+                            state: MultiFormatState) -> None:
+        """Write code in text.
+
+        Write code text into the current paragraph, heading, bullet list item
+        or numbered point list item.
+
+        Args:
+            text: The text to add to the code block.
+            state: The state of the current item.
+        """
+        assert state in [MultiFormatState.BULLET_LIST_ITEM,
+                         MultiFormatState.NUMBERED_LIST_ITEM,
+                         MultiFormatState.HEADING,
+                         MultiFormatState.PARAGRAPH,
+                         MultiFormatState.CODE_BLOCK]
+        assert isinstance(text, str)
+        if self.current_paragraph is None:
+            raise RuntimeError('No current paragraph to write code into')
+        run = self.current_paragraph.add_run(text)
+        # Set monospace font
+        run.font.name = 'Courier New'
+
     def _start_bullet_list(self, level: int) -> None:
         """Start a bullet list.
 
@@ -413,14 +436,11 @@ class MultiFormatDocx(MultiFormat):
             text: The text to add to the code block.
             programming_language: The programming language of the code block.
         """
-        assert isinstance(text, str)
+        # _start_code_block and _end_code_block handle the BLOCK aspects,
+        # so we only need to write the text inside the code block.
         assert programming_language is None or \
             isinstance(programming_language, str)
-        if self.current_paragraph is None:
-            raise RuntimeError('No current paragraph to write code into')
-        run = self.current_paragraph.add_run(text)
-        # Set monospace font
-        run.font.name = 'Courier New'
+        self._write_code_in_text(text, state=MultiFormatState.CODE_BLOCK)
 
     def _encode_text(self, text: str) -> str:
         """Encode text (escape special characters)."""

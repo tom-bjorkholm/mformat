@@ -119,6 +119,10 @@ functions:
 - `add_url` to add a URL (link) to an already started paragraph, heading, bullet
   point list item or numbered point list item.
 
+- `add_code_in_text` to add some short text (function name, variable name, etc.)
+  as code to an already started paragraph, heading, bullet point list item or
+  numbered point list item.
+
 - `start_table` to start a new table with the provided first row.
 
 - `add_table_row` to add another row to an already started table.
@@ -176,7 +180,7 @@ format was introduced.
 
 ## Test summary
 
-* Test result: 1345 passed in 11s
+* Test result: 1345 passed in 12s
 * No Flake8 warnings.
 * No mypy errors found.
 * 0.2.3 built and tested using python version: Python 3.14.3

@@ -7,7 +7,7 @@
 
 from typing import Optional, Callable
 from html import escape
-from mformat.mformat_textbased import MultiFormatTextBased
+from mformat.mformat_textbased import MultiFormatTextBased, split_whitespace
 from mformat.mformat_state import MultiFormatState, Formatting
 from mformat.mformat import FormatterDescriptor
 
@@ -124,6 +124,13 @@ class MultiFormatHtml(MultiFormatTextBased):
         if formatting.italic:
             text = f'<em>{text}</em>'
         self.file.write(text)
+
+    def _write_code_in_text(self, text: str,
+                            state: MultiFormatState) -> None:
+        """Write code in text."""
+        assert self.file is not None
+        leading, stripped, trailing = split_whitespace(text)
+        self.file.write(f'{leading}<code>{stripped}</code>{trailing}')
 
     def _start_bullet_list(self, level: int) -> None:
         """Start a bullet list."""

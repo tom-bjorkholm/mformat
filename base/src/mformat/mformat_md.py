@@ -7,23 +7,9 @@
 
 from copy import deepcopy
 from typing import Optional, Callable
-from mformat.mformat_textbased import MultiFormatTextBased
+from mformat.mformat_textbased import MultiFormatTextBased, split_whitespace
 from mformat.mformat_state import MultiFormatState, Formatting
 from mformat.mformat import FormatterDescriptor
-
-
-def split_whitespace(text: str) -> tuple[str, str, str]:
-    """Split a string into leading, stripped, and trailing whitespace."""
-    if not text:
-        return '', '', ''
-    stripped = text.strip()
-    if not stripped:
-        return text, '', ''
-    if stripped == text:
-        return '', stripped, ''
-    leading = text[:len(text) - len(text.lstrip())]
-    trailing = text[len(text.rstrip()):]
-    return leading, stripped, trailing
 
 
 class MultiFormatMd(MultiFormatTextBased):
