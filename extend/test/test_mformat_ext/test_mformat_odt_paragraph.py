@@ -266,3 +266,21 @@ def test_paragraph_format_transitions(capsys, first_format, second_format):
     all_text = get_all_text_content(doc)
     assert 'First' in all_text
     assert 'Second' in all_text
+
+
+@pytest.mark.parametrize('text,code,expected',
+                         [('text', 'code', 'text code'),
+                          ('Here is the code: ',
+                           ' print("Hello")',
+                           'Here is the code: print("Hello")')])
+def test_add_code_in_text(capsys, text, code, expected):
+    """Test the add_code_in_text method."""
+    def test_action(mfo):
+        assert isinstance(mfo, MultiFormatOdt)
+        mfo.start_paragraph(text=text)
+        mfo.add_code_in_text(text=code)
+
+    doc = silent_odt_create(capsys, func=test_action)
+    all_text = get_all_text_content(doc)
+    assert text in all_text
+    assert expected in all_text

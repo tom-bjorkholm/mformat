@@ -5,18 +5,9 @@
 # MIT License
 #
 
-# import sys
-# from pathlib import Path
+import pytest
 from test_mformat_docx_core import silent_docx_create
 from mformat_ext.mformat_docx import MultiFormatDocx
-
-# Add base test helpers to path for shared test utilities
-# _base_test_path = (
-#   Path(__file__).parent.parent.parent.parent /
-#    'base' / 'test' / 'test_mformat'
-# )
-# sys.path.insert(0, str(_base_test_path))
-# # pylint: disable=wrong-import-order,wrong-import-position,import-error
 
 
 def test_add_url(capsys):
@@ -39,3 +30,20 @@ def test_add_url_as_text(capsys):
     html = silent_docx_create(capsys, func=func)
     assert 'Check this:' in html
     assert '<a href="http://example.com">Here</a>' in html
+
+
+@pytest.mark.parametrize('text,code,expected',
+                         [('text', 'code', 'text code'),
+                          ('Here is the code:',
+                           'print("Hello")',
+                           'print(&quot;Hello&quot;)')])
+def test_add_code_in_text(capsys, text, code, expected):
+    """Test the add_code_in_text method."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatDocx)
+        mfd.start_paragraph(text=text)
+        mfd.add_code_in_text(text=code)
+
+    html = silent_docx_create(capsys, func=test_action)
+    assert text in html
+    assert expected in html

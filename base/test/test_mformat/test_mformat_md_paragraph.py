@@ -98,8 +98,7 @@ def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positi
                            '[http://example.com](http://example.com)\n'),
                           ('http://test.org', 'link text',
                            '[link text](http://test.org)\n')])
-def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                 url, text, expected):
+def test_add_url(capsys, url, text, expected):
     """Test the add_url method."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -116,8 +115,7 @@ def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-position
                            'http://example.com\n'),
                           ('http://test.org', 'See here',
                            'See here http://test.org\n')])
-def test_add_url_as_text(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                         url, text, expected):
+def test_add_url_as_text(capsys, url, text, expected):
     """Test the add_url method with url_as_text=True."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -127,4 +125,21 @@ def test_add_url_as_text(capsys,  # pylint: disable=too-many-arguments,too-many-
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    url_as_text=True,
+                                   capsys=capsys)
+
+
+@pytest.mark.parametrize('text,code,expected',
+                         [('text', 'code', 'text `code`\n'),
+                          ('Here is the code: ',
+                           ' print("Hello")',
+                           'Here is the code: `print("Hello")`\n')])
+def test_add_code_in_text(capsys, text, code, expected):
+    """Test the add_code_in_text method."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.start_paragraph(text=text)
+        mfd.add_code_in_text(text=code)
+
+    check_run_with_context_manager('md', '.md', test_action,
+                                   expected_text=expected,
                                    capsys=capsys)

@@ -139,3 +139,24 @@ def test_add_url_as_text(capsys,  # pylint: disable=too-many-arguments,too-many-
     check_run_with_context_manager('html', '.html', test_action,
                                    url_as_text=True, expected_text=expected,
                                    capsys=capsys)
+
+
+@pytest.mark.parametrize('text,code,expected',
+                         [('text', 'code',
+                           PF_EN_NT_NC + '<p>\n' +
+                           'text <code>code</code></p>\n' + SFTOT),
+                          ('Here is the code: ',
+                           ' print("Hello")',
+                           PF_EN_NT_NC + '<p>\n' +
+                           'Here is the code: ' +
+                           '<code>print(&quot;Hello&quot;)</code></p>\n' +
+                           SFTOT)])
+def test_add_code_in_text(capsys, text, code, expected):
+    """Test the add_code_in_text method."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.start_paragraph(text=text)
+        mfd.add_code_in_text(text=code)
+
+    check_run_with_context_manager('html', '.html', test_action,
+                                   expected_text=expected, capsys=capsys)

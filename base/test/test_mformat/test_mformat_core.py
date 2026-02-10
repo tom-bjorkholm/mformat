@@ -9,7 +9,7 @@ from typing import Optional
 import pytest
 from check_capsys import check_capsys
 from test_helpers import (
-    MultiFormat2, MultiFormat3, MultiFormat5,
+    MultiFormat2, MultiFormat3, MultiFormat4, MultiFormat5,
     MultiFormat8, MultiFormat9
 )
 from mformat.mformat_state import MultiFormatState, Formatting
@@ -185,20 +185,21 @@ def test_write_code_block_not_impl(capsys):
     """Test that the write_code_block method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
-        mfmt._write_code_block(text='test',  # pylint: disable=protected-access
+        mfmt._write_code_block(text='test',  # pylint: disable=protected-access # noqa: E501
                                programming_language='python')
     assert exc.value.args[0] == '_write_code_block must be ' + \
         'overridden by a subclass MultiFormat2'
     check_capsys(capsys)
 
 
-def test_encode_text_not_impl(capsys):
-    """Test that the encode_text method is not overridden."""
+def test_write_code_int_not_impl(capsys):
+    """Test that the write_code_in_text method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
-        mfmt._encode_text('test')  # pylint: disable=protected-access
-    assert exc.value.args[0] == '_encode_text must be overridden by a ' + \
-        'subclass MultiFormat2'
+        mfmt._write_code_in_text(text='test',  # pylint: disable=protected-access # noqa: E501
+                                 state=MultiFormatState.PARAGRAPH)
+    assert exc.value.args[0] == '_write_code_in_text must be ' + \
+        'overridden by a subclass MultiFormat2'
     check_capsys(capsys)
 
 
@@ -401,8 +402,29 @@ def test_heading_with_smart_ws(capsys):
 # Tests for code blocks
 
 
-class MultiFormat12(MultiFormat3):
-    """Class used for testing code blocks."""
+class MultiFormat12(MultiFormat4):
+    """Class used for testing code blocks and code in text."""
+
+    def __init__(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                 expected_code: str,
+                 expected_text: str = '',
+                 expected_bold: bool = False,
+                 expected_italic: bool = False,
+                 file_name: str = 'test',
+                 code_in: bool = False):
+        """Initialize the MultiFormat11 class."""
+        super().__init__(file_name=file_name, expected_text=expected_text,
+                         expected_bold=expected_bold,
+                         expected_italic=expected_italic)
+        self.expected_code: str = expected_code
+        self.code_in: bool = code_in
+
+    def _write_code_in_text(self, text: str, state: MultiFormatState) -> None:
+        """Write code into text."""
+        assert isinstance(text, str)
+        assert isinstance(state, MultiFormatState)
+        self.inc_count('_write_code_in_text')
+        assert text == self.expected_code
 
     def _start_code_block(self, programming_language: Optional[str]) -> None:
         """Start a code block."""
@@ -423,13 +445,18 @@ class MultiFormat12(MultiFormat3):
         if programming_language is not None:
             assert isinstance(programming_language, str)
         self.inc_count('_write_code_block')
+        if self.code_in:
+            assert text in self.expected_code
+        else:
+            assert text == self.expected_code
 
 
 def test_write_code_block_basic(capsys):
     """Test basic code block writing."""
-    mfmt = MultiFormat12(file_name='test')
+    txt = 'print("Hello")'
+    mfmt = MultiFormat12(file_name='test', expected_code=txt)
     assert mfmt.state == MultiFormatState.EMPTY
-    mfmt.write_code_block(text='print("Hello")')
+    mfmt.write_code_block(text=txt)
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
     assert mfmt.count == {
         '_encode_text': 1,
@@ -442,8 +469,9 @@ def test_write_code_block_basic(capsys):
 
 def test_write_code_block_with_language(capsys):
     """Test code block with programming language."""
-    mfmt = MultiFormat12(file_name='test')
-    mfmt.write_code_block(text='x = 42', programming_language='python')
+    txt = 'x = 42'
+    mfmt = MultiFormat12(file_name='test', expected_code=txt)
+    mfmt.write_code_block(text=txt, programming_language='python')
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
     assert mfmt.count == {
         '_encode_text': 1,
@@ -456,9 +484,12 @@ def test_write_code_block_with_language(capsys):
 
 def test_paragraph_then_code_block(capsys):
     """Test paragraph followed by code block."""
-    mfmt = MultiFormat12(file_name='test')
-    mfmt.start_paragraph(text='Here is code:')
-    mfmt.write_code_block(text='code here')
+    code = 'code here'
+    text = 'Here is code:'
+    mfmt = MultiFormat12(file_name='test',
+                         expected_code=code, expected_text=text)
+    mfmt.start_paragraph(text=text)
+    mfmt.write_code_block(text=code)
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
     assert mfmt.count == {
         '_encode_text': 2,
@@ -474,9 +505,12 @@ def test_paragraph_then_code_block(capsys):
 
 def test_code_block_then_paragraph(capsys):
     """Test code block followed by paragraph."""
-    mfmt = MultiFormat12(file_name='test')
-    mfmt.write_code_block(text='code')
-    mfmt.start_paragraph(text='After code')
+    code = 'code'
+    text = 'After code'
+    mfmt = MultiFormat12(file_name='test',
+                         expected_code=code, expected_text=text)
+    mfmt.write_code_block(text=code)
+    mfmt.start_paragraph(text=text)
     assert mfmt.state == MultiFormatState.PARAGRAPH
     assert mfmt.count == {
         '_encode_text': 2,
@@ -491,7 +525,8 @@ def test_code_block_then_paragraph(capsys):
 
 def test_multiple_code_blocks(capsys):
     """Test multiple code blocks in sequence."""
-    mfmt = MultiFormat12(file_name='test')
+    mfmt = MultiFormat12(file_name='test',
+                         expected_code='first, second', code_in=True)
     mfmt.write_code_block(text='first', programming_language='python')
     mfmt.write_code_block(text='second', programming_language='javascript')
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
@@ -506,8 +541,8 @@ def test_multiple_code_blocks(capsys):
 
 def test_code_block_multiline(capsys):
     """Test code block with multiline text."""
-    mfmt = MultiFormat12(file_name='test')
     code = 'def hello():\n    print("Hello")\n    return True'
+    mfmt = MultiFormat12(file_name='test', expected_code=code)
     mfmt.write_code_block(text=code, programming_language='python')
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
     assert mfmt.count == {
@@ -521,7 +556,7 @@ def test_code_block_multiline(capsys):
 
 def test_code_block_empty(capsys):
     """Test code block with empty text."""
-    mfmt = MultiFormat12(file_name='test')
+    mfmt = MultiFormat12(file_name='test', expected_code='')
     mfmt.write_code_block(text='')
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
     assert mfmt.count == {
@@ -535,11 +570,29 @@ def test_code_block_empty(capsys):
 
 def test_invalid_state_plist(capsys):
     """Test the handling of invalid state for point lists."""
-    mfmt = MultiFormat12(file_name='test')
+    mfmt = MultiFormat12(file_name='test', expected_code='')
     mfmt.state = MultiFormatState.BULLET_LIST_ITEM
     with pytest.raises(KeyError):
         psi = PointStackItem(point_list_type=17,
                              number_at_level=1)
         mfmt.point_list_stack.append(psi)
         mfmt._state_from_point_list()  # pylint: disable=protected-access # noqa: E501
+    check_capsys(capsys)
+
+
+def test_code_in_text(capsys):
+    """Test code in text."""
+    code = ' print("Hello")'
+    text = 'Here is code:'
+    mfmt = MultiFormat12(file_name='test', expected_code=code,
+                         expected_text=text)
+    mfmt.start_paragraph(text=text)
+    mfmt.add_code_in_text(text=code)
+    assert mfmt.state == MultiFormatState.PARAGRAPH
+    assert mfmt.count == {
+        '_encode_text': 2,
+        '_write_file_prefix': 1,
+        '_start_paragraph': 1,
+        '_write_text': 1,
+        '_write_code_in_text': 1}
     check_capsys(capsys)
