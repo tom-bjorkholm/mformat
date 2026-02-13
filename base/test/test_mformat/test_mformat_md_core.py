@@ -136,7 +136,7 @@ def test_heading_integration(capsys,  # pylint: disable=too-many-arguments,too-m
     """Test complete heading creation."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
-        mfd.start_heading(level=level, text=text)
+        mfd.new_heading(level=level, text=text)
 
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
@@ -155,7 +155,7 @@ def test_heading_formatting(capsys,  # pylint: disable=too-many-arguments,too-ma
     """Test heading with bold and italic formatting."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
-        mfd.start_heading(level=level, text=text, bold=bold, italic=italic)
+        mfd.new_heading(level=level, text=text, bold=bold, italic=italic)
 
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
@@ -166,7 +166,7 @@ def test_heading_add_text(capsys):
     """Test adding text to a heading."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
-        mfd.start_heading(level=1, text='Title')
+        mfd.new_heading(level=1, text='Title')
         mfd.add_text(text=' and more')
 
     check_run_with_context_manager('md', '.md', test_action,
@@ -213,7 +213,7 @@ def test_heading_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-
     """Test adding URL to a heading."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
-        mfd.start_heading(level=2, text=htxt)
+        mfd.new_heading(level=2, text=htxt)
         mfd.add_url(url=url, text=utxt, bold=bold)
 
     # pylint: disable=duplicate-code
@@ -226,8 +226,8 @@ def test_heading_then_paragraph(capsys):
     """Test heading followed by paragraph."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
-        mfd.start_heading(level=1, text='Title')
-        mfd.start_paragraph('Some text')
+        mfd.new_heading(level=1, text='Title')
+        mfd.new_paragraph('Some text')
 
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text='# Title\n\nSome text\n',
@@ -238,9 +238,9 @@ def test_multiple_headings(capsys):
     """Test multiple headings."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
-        mfd.start_heading(level=1, text='Main')
-        mfd.start_heading(level=2, text='Sub')
-        mfd.start_heading(level=3, text='Subsub')
+        mfd.new_heading(level=1, text='Main')
+        mfd.new_heading(level=2, text='Sub')
+        mfd.new_heading(level=3, text='Subsub')
 
     # pylint: disable=duplicate-code
     expected = '# Main\n\n## Sub\n\n### Subsub\n'
@@ -253,9 +253,9 @@ def test_heading_paragraph_heading(capsys):
     """Test heading, paragraph, then another heading."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
-        mfd.start_heading(level=1, text='First Heading')
-        mfd.start_paragraph('Some content here.')
-        mfd.start_heading(level=2, text='Second Heading')
+        mfd.new_heading(level=1, text='First Heading')
+        mfd.new_paragraph('Some content here.')
+        mfd.new_heading(level=2, text='Second Heading')
 
     expected = '# First Heading\n\nSome content here.\n\n## Second Heading\n'
     check_run_with_context_manager('md', '.md', test_action,
@@ -322,7 +322,7 @@ def test_paragraph_then_code_block(capsys):
     """Test paragraph followed by code block."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
-        mfd.start_paragraph(text='Here is some code:')
+        mfd.new_paragraph(text='Here is some code:')
         mfd.write_code_block(text='x = 42', programming_language='python')
 
     expected = 'Here is some code:\n\n````python\nx = 42\n````\n'
@@ -336,7 +336,7 @@ def test_code_block_then_paragraph(capsys):
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.write_code_block(text='x = 42')
-        mfd.start_paragraph(text='That was the code.')
+        mfd.new_paragraph(text='That was the code.')
 
     expected = '\n````text\nx = 42\n````\n\nThat was the code.\n'
     check_run_with_context_manager('md', '.md', test_action,
@@ -348,7 +348,7 @@ def test_heading_then_code_block(capsys):
     """Test heading followed by code block."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
-        mfd.start_heading(level=2, text='Code Example')
+        mfd.new_heading(level=2, text='Code Example')
         mfd.write_code_block(text='example()', programming_language='python')
 
     expected = '## Code Example\n\n````python\nexample()\n````\n'

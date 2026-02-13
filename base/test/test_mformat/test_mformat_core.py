@@ -133,7 +133,7 @@ def test_cls_method_not_overridden3(capsys, method_name):
 
 
 def test_start_num_item_not_impl(capsys):
-    """Test that the start_numbered_item method is not overridden."""
+    """Test that the _start_numbered_item method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
         # pylint: disable=protected-access
@@ -281,13 +281,13 @@ def test_enter_exit(capsys):
                            {'_encode_text': 1, '_end_paragraph': 1,
                             '_start_heading': 1, '_write_text': 1},
                            3, 'Sub-subheading')])
-def test_start_heading(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                       from_state, to_state, count, level, text):
-    """Test that the start_heading method is correct."""
+def test_new_heading(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                     from_state, to_state, count, level, text):
+    """Test that the new_heading method is correct."""
     mfmt = MultiFormat8(file_name='test', expected_text=text,
                         expected_level=level)
     mfmt.state = from_state
-    mfmt.start_heading(level=level, text=text)
+    mfmt.new_heading(level=level, text=text)
     assert mfmt.state == to_state
     assert mfmt.heading_level == level
     assert mfmt.count == count
@@ -299,13 +299,13 @@ def test_start_heading(capsys,  # pylint: disable=too-many-arguments,too-many-po
                           (2, 'Bold Heading', True, False),
                           (3, 'Italic Heading', False, True),
                           (4, 'Both Heading', True, True)])
-def test_start_heading_bold_italic(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                                   level, text, bold, italic):
-    """Test start_heading with bold and italic parameters."""
+def test_new_heading_bold_italic(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                                 level, text, bold, italic):
+    """Test new_heading with bold and italic parameters."""
     mfmt = MultiFormat8(file_name='test', expected_text=text,
                         expected_level=level,
                         expected_bold=bold, expected_italic=italic)
-    mfmt.start_heading(level=level, text=text, bold=bold, italic=italic)
+    mfmt.new_heading(level=level, text=text, bold=bold, italic=italic)
     assert mfmt.state == MultiFormatState.HEADING
     assert mfmt.heading_level == level
     assert mfmt.count == {'_encode_text': 1, '_start_heading': 1,
@@ -355,12 +355,12 @@ def test_heading_then_paragraph(capsys):
     """Test heading followed by paragraph."""
     mfmt = MultiFormat8(file_name='test', expected_text='Title',
                         expected_level=1)
-    mfmt.start_heading(level=1, text='Title')
+    mfmt.new_heading(level=1, text='Title')
     assert mfmt.state == MultiFormatState.HEADING
     # Now start a paragraph - should end the heading
     # Note: We don't check expected_level for the paragraph
     mfmt.expected_text = 'Paragraph text'
-    mfmt.start_paragraph(text='Paragraph text')
+    mfmt.new_paragraph(text='Paragraph text')
     assert mfmt.state == MultiFormatState.PARAGRAPH
     assert mfmt.heading_level is None
     assert mfmt.count == {'_encode_text': 2, '_start_heading': 1,
@@ -373,12 +373,12 @@ def test_multiple_headings(capsys):
     """Test multiple headings in sequence."""
     mfmt = MultiFormat8(file_name='test', expected_text='First',
                         expected_level=1)
-    mfmt.start_heading(level=1, text='First')
+    mfmt.new_heading(level=1, text='First')
     assert mfmt.heading_level == 1
     # Start another heading - should end the first
     mfmt.expected_text = 'Second'
     mfmt.expected_level = 2
-    mfmt.start_heading(level=2, text='Second')
+    mfmt.new_heading(level=2, text='Second')
     assert mfmt.heading_level == 2
     assert mfmt.count == {'_encode_text': 2, '_start_heading': 2,
                           '_write_text': 2, '_write_file_prefix': 1,
@@ -390,7 +390,7 @@ def test_heading_with_smart_ws(capsys):
     """Test heading with smart_ws parameter."""
     mfmt = MultiFormat8(file_name='test', expected_text='Heading',
                         expected_level=1)
-    mfmt.start_heading(level=1, text='  Heading  ', smart_ws=True)
+    mfmt.new_heading(level=1, text='  Heading  ', smart_ws=True)
     assert mfmt.ws_needed_at_append is True
     mfmt.expected_text = ' more'
     mfmt.add_text(text='  more  ', smart_ws=True)
@@ -488,7 +488,7 @@ def test_paragraph_then_code_block(capsys):
     text = 'Here is code:'
     mfmt = MultiFormat12(file_name='test',
                          expected_code=code, expected_text=text)
-    mfmt.start_paragraph(text=text)
+    mfmt.new_paragraph(text=text)
     mfmt.write_code_block(text=code)
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
     assert mfmt.count == {
@@ -510,7 +510,7 @@ def test_code_block_then_paragraph(capsys):
     mfmt = MultiFormat12(file_name='test',
                          expected_code=code, expected_text=text)
     mfmt.write_code_block(text=code)
-    mfmt.start_paragraph(text=text)
+    mfmt.new_paragraph(text=text)
     assert mfmt.state == MultiFormatState.PARAGRAPH
     assert mfmt.count == {
         '_encode_text': 2,
@@ -586,7 +586,7 @@ def test_code_in_text(capsys):
     text = 'Here is code:'
     mfmt = MultiFormat12(file_name='test', expected_code=code,
                          expected_text=text)
-    mfmt.start_paragraph(text=text)
+    mfmt.new_paragraph(text=text)
     mfmt.add_code_in_text(text=code)
     assert mfmt.state == MultiFormatState.PARAGRAPH
     assert mfmt.count == {

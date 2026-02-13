@@ -9,6 +9,7 @@ from types import TracebackType
 from typing import NamedTuple, Callable, Optional
 import sys
 import os
+import warnings
 from mformat.mformat_lists_impl import ListHandlerMixin, PointListType
 from mformat.mformat_state import MultiFormatState, FormattingWithWS, \
     Formatting
@@ -32,7 +33,7 @@ class TableInformation:  # pylint: disable=too-few-public-methods
         self.column_widths: list[int] = []
 
 
-class MultiFormat(ListHandlerMixin):
+class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods # noqa: E501
     """Base class for all multi file format classes."""
 
     def __init__(self, file_name: str,
@@ -130,9 +131,9 @@ class MultiFormat(ListHandlerMixin):
         self._close()
         self.state = MultiFormatState.CLOSED
 
-    def start_heading(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                      level: int, text: str, smart_ws: bool = True,
-                      bold: bool = False, italic: bool = False) -> None:
+    def new_heading(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                    level: int, text: str, smart_ws: bool = True,
+                    bold: bool = False, italic: bool = False) -> None:
         """Start a new heading.
 
         Args:
@@ -140,7 +141,7 @@ class MultiFormat(ListHandlerMixin):
             text: The text to write in the heading.
             smart_ws: If True, leading and trailing whitespace are collapsed
                       and a single space is inserted between texts (from
-                      start_heading or add_text).
+                      new_heading or add_text).
             bold: If True, the text is bold.
                   Recommended to leave False for headings as it will be
                   formatted as a heading.
@@ -158,15 +159,15 @@ class MultiFormat(ListHandlerMixin):
         self._write_text(self._to_write(text, smart_ws, False),
                          self.state, formatting)
 
-    def start_paragraph(self, text: str, smart_ws: bool = True,
-                        bold: bool = False, italic: bool = False) -> None:
+    def new_paragraph(self, text: str, smart_ws: bool = True,
+                      bold: bool = False, italic: bool = False) -> None:
         """Start a new paragraph.
 
         Args:
             text: The text to write in the paragraph.
             smart_ws: If True, leading and trailing whitespace are collapsed
                       and a single space is inserted between texts (from
-                      start_paragraph or add_text).
+                      new_paragraph or add_text).
             bold: If True, the text is bold.
             italic: If True, the text is italic.
         """
@@ -186,7 +187,7 @@ class MultiFormat(ListHandlerMixin):
             text: The text to add to the current item.
             smart_ws: If True, leading and trailing whitespace are collapsed
                       and a single space is inserted between texts (from
-                      start_paragraph, start_bullet, ... or add_text).
+                      new_paragraph, new_bullet_item, ... or add_text).
             bold: If True, the text is bold.
             italic: If True, the text is italic.
         """
@@ -269,7 +270,7 @@ class MultiFormat(ListHandlerMixin):
                         else None,
                         self.state, formatting)
 
-    def start_bullet_item(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+    def new_bullet_item(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
             self, text: str, level: Optional[int] = None,
             smart_ws: bool = True, bold: bool = False,
             italic: bool = False) -> None:
@@ -294,7 +295,7 @@ class MultiFormat(ListHandlerMixin):
             level: The level of the bullet list item.
             smart_ws: If True, leading and trailing whitespace are collapsed
                       and a single space is inserted between texts (from
-                      start_bullet_item or add_text).
+                      new_bullet_item or add_text).
             bold: If True, the text is bold.
             italic: If True, the text is italic.
         """
@@ -306,7 +307,7 @@ class MultiFormat(ListHandlerMixin):
             text=text, level=level, formatting=formatting_with_ws,
             point_list_type=PointListType.BULLET)
 
-    def start_numbered_point_item(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+    def new_numbered_point_item(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
             self, text: str, level: Optional[int] = None,
             smart_ws: bool = True, bold: bool = False,
             italic: bool = False) -> None:
@@ -332,7 +333,7 @@ class MultiFormat(ListHandlerMixin):
             level: The level of the numbered point list item.
             smart_ws: If True, leading and trailing whitespace are collapsed
                       and a single space is inserted between texts (from
-                      start_numbered_point_item or add_text).
+                      new_numbered_point_item or add_text).
             bold: If True, the text is bold.
             italic: If True, the text is italic.
         """
@@ -344,8 +345,8 @@ class MultiFormat(ListHandlerMixin):
             text=text, level=level, formatting=formatting_with_ws,
             point_list_type=PointListType.NUMBERED)
 
-    def start_table(self, first_row: list[str],
-                    bold: bool = False, italic: bool = False) -> None:
+    def new_table(self, first_row: list[str],
+                  bold: bool = False, italic: bool = False) -> None:
         """Start a new table.
 
         Args:
@@ -396,7 +397,7 @@ class MultiFormat(ListHandlerMixin):
                              italic_first_row: bool = False) -> None:
         """Add a complete table.
 
-        Result is same as calling start_table followed by add_table_row
+        Result is same as calling new_table followed by add_table_row
         for each row. Args:
             table: The complete table to add.
             formatting_first_row: The formatting of the text in each
@@ -418,8 +419,8 @@ class MultiFormat(ListHandlerMixin):
                 errmsg += 'All rows must have the same number of columns!'
                 raise RuntimeError(errmsg)
             self._update_table_column_widths(row=row)
-        self.start_table(first_row=table[0], bold=bold_first_row,
-                         italic=italic_first_row)
+        self.new_table(first_row=table[0], bold=bold_first_row,
+                       italic=italic_first_row)
         for row in table[1:]:
             self.add_table_row(row=row, bold=False, italic=False)
 
@@ -750,3 +751,73 @@ class MultiFormat(ListHandlerMixin):
         """Encode a table row."""
         assert isinstance(row, list)
         return [self._encode_text(cell) for cell in row]
+
+    # ========================================================================
+    # Deprecated methods - to be removed in future versions
+    # ========================================================================
+
+    def start_paragraph(self, text: str, smart_ws: bool = True,
+                        bold: bool = False, italic: bool = False) -> None:
+        """Start a new paragraph (deprecated).
+
+        .. deprecated:: 0.3.0
+          Use :meth:`new_paragraph` instead.
+        """
+        warnings.warn('start_paragraph is deprecated. '
+                      'Use new_paragraph instead.', DeprecationWarning,
+                      stacklevel=3)
+        self.new_paragraph(text, smart_ws, bold, italic)
+
+    def start_heading(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                      level: int, text: str, smart_ws: bool = True,
+                      bold: bool = False, italic: bool = False) -> None:
+        """Start a new heading (deprecated).
+
+        .. deprecated:: 0.3.0
+          Use :meth:`new_heading` instead.
+        """
+        warnings.warn('start_heading is deprecated. '
+                      'Use new_heading instead.', DeprecationWarning,
+                      stacklevel=3)
+        self.new_heading(level, text, smart_ws, bold, italic)
+
+    def start_bullet_item(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                          text: str, level: Optional[int] = None,
+                          smart_ws: bool = True, bold: bool = False,
+                          italic: bool = False) -> None:
+        """Start a bullet item (deprecated).
+
+        .. deprecated:: 0.3.0
+          Use :meth:`new_bullet_item` instead.
+        """
+        warnings.warn('start_bullet_item is deprecated. '
+                      'Use new_bullet_item instead.', DeprecationWarning,
+                      stacklevel=3)
+        self.new_bullet_item(text, level, smart_ws, bold, italic)
+
+    def start_numbered_point_item(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                                  text: str, level: Optional[int] = None,
+                                  smart_ws: bool = True, bold: bool = False,
+                                  italic: bool = False) -> None:
+        """Start a numbered point item (deprecated).
+
+        .. deprecated:: 0.3.0
+          Use :meth:`new_numbered_point_item` instead.
+        """
+        warnings.warn('start_numbered_point_item is deprecated. '
+                      'Use new_numbered_point_item instead.',
+                      DeprecationWarning,
+                      stacklevel=3)
+        self.new_numbered_point_item(text, level, smart_ws, bold, italic)
+
+    def start_table(self, first_row: list[str],
+                    bold: bool = False, italic: bool = False) -> None:
+        """Start a table (deprecated).
+
+        .. deprecated:: 0.3.0
+          Use :meth:`new_table` instead.
+        """
+        warnings.warn('start_table is deprecated. '
+                      'Use new_table instead.', DeprecationWarning,
+                      stacklevel=3)
+        self.new_table(first_row, bold, italic)

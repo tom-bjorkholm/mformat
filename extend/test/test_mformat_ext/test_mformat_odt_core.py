@@ -208,7 +208,7 @@ def test_create_ok(capsys, fname):
     """Test the shortcut create function with an OK class."""
     def func(mfo: MultiFormatOdt) -> None:
         assert type(mfo).__name__ == 'MultiFormatOdt'
-        mfo.start_paragraph(text='Test content')
+        mfo.new_paragraph(text='Test content')
 
     doc = silent_odt_create(capsys, func=func, fname=fname)
     assert doc is not None
@@ -234,7 +234,7 @@ def test_create_nok(capsys):
 def test_language_parameter(capsys, lang):
     """Test creating ODT with different language parameters."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_paragraph(text='Test content')
+        mfo.new_paragraph(text='Test content')
 
     doc = silent_odt_create(capsys, func=func, lang=lang)
     assert doc is not None
@@ -250,7 +250,7 @@ def test_language_parameter(capsys, lang):
 def test_heading_creation(capsys, level):
     """Test creating headings at different levels."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_heading(level=level, text=f'Heading Level {level}')
+        mfo.new_heading(level=level, text=f'Heading Level {level}')
 
     doc = silent_odt_create(capsys, func=func)
     headings = get_heading_texts(doc)
@@ -261,7 +261,7 @@ def test_heading_creation(capsys, level):
 def test_heading_with_text(capsys):
     """Test heading with additional text."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_heading(level=1, text='Main Title')
+        mfo.new_heading(level=1, text='Main Title')
         mfo.add_text(text=' - Extended')
 
     doc = silent_odt_create(capsys, func=func)
@@ -273,7 +273,7 @@ def test_heading_with_text(capsys):
 def test_heading_with_url(capsys):
     """Test heading with URL."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_heading(level=2, text='Check ')
+        mfo.new_heading(level=2, text='Check ')
         mfo.add_url(url='http://example.com', text='this link')
 
     doc = silent_odt_create(capsys, func=func)
@@ -289,8 +289,8 @@ def test_heading_with_url(capsys):
 def test_heading_then_paragraph(capsys):
     """Test heading followed by paragraph."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_heading(level=1, text='Title')
-        mfo.start_paragraph('Some text')
+        mfo.new_heading(level=1, text='Title')
+        mfo.new_paragraph('Some text')
 
     doc = silent_odt_create(capsys, func=func)
     headings = get_heading_texts(doc)
@@ -303,9 +303,9 @@ def test_heading_then_paragraph(capsys):
 def test_multiple_headings(capsys):
     """Test multiple headings."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_heading(level=1, text='Main')
-        mfo.start_heading(level=2, text='Sub')
-        mfo.start_heading(level=3, text='Subsub')
+        mfo.new_heading(level=1, text='Main')
+        mfo.new_heading(level=2, text='Sub')
+        mfo.new_heading(level=3, text='Subsub')
 
     doc = silent_odt_create(capsys, func=func)
     headings = get_heading_texts(doc)
@@ -318,9 +318,9 @@ def test_multiple_headings(capsys):
 def test_heading_paragraph_heading(capsys):
     """Test heading, paragraph, then another heading."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_heading(level=1, text='First Heading')
-        mfo.start_paragraph('Some content here.')
-        mfo.start_heading(level=2, text='Second Heading')
+        mfo.new_heading(level=1, text='First Heading')
+        mfo.new_paragraph('Some content here.')
+        mfo.new_heading(level=2, text='Second Heading')
 
     doc = silent_odt_create(capsys, func=func)
     headings = get_heading_texts(doc)
@@ -339,8 +339,8 @@ def test_heading_paragraph_heading(capsys):
 def test_heading_formatting(capsys, bold, italic, expected_style):
     """Test heading with bold and italic formatting."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_heading(level=1, text='Formatted Title',
-                          bold=bold, italic=italic)
+        mfo.new_heading(level=1, text='Formatted Title',
+                        bold=bold, italic=italic)
 
     doc = silent_odt_create(capsys, func=func)
     headings = get_heading_texts(doc)
@@ -419,7 +419,7 @@ def test_code_block_style(capsys):
 def test_paragraph_then_code_block(capsys):
     """Test paragraph followed by code block."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_paragraph(text='Here is some code:')
+        mfo.new_paragraph(text='Here is some code:')
         mfo.write_code_block(text='x = 42', programming_language='python')
 
     doc = silent_odt_create(capsys, func=func)
@@ -432,7 +432,7 @@ def test_code_block_then_paragraph(capsys):
     """Test code block followed by paragraph."""
     def func(mfo: MultiFormatOdt) -> None:
         mfo.write_code_block(text='x = 42')
-        mfo.start_paragraph(text='That was the code.')
+        mfo.new_paragraph(text='That was the code.')
 
     doc = silent_odt_create(capsys, func=func)
     all_text = get_all_text_content(doc)
@@ -443,7 +443,7 @@ def test_code_block_then_paragraph(capsys):
 def test_heading_then_code_block(capsys):
     """Test heading followed by code block."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_heading(level=2, text='Code Example')
+        mfo.new_heading(level=2, text='Code Example')
         mfo.write_code_block(text='example()', programming_language='python')
 
     doc = silent_odt_create(capsys, func=func)
@@ -490,7 +490,7 @@ def test_empty_document(capsys):
 def test_special_characters_in_heading(capsys):
     """Test special characters in heading text."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_heading(level=1, text='Test <>&"\'')
+        mfo.new_heading(level=1, text='Test <>&"\'')
 
     doc = silent_odt_create(capsys, func=func)
     headings = get_heading_texts(doc)

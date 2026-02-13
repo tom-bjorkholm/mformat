@@ -21,7 +21,7 @@ from e01_paragraph import paragraph_example  # pylint: disable=wrong-import-posi
 
 
 EXPECTED_MD_TEXT = [
-    'With start_paragraph we can start a paragraph. ',
+    'With new_paragraph we can start a paragraph. ',
     'With add_text we can add text to\n'
     'the paragraph. We can also add text to the ',
     'paragraph in multiple calls using\n'
@@ -46,7 +46,7 @@ EXPECTED_HTML_POST = [
 ]
 EXPECTED_HTML_BODY_TEXT = [
     '<p>',
-    'With start_paragraph we can start a paragraph.',
+    'With new_paragraph we can start a paragraph.',
     'With add_text we can add text to the paragraph.',
     'We can also add text to the paragraph in multiple',
     'calls using add_text. (As this example does not',

@@ -51,14 +51,14 @@ def existing_file_example(format_name: str, file_name: str) -> None:
     # e01_paragraph.
     with create_mf(format_name=format_name, file_name=file_name,
                    args=opt_args) as mf:
-        mf.start_heading(level=1, text='Existing File Example')
+        mf.new_heading(level=1, text='Existing File Example')
         txt = 'Using the file_exists_callback in the OptArgs dictionary ' +\
             'and passing this dictionary to the MultiFormat constructor ' +\
             '(directly or using the create_mf function) ' +\
             'allows us to handle an exiting file in any way we want. ' +\
             'The default behaviour if no callback is provided is to ' +\
             'refuse to overwrite existing files.'
-        mf.start_paragraph(text=txt)
+        mf.new_paragraph(text=txt)
 
 
 if __name__ == '__main__':

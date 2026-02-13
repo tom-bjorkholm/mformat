@@ -133,15 +133,15 @@ P1_DESIGN_OF_USE_2 = ').'
 P2_DESIGN_OF_USE = 'In the context of the with-clause the programmer just ' \
     'calls a minimum of member functions:'
 B_DESIGN_OF_USE = [
-    ['start_paragraph',
+    ['new_paragraph',
      'to start a new paragraph with some provided text content.'],
-    ['start_heading',
+    ['new_heading',
      'to start a new heading with some provided text content.'],
-    ['start_bullet_item',
+    ['new_bullet_item',
      'to start a new bullet point list item with some provided text '
      'content, and if needed to start the bullet point list with the '
      'bullet point item.'],
-    ['start_numbered_point_item',
+    ['new_numbered_point_item',
      'to start a new numbered point list item with some provided text '
      'content, and if needed to start the numbered point list with the '
      'number point list item.'],
@@ -155,7 +155,7 @@ B_DESIGN_OF_USE = [
      'to add some short text (function name, variable name, etc.) ' \
      'as code to an already started paragraph, heading, bullet point ' \
      'list item or numbered point list item.'],
-    ['start_table', 'to start a new table with the provided first row.'],
+    ['new_table', 'to start a new table with the provided first row.'],
     ['add_table_row', 'to add another row to an already started table.'],
     ['write_complete_table', 'to write a table all at once.'],
     ['write_code_block', 'to write some preformatted text as a code block'],
@@ -163,8 +163,8 @@ B_DESIGN_OF_USE = [
 P3_DESIGN_OF_USE = 'There are no member functions to end or close any ' \
     'document item. Each document item is automatically closed as another ' \
     'docuemnt item is started (or when closing the file at the end of the ' \
-    'context manager scope). start_bullet_item and ' \
-    'start_numbered_point_item take an optional level argument, ' \
+    'context manager scope). new_bullet_item and ' \
+    'new_numbered_point_item take an optional level argument, ' \
     'that is used to change to another nesting level.'
 H2_EXAMPLES = 'Example programs'
 P1_EXAMPLES_1 = 'A number of minimal but complete example programs are ' \
@@ -207,6 +207,27 @@ FORMATS = [
     ['md', 'Markdown', 'mformat', '0.2'],
     ['odt', 'Open Document Text', 'mformat-ext', '0.2']
 ]
+H2_DEPRECATED = 'API changes in version 0.3 (deprecated methods)'
+P1_DEPRECATED = 'In version 0.2.x the public API was build around methods ' \
+    'that started document items, like start_paragraph. However, experience ' \
+    'showed that this was not intuitive for the user. Many users ' \
+    'were trying to use end or stop methods (that do not exist) in pair with ' \
+    'the start methods. ' \
+    'To address this, the public API was changed in version 0.3.0 to use ' \
+    'methods named new something, like new_paragraph. With this naming ' \
+    'the intuition should hopefully not tell users to look for end or ' \
+    'stop methods (that do not exist). People have also pointed ' \
+    'out that phrases like "new paragraph" are commonly used in dictation.'
+P2_DEPRECATED = 'The old methods are still available, but are deprecated and ' \
+    'will be removed in some future version.'
+T_DEPRECATED = [
+    ['New method', 'Deprecated method'],
+    ['new_paragraph', 'start_paragraph'],
+    ['new_heading', 'start_heading'],
+    ['new_bullet_item', 'start_bullet_item'],
+    ['new_numbered_point_item', 'start_numbered_point_item'],
+    ['new_table', 'start_table']
+]
 DISPATCHER: dict[str, dict[ReadmeType, str]] = {
     'title': {
         ReadmeType.BASE: TITLE_BASE,
@@ -225,28 +246,28 @@ DISPATCHER: dict[str, dict[ReadmeType, str]] = {
 
 def _write_installing(mft: MultiFormat, readme_type: ReadmeType) -> None:
     """Write the installing section."""
-    mft.start_heading(level=2,
-                      text=DISPATCHER['installing_base'][readme_type])
-    mft.start_paragraph(text=BASE_P1)
-    mft.start_paragraph(text=BASE_P2_1)
+    mft.new_heading(level=2,
+                    text=DISPATCHER['installing_base'][readme_type])
+    mft.new_paragraph(text=BASE_P1)
+    mft.new_paragraph(text=BASE_P2_1)
     mft.add_url(url=BASE_URL)
     mft.add_text(text=BASE_P2_2)
-    mft.start_heading(level=3, text=H3_INSTALLING_B_LINUX)
+    mft.new_heading(level=3, text=H3_INSTALLING_B_LINUX)
     mft.write_code_block(text=COMMAND_INSTALLING_B_LINUX,
                          programming_language='sh')
-    mft.start_heading(level=3, text=H3_INSTALLING_B_WINDOWS)
+    mft.new_heading(level=3, text=H3_INSTALLING_B_WINDOWS)
     mft.write_code_block(text=COMMAND_INSTALLING_B_WINDOWS,
                          programming_language='sh')
-    mft.start_heading(level=2,
+    mft.new_heading(level=2,
                       text=DISPATCHER['installing_extend'][readme_type])
-    mft.start_paragraph(text=EXTEND_P1)
-    mft.start_paragraph(text=EXTEND_P2_1)
+    mft.new_paragraph(text=EXTEND_P1)
+    mft.new_paragraph(text=EXTEND_P2_1)
     mft.add_url(url=EXTEND_URL)
     mft.add_text(text=EXTEND_P2_2)
-    mft.start_heading(level=3, text=H3_INSTALLING_E_LINUX)
+    mft.new_heading(level=3, text=H3_INSTALLING_E_LINUX)
     mft.write_code_block(text=COMMAND_INSTALLING_E_LINUX,
                          programming_language='sh')
-    mft.start_heading(level=3, text=H3_INSTALLING_E_WINDOWS)
+    mft.new_heading(level=3, text=H3_INSTALLING_E_WINDOWS)
     mft.write_code_block(text=COMMAND_INSTALLING_E_WINDOWS,
                          programming_language='sh')
 
@@ -257,44 +278,48 @@ def create_pypi_readme(readme_type: ReadmeType, path: Path) -> None:
         'file_exists_callback': file_exists_callback
     }
     with create_mf(format_name='md', file_name=str(path), args=args) as mft:
-        mft.start_heading(level=1, text=DISPATCHER['title'][readme_type])
-        mft.start_paragraph(text=INTRO_P1)
-        mft.start_paragraph(text=INTRO_P2)
-        mft.start_paragraph(text=INTRO_P3)
+        mft.new_heading(level=1, text=DISPATCHER['title'][readme_type])
+        mft.new_paragraph(text=INTRO_P1)
+        mft.new_paragraph(text=INTRO_P2)
+        mft.new_paragraph(text=INTRO_P3)
         _write_installing(mft, readme_type)
-        mft.start_heading(level=2, text=H2_WHAT_IT_DOES)
-        mft.start_paragraph(text=P1_WHAT_IT_DOES)
+        mft.new_heading(level=2, text=H2_WHAT_IT_DOES)
+        mft.new_paragraph(text=P1_WHAT_IT_DOES)
         for item in B_WHAT_IT_DOES:
-            mft.start_bullet_item(text=item)
-        mft.start_heading(level=2, text=H2_DESIGN_OF_USE)
-        mft.start_paragraph(text=P1_DESIGN_OF_USE_1)
+            mft.new_bullet_item(text=item)
+        mft.new_heading(level=2, text=H2_DESIGN_OF_USE)
+        mft.new_paragraph(text=P1_DESIGN_OF_USE_1)
         mft.add_code_in_text(text=P1_DESIGN_OF_USE_C)
         mft.add_text(text=P1_DESIGN_OF_USE_2)
-        mft.start_paragraph(text=P2_DESIGN_OF_USE)
+        mft.new_paragraph(text=P2_DESIGN_OF_USE)
         for items in B_DESIGN_OF_USE:
-            mft.start_bullet_item(text='')
+            mft.new_bullet_item(text='')
             mft.add_code_in_text(text=items[0])
             mft.add_text(text=items[1])
-        mft.start_paragraph(text=P3_DESIGN_OF_USE)
-        mft.start_heading(level=2, text=H2_EXAMPLES)
-        mft.start_paragraph(text=P1_EXAMPLES_1)
+        mft.new_paragraph(text=P3_DESIGN_OF_USE)
+        mft.new_heading(level=2, text=H2_EXAMPLES)
+        mft.new_paragraph(text=P1_EXAMPLES_1)
         mft.add_url(url=URL_EXAMPLES, text=URL_EXAMPLES_TEXT)
         mft.add_text(text=P1_EXAMPLES_2)
-        mft.start_heading(level=2, text=H2_API_DOCUMENTATION)
-        mft.start_paragraph(text=P1_API_DOCUMENTATION_1)
+        mft.new_heading(level=2, text=H2_API_DOCUMENTATION)
+        mft.new_paragraph(text=P1_API_DOCUMENTATION_1)
         mft.add_url(url=API_URL_PUBLIC, text=API_URL_PUBLIC_TEXT)
         mft.add_text(text=P1_API_DOCUMENTATION_2)
         mft.add_url(url=API_URL_PROTECTED, text=API_URL_PROTECTED_TEXT)
         mft.add_text(text=P1_API_DOCUMENTATION_3)
-        mft.start_paragraph(text=P2_API_DOCUMENTATION_1)
+        mft.new_paragraph(text=P2_API_DOCUMENTATION_1)
         mft.add_url(url=URL_EXAMPLES, text=URL_EXAMPLES_TEXT2)
         mft.add_text(text=P2_API_DOCUMENTATION_2)
-        mft.start_heading(level=2, text=H2_VERSION_HISTORY)
+        mft.new_heading(level=2, text=H2_VERSION_HISTORY)
         mft.write_complete_table(table=VERSION_HISTORY)
-        mft.start_heading(level=2, text=H2_FORMATS)
-        mft.start_paragraph(text=P1_FORMATS)
+        mft.new_heading(level=2, text=H2_FORMATS)
+        mft.new_paragraph(text=P1_FORMATS)
         mft.write_complete_table(table=FORMATS)
-        mft.start_heading(level=2, text='Test summary')
+        mft.new_heading(level=2, text=H2_DEPRECATED)
+        mft.new_paragraph(text=P1_DEPRECATED)
+        mft.new_paragraph(text=P2_DEPRECATED)
+        mft.write_complete_table(table=T_DEPRECATED)
+        mft.new_heading(level=2, text='Test summary')
     print(f'Created {str(path)} file for {readme_type.name}',
           file=sys.stderr)
 

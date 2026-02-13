@@ -27,7 +27,7 @@ def heading_example(format_name: str,
         # The level 2 heading is a subheading of the main heading.
         # (For the markdown output to be accepted by markdownlint without
         # warning, the document should start with a level 1 heading.)
-        mf.start_heading(level=1, text='This is a heading,')
+        mf.new_heading(level=1, text='This is a heading,')
         # We can also add text to the heading in multiple calls
         # using add_text.
         mf.add_text('at level 1.')

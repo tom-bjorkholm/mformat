@@ -1,9 +1,9 @@
-With start_paragraph we can start a paragraph. Thanks to smart whitespace
+With new_paragraph we can start a paragraph. Thanks to smart whitespace
 handling, we do not need to add whitespace between text fragments from different
-calls to add_text or start_paragraph calls. If we have extra whitespace, it will
+calls to add_text or new_paragraph calls. If we have extra whitespace, it will
 be consolidated into a single space.
 
-With start_paragraph we can start another paragraph. With smart_ws=False the
+With new_paragraph we can start another paragraph. With smart_ws=False the
 whitespace between text fragments will be preserved.So we can have no whitespae
 or multiple spaces between text fragments if we want to. We can at any time
 switch on smart whitespace handling by ommitting the smart_ws=False argument, or

@@ -32,14 +32,14 @@ def filter_args_for_format_example(format_name: str, file_name: str) -> None:
     opt_args = filter_args_mf(args=all_opt_args, format_name=format_name)
     with create_mf(format_name=format_name, file_name=file_name,
                    args=opt_args) as mf:
-        mf.start_heading(level=1,
-                         text='CSS in HTML gefiltert für andere Formate')
-        mf.start_paragraph(
+        mf.new_heading(level=1,
+                       text='CSS in HTML gefiltert für andere Formate')
+        mf.new_paragraph(
             text='Dieses Beispiel zeigt, wie Sie eine CSS-Datei für HTML '
             'gefiltert haben, so dass sie nicht für andere Formate verfügbar '
             'ist.'
         )
-        mf.start_paragraph(
+        mf.new_paragraph(
             text='Die CSS-Datei liegt unter example/css/ und wird per '
             'relativem Pfad eingebunden (für lokale Anzeige). Die Ausgabe '
             'ist auf Deutsch; in HTML wird lang="de" im erzeugten <html>-Tag '
@@ -49,5 +49,5 @@ def filter_args_for_format_example(format_name: str, file_name: str) -> None:
 
 
 if __name__ == '__main__':
-    example_main(example_text='CSS and language in HTML',
+    example_main(example_text='Filtering arguments for format',
                  function=filter_args_for_format_example)

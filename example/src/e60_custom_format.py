@@ -562,40 +562,40 @@ def custom_format_example(format_name: str, file_name: str) -> None:
     # if not present.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
         # Write a heading
-        mf.start_heading(level=1, text='Custom Format Example')
+        mf.new_heading(level=1, text='Custom Format Example')
         # Write a paragraph
-        mf.start_paragraph('This example demonstrates how to create and use '
-                           'a custom format in the mformat framework.')
+        mf.new_paragraph('This example demonstrates how to create and use '
+                         'a custom format in the mformat framework.')
         mf.add_text('The same code can be used to write to different formats, '
                     'just by changing the format name.')
         # Write another heading
-        mf.start_heading(level=2, text='Features')
+        mf.new_heading(level=2, text='Features')
         # Write a bullet list
-        mf.start_bullet_item('Easy to extend the framework')
-        mf.start_bullet_item('Supports all standard document elements')
-        mf.start_bullet_item('Format-agnostic API')
+        mf.new_bullet_item('Easy to extend the framework')
+        mf.new_bullet_item('Supports all standard document elements')
+        mf.new_bullet_item('Format-agnostic API')
         # Write a numbered list
-        mf.start_numbered_point_item('First step: Create a format class')
-        mf.start_numbered_point_item('Second step: Implement required methods')
-        mf.start_numbered_point_item('Third step: Register the format')
+        mf.new_numbered_point_item('First step: Create a format class')
+        mf.new_numbered_point_item('Second step: Implement required methods')
+        mf.new_numbered_point_item('Third step: Register the format')
         # Write a table
         mf.write_complete_table([
             ['Element', 'Method'],
-            ['Paragraph', 'start_paragraph()'],
-            ['Heading', 'start_heading()'],
-            ['List', 'start_bullet_item()'],
+            ['Paragraph', 'new_paragraph()'],
+            ['Heading', 'new_heading()'],
+            ['List', 'new_bullet_item()'],
         ], bold_first_row=True)
         # Write a code block
         mf.write_code_block('def example():\n    print("Hello, World!")',
                             programming_language='python')
         # Write a paragraph with formatting
-        mf.start_paragraph('This text is ', bold=False, italic=False)
+        mf.new_paragraph('This text is ', bold=False, italic=False)
         mf.add_text('bold', bold=True, italic=False)
         mf.add_text(' and this is ', bold=False, italic=False)
         mf.add_text('italic', bold=False, italic=True)
         mf.add_text('.', bold=False, italic=False)
         # Write a URL
-        mf.start_paragraph('Visit ')
+        mf.new_paragraph('Visit ')
         mf.add_url('https://example.com', text='our website',
                    bold=False, italic=False)
 

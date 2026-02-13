@@ -15,17 +15,17 @@ def example_code_blocks(format_name: str, file_name: str) -> None:
     # as a context manager as we did in exampe e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
         # See example e05_heading.py for how to write a heading.
-        mf.start_heading(level=1, text='Code blocks example')
+        mf.new_heading(level=1, text='Code blocks example')
         # First a paragraph to show the difference between code blocks and
         # paragraphs.
-        mf.start_paragraph(text='This is a normal paragraph with some text.')
+        mf.new_paragraph(text='This is a normal paragraph with some text.')
         mf.add_text('Paragraphs are not useable for showing code')
         mf.add_text('as the text is usually shown in variable width fonts,')
         mf.add_text('and line wrapping is not easy to control.')
         mf.add_text('Code blocks on the other hand are designed to show code')
         mf.add_text('in a monospace font, and line wrapping is easy to')
         mf.add_text('control.')
-        mf.start_paragraph(text='Code blocks are written using the')
+        mf.new_paragraph(text='Code blocks are written using the')
         #
         # In the paragraph we can use add_code_in_text() to some word(s)
         # to be shown as code in a monospace font with the add_code_in_text()

@@ -88,7 +88,7 @@ def has_italic_in_cell(cell: TableCell) -> bool:
 def test_simple_table(capsys):
     """Test a simple table."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_table(first_row=['Col1', 'Col2'])
+        mfo.new_table(first_row=['Col1', 'Col2'])
         mfo.add_table_row(row=['A', 'B'])
         mfo.add_table_row(row=['C', 'D'])
 
@@ -105,7 +105,7 @@ def test_simple_table(capsys):
 def test_table_with_bold_header(capsys):
     """Test a table with bold header."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_table(first_row=['Name', 'Age'], bold=True)
+        mfo.new_table(first_row=['Name', 'Age'], bold=True)
         mfo.add_table_row(row=['Alice', '30'])
         mfo.add_table_row(row=['Bob', '25'])
 
@@ -125,7 +125,7 @@ def test_table_with_bold_header(capsys):
 def test_table_with_italic_header(capsys):
     """Test a table with italic header."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_table(first_row=['Name', 'Age'], italic=True)
+        mfo.new_table(first_row=['Name', 'Age'], italic=True)
         mfo.add_table_row(row=['Alice', '30'])
 
     doc = silent_odt_create(capsys, func=func)
@@ -184,8 +184,8 @@ def test_write_complete_table_with_bold_header(capsys):
 def test_paragraph_then_table(capsys):
     """Test paragraph followed by table."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_paragraph(text='Here is a table:')
-        mfo.start_table(first_row=['A', 'B'])
+        mfo.new_paragraph(text='Here is a table:')
+        mfo.new_table(first_row=['A', 'B'])
         mfo.add_table_row(row=['1', '2'])
 
     doc = silent_odt_create(capsys, func=func)
@@ -198,9 +198,9 @@ def test_paragraph_then_table(capsys):
 def test_table_then_paragraph(capsys):
     """Test table followed by paragraph."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_table(first_row=['X', 'Y'])
+        mfo.new_table(first_row=['X', 'Y'])
         mfo.add_table_row(row=['1', '2'])
-        mfo.start_paragraph(text='That was the table.')
+        mfo.new_paragraph(text='That was the table.')
 
     doc = silent_odt_create(capsys, func=func)
     tables = get_table_data(doc)
@@ -212,8 +212,8 @@ def test_table_then_paragraph(capsys):
 def test_heading_then_table(capsys):
     """Test heading followed by table."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_heading(level=2, text='Data Table')
-        mfo.start_table(first_row=['Col1', 'Col2'])
+        mfo.new_heading(level=2, text='Data Table')
+        mfo.new_table(first_row=['Col1', 'Col2'])
         mfo.add_table_row(row=['A', 'B'])
 
     doc = silent_odt_create(capsys, func=func)
@@ -230,7 +230,7 @@ def test_heading_then_table(capsys):
 def test_table_with_three_columns(capsys):
     """Test a table with three columns."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_table(first_row=['Name', 'Age', 'City'])
+        mfo.new_table(first_row=['Name', 'Age', 'City'])
         mfo.add_table_row(row=['Alice', '30', 'NYC'])
         mfo.add_table_row(row=['Bob', '25', 'LA'])
 
@@ -245,7 +245,7 @@ def test_table_with_three_columns(capsys):
 def test_table_with_single_column(capsys):
     """Test a table with a single column."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_table(first_row=['Items'])
+        mfo.new_table(first_row=['Items'])
         mfo.add_table_row(row=['Apple'])
         mfo.add_table_row(row=['Banana'])
         mfo.add_table_row(row=['Cherry'])
@@ -264,7 +264,7 @@ def test_table_with_many_columns(capsys):
     def func(mfo: MultiFormatOdt) -> None:
         headers = ['A', 'B', 'C', 'D', 'E', 'F']
         row1 = ['1', '2', '3', '4', '5', '6']
-        mfo.start_table(first_row=headers)
+        mfo.new_table(first_row=headers)
         mfo.add_table_row(row=row1)
 
     doc = silent_odt_create(capsys, func=func)
@@ -280,9 +280,9 @@ def test_table_with_many_columns(capsys):
 def test_multiple_tables(capsys):
     """Test multiple tables in one document."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_table(first_row=['Table1Col1', 'Table1Col2'])
+        mfo.new_table(first_row=['Table1Col1', 'Table1Col2'])
         mfo.add_table_row(row=['A', 'B'])
-        mfo.start_table(first_row=['Table2Col1', 'Table2Col2'])
+        mfo.new_table(first_row=['Table2Col1', 'Table2Col2'])
         mfo.add_table_row(row=['C', 'D'])
 
     doc = silent_odt_create(capsys, func=func)
@@ -295,10 +295,10 @@ def test_multiple_tables(capsys):
 def test_tables_separated_by_paragraph(capsys):
     """Test tables separated by a paragraph."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_table(first_row=['First', 'Table'])
+        mfo.new_table(first_row=['First', 'Table'])
         mfo.add_table_row(row=['1', '2'])
-        mfo.start_paragraph(text='Between tables')
-        mfo.start_table(first_row=['Second', 'Table'])
+        mfo.new_paragraph(text='Between tables')
+        mfo.new_table(first_row=['Second', 'Table'])
         mfo.add_table_row(row=['3', '4'])
 
     doc = silent_odt_create(capsys, func=func)
@@ -314,7 +314,7 @@ def test_tables_separated_by_paragraph(capsys):
 def test_special_characters_in_table(capsys):
     """Test special characters in table cells."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_table(first_row=['Special', 'Chars'])
+        mfo.new_table(first_row=['Special', 'Chars'])
         mfo.add_table_row(row=['<>&', '"\''])
 
     doc = silent_odt_create(capsys, func=func)
@@ -326,7 +326,7 @@ def test_special_characters_in_table(capsys):
 def test_unicode_in_table(capsys):
     """Test unicode characters in table cells."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_table(first_row=['Language', 'Text'])
+        mfo.new_table(first_row=['Language', 'Text'])
         mfo.add_table_row(row=['Swedish', 'åäö'])
         mfo.add_table_row(row=['Japanese', '日本語'])
 
@@ -343,7 +343,7 @@ def test_unicode_in_table(capsys):
 def test_table_with_empty_cells(capsys):
     """Test table with empty cells."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_table(first_row=['Col1', 'Col2'])
+        mfo.new_table(first_row=['Col1', 'Col2'])
         mfo.add_table_row(row=['', 'B'])
         mfo.add_table_row(row=['C', ''])
 
@@ -360,7 +360,7 @@ def test_table_with_empty_cells(capsys):
 def test_header_only_table(capsys):
     """Test table with only header row."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_table(first_row=['Header1', 'Header2'])
+        mfo.new_table(first_row=['Header1', 'Header2'])
 
     doc = silent_odt_create(capsys, func=func)
     tables = get_table_data(doc)
@@ -374,10 +374,10 @@ def test_header_only_table(capsys):
 def test_table_then_bullet_list(capsys):
     """Test table followed by bullet list."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_table(first_row=['Col1', 'Col2'])
+        mfo.new_table(first_row=['Col1', 'Col2'])
         mfo.add_table_row(row=['A', 'B'])
-        mfo.start_bullet_item(text='List item 1')
-        mfo.start_bullet_item(text='List item 2')
+        mfo.new_bullet_item(text='List item 1')
+        mfo.new_bullet_item(text='List item 2')
 
     doc = silent_odt_create(capsys, func=func)
     tables = get_table_data(doc)
@@ -390,9 +390,9 @@ def test_table_then_bullet_list(capsys):
 def test_bullet_list_then_table(capsys):
     """Test bullet list followed by table."""
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.start_bullet_item(text='List item 1')
-        mfo.start_bullet_item(text='List item 2')
-        mfo.start_table(first_row=['Col1', 'Col2'])
+        mfo.new_bullet_item(text='List item 1')
+        mfo.new_bullet_item(text='List item 2')
+        mfo.new_table(first_row=['Col1', 'Col2'])
         mfo.add_table_row(row=['A', 'B'])
 
     doc = silent_odt_create(capsys, func=func)

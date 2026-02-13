@@ -56,11 +56,11 @@ class MultiFormat11(MultiFormat3):
         self.inc_count('_end_heading')
 
 
-def test_start_table_basic(capsys):
+def test_new_table_basic(capsys):
     """Test starting a basic table."""
     mfmt = MultiFormat11(file_name='test')
     assert mfmt.state == MultiFormatState.EMPTY
-    mfmt.start_table(first_row=['Col1', 'Col2'])
+    mfmt.new_table(first_row=['Col1', 'Col2'])
     assert mfmt.state == MultiFormatState.TABLE
     assert mfmt.table is not None
     assert mfmt.table.number_of_columns == 2
@@ -74,10 +74,10 @@ def test_start_table_basic(capsys):
     check_capsys(capsys)
 
 
-def test_start_table_with_rows(capsys):
+def test_new_table_with_rows(capsys):
     """Test table with multiple rows."""
     mfmt = MultiFormat11(file_name='test')
-    mfmt.start_table(first_row=['Name', 'Age'])
+    mfmt.new_table(first_row=['Name', 'Age'])
     mfmt.add_table_row(row=['Alice', '30'])
     mfmt.add_table_row(row=['Bob', '25'])
     assert mfmt.state == MultiFormatState.TABLE
@@ -95,7 +95,7 @@ def test_start_table_with_rows(capsys):
 def test_table_column_width_expansion(capsys):
     """Test that column widths expand with longer content."""
     mfmt = MultiFormat11(file_name='test')
-    mfmt.start_table(first_row=['A', 'B'])
+    mfmt.new_table(first_row=['A', 'B'])
     assert mfmt.table.column_widths == [1, 1]
     mfmt.add_table_row(row=['Short', 'Text'])
     assert mfmt.table.column_widths == [5, 4]
@@ -134,9 +134,9 @@ def test_write_complete_table_with_varying_widths(capsys):
 def test_table_then_paragraph(capsys):
     """Test table followed by paragraph."""
     mfmt = MultiFormat11(file_name='test')
-    mfmt.start_table(first_row=['X', 'Y'])
+    mfmt.new_table(first_row=['X', 'Y'])
     mfmt.add_table_row(row=['1', '2'])
-    mfmt.start_paragraph(text='After table')
+    mfmt.new_paragraph(text='After table')
     assert mfmt.state == MultiFormatState.PARAGRAPH
     assert mfmt.count == {
         '_encode_text': 5,
@@ -153,8 +153,8 @@ def test_table_then_paragraph(capsys):
 def test_heading_then_table(capsys):
     """Test heading followed by table."""
     mfmt = MultiFormat11(file_name='test')
-    mfmt.start_heading(level=1, text='Data')
-    mfmt.start_table(first_row=['Col1', 'Col2'])
+    mfmt.new_heading(level=1, text='Data')
+    mfmt.new_table(first_row=['Col1', 'Col2'])
     assert mfmt.state == MultiFormatState.TABLE
     assert mfmt.count == {
         '_encode_text': 3,
@@ -170,10 +170,10 @@ def test_heading_then_table(capsys):
 def test_multiple_tables(capsys):
     """Test multiple tables in sequence."""
     mfmt = MultiFormat11(file_name='test')
-    mfmt.start_table(first_row=['A', 'B'])
+    mfmt.new_table(first_row=['A', 'B'])
     mfmt.add_table_row(row=['1', '2'])
-    mfmt.start_paragraph(text='Between')
-    mfmt.start_table(first_row=['X', 'Y', 'Z'])
+    mfmt.new_paragraph(text='Between')
+    mfmt.new_table(first_row=['X', 'Y', 'Z'])
     mfmt.add_table_row(row=['3', '4', '5'])
     assert mfmt.state == MultiFormatState.TABLE
     assert mfmt.table.number_of_columns == 3
@@ -193,7 +193,7 @@ def test_multiple_tables(capsys):
 def test_table_error_wrong_column_count(capsys):
     """Test error when row has wrong number of columns."""
     mfmt = MultiFormat11(file_name='test')
-    mfmt.start_table(first_row=['A', 'B'])
+    mfmt.new_table(first_row=['A', 'B'])
     with pytest.raises(RuntimeError, match='Row has 3 columns'):
         mfmt.add_table_row(row=['1', '2', '3'])
     check_capsys(capsys)
@@ -228,7 +228,7 @@ def test_write_complete_table_error_inconsistent_columns(capsys):
 def test_table_with_single_column(capsys):
     """Test table with single column."""
     mfmt = MultiFormat11(file_name='test')
-    mfmt.start_table(first_row=['Column'])
+    mfmt.new_table(first_row=['Column'])
     mfmt.add_table_row(row=['Value1'])
     mfmt.add_table_row(row=['Value2'])
     assert mfmt.table.number_of_columns == 1
@@ -241,22 +241,22 @@ def test_table_with_many_columns(capsys):
     """Test table with many columns."""
     mfmt = MultiFormat11(file_name='test')
     first_row = ['C1', 'C2', 'C3', 'C4', 'C5']
-    mfmt.start_table(first_row=first_row)
+    mfmt.new_table(first_row=first_row)
     mfmt.add_table_row(row=['1', '2', '3', '4', '5'])
     assert mfmt.table.number_of_columns == 5
     assert mfmt.table.column_widths == [2, 2, 2, 2, 2]
     check_capsys(capsys)
 
 
-def test_write_complete_table_then_start_table(capsys):
-    """Test write_complete_table followed by start_table."""
+def test_write_complete_table_then_new_table(capsys):
+    """Test write_complete_table followed by new_table."""
     mfmt = MultiFormat11(file_name='test')
     # First table using write_complete_table
     mfmt.write_complete_table(table=[['A', 'B'], ['1', '2']])
     assert mfmt.table.column_widths == [1, 1]
     # Start a new table
-    mfmt.start_paragraph(text='Between')
-    mfmt.start_table(first_row=['Long', 'Short'])
+    mfmt.new_paragraph(text='Between')
+    mfmt.new_table(first_row=['Long', 'Short'])
     assert mfmt.table.column_widths == [4, 5]
     mfmt.add_table_row(row=['A', 'B'])
     # New table should have its own column widths
@@ -268,7 +268,7 @@ def test_write_complete_table_then_start_table(capsys):
 def test_table_row_in_paragraph(capsys):
     """Test table row in paragraph."""
     mfmt = MultiFormat11(file_name='test')
-    mfmt.start_paragraph(text='A')
+    mfmt.new_paragraph(text='A')
     with pytest.raises(RuntimeError) as exc:
         mfmt.add_table_row(row=['1', '2'])
     assert exc.value.args[0] == 'Cannot add table row to state PARAGRAPH'

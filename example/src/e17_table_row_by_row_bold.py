@@ -15,10 +15,10 @@ def example_table_row_by_row_bold(format_name: str, file_name: str) -> None:
     # as a context manager as we did in exampe e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
         # See example e05_heading.py for how to write a heading.
-        mf.start_heading(level=1,
-                         text='Table row by row with bold & italic example')
+        mf.new_heading(level=1,
+                       text='Table row by row with bold & italic example')
         # Start first row of table with bold first line.
-        mf.start_table(first_row=['City', 'Country', 'Size'], bold=True)
+        mf.new_table(first_row=['City', 'Country', 'Size'], bold=True)
         # Add a row.
         mf.add_table_row(row=['Mariehamn', 'Finland', 'Small'])
         mf.add_table_row(row=['Copenhagen', 'Denmark', 'Large'], italic=True)
@@ -26,15 +26,15 @@ def example_table_row_by_row_bold(format_name: str, file_name: str) -> None:
                          italic=True)
         # Table is automatically ended when the context manager is exited,
         # or when we start something else, like another table.
-        mf.start_table(first_row=['Capital', 'Country', 'Continent'],
-                       italic=True)
+        mf.new_table(first_row=['Capital', 'Country', 'Continent'],
+                     italic=True)
         mf.add_table_row(row=['Oslo', 'Norway', 'Europe'])
         mf.add_table_row(row=['Tokyo', 'Japan', 'Asia'])
         mf.add_table_row(row=['Berlin', 'Germany', 'Europe'], bold=True)
         mf.add_table_row(row=['Kairo', 'Egypt', 'Africa'])
         mf.add_table_row(row=['Brussels', 'Belgium', 'Europe'], bold=True,
                          italic=True)
-        mf.start_paragraph(text=NOTE)
+        mf.new_paragraph(text=NOTE)
 
 
 if __name__ == '__main__':

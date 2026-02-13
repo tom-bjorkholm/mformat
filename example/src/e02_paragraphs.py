@@ -17,20 +17,20 @@ def paragraphs_example(format_name: str,
     # and the output file name as shown in the example file e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
         # Start a paragraph.
-        mf.start_paragraph('With start_paragraph we can start a paragraph.')
+        mf.new_paragraph('With new_paragraph we can start a paragraph.')
         # We can also add text to the paragraph in multiple calls
         # using add_text.
         mf.add_text('With add_text we can add text to the paragraph.')
         mf.add_text('As described in the example file e01_paragraph.py.')
         # Start a second paragraph - this automatically closes the first
         # paragraph.
-        mf.start_paragraph('With start_paragraph we can start a second '
-                           'paragraph.')
+        mf.new_paragraph('With new_paragraph we can start a second '
+                         'paragraph.')
         # We can also add text to the second paragraph in multiple calls
         # using add_text.
         mf.add_text('With add_text we can add text to the second')
         mf.add_text('paragraph just as we did with the first paragraph.')
-        mf.start_paragraph(NO_HEADING_TEXT)
+        mf.new_paragraph(NO_HEADING_TEXT)
         # There is no need to close the second paragraph, it is closed
         # automatically when we start something new or when the with
         # statement is exited.

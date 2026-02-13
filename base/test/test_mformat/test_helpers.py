@@ -261,7 +261,7 @@ class MultiFormat7(MultiFormat4):
 
 
 class MultiFormat8(MultiFormat3):
-    """Class used for testing start_heading."""
+    """Class used for testing new_heading."""
 
     def __init__(self, file_name: str, expected_text: str,
                  expected_level: int,
@@ -400,11 +400,11 @@ def action_complex_nested_bullet_structure(mfd: Any) -> None:
     - Item 2
       - Item 2.1
     """
-    mfd.start_bullet_item(text='Item 1', level=1)
-    mfd.start_bullet_item(text='Item 1.1', level=2)
-    mfd.start_bullet_item(text='Item 1.2', level=2)
-    mfd.start_bullet_item(text='Item 2', level=1)
-    mfd.start_bullet_item(text='Item 2.1', level=2)
+    mfd.new_bullet_item(text='Item 1', level=1)
+    mfd.new_bullet_item(text='Item 1.1', level=2)
+    mfd.new_bullet_item(text='Item 1.2', level=2)
+    mfd.new_bullet_item(text='Item 2', level=1)
+    mfd.new_bullet_item(text='Item 2.1', level=2)
 
 
 # Common table data for tests to avoid code duplication

@@ -30,7 +30,7 @@ def paragraph_example(format_name: str,
         # Start a paragraph.
         # We can add all the text of the paragraph in one go in this call,
         # or we can have just a little text in this call.
-        mf.start_paragraph('With start_paragraph we can start a paragraph.')
+        mf.new_paragraph('With new_paragraph we can start a paragraph.')
         # We can also add text to the paragraph in multiple calls
         # using add_text.
         mf.add_text('With add_text we can add text to the paragraph.')

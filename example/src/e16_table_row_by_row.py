@@ -23,9 +23,9 @@ def example_table_row_by_row(format_name: str, file_name: str) -> None:
     # as a context manager as we did in exampe e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
         # See example e05_heading.py for how to write a heading.
-        mf.start_heading(level=1, text='Table row by row example')
+        mf.new_heading(level=1, text='Table row by row example')
         # Start a table.
-        mf.start_table(first_row=['Name', 'Age', 'City'])
+        mf.new_table(first_row=['Name', 'Age', 'City'])
         # Add a row.
         mf.add_table_row(row=['John', '25', 'New York'])
         # Add a row.
@@ -34,7 +34,7 @@ def example_table_row_by_row(format_name: str, file_name: str) -> None:
         mf.add_table_row(row=['Jim', '35', 'Chicago'])
         # Table is automatically ended when the context manager is exited,
         # or when we start something else.
-        mf.start_paragraph(text=NOTE)
+        mf.new_paragraph(text=NOTE)
 
 
 if __name__ == '__main__':

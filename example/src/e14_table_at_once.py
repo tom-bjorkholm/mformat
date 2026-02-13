@@ -14,7 +14,7 @@ def example_table_at_once(format_name: str, file_name: str) -> None:
     # as a context manager as we did in exampe e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
         # See example e05_heading.py for how to write a heading.
-        mf.start_heading(level=1, text='Table in one call example')
+        mf.new_heading(level=1, text='Table in one call example')
         # The table data
         table_data: list[list[str]] = [
             ['Name', 'Age', 'City'],

@@ -96,7 +96,7 @@ def test_create_nok(capsys):
 def test_heading_creation(capsys, level):
     """Test creating headings at different levels."""
     def func(mfd: MultiFormatDocx) -> None:
-        mfd.start_heading(level=level, text=f'Heading Level {level}')
+        mfd.new_heading(level=level, text=f'Heading Level {level}')
 
     html = silent_docx_create(capsys, func=func)
     assert f'<h{level}>Heading Level {level}</h{level}>' in html
@@ -105,7 +105,7 @@ def test_heading_creation(capsys, level):
 def test_heading_with_text(capsys):
     """Test heading with additional text."""
     def func(mfd: MultiFormatDocx) -> None:
-        mfd.start_heading(level=1, text='Main Title')
+        mfd.new_heading(level=1, text='Main Title')
         mfd.add_text(text=' - Extended')
 
     html = silent_docx_create(capsys, func=func)
@@ -115,7 +115,7 @@ def test_heading_with_text(capsys):
 def test_heading_with_url(capsys):
     """Test heading with URL."""
     def func(mfd: MultiFormatDocx) -> None:
-        mfd.start_heading(level=2, text='Check ')
+        mfd.new_heading(level=2, text='Check ')
         mfd.add_url(url='http://example.com', text='this link')
 
     html = silent_docx_create(capsys, func=func)
@@ -127,8 +127,8 @@ def test_heading_with_url(capsys):
 def test_heading_then_paragraph(capsys):
     """Test heading followed by paragraph."""
     def func(mfd: MultiFormatDocx) -> None:
-        mfd.start_heading(level=1, text='Title')
-        mfd.start_paragraph('Some text')
+        mfd.new_heading(level=1, text='Title')
+        mfd.new_paragraph('Some text')
 
     html = silent_docx_create(capsys, func=func)
     assert '<h1>Title</h1>' in html
@@ -138,9 +138,9 @@ def test_heading_then_paragraph(capsys):
 def test_multiple_headings(capsys):
     """Test multiple headings."""
     def func(mfd: MultiFormatDocx) -> None:
-        mfd.start_heading(level=1, text='Main')
-        mfd.start_heading(level=2, text='Sub')
-        mfd.start_heading(level=3, text='Subsub')
+        mfd.new_heading(level=1, text='Main')
+        mfd.new_heading(level=2, text='Sub')
+        mfd.new_heading(level=3, text='Subsub')
 
     html = silent_docx_create(capsys, func=func)
     assert '<h1>Main</h1>' in html
@@ -151,9 +151,9 @@ def test_multiple_headings(capsys):
 def test_heading_paragraph_heading(capsys):
     """Test heading, paragraph, then another heading."""
     def func(mfd: MultiFormatDocx) -> None:
-        mfd.start_heading(level=1, text='First Heading')
-        mfd.start_paragraph('Some content here.')
-        mfd.start_heading(level=2, text='Second Heading')
+        mfd.new_heading(level=1, text='First Heading')
+        mfd.new_paragraph('Some content here.')
+        mfd.new_heading(level=2, text='Second Heading')
 
     html = silent_docx_create(capsys, func=func)
     assert '<h1>First Heading</h1>' in html
@@ -168,8 +168,8 @@ def test_heading_paragraph_heading(capsys):
 def test_heading_formatting(capsys, bold, italic):
     """Test heading with bold and italic formatting."""
     def func(mfd: MultiFormatDocx) -> None:
-        mfd.start_heading(level=1, text='Formatted Title',
-                          bold=bold, italic=italic)
+        mfd.new_heading(level=1, text='Formatted Title',
+                        bold=bold, italic=italic)
 
     html = silent_docx_create(capsys, func=func)
     assert '<h1>' in html
@@ -236,7 +236,7 @@ def test_code_block_with_special_chars(capsys):
 def test_paragraph_then_code_block(capsys):
     """Test paragraph followed by code block."""
     def func(mfd: MultiFormatDocx) -> None:
-        mfd.start_paragraph(text='Here is some code:')
+        mfd.new_paragraph(text='Here is some code:')
         mfd.write_code_block(text='x = 42', programming_language='python')
 
     html = silent_docx_create(capsys, func=func)
@@ -248,7 +248,7 @@ def test_code_block_then_paragraph(capsys):
     """Test code block followed by paragraph."""
     def func(mfd: MultiFormatDocx) -> None:
         mfd.write_code_block(text='x = 42')
-        mfd.start_paragraph(text='That was the code.')
+        mfd.new_paragraph(text='That was the code.')
 
     html = silent_docx_create(capsys, func=func)
     assert 'x = 42' in html
@@ -258,7 +258,7 @@ def test_code_block_then_paragraph(capsys):
 def test_heading_then_code_block(capsys):
     """Test heading followed by code block."""
     def func(mfd: MultiFormatDocx) -> None:
-        mfd.start_heading(level=2, text='Code Example')
+        mfd.new_heading(level=2, text='Code Example')
         mfd.write_code_block(text='example()', programming_language='python')
 
     html = silent_docx_create(capsys, func=func)

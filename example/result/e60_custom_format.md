@@ -18,11 +18,11 @@ changing the format name.
 
 3. Third step: Register the format
 
-| **Element** | **Method**          |
-|-------------|---------------------|
-| Paragraph   | start_paragraph()   |
-| Heading     | start_heading()     |
-| List        | start_bullet_item() |
+| **Element** | **Method**        |
+|-------------|-------------------|
+| Paragraph   | new_paragraph()   |
+| Heading     | new_heading()     |
+| List        | new_bullet_item() |
 
 
 ````python

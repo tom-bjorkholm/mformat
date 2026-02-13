@@ -14,8 +14,8 @@ def example_table_at_once_bold(format_name: str, file_name: str) -> None:
     # as a context manager as we did in exampe e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
         # See example e05_heading.py for how to write a heading.
-        mf.start_heading(level=1,
-                         text='Table in one call with bold first row example')
+        mf.new_heading(level=1,
+                       text='Table in one call with bold first row example')
         # The table data
         table_data: list[list[str]] = [
             ['Name', 'Age', 'City'],
@@ -24,12 +24,12 @@ def example_table_at_once_bold(format_name: str, file_name: str) -> None:
             ['Jill', '35', 'Chicago'],
         ]
         # Write explanation before the table.
-        mf.start_paragraph('This is a table with bold text in first row.')
+        mf.new_paragraph('This is a table with bold text in first row.')
         # Write the table
         mf.write_complete_table(table=table_data, bold_first_row=True)
         # Now we show italics and bold in the first row.
-        mf.start_paragraph('Now a table with italics and bold in the '
-                           'first row.')
+        mf.new_paragraph('Now a table with italics and bold in the '
+                         'first row.')
         mf.write_complete_table(table=table_data, bold_first_row=True,
                                 italic_first_row=True)
 

@@ -145,7 +145,7 @@ def test_heading_integration(capsys,  # pylint: disable=too-many-arguments,too-m
     """Test complete heading creation."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_heading(level=level, text=text)
+        mfd.new_heading(level=level, text=text)
 
     check_run_with_context_manager('html', '.html', test_action,
                                    expected_text=expected, capsys=capsys)
@@ -163,7 +163,7 @@ def test_heading_formatting(capsys,  # pylint: disable=too-many-arguments,too-ma
     """Test heading with bold and italic formatting."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_heading(level=level, text=text, bold=bold, italic=italic)
+        mfd.new_heading(level=level, text=text, bold=bold, italic=italic)
 
     exp = PF_EN_NT_NC + expected + SFTOT
     check_run_with_context_manager('html', '.html', test_action,
@@ -174,7 +174,7 @@ def test_heading_add_text(capsys):
     """Test adding text to a heading."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_heading(level=1, text='Title')
+        mfd.new_heading(level=1, text='Title')
         mfd.add_text(text=' and more')
 
     exp = PF_EN_NT_NC + '<h1>\nTitle and more</h1>\n' + SFTOT
@@ -186,7 +186,7 @@ def test_heading_add_url(capsys):
     """Test adding URL to a heading."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_heading(level=2, text='Check ')
+        mfd.new_heading(level=2, text='Check ')
         mfd.add_url(url='http://example.com', text='this link')
 
     exp = (PF_EN_NT_NC + '<h2>\nCheck ' +
@@ -199,8 +199,8 @@ def test_heading_then_paragraph(capsys):
     """Test heading followed by paragraph."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_heading(level=1, text='Title')
-        mfd.start_paragraph('Some text')
+        mfd.new_heading(level=1, text='Title')
+        mfd.new_paragraph('Some text')
 
     exp = (PF_EN_NT_NC + '<h1>\nTitle</h1>\n' +
            '<p>\nSome text</p>\n' + SFTOT)
@@ -212,9 +212,9 @@ def test_multiple_headings(capsys):
     """Test multiple headings."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_heading(level=1, text='Main')
-        mfd.start_heading(level=2, text='Sub')
-        mfd.start_heading(level=3, text='Subsub')
+        mfd.new_heading(level=1, text='Main')
+        mfd.new_heading(level=2, text='Sub')
+        mfd.new_heading(level=3, text='Subsub')
 
     exp = (PF_EN_NT_NC + '<h1>\nMain</h1>\n' +
            '<h2>\nSub</h2>\n<h3>\nSubsub</h3>\n' + SFTOT)
@@ -226,9 +226,9 @@ def test_heading_paragraph_heading(capsys):
     """Test heading, paragraph, then another heading."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_heading(level=1, text='First Heading')
-        mfd.start_paragraph('Some content here.')
-        mfd.start_heading(level=2, text='Second Heading')
+        mfd.new_heading(level=1, text='First Heading')
+        mfd.new_paragraph('Some content here.')
+        mfd.new_heading(level=2, text='Second Heading')
 
     exp = (PF_EN_NT_NC + '<h1>\nFirst Heading</h1>\n' +
            '<p>\nSome content here.</p>\n' +
@@ -301,7 +301,7 @@ def test_paragraph_then_code_block(capsys):
     """Test paragraph followed by code block."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_paragraph(text='Here is some code:')
+        mfd.new_paragraph(text='Here is some code:')
         mfd.write_code_block(text='x = 42', programming_language='python')
 
     exp = (PF_EN_NT_NC + '<p>\nHere is some code:</p>\n' +
@@ -316,7 +316,7 @@ def test_code_block_then_paragraph(capsys):
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
         mfd.write_code_block(text='x = 42')
-        mfd.start_paragraph(text='That was the code.')
+        mfd.new_paragraph(text='That was the code.')
 
     exp = (PF_EN_NT_NC + '<pre><code>\nx = 42</code></pre>\n' +
            '<p>\nThat was the code.</p>\n' + SFTOT)
@@ -328,7 +328,7 @@ def test_heading_then_code_block(capsys):
     """Test heading followed by code block."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_heading(level=2, text='Code Example')
+        mfd.new_heading(level=2, text='Code Example')
         mfd.write_code_block(text='example()', programming_language='python')
 
     exp = (PF_EN_NT_NC + '<h2>\nCode Example</h2>\n' +

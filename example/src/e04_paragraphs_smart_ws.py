@@ -19,28 +19,28 @@ def paragraphs_smart_ws_example(format_name: str,
         # Start a paragraph.
         # We can add all the text of the paragraph in one go in this call,
         # or we can have just a little text in this call.
-        mf.start_paragraph('With start_paragraph we can start a paragraph.')
+        mf.new_paragraph('With new_paragraph we can start a paragraph.')
         # We can also add text to the paragraph in multiple calls
         # using add_text. The default smart whitespace handling is enabled
         # so we do not need to add whitespace between text fragments from
-        # different calls to add_text or start_paragraph calls.
+        # different calls to add_text or new_paragraph calls.
         mf.add_text('Thanks to smart whitespace handling, we do not need')
         mf.add_text('to add whitespace between text fragments from different')
         mf.add_text('calls to add_text ')
         # If we have extra whitespace, it will be consolidated
         # into a single space.
-        mf.add_text(' or start_paragraph calls. ')
+        mf.add_text(' or new_paragraph calls. ')
         mf.add_text(' If we have extra whitespace, it will be consolidated')
         mf.add_text('into a single space.')
         # Start a second paragraph with smart whitespace handling disabled
-        # in the start_paragraph call.
-        mf.start_paragraph('With start_paragraph we can start another '
-                           'paragraph. ',
-                           smart_ws=False)
+        # in the new_paragraph call.
+        mf.new_paragraph('With new_paragraph we can start another '
+                         'paragraph. ',
+                         smart_ws=False)
         # We can also add text to the second paragraph in multiple calls
         # using add_text. The smart whitespace handling is disabled by setting
         # smart_ws=False so whitespace between text fragments from different
-        # calls to add_text or start_paragraph calls will be preserved
+        # calls to add_text or new_paragraph calls will be preserved
         mf.add_text(' With smart_ws=False the whitespace between text ',
                     smart_ws=False)
         mf.add_text(' fragments will be preserved.', smart_ws=False)
@@ -53,7 +53,7 @@ def paragraphs_smart_ws_example(format_name: str,
         mf.add_text('by ommitting the smart_ws=False argument,')
         # Naturally we can also explicitly set smart_ws=True.
         mf.add_text('or by explicitly setting smart_ws=True.', smart_ws=True)
-        mf.start_paragraph(NO_HEADING_TEXT, bold=True)
+        mf.new_paragraph(NO_HEADING_TEXT, bold=True)
 
 
 if __name__ == "__main__":

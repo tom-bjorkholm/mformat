@@ -101,15 +101,15 @@ mformat should have a with-clause getting the formatting object from the factory
 In the context of the with-clause the programmer just calls a minimum of member
 functions:
 
-- `start_paragraph` to start a new paragraph with some provided text content.
+- `new_paragraph` to start a new paragraph with some provided text content.
 
-- `start_heading` to start a new heading with some provided text content.
+- `new_heading` to start a new heading with some provided text content.
 
-- `start_bullet_item` to start a new bullet point list item with some provided
+- `new_bullet_item` to start a new bullet point list item with some provided
   text content, and if needed to start the bullet point list with the bullet
   point item.
 
-- `start_numbered_point_item` to start a new numbered point list item with some
+- `new_numbered_point_item` to start a new numbered point list item with some
   provided text content, and if needed to start the numbered point list with the
   number point list item.
 
@@ -123,7 +123,7 @@ functions:
   as code to an already started paragraph, heading, bullet point list item or
   numbered point list item.
 
-- `start_table` to start a new table with the provided first row.
+- `new_table` to start a new table with the provided first row.
 
 - `add_table_row` to add another row to an already started table.
 
@@ -133,9 +133,9 @@ functions:
 
 There are no member functions to end or close any document item. Each document
 item is automatically closed as another docuemnt item is started (or when
-closing the file at the end of the context manager scope). start_bullet_item and
-start_numbered_point_item take an optional level argument, that is used to
-change to another nesting level.
+closing the file at the end of the context manager scope). new_bullet_item and
+new_numbered_point_item take an optional level argument, that is used to change
+to another nesting level.
 
 ## Example programs
 
@@ -178,9 +178,31 @@ format was introduced.
 | md     | Markdown            | mformat       | 0.2                 |
 | odt    | Open Document Text  | mformat-ext   | 0.2                 |
 
+## API changes in version 0.3 (deprecated methods)
+
+In version 0.2.x the public API was build around methods that started document
+items, like start_paragraph. However, experience showed that this was not
+intuitive for the user. Many users were trying to use end or stop methods (that
+do not exist) in pair with the start methods. To address this, the public API
+was changed in version 0.3.0 to use methods named new something, like
+new_paragraph. With this naming the intuition should hopefully not tell users to
+look for end or stop methods (that do not exist). People have also pointed out
+that phrases like "new paragraph" are commonly used in dictation.
+
+The old methods are still available, but are deprecated and will be removed in
+some future version.
+
+| New method              | Deprecated method         |
+|-------------------------|---------------------------|
+| new_paragraph           | start_paragraph           |
+| new_heading             | start_heading             |
+| new_bullet_item         | start_bullet_item         |
+| new_numbered_point_item | start_numbered_point_item |
+| new_table               | start_table               |
+
 ## Test summary
 
-* Test result: 1354 passed in 12s
-* No Flake8 warnings.
-* No mypy errors found.
-* 0.2.3 built and tested using python version: Python 3.14.3
+- Test result: 1354 passed in 12s
+- No Flake8 warnings.
+- No mypy errors found.
+- 0.2.3 built and tested using python version: Python 3.14.3

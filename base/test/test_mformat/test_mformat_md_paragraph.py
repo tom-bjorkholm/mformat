@@ -19,14 +19,14 @@ from mformat.factory import create_mf
 @pytest.mark.parametrize('text, expected',
                          [('test', 'test\n'),
                           ('test\ntest', 'test\ntest\n')])
-def test_start_paragraph(capsys, text, expected):
-    """Test the start_paragraph method."""
+def test_new_paragraph(capsys, text, expected):
+    """Test the new_paragraph method."""
     with TemporaryDirectory() as tmp_dir:
         fname = tmp_dir + '/test.md'
         with create_mf('md', file_name=fname) as mfd:
             assert type(mfd).__name__ == 'MultiFormatMd'
             assert mfd.state == MultiFormatState.EMPTY
-            mfd.start_paragraph(text=text)
+            mfd.new_paragraph(text=text)
             assert mfd.state == MultiFormatState.PARAGRAPH
         with open(fname, 'rt', encoding='utf-8') as file:
             assert file.read() == expected
@@ -37,13 +37,13 @@ def test_start_paragraph(capsys, text, expected):
                          [('bold text', True, False, '**bold text**\n'),
                           ('italic text', False, True, '*italic text*\n'),
                           ('both', True, True, '***both***\n')])
-def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
-                                    text, bold, italic, expected):
-    """Test the start_paragraph method with bold and italic."""
+def test_new_paragraph_formatting(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+                                  text, bold, italic, expected):
+    """Test the new_paragraph method with bold and italic."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
         assert mfd.state == MultiFormatState.EMPTY
-        mfd.start_paragraph(text=text, bold=bold, italic=italic)
+        mfd.new_paragraph(text=text, bold=bold, italic=italic)
         assert mfd.state == MultiFormatState.PARAGRAPH
 
     check_run_with_context_manager('md', '.md', test_action,
@@ -57,14 +57,14 @@ def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-argument
                          [('', '\n'),
                           (' ', '\n'),
                           ('   ', '\n')])
-def test_start_paragraph_space(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
-                               text, bold, italic, expected):
-    """Test the start_paragraph method with bold and italic."""
+def test_new_paragraph_space(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+                             text, bold, italic, expected):
+    """Test the new_paragraph method with bold and italic."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
         assert mfd.state == MultiFormatState.EMPTY
-        mfd.start_paragraph(text=text, bold=bold, italic=italic,
-                            smart_ws=False)
+        mfd.new_paragraph(text=text, bold=bold, italic=italic,
+                          smart_ws=False)
         assert mfd.state == MultiFormatState.PARAGRAPH
 
     check_run_with_context_manager('md', '.md', test_action,
@@ -102,7 +102,7 @@ def test_add_url(capsys, url, text, expected):
     """Test the add_url method."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
-        mfd.start_paragraph('')
+        mfd.new_paragraph('')
         mfd.add_url(url=url, text=text)
 
     check_run_with_context_manager('md', '.md', test_action,
@@ -119,7 +119,7 @@ def test_add_url_as_text(capsys, url, text, expected):
     """Test the add_url method with url_as_text=True."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
-        mfd.start_paragraph('')
+        mfd.new_paragraph('')
         mfd.add_url(url=url, text=text)
 
     check_run_with_context_manager('md', '.md', test_action,
@@ -137,7 +137,7 @@ def test_add_code_in_text(capsys, text, code, expected):
     """Test the add_code_in_text method."""
     def test_action(mfd):
         assert type(mfd).__name__ == 'MultiFormatMd'
-        mfd.start_paragraph(text=text)
+        mfd.new_paragraph(text=text)
         mfd.add_code_in_text(text=code)
 
     check_run_with_context_manager('md', '.md', test_action,

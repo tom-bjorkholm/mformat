@@ -25,14 +25,14 @@ def use_css_in_html_example(format_name: str, file_name: str) -> None:
         }
     with create_mf(format_name=format_name, file_name=file_name,
                    args=opt_args) as mf:
-        mf.start_heading(level=1, text='CSS und Sprache in HTML')
-        mf.start_paragraph(
+        mf.new_heading(level=1, text='CSS und Sprache in HTML')
+        mf.new_paragraph(
             text='Dieses Beispiel zeigt, wie Sie eine CSS-Datei und die '
             'Dokumentensprache (lang) mit mformat setzen. Übergeben Sie '
             'OptArgs mit "css_file" und "lang" an create_mf, wenn das '
             'Format HTML ist.'
         )
-        mf.start_paragraph(
+        mf.new_paragraph(
             text='Die CSS-Datei liegt unter example/css/ und wird per '
             'relativem Pfad eingebunden (für lokale Anzeige). Die Ausgabe '
             'ist auf Deutsch; lang="de" steht im erzeugten <html>-Tag.'

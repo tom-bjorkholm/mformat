@@ -27,12 +27,12 @@ from mformat.mformat_state import MultiFormatState
                            {'_encode_text': 1, '_end_paragraph': 1,
                             '_start_paragraph': 1, '_write_text': 1},
                            'def')])
-def test_start_paragraph(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                         from_state, to_state, count, text):
-    """Test that the start_paragraph method is correct."""
+def test_new_paragraph(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                       from_state, to_state, count, text):
+    """Test that the new_paragraph method is correct."""
     mfmt = MultiFormat4(file_name='test', expected_text=text)
     mfmt.state = from_state
-    mfmt.start_paragraph(text=text)
+    mfmt.new_paragraph(text=text)
     assert mfmt.state == to_state
     assert mfmt.count == count
     check_capsys(capsys)
@@ -91,12 +91,12 @@ def test_add_text(capsys,  # pylint: disable=too-many-arguments,too-many-positio
                           ('def', True, False, 'def'),
                           ('ghi', False, True, 'ghi'),
                           ('jkl', True, True, 'jkl')])
-def test_start_paragraph_bold_italic(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                                     text, bold, italic, expected_text):
-    """Test start_paragraph with bold and italic parameters."""
+def test_new_paragraph_bold_italic(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                                   text, bold, italic, expected_text):
+    """Test new_paragraph with bold and italic parameters."""
     mfmt = MultiFormat4(file_name='test', expected_text=expected_text,
                         expected_bold=bold, expected_italic=italic)
-    mfmt.start_paragraph(text=text, bold=bold, italic=italic)
+    mfmt.new_paragraph(text=text, bold=bold, italic=italic)
     assert mfmt.state == MultiFormatState.PARAGRAPH
     assert mfmt.count == {'_encode_text': 1, '_start_paragraph': 1,
                           '_write_text': 1, '_write_file_prefix': 1}
@@ -245,12 +245,12 @@ def test_add_url_as_text_formatting(capsys,  # pylint: disable=too-many-argument
                           ('hello\r', 'hello\r', False),
                           ('', '', False),
                           ('  ', '  ', False)])
-def test_start_paragraph_smart_ws_false(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                                        text, expected_text,
-                                        expected_ws_needed):
-    """Test start_paragraph with smart_ws=False."""
+def test_new_paragraph_smart_ws_false(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                                      text, expected_text,
+                                      expected_ws_needed):
+    """Test new_paragraph with smart_ws=False."""
     mfmt = MultiFormat4(file_name='test', expected_text=expected_text)
-    mfmt.start_paragraph(text=text, smart_ws=False)
+    mfmt.new_paragraph(text=text, smart_ws=False)
     assert mfmt.state == MultiFormatState.PARAGRAPH
     assert mfmt.ws_needed_at_append == expected_ws_needed
     assert mfmt.count == {'_encode_text': 1, '_start_paragraph': 1,
@@ -280,7 +280,7 @@ def test_smart_ws_false_no_space_between_texts(capsys):
     """Test that smart_ws=False does not add space between texts."""
     # First call: write 'hello' (no trailing whitespace)
     mfmt = MultiFormat4(file_name='test', expected_text='hello')
-    mfmt.start_paragraph(text='hello', smart_ws=False)
+    mfmt.new_paragraph(text='hello', smart_ws=False)
     assert mfmt.ws_needed_at_append is True
     # Second call: write 'world' (should NOT get leading space)
     mfmt.expected_text = 'world'
@@ -295,7 +295,7 @@ def test_smart_ws_false_with_trailing_space(capsys):
     """Test smart_ws=False with text that has trailing whitespace."""
     # First call: write 'hello ' (with trailing space)
     mfmt = MultiFormat4(file_name='test', expected_text='hello ')
-    mfmt.start_paragraph(text='hello ', smart_ws=False)
+    mfmt.new_paragraph(text='hello ', smart_ws=False)
     assert mfmt.ws_needed_at_append is False
     # Second call: write 'world' (should NOT get leading space)
     mfmt.expected_text = 'world'
@@ -309,7 +309,7 @@ def test_smart_ws_false_with_trailing_space(capsys):
 def test_smart_ws_false_empty_text(capsys):
     """Test smart_ws=False with empty text."""
     mfmt = MultiFormat4(file_name='test', expected_text='')
-    mfmt.start_paragraph(text='', smart_ws=False)
+    mfmt.new_paragraph(text='', smart_ws=False)
     assert mfmt.ws_needed_at_append is False
     # Add more text after empty start
     mfmt.expected_text = 'content'
@@ -345,7 +345,7 @@ def test_mixed_smart_ws_modes(capsys,  # pylint: disable=too-many-arguments,too-
     # First call
     expected_first = first_text.strip() if first_smart_ws else first_text
     mfmt = MultiFormat4(file_name='test', expected_text=expected_first)
-    mfmt.start_paragraph(text=first_text, smart_ws=first_smart_ws)
+    mfmt.new_paragraph(text=first_text, smart_ws=first_smart_ws)
     # Second call
     mfmt.expected_text = expected_second
     mfmt.add_text(text=second_text, smart_ws=second_smart_ws)
@@ -358,7 +358,7 @@ def test_complex_mixed_smart_ws_sequence(capsys):
     """Test a complex sequence mixing smart_ws modes."""
     # Start with smart_ws=False, text ending without whitespace
     mfmt = MultiFormat4(file_name='test', expected_text='First')
-    mfmt.start_paragraph(text='First', smart_ws=False)
+    mfmt.new_paragraph(text='First', smart_ws=False)
     assert mfmt.ws_needed_at_append is True
     # Add with smart_ws=True - should add space
     mfmt.expected_text = ' second'
@@ -380,7 +380,7 @@ def test_smart_ws_false_trailing_ws_then_smart_ws_true(capsys):
     """Test smart_ws=False with trailing whitespace, then smart_ws=True."""
     # Write text with trailing space using smart_ws=False
     mfmt = MultiFormat4(file_name='test', expected_text='Hello ')
-    mfmt.start_paragraph(text='Hello ', smart_ws=False)
+    mfmt.new_paragraph(text='Hello ', smart_ws=False)
     assert mfmt.ws_needed_at_append is False
     # Add text with smart_ws=True - should NOT add space
     mfmt.expected_text = 'world'

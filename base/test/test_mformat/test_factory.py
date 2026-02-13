@@ -253,7 +253,7 @@ def test_create_file_exists_y(capsys, fmt):
             f.write('Original content')
         with create_mf(format_name=fmt, file_name=file_name,
                        args=args) as mf:
-            mf.start_heading(1, 'Test heading')
+            mf.new_heading(1, 'Test heading')
         if fmt in ['html', 'md']:
             with open(file_name, 'r', encoding='utf-8') as f:
                 content = f.read()
@@ -280,7 +280,7 @@ def test_create_file_exists_ay(capsys, monkeypatch, fmt):
             f.write('Original content')
         with create_mf(format_name=fmt, file_name=file_name,
                        args=args) as mf:
-            mf.start_heading(1, 'Test heading')
+            mf.new_heading(1, 'Test heading')
         if fmt in ['html', 'md']:
             with open(file_name, 'r', encoding='utf-8') as f:
                 content = f.read()
@@ -308,7 +308,7 @@ def test_create_file_exists_n(capsys, fmt):
         with pytest.raises(FileExistsError) as exc:
             with create_mf(format_name=fmt, file_name=file_name,
                            args=args) as mf:
-                mf.start_heading(1, 'Test heading')
+                mf.new_heading(1, 'Test heading')
         assert exc.value.args[0] == f'File {file_name} already exists.'
         with open(file_name, 'r', encoding='utf-8') as f:
             content = f.read()
@@ -331,7 +331,7 @@ def test_create_file_exists_an(capsys, monkeypatch, fmt):
         with pytest.raises(FileExistsError) as exc:
             with create_mf(format_name=fmt, file_name=file_name,
                            args=args) as mf:
-                mf.start_heading(1, 'Test heading')
+                mf.new_heading(1, 'Test heading')
         assert exc.value.args[0] == f'File {file_name} already exists.'
         with open(file_name, 'r', encoding='utf-8') as f:
             content = f.read()

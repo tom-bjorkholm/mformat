@@ -18,9 +18,9 @@ def paragraphs_bold_example(format_name: str,
     # and the output file name as shown in the example file e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
         # Start a paragraph with first sentence in bold.
-        mf.start_paragraph('With start_paragraph we can start a paragraph '
-                           'with the first sentence in bold.',
-                           bold=True)
+        mf.new_paragraph('With new_paragraph we can start a paragraph '
+                         'with the first sentence in bold.',
+                         bold=True)
         # Add some more text to the paragraph this time not in bold.
         mf.add_text('Use add_text to add text without bold to the paragraph.')
         # Add some more text to the paragraph this time in italic.
@@ -30,9 +30,9 @@ def paragraphs_bold_example(format_name: str,
         mf.add_text('Use add_text to add text in bold and italic.',
                     bold=True, italic=True)
         # Let us add a second paragraph with first sentence in italic.
-        mf.start_paragraph('With start_paragraph we can start a second '
-                           'paragraph with the first sentence in italic.',
-                           italic=True)
+        mf.new_paragraph('With new_paragraph we can start a second '
+                         'paragraph with the first sentence in italic.',
+                         italic=True)
         # Add some more text to the second paragraph this time not in italic.
         mf.add_text('Use add_text to add text without italic to the '
                     'second paragraph.')
@@ -43,7 +43,7 @@ def paragraphs_bold_example(format_name: str,
         # in italic and bold.
         mf.add_text('Use add_text to add text in italic and bold to the '
                     'second paragraph.', italic=True, bold=True)
-        mf.start_paragraph(NO_HEADING_TEXT, bold=True)
+        mf.new_paragraph(NO_HEADING_TEXT, bold=True)
 
 
 if __name__ == "__main__":

@@ -19,31 +19,32 @@ def bullet_bold_example(format_name: str,
     # We use a with statement to ensure that the file is closed properly.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
         # See example e05_heading.py for how to write a heading.
-        mf.start_heading(level=1, text='Bullet list with bold text example')
+        mf.new_heading(level=1, text='Bullet list with bold text example')
         # To start a bullet list we simple start a bullet point item.
         # It will not be bold or italic unless we specify it.
-        mf.start_bullet_item('This is the first bullet point item.')
+        mf.new_bullet_item('This is the first bullet point item.')
         mf.add_text('This is not bold or italic.')
         mf.add_text('However, this bold text is added to it.', bold=True)
         mf.add_text('And this italic text is added to it.', italic=True)
-        mf.start_bullet_item('This is the bold bullet point item.', bold=True)
+        mf.new_bullet_item('This is the bold bullet point item.', bold=True)
         mf.add_text('This non-bold text is added to it.')
-        mf.start_bullet_item('This is the italic bullet point item.',
-                             italic=True)
+        mf.new_bullet_item('This is the italic bullet point item.',
+                           italic=True)
         mf.add_text('This non-italic text is added to it.')
-        mf.start_bullet_item('This is the bold and italic bullet point item.',
-                             bold=True, italic=True)
+        mf.new_bullet_item('This is the bold and italic bullet point item.',
+                           bold=True, italic=True)
         mf.add_text('This non-bold and non-italic text is added to it.')
-        mf.start_bullet_item('This is in item in a nested bullet list.',
-                             level=2)
+        mf.new_bullet_item('This is in item in a nested bullet list.',
+                           level=2)
         mf.add_text('Bold text added to it.', bold=True)
         mf.add_text('And italic text added to it.', italic=True)
-        mf.start_bullet_item('Second nested bullet point item.', bold=True,
-                             italic=True)
+        mf.new_bullet_item('Second nested bullet point item.', bold=True,
+                           italic=True)
         mf.add_text('This non-bold and non-italic text is added to it.')
         mf.add_text('And bold', bold=True)
         mf.add_text('and italic text added to it.', italic=True)
 
 
 if __name__ == "__main__":
-    example_main(example_text='Headings', function=bullet_bold_example)
+    example_main(example_text='Bullet list with bold text',
+                 function=bullet_bold_example)

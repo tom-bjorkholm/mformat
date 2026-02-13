@@ -1,6 +1,6 @@
 # Main heading of example
 
-With start_paragraph we can start a paragraph. With add_text we can add text to
+With new_paragraph we can start a paragraph. With add_text we can add text to
 the paragraph.
 
 ## Sub heading of example where add_text adds text to the sub heading

@@ -56,8 +56,8 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
     and numbered lists. It accesses state variables (point_list_stack,
     state, etc.) through self. The derived class must implement the
     abstract methods, and MultiFormat must provide the start state
-    for self.state and the public methods start_bullet_item,
-    start_numbered_item.
+    for self.state and the public methods new_bullet_item,
+    new_numbered_item.
 
     The mixin defines:
     - Internal state machine: _start_list_item_impl and helpers
@@ -127,7 +127,7 @@ class ListHandlerMixin:  # pylint: disable=too-few-public-methods
         if target_level > len(self.point_list_stack) + 1:
             type_name = self._get_point_list_type_name(point_list_type)
             raise RuntimeError(
-                f'start_{type_name}_item called with level={target_level}, '
+                f'new_{type_name}_item called with level={target_level}, '
                 f'but level {target_level-1} does not exist.')
 
     def _adjust_to_list_level(

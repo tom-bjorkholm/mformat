@@ -13,7 +13,7 @@ from mformat_ext.mformat_docx import MultiFormatDocx
 def test_add_url(capsys):
     """Test the add_url method creates a docx file with URL content."""
     def func(mfd: MultiFormatDocx) -> None:
-        mfd.start_paragraph('Check this link:')
+        mfd.new_paragraph('Check this link:')
         mfd.add_url(url='http://example.com', text='Example')
 
     html = silent_docx_create(capsys, func=func)
@@ -24,7 +24,7 @@ def test_add_url(capsys):
 def test_add_url_as_text(capsys):
     """Test the add_url method with url_as_text=True."""
     def func(mfd: MultiFormatDocx) -> None:
-        mfd.start_paragraph('Check this:')
+        mfd.new_paragraph('Check this:')
         mfd.add_url(url='http://example.com', text='Here')
 
     html = silent_docx_create(capsys, func=func)
@@ -41,7 +41,7 @@ def test_add_code_in_text(capsys, text, code, expected):
     """Test the add_code_in_text method."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatDocx)
-        mfd.start_paragraph(text=text)
+        mfd.new_paragraph(text=text)
         mfd.add_code_in_text(text=code)
 
     html = silent_docx_create(capsys, func=test_action)

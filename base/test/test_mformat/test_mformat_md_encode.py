@@ -111,7 +111,7 @@ class TestEncodeTextAlwaysEscaped:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text(char)
                 assert result == escaped
         check_capsys(capsys)
@@ -129,7 +129,7 @@ class TestEncodeTextAlwaysEscaped:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text(text)
                 assert result == expected
         check_capsys(capsys)
@@ -139,7 +139,7 @@ class TestEncodeTextAlwaysEscaped:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('\\`[]{}|<')
                 assert result == '\\\\\\`\\[\\]\\{\\}\\|\\<'
         check_capsys(capsys)
@@ -153,7 +153,7 @@ class TestEncodeTextParenthesis:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('](url)')
                 assert '\\]\\(' in result
         check_capsys(capsys)
@@ -163,7 +163,7 @@ class TestEncodeTextParenthesis:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('function(arg)')
                 assert result == 'function(arg)'
         check_capsys(capsys)
@@ -173,7 +173,7 @@ class TestEncodeTextParenthesis:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('(parenthesized)')
                 assert result == '(parenthesized)'
         check_capsys(capsys)
@@ -183,7 +183,7 @@ class TestEncodeTextParenthesis:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('text) more')
                 assert result == 'text) more'
         check_capsys(capsys)
@@ -197,7 +197,7 @@ class TestEncodeTextExclamation:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('![alt](img.png)')
                 assert result.startswith('\\!\\[')
         check_capsys(capsys)
@@ -207,7 +207,7 @@ class TestEncodeTextExclamation:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('Hello! World')
                 assert result == 'Hello! World'
         check_capsys(capsys)
@@ -217,7 +217,7 @@ class TestEncodeTextExclamation:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('Exciting!')
                 assert result == 'Exciting!'
         check_capsys(capsys)
@@ -227,7 +227,7 @@ class TestEncodeTextExclamation:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('!important')
                 assert result == '!important'
         check_capsys(capsys)
@@ -241,7 +241,7 @@ class TestEncodeTextTilde:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('~~strikethrough~~')
                 assert result == '\\~\\~strikethrough\\~\\~'
         check_capsys(capsys)
@@ -251,7 +251,7 @@ class TestEncodeTextTilde:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('approximately ~100')
                 assert result == 'approximately ~100'
         check_capsys(capsys)
@@ -261,7 +261,7 @@ class TestEncodeTextTilde:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('~a~ b ~c~')
                 assert '\\~\\~' not in result
         check_capsys(capsys)
@@ -271,7 +271,7 @@ class TestEncodeTextTilde:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('~~~')
                 assert result == '\\~\\~\\~'
         check_capsys(capsys)
@@ -285,7 +285,7 @@ class TestEncodeTextGreaterThan:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('> quoted')
                 assert result == '\\> quoted'
         check_capsys(capsys)
@@ -295,7 +295,7 @@ class TestEncodeTextGreaterThan:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('line1\n> quoted')
                 assert result == 'line1\n\\> quoted'
         check_capsys(capsys)
@@ -305,7 +305,7 @@ class TestEncodeTextGreaterThan:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('a > b')
                 assert result == 'a > b'
         check_capsys(capsys)
@@ -315,7 +315,7 @@ class TestEncodeTextGreaterThan:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 # Note: > is only escaped at line start or directly after <
                 # In 'a<b>c', the > is after 'b', not after '<'
                 result = mfd._encode_text('a<b>c')
@@ -327,7 +327,7 @@ class TestEncodeTextGreaterThan:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 # Empty tag: > is directly after <
                 result = mfd._encode_text('a<>b')
                 assert result == 'a\\<\\>b'
@@ -338,7 +338,7 @@ class TestEncodeTextGreaterThan:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('x > 5 and y > 3')
                 assert result == 'x > 5 and y > 3'
         check_capsys(capsys)
@@ -352,7 +352,7 @@ class TestEncodeTextHash:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('# heading')
                 assert result == '\\# heading'
         check_capsys(capsys)
@@ -362,7 +362,7 @@ class TestEncodeTextHash:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('text\n## heading')
                 assert result == 'text\n\\## heading'
         check_capsys(capsys)
@@ -372,7 +372,7 @@ class TestEncodeTextHash:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('C# programming')
                 assert result == 'C# programming'
         check_capsys(capsys)
@@ -382,7 +382,7 @@ class TestEncodeTextHash:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('trending #topic')
                 assert result == 'trending #topic'
         check_capsys(capsys)
@@ -392,7 +392,7 @@ class TestEncodeTextHash:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('### heading')
                 assert result.startswith('\\#')
         check_capsys(capsys)
@@ -412,7 +412,7 @@ class TestEncodeTextListMarkers:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text(text)
                 assert result == expected
         check_capsys(capsys)
@@ -422,7 +422,7 @@ class TestEncodeTextListMarkers:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('-')
                 assert result == '\\-'
         check_capsys(capsys)
@@ -432,7 +432,7 @@ class TestEncodeTextListMarkers:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 # Only the first dash at line start is escaped
                 result = mfd._encode_text('---')
                 assert result == '\\---'
@@ -443,7 +443,7 @@ class TestEncodeTextListMarkers:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('a-b-c')
                 assert result == 'a-b-c'
         check_capsys(capsys)
@@ -453,7 +453,7 @@ class TestEncodeTextListMarkers:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('a - b')
                 assert result == 'a - b'
         check_capsys(capsys)
@@ -463,7 +463,7 @@ class TestEncodeTextListMarkers:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('a+b')
                 assert result == 'a+b'
         check_capsys(capsys)
@@ -473,7 +473,7 @@ class TestEncodeTextListMarkers:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('line\n- item')
                 assert result == 'line\n\\- item'
         check_capsys(capsys)
@@ -483,7 +483,7 @@ class TestEncodeTextListMarkers:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('-text')
                 assert result == '-text'
         check_capsys(capsys)
@@ -503,7 +503,7 @@ class TestEncodeTextEmphasis:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text(text)
                 assert result == expected
         check_capsys(capsys)
@@ -513,7 +513,7 @@ class TestEncodeTextEmphasis:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('a*b*c')
                 assert result == 'a*b*c'
         check_capsys(capsys)
@@ -523,7 +523,7 @@ class TestEncodeTextEmphasis:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('snake_case_name')
                 assert result == 'snake_case_name'
         check_capsys(capsys)
@@ -533,7 +533,7 @@ class TestEncodeTextEmphasis:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('* item')
                 assert result == '\\* item'
         check_capsys(capsys)
@@ -543,7 +543,7 @@ class TestEncodeTextEmphasis:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('***')
                 assert result == '\\*\\*\\*'
         check_capsys(capsys)
@@ -553,7 +553,7 @@ class TestEncodeTextEmphasis:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 # All underscores are at word boundaries
                 result = mfd._encode_text('___')
                 assert result == '\\_\\_\\_'
@@ -564,7 +564,7 @@ class TestEncodeTextEmphasis:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('word.*bold*')
                 assert '\\*bold\\*' in result
         check_capsys(capsys)
@@ -574,7 +574,7 @@ class TestEncodeTextEmphasis:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('*bold*.')
                 assert result.startswith('\\*bold\\*')
         check_capsys(capsys)
@@ -588,7 +588,7 @@ class TestEncodeTextEquals:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('===')
                 assert result.startswith('\\=')
         check_capsys(capsys)
@@ -598,7 +598,7 @@ class TestEncodeTextEquals:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('=')
                 assert result == '\\='
         check_capsys(capsys)
@@ -608,7 +608,7 @@ class TestEncodeTextEquals:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('a=b')
                 assert result == 'a=b'
         check_capsys(capsys)
@@ -618,7 +618,7 @@ class TestEncodeTextEquals:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('x = y + z')
                 assert result == 'x = y + z'
         check_capsys(capsys)
@@ -628,7 +628,7 @@ class TestEncodeTextEquals:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('heading\n===')
                 assert 'heading\n\\=' in result
         check_capsys(capsys)
@@ -638,7 +638,7 @@ class TestEncodeTextEquals:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('=value')
                 assert result == '=value'
         check_capsys(capsys)
@@ -664,7 +664,7 @@ class TestEncodeTextRegularText:  # pylint: disable=too-few-public-methods
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text(text)
                 assert result == text
         check_capsys(capsys)
@@ -678,7 +678,7 @@ class TestEncodeTextComplexCases:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('[link text](http://example.com)')
                 assert '\\[' in result
                 assert '\\]' in result
@@ -690,7 +690,7 @@ class TestEncodeTextComplexCases:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('![alt text](image.png)')
                 assert '\\!' in result
                 assert '\\[' in result
@@ -701,7 +701,7 @@ class TestEncodeTextComplexCases:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 # Only < is always escaped; > is only escaped at line start
                 # or directly after <
                 result = mfd._encode_text('<div>content</div>')
@@ -715,7 +715,7 @@ class TestEncodeTextComplexCases:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('use `code` here')
                 assert '\\`code\\`' in result
         check_capsys(capsys)
@@ -725,7 +725,7 @@ class TestEncodeTextComplexCases:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('| col1 | col2 |')
                 assert '\\|' in result
         check_capsys(capsys)
@@ -735,7 +735,7 @@ class TestEncodeTextComplexCases:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 text = '# heading\n- list\n> quote\n*emphasis*'
                 result = mfd._encode_text(text)
                 assert result.startswith('\\#')
@@ -749,7 +749,7 @@ class TestEncodeTextComplexCases:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('if (x > 5 && y < 10)')
                 assert '\\<' in result
                 assert '(' in result and '\\(' not in result
@@ -760,7 +760,7 @@ class TestEncodeTextComplexCases:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('my_variable_name')
                 assert result == 'my_variable_name'
         check_capsys(capsys)
@@ -770,7 +770,7 @@ class TestEncodeTextComplexCases:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('a*b + c*d = e')
                 assert result == 'a*b + c*d = e'
         check_capsys(capsys)
@@ -780,7 +780,7 @@ class TestEncodeTextComplexCases:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('/path/to/my_file.txt')
                 assert result == '/path/to/my_file.txt'
         check_capsys(capsys)
@@ -790,7 +790,7 @@ class TestEncodeTextComplexCases:
         with TemporaryDirectory() as tmp_dir:
             fname = tmp_dir + '/test.md'
             with MultiFormatMd(file_name=fname) as mfd:
-                mfd.start_paragraph(text='x')
+                mfd.new_paragraph(text='x')
                 result = mfd._encode_text('https://example.com/path?a=1&b=2')
                 assert result == 'https://example.com/path?a=1&b=2'
         check_capsys(capsys)

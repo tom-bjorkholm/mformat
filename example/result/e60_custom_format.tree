@@ -11,10 +11,10 @@ This example demonstrates how to create and use a custom format in the mformat f
 2.. Second step: Implement required methods
 3.. Third step: Register the format
 | **Element** | **Method** |
-|-----------|---------------------|
-| Paragraph | start_paragraph\(\) |
-| Heading   | start_heading\(\)   |
-| List      | start_bullet_item\(\) |
+|-----------|-------------------|
+| Paragraph | new_paragraph\(\) |
+| Heading   | new_heading\(\)   |
+| List      | new_bullet_item\(\) |
 
 ```CODE (python)
 def example\(\):

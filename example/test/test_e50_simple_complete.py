@@ -24,7 +24,7 @@ from e50_simple_complete import multi_format_example  # pylint: disable=wrong-im
 
 EXPECTED_MD_TEXT = [
     '# Main heading of example',
-    'With start_paragraph we can start a paragraph.',
+    'With new_paragraph we can start a paragraph.',
     'With add_text we can add text to',
     'the paragraph.',
     '## Sub heading of example',
@@ -41,7 +41,7 @@ EXPECTED_HTML_BODY_TEXT = [
     '<h1>',
     'Main heading of example',
     '</h1>',
-    'With start_paragraph we can start a paragraph.',
+    'With new_paragraph we can start a paragraph.',
     'With add_text we can add text to',
     'the paragraph.',
     '<h2>',
@@ -60,7 +60,7 @@ EXPECTED_ODT_BODY_TEXT = [
     '<h1 class="P-">',
     'Main heading of example',
     '</h1>',
-    'With start_paragraph we can start a paragraph.',
+    'With new_paragraph we can start a paragraph.',
     'With add_text we can add text to',
     'the paragraph.',
     '<h2 class="P-">',

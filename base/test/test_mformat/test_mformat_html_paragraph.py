@@ -18,7 +18,7 @@ from mformat.mformat_state import MultiFormatState, Formatting
 
 
 def test_start_paragraph(capsys):
-    """Test the start_paragraph method."""
+    """Test the _start_paragraph method."""
     txt = run_protected_method('html', '.html', '_start_paragraph')
     assert txt == '<p>\n'
     check_capsys(capsys)
@@ -36,15 +36,15 @@ def test_end_paragraph(capsys):
                            ['Hello, world!', 'Bye!'], EN_NT_NC_T1),
                           ('sv', 'Something', 'style1.css',
                            ['Something else', 'Yeah!'], SV_TS_C1_T2)])
-def test_start_paragraph2(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
-                          lang, title, css_file, texts, expected):
-    """Test the start_paragraph method."""
+def test_new_paragraph2(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+                        lang, title, css_file, texts, expected):
+    """Test the new_paragraph method."""
     args = args_for_file_prefix(lang, title, css_file)
 
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
         for text in texts:
-            mfd.start_paragraph(text)
+            mfd.new_paragraph(text)
 
     check_run_with_context_manager('html', '.html', test_action, args=args,
                                    expected_text=expected, capsys=capsys)
@@ -57,12 +57,12 @@ def test_start_paragraph2(capsys,  # pylint: disable=too-many-arguments, too-man
                            '<em>Italic text</em>'),
                           ('Both styles', True, True,
                            '<em><strong>Both styles</strong></em>')])
-def test_start_paragraph_formatting(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
-                                    text, bold, italic, expected):
-    """Test the start_paragraph method with bold and italic."""
+def test_new_paragraph_formatting(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+                                  text, bold, italic, expected):
+    """Test the new_paragraph method with bold and italic."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_paragraph(text, bold=bold, italic=italic)
+        mfd.new_paragraph(text, bold=bold, italic=italic)
 
     exp = PF_EN_NT_NC + '<p>\n' + expected + '</p>\n' + SFTOT
     check_run_with_context_manager('html', '.html', test_action,
@@ -113,7 +113,7 @@ def test_add_url(capsys,  # pylint: disable=too-many-arguments,too-many-position
     """Test the add_url method."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_paragraph('')
+        mfd.new_paragraph('')
         mfd.add_url(url=url, text=text)
 
     check_run_with_context_manager('html', '.html', test_action,
@@ -133,7 +133,7 @@ def test_add_url_as_text(capsys,  # pylint: disable=too-many-arguments,too-many-
     """Test the add_url method with url_as_text=True."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_paragraph('')
+        mfd.new_paragraph('')
         mfd.add_url(url=url, text=text)
 
     check_run_with_context_manager('html', '.html', test_action,
@@ -155,7 +155,7 @@ def test_add_code_in_text(capsys, text, code, expected):
     """Test the add_code_in_text method."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_paragraph(text=text)
+        mfd.new_paragraph(text=text)
         mfd.add_code_in_text(text=code)
 
     check_run_with_context_manager('html', '.html', test_action,

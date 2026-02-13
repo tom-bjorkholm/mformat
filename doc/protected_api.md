@@ -127,14 +127,14 @@
     * [file\_name\_extension](#mformat.mformat.MultiFormat.file_name_extension)
     * [open](#mformat.mformat.MultiFormat.open)
     * [close](#mformat.mformat.MultiFormat.close)
-    * [start\_heading](#mformat.mformat.MultiFormat.start_heading)
-    * [start\_paragraph](#mformat.mformat.MultiFormat.start_paragraph)
+    * [new\_heading](#mformat.mformat.MultiFormat.new_heading)
+    * [new\_paragraph](#mformat.mformat.MultiFormat.new_paragraph)
     * [add\_text](#mformat.mformat.MultiFormat.add_text)
     * [add\_code\_in\_text](#mformat.mformat.MultiFormat.add_code_in_text)
     * [add\_url](#mformat.mformat.MultiFormat.add_url)
-    * [start\_bullet\_item](#mformat.mformat.MultiFormat.start_bullet_item)
-    * [start\_numbered\_point\_item](#mformat.mformat.MultiFormat.start_numbered_point_item)
-    * [start\_table](#mformat.mformat.MultiFormat.start_table)
+    * [new\_bullet\_item](#mformat.mformat.MultiFormat.new_bullet_item)
+    * [new\_numbered\_point\_item](#mformat.mformat.MultiFormat.new_numbered_point_item)
+    * [new\_table](#mformat.mformat.MultiFormat.new_table)
     * [add\_table\_row](#mformat.mformat.MultiFormat.add_table_row)
     * [write\_complete\_table](#mformat.mformat.MultiFormat.write_complete_table)
     * [write\_code\_block](#mformat.mformat.MultiFormat.write_code_block)
@@ -172,6 +172,11 @@
     * [\_write\_code\_block](#mformat.mformat.MultiFormat._write_code_block)
     * [\_encode\_text](#mformat.mformat.MultiFormat._encode_text)
     * [\_encode\_table\_row](#mformat.mformat.MultiFormat._encode_table_row)
+    * [start\_paragraph](#mformat.mformat.MultiFormat.start_paragraph)
+    * [start\_heading](#mformat.mformat.MultiFormat.start_heading)
+    * [start\_bullet\_item](#mformat.mformat.MultiFormat.start_bullet_item)
+    * [start\_numbered\_point\_item](#mformat.mformat.MultiFormat.start_numbered_point_item)
+    * [start\_table](#mformat.mformat.MultiFormat.start_table)
 * [mformat.mformat\_html](#mformat.mformat_html)
   * [MultiFormatHtml](#mformat.mformat_html.MultiFormatHtml)
     * [\_\_init\_\_](#mformat.mformat_html.MultiFormatHtml.__init__)
@@ -337,8 +342,8 @@ This mixin provides the implementation of the handling of bullet
 and numbered lists. It accesses state variables (point_list_stack,
 state, etc.) through self. The derived class must implement the
 abstract methods, and MultiFormat must provide the start state
-for self.state and the public methods start_bullet_item,
-start_numbered_item.
+for self.state and the public methods new_bullet_item,
+new_numbered_item.
 
 The mixin defines:
 - Internal state machine: _start_list_item_impl and helpers
@@ -1946,16 +1951,16 @@ Close the file.
 Avoid using this method directly.
 Use MultiFormat as a context manager instead, using a with statement.
 
-<a id="mformat.mformat.MultiFormat.start_heading"></a>
+<a id="mformat.mformat.MultiFormat.new_heading"></a>
 
-#### start\_heading
+#### new\_heading
 
 ```python
-def start_heading(level: int,
-                  text: str,
-                  smart_ws: bool = True,
-                  bold: bool = False,
-                  italic: bool = False) -> None
+def new_heading(level: int,
+                text: str,
+                smart_ws: bool = True,
+                bold: bool = False,
+                italic: bool = False) -> None
 ```
 
 Start a new heading.
@@ -1966,7 +1971,7 @@ Start a new heading.
 - `text` - The text to write in the heading.
 - `smart_ws` - If True, leading and trailing whitespace are collapsed
   and a single space is inserted between texts (from
-  start_heading or add_text).
+  new_heading or add_text).
 - `bold` - If True, the text is bold.
   Recommended to leave False for headings as it will be
   formatted as a heading.
@@ -1974,15 +1979,15 @@ Start a new heading.
   Recommended to leave False for headings as it will be
   formatted as a heading.
 
-<a id="mformat.mformat.MultiFormat.start_paragraph"></a>
+<a id="mformat.mformat.MultiFormat.new_paragraph"></a>
 
-#### start\_paragraph
+#### new\_paragraph
 
 ```python
-def start_paragraph(text: str,
-                    smart_ws: bool = True,
-                    bold: bool = False,
-                    italic: bool = False) -> None
+def new_paragraph(text: str,
+                  smart_ws: bool = True,
+                  bold: bool = False,
+                  italic: bool = False) -> None
 ```
 
 Start a new paragraph.
@@ -1992,7 +1997,7 @@ Start a new paragraph.
 - `text` - The text to write in the paragraph.
 - `smart_ws` - If True, leading and trailing whitespace are collapsed
   and a single space is inserted between texts (from
-  start_paragraph or add_text).
+  new_paragraph or add_text).
 - `bold` - If True, the text is bold.
 - `italic` - If True, the text is italic.
 
@@ -2014,7 +2019,7 @@ Add text to the current item (paragraph, bullet list item, etc.).
 - `text` - The text to add to the current item.
 - `smart_ws` - If True, leading and trailing whitespace are collapsed
   and a single space is inserted between texts (from
-  start_paragraph, start_bullet, ... or add_text).
+  new_paragraph, new_bullet_item, ... or add_text).
 - `bold` - If True, the text is bold.
 - `italic` - If True, the text is italic.
 
@@ -2064,16 +2069,16 @@ Add a URL to the current item (paragraph, bullet list item, etc.).
 - `bold` - If True, the text is bold.
 - `italic` - If True, the text is italic.
 
-<a id="mformat.mformat.MultiFormat.start_bullet_item"></a>
+<a id="mformat.mformat.MultiFormat.new_bullet_item"></a>
 
-#### start\_bullet\_item
+#### new\_bullet\_item
 
 ```python
-def start_bullet_item(text: str,
-                      level: Optional[int] = None,
-                      smart_ws: bool = True,
-                      bold: bool = False,
-                      italic: bool = False) -> None
+def new_bullet_item(text: str,
+                    level: Optional[int] = None,
+                    smart_ws: bool = True,
+                    bold: bool = False,
+                    italic: bool = False) -> None
 ```
 
 Start a new bullet list item and a new bullet list if needed.
@@ -2098,20 +2103,20 @@ list, the list at that level is ended and a new bullet list is started.
 - `level` - The level of the bullet list item.
 - `smart_ws` - If True, leading and trailing whitespace are collapsed
   and a single space is inserted between texts (from
-  start_bullet_item or add_text).
+  new_bullet_item or add_text).
 - `bold` - If True, the text is bold.
 - `italic` - If True, the text is italic.
 
-<a id="mformat.mformat.MultiFormat.start_numbered_point_item"></a>
+<a id="mformat.mformat.MultiFormat.new_numbered_point_item"></a>
 
-#### start\_numbered\_point\_item
+#### new\_numbered\_point\_item
 
 ```python
-def start_numbered_point_item(text: str,
-                              level: Optional[int] = None,
-                              smart_ws: bool = True,
-                              bold: bool = False,
-                              italic: bool = False) -> None
+def new_numbered_point_item(text: str,
+                            level: Optional[int] = None,
+                            smart_ws: bool = True,
+                            bold: bool = False,
+                            italic: bool = False) -> None
 ```
 
 Start a new numbered point list item and a new list if needed.
@@ -2137,18 +2142,18 @@ list is started.
 - `level` - The level of the numbered point list item.
 - `smart_ws` - If True, leading and trailing whitespace are collapsed
   and a single space is inserted between texts (from
-  start_numbered_point_item or add_text).
+  new_numbered_point_item or add_text).
 - `bold` - If True, the text is bold.
 - `italic` - If True, the text is italic.
 
-<a id="mformat.mformat.MultiFormat.start_table"></a>
+<a id="mformat.mformat.MultiFormat.new_table"></a>
 
-#### start\_table
+#### new\_table
 
 ```python
-def start_table(first_row: list[str],
-                bold: bool = False,
-                italic: bool = False) -> None
+def new_table(first_row: list[str],
+              bold: bool = False,
+              italic: bool = False) -> None
 ```
 
 Start a new table.
@@ -2188,7 +2193,7 @@ def write_complete_table(table: list[list[str]],
 
 Add a complete table.
 
-Result is same as calling start_table followed by add_table_row
+Result is same as calling new_table followed by add_table_row
 for each row. Args:
 table: The complete table to add.
 formatting_first_row: The formatting of the text in each
@@ -2589,6 +2594,88 @@ def _encode_table_row(row: list[str]) -> list[str]
 ```
 
 Encode a table row.
+
+<a id="mformat.mformat.MultiFormat.start_paragraph"></a>
+
+#### start\_paragraph
+
+```python
+def start_paragraph(text: str,
+                    smart_ws: bool = True,
+                    bold: bool = False,
+                    italic: bool = False) -> None
+```
+
+Start a new paragraph (deprecated).
+
+.. deprecated:: 0.3.0
+  Use :meth:`new_paragraph` instead.
+
+<a id="mformat.mformat.MultiFormat.start_heading"></a>
+
+#### start\_heading
+
+```python
+def start_heading(level: int,
+                  text: str,
+                  smart_ws: bool = True,
+                  bold: bool = False,
+                  italic: bool = False) -> None
+```
+
+Start a new heading (deprecated).
+
+.. deprecated:: 0.3.0
+  Use :meth:`new_heading` instead.
+
+<a id="mformat.mformat.MultiFormat.start_bullet_item"></a>
+
+#### start\_bullet\_item
+
+```python
+def start_bullet_item(text: str,
+                      level: Optional[int] = None,
+                      smart_ws: bool = True,
+                      bold: bool = False,
+                      italic: bool = False) -> None
+```
+
+Start a bullet item (deprecated).
+
+.. deprecated:: 0.3.0
+  Use :meth:`new_bullet_item` instead.
+
+<a id="mformat.mformat.MultiFormat.start_numbered_point_item"></a>
+
+#### start\_numbered\_point\_item
+
+```python
+def start_numbered_point_item(text: str,
+                              level: Optional[int] = None,
+                              smart_ws: bool = True,
+                              bold: bool = False,
+                              italic: bool = False) -> None
+```
+
+Start a numbered point item (deprecated).
+
+.. deprecated:: 0.3.0
+  Use :meth:`new_numbered_point_item` instead.
+
+<a id="mformat.mformat.MultiFormat.start_table"></a>
+
+#### start\_table
+
+```python
+def start_table(first_row: list[str],
+                bold: bool = False,
+                italic: bool = False) -> None
+```
+
+Start a table (deprecated).
+
+.. deprecated:: 0.3.0
+  Use :meth:`new_table` instead.
 
 <a id="mformat.mformat_html"></a>
 

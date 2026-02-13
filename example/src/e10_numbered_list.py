@@ -18,14 +18,14 @@ def numbered_list_example(format_name: str,
     # and the output file name as in e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
         # See example e05_heading.py for how to write a heading.
-        mf.start_heading(level=1, text='Numbered list example')
+        mf.new_heading(level=1, text='Numbered list example')
         # To start a numbered list we simple start a numbered list item.
-        mf.start_numbered_point_item('This is the first numbered item.')
+        mf.new_numbered_point_item('This is the first numbered item.')
         mf.add_text('We can add text to the numbered items with add_text(),')
         mf.add_text('just as we can add text to paragraphs.')
-        mf.start_numbered_point_item('This is the second numbered item.')
-        mf.start_numbered_point_item('This is the third numbered item.')
+        mf.new_numbered_point_item('This is the second numbered item.')
+        mf.new_numbered_point_item('This is the third numbered item.')
 
 
 if __name__ == "__main__":
-    example_main(example_text='Headings', function=numbered_list_example)
+    example_main(example_text='Numbered list', function=numbered_list_example)

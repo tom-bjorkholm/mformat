@@ -19,7 +19,7 @@ def test_simple_table(capsys):
     """Test a simple table."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_table(first_row=['Col1', 'Col2'])
+        mfd.new_table(first_row=['Col1', 'Col2'])
         mfd.add_table_row(row=['A', 'B'])
         mfd.add_table_row(row=['C', 'D'])
 
@@ -35,7 +35,7 @@ def test_table_with_bold_header(capsys):
     """Test a table with bold header."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_table(first_row=['Name', 'Age'], bold=True)
+        mfd.new_table(first_row=['Name', 'Age'], bold=True)
         mfd.add_table_row(row=['Alice', '30'])
         mfd.add_table_row(row=['Bob', '25'])
 
@@ -52,7 +52,7 @@ def test_table_with_italic_header(capsys):
     """Test a table with italic header."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_table(first_row=['Name', 'Age'], italic=True)
+        mfd.new_table(first_row=['Name', 'Age'], italic=True)
         mfd.add_table_row(row=['Alice', '30'])
 
     expected = (PF_EN_NT_NC + '<table border="1">\n<tr>\n'
@@ -97,8 +97,8 @@ def test_paragraph_then_table(capsys):
     """Test paragraph followed by table."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_paragraph(text='Here is a table:')
-        mfd.start_table(first_row=['A', 'B'])
+        mfd.new_paragraph(text='Here is a table:')
+        mfd.new_table(first_row=['A', 'B'])
         mfd.add_table_row(row=['1', '2'])
 
     expected = (PF_EN_NT_NC +
@@ -113,9 +113,9 @@ def test_table_then_paragraph(capsys):
     """Test table followed by paragraph."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_table(first_row=['X', 'Y'])
+        mfd.new_table(first_row=['X', 'Y'])
         mfd.add_table_row(row=['1', '2'])
-        mfd.start_paragraph(text='That was the table.')
+        mfd.new_paragraph(text='That was the table.')
 
     expected = (PF_EN_NT_NC +
                 '<table border="1">\n<tr>\n<td>X</td>\n<td>Y</td>\n</tr>\n'
@@ -129,8 +129,8 @@ def test_heading_then_table(capsys):
     """Test heading followed by table."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_heading(level=2, text='Data Table')
-        mfd.start_table(first_row=['Col1', 'Col2'])
+        mfd.new_heading(level=2, text='Data Table')
+        mfd.new_table(first_row=['Col1', 'Col2'])
         mfd.add_table_row(row=['A', 'B'])
 
     expected = (PF_EN_NT_NC +
@@ -145,7 +145,7 @@ def test_table_with_three_columns(capsys):
     """Test a table with three columns."""
     def test_action(mfd):
         assert isinstance(mfd, MultiFormatHtml)
-        mfd.start_table(first_row=['Name', 'Age', 'City'])
+        mfd.new_table(first_row=['Name', 'Age', 'City'])
         mfd.add_table_row(row=['Alice', '30', 'NYC'])
         mfd.add_table_row(row=['Bob', '25', 'LA'])
 
