@@ -71,21 +71,21 @@ EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_PO
 
 
 def test_42_filter_args_for_format_md(capsys):
-    """Test the paragraphs_example function with the md format."""
+    """Test the filter_args_for_format_example function with the md format."""
     expected_txt = EXPECTED_MD_TEXT
     check_markdown_func(filter_args_for_format_example, expected_txt, expected_error=[])
     check_capsys_silent(capsys)
 
 
 def test_42_filter_args_for_format_html(capsys):
-    """Test the paragraphs_example function with the html format."""
+    """Test the filter_args_for_format_example function with the html format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_html_func(filter_args_for_format_example, expected_txt)
     check_capsys_silent(capsys)
 
 
 def test_42_filter_args_for_format_docx(capsys):
-    """Test the paragraphs_example function with the docx format."""
+    """Test the filter_args_for_format_example function with the docx format."""
     expected_txt = EXPECTED_HTML_BODY_TEXT
     expected_warnings = []
     check_docx_func(filter_args_for_format_example, expected_txt, expected_warnings)
@@ -93,7 +93,7 @@ def test_42_filter_args_for_format_docx(capsys):
 
 
 def test_42_filter_args_for_format_odt(capsys):
-    """Test the paragraphs_example function with the odt format."""
+    """Test the filter_args_for_format_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(filter_args_for_format_example, expected_txt)
     check_capsys_silent(capsys)

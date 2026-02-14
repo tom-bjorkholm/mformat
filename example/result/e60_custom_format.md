@@ -8,7 +8,7 @@ changing the format name.
 
 - Easy to extend the framework
 
-- Supports all standard document elements
+- Supports most standard document elements
 
 - Format-agnostic API
 
@@ -23,7 +23,6 @@ changing the format name.
 | Paragraph   | new_paragraph()   |
 | Heading     | new_heading()     |
 | List        | new_bullet_item() |
-
 
 ````python
 def example():

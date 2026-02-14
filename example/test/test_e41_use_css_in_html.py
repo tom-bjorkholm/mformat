@@ -84,21 +84,21 @@ EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_PO
 
 
 def test_41_use_css_in_html_md(capsys):
-    """Test the paragraphs_example function with the md format."""
+    """Test the use_css_in_html_example function with the md format."""
     expected_txt = EXPECTED_MD_TEXT
     check_markdown_func(use_css_in_html_example, expected_txt, expected_error=[])
     check_capsys_silent(capsys)
 
 
 def test_41_use_css_in_html_html(capsys):
-    """Test the paragraphs_example function with the html format."""
+    """Test the use_css_in_html_example function with the html format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_html_func(use_css_in_html_example, expected_txt)
     check_capsys_silent(capsys)
 
 
 def test_41_use_css_in_html_docx(capsys):
-    """Test the paragraphs_example function with the docx format."""
+    """Test the use_css_in_html_example function with the docx format."""
     expected_txt = EXPECTED_HTML_BODY_TEXT
     expected_warnings = []
     check_docx_func(use_css_in_html_example, expected_txt, expected_warnings)
@@ -106,7 +106,7 @@ def test_41_use_css_in_html_docx(capsys):
 
 
 def test_41_use_css_in_html_odt(capsys):
-    """Test the paragraphs_example function with the odt format."""
+    """Test the use_css_in_html_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(use_css_in_html_example, expected_txt)
     check_capsys_silent(capsys)

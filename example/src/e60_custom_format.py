@@ -572,7 +572,7 @@ def custom_format_example(format_name: str, file_name: str) -> None:
         mf.new_heading(level=2, text='Features')
         # Write a bullet list
         mf.new_bullet_item('Easy to extend the framework')
-        mf.new_bullet_item('Supports all standard document elements')
+        mf.new_bullet_item('Supports most standard document elements')
         mf.new_bullet_item('Format-agnostic API')
         # Write a numbered list
         mf.new_numbered_point_item('First step: Create a format class')

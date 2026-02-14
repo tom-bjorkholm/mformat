@@ -5,7 +5,7 @@
 This example demonstrates how to create and use a custom format in the mformat framework. The same code can be used to write to different formats, just by changing the format name.
   >> Features
 • Easy to extend the framework
-• Supports all standard document elements
+• Supports most standard document elements
 • Format-agnostic API
 1.. First step: Create a format class
 2.. Second step: Implement required methods

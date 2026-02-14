@@ -254,6 +254,18 @@ def odt_version_of_html(html: list[str]) -> list[str]:
     for idx, line in enumerate(odt_html):
         if line == '<h1>':
             odt_html[idx] = '<h1'
+        if line == '<h2>':
+            odt_html[idx] = '<h2'
+        if line == '<h3>':
+            odt_html[idx] = '<h3'
+        if line == '<h4>':
+            odt_html[idx] = '<h4'
+        if line == '<h5>':
+            odt_html[idx] = '<h5'
+        if line == '<h6>':
+            odt_html[idx] = '<h6'
         elif line == '<p>':
             odt_html[idx] = '<p'
+        elif line == '<ul>':
+            odt_html[idx] = '<ul'
     return odt_html
