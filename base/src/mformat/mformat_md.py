@@ -215,7 +215,10 @@ class MultiFormatMd(MultiFormatTextBased):
         assert self.file is not None
         if programming_language is None:
             programming_language = 'text'
-        self.file.write(f'\n````{programming_language}\n')
+        before = self._get_last_chars_written(num_chars=2)
+        if before not in ('\n\n', ''):
+            self.file.write('\n')
+        self.file.write(f'````{programming_language}\n')
 
     def _end_code_block(self, programming_language: Optional[str]) -> None:
         """End a code block."""

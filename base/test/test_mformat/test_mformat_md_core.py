@@ -272,7 +272,7 @@ def test_simple_code_block(capsys):
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.write_code_block(text='print("Hello, World!")')
 
-    expected = '\n````text\nprint("Hello, World!")\n````\n'
+    expected = '````text\nprint("Hello, World!")\n````\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -285,7 +285,7 @@ def test_code_block_with_language(capsys):
         mfd.write_code_block(text='print("Hello")',
                              programming_language='python')
 
-    expected = '\n````python\nprint("Hello")\n````\n'
+    expected = '````python\nprint("Hello")\n````\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -298,7 +298,7 @@ def test_code_block_multiline(capsys):
         code = 'def hello():\n    print("Hello")\n    return True'
         mfd.write_code_block(text=code, programming_language='python')
 
-    expected = ('\n````python\ndef hello():\n    print("Hello")\n'
+    expected = ('````python\ndef hello():\n    print("Hello")\n'
                 '    return True\n````\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
@@ -312,7 +312,7 @@ def test_code_block_with_special_chars(capsys):
         code = 'x = "test <>&"\ny = \'another\''
         mfd.write_code_block(text=code)
 
-    expected = '\n````text\nx = "test <>&"\ny = \'another\'\n````\n'
+    expected = '````text\nx = "test <>&"\ny = \'another\'\n````\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -338,7 +338,7 @@ def test_code_block_then_paragraph(capsys):
         mfd.write_code_block(text='x = 42')
         mfd.new_paragraph(text='That was the code.')
 
-    expected = '\n````text\nx = 42\n````\n\nThat was the code.\n'
+    expected = '````text\nx = 42\n````\n\nThat was the code.\n'
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -364,7 +364,7 @@ def test_multiple_code_blocks(capsys):
         mfd.write_code_block(text='x = 1', programming_language='python')
         mfd.write_code_block(text='y = 2', programming_language='python')
 
-    expected = ('\n````python\nx = 1\n````\n'
+    expected = ('````python\nx = 1\n````\n'
                 '\n````python\ny = 2\n````\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
