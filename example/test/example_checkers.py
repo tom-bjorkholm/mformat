@@ -31,7 +31,7 @@ def print_text(text: str) -> None:
     """Print the text."""
     lines = [line.strip() for line in text.split('\n') if line.strip()]
     for line in lines[:500]:
-        print(f'{line[:100]}', file=sys.stderr)
+        print(f'{line[:400]}', file=sys.stderr)
 
 
 def print_line_col_of_pos(text: str, pos: int) -> None:
@@ -244,3 +244,16 @@ def check_odt_func(func: Callable[[str, str], None],
             converter = ODF2XHTML()
             html = converter.odf2xhtml(file)
             check_text_in_order(html, expected_txt)
+
+
+def odt_version_of_html(html: list[str]) -> list[str]:
+    """Convert HTML to version that we get from odf2xhtml."""
+    odt_html = []
+    for line in html:
+        odt_html.append(line.replace('&quot;', '"'))
+    for idx, line in enumerate(odt_html):
+        if line == '<h1>':
+            odt_html[idx] = '<h1'
+        elif line == '<p>':
+            odt_html[idx] = '<p'
+    return odt_html

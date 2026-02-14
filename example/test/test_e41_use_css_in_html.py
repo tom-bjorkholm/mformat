@@ -11,7 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
-    check_docx_func, check_odt_func)
+    check_docx_func, check_odt_func, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
 _example_test_path = (
@@ -62,23 +62,21 @@ THIS_EXPECTED_HTML_PRE = [
     '<body>',
 ]
 EXPECTED_HTML_TEXT = THIS_EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
-EXPECTED_ODT_BODY_TEXT = [
+EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_HTML_BODY_TEXT)
+EXPECTED_ODT_BODY_TEXT2 = [
     '<h1',
     'CSS und Sprache in HTML',
     '</h1>',
-    '<p>',
+    '<p',
     'Dieses Beispiel zeigt, wie Sie eine CSS-Datei und die',
     'Dokumentensprache (lang) mit mformat setzen. Übergeben',
-    'Sie OptArgs mit',
-    'css_file',
-    'und',
-    'lang',
+    'Sie OptArgs mit "css_file" und "lang"',
     'an create_mf, wenn das Format HTML ist.',
     '</p>',
-    '<p>',
+    '<p',
     'Die CSS-Datei liegt unter example/css/ und wird per relativem',
     'Pfad eingebunden (für lokale Anzeige). Die Ausgabe ist auf',
-    'Deutsch;',
+    'Deutsch; lang="de" steht im erzeugten &lt;html&gt;-Tag.',
     '</p>'
 ]
 EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
@@ -112,3 +110,8 @@ def test_41_use_css_in_html_odt(capsys):
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(use_css_in_html_example, expected_txt)
     check_capsys_silent(capsys)
+
+
+def test_odt_body_text():
+    """Test the odt body text."""
+    assert EXPECTED_ODT_BODY_TEXT == EXPECTED_ODT_BODY_TEXT2
