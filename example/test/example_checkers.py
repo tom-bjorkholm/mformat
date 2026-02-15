@@ -31,7 +31,7 @@ def print_text(text: str) -> None:
     """Print the text."""
     lines = [line.strip() for line in text.split('\n') if line.strip()]
     for line in lines[:500]:
-        print(f'{line[:400]}', file=sys.stderr)
+        print(f'{line[:800]}', file=sys.stderr)
 
 
 def print_line_col_of_pos(text: str, pos: int) -> None:
@@ -55,13 +55,18 @@ def check_text_in_order(text: str, expected_txts: list[str]) -> None:
         pos = text.find(expected_txt, start)
         if pos == -1:
             print(f'Expected text with index {num-1} ended at '
-                  f' position {start} in text.', file=sys.stderr)
+                  f'position {start} in text.', file=sys.stderr)
+            print(f'Expected text index {num-1}: {expected_txts[num-1]}',
+                  file=sys.stderr)
             print(f'Expected text with index {num} not found in text '
                   f'starting at position {start}.', file=sys.stderr)
             print_line_col_of_pos(text, start)
             print(f'Failing expected text: {expected_txt}', file=sys.stderr)
             print(f'Text from position {start}:', file=sys.stderr)
             print_text(text[start:])
+            print('\n\n----Complete text beginning:-------------\n',
+                  file=sys.stderr)
+            print_text(text)
         assert pos != -1
         start = pos + len(expected_txt)
 
@@ -246,26 +251,86 @@ def check_odt_func(func: Callable[[str, str], None],
             check_text_in_order(html, expected_txt)
 
 
+EQUIV_SEQS = [
+    (['</strong>', '<strong>'], []),
+    (['</em>', '<em>'], []),
+    (['<strong>', '</strong>'], []),
+    (['<em>', '</em>'], []),
+    (['</strong>', '<em>', '<strong>'], ['<em>']),
+    (['<strong>', '<em>', '</strong>'], ['<em>']),
+    (['</em>', '<strong>', '<em>'], ['<strong>']),
+    (['<em>', '<strong>', '</em>'], ['<strong>']),
+    (['</strong>', '<p>', '<strong>'], ['<p>']),
+    (['</strong>', '</p>', '<p>', '<strong>'], ['</p>', '<p>']),
+    (['</em>', '<p>', '<em>'], ['<p>']),
+    (['</em>', '</p>', '<p>', '<em>'], ['</p>', '<p>']),
+]
+
+
+def _reduce_equiv_seqs(html: list[str]) -> list[str]:
+    """Reduce equivalent sequences of HTML tags.
+    
+    When the html input contains a sequence of values (tags)
+    that is a key in EQUIV_SEQS, the sequence is replaced by the value.
+    """
+    reduced_html: list[str] = []
+    idx: int = 0
+    while idx < len(html):
+        for seq_key, seq_value in EQUIV_SEQS:
+            if html[idx:idx+len(seq_key)] == seq_key:
+                reduced_html.extend(seq_value)
+                idx += len(seq_key)
+                continue
+        reduced_html.append(html[idx])
+        idx += 1
+    return reduced_html
+
+
+def docx_version_of_html(html: list[str]) -> list[str]:
+    """Convert HTML to version that we get from mammoth."""
+    reduced_html = _reduce_equiv_seqs(html)
+    docx_html = []
+    for idx, line in enumerate(reduced_html):
+        if line == '<strong>' and idx > 0 and reduced_html[idx-1] == '<em>':
+            continue
+        if line == '</strong>' and idx > 0 and reduced_html[idx-1] == '</em>':
+            continue
+        if line == '<em>' and idx > 0 and reduced_html[idx-1] == '<strong>':
+            continue
+        if line == '</em>' and idx > 0 and reduced_html[idx-1] == '</strong>':
+            continue
+        docx_html.append(line)
+    return docx_html
+
+
+HTML2ODT_TAGS = {
+    '<h1>': '<h1',
+    '<h2>': '<h2',
+    '<h3>': '<h3',
+    '<h4>': '<h4',
+    '<h5>': '<h5',
+    '<h6>': '<h6',
+    '<p>': '<p',
+    '<ul>': '<ul'
+}
+
+
 def odt_version_of_html(html: list[str]) -> list[str]:
     """Convert HTML to version that we get from odf2xhtml."""
     odt_html = []
     for line in html:
         odt_html.append(line.replace('&quot;', '"'))
     for idx, line in enumerate(odt_html):
-        if line == '<h1>':
-            odt_html[idx] = '<h1'
-        if line == '<h2>':
-            odt_html[idx] = '<h2'
-        if line == '<h3>':
-            odt_html[idx] = '<h3'
-        if line == '<h4>':
-            odt_html[idx] = '<h4'
-        if line == '<h5>':
-            odt_html[idx] = '<h5'
-        if line == '<h6>':
-            odt_html[idx] = '<h6'
-        elif line == '<p>':
-            odt_html[idx] = '<p'
-        elif line == '<ul>':
-            odt_html[idx] = '<ul'
+        if line in HTML2ODT_TAGS:
+            odt_html[idx] = HTML2ODT_TAGS[line]
+        elif line in ('<em>', '<strong>'):
+            if idx > 0  and odt_html[idx-1] == '<span':
+                odt_html[idx] = ''
+            else:
+                odt_html[idx] = '<span'
+        elif line in ('</em>', '</strong>'):
+            if idx > 0  and odt_html[idx-1] == '</span':
+                odt_html[idx] = ''
+            else:
+                odt_html[idx] = '</span'
     return odt_html
