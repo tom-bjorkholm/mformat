@@ -216,7 +216,7 @@ class MultiFormatMd(MultiFormatTextBased):
         if programming_language is None:
             programming_language = 'text'
         before = self._get_last_chars_written(num_chars=2)
-        if before not in ('\n\n', ''):
+        if before not in ('\n\n', '\n', ''):
             self.file.write('\n')
         self.file.write(f'````{programming_language}\n')
 
