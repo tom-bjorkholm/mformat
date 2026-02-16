@@ -105,7 +105,7 @@ def test_e11_numbered_nested_list_md(capsys):
     """Test the numbered_nested_example function with the md format."""
     expected_txt = EXPECTED_MD_TEXT
     # pymarkdown list incorreclty sees 4 space indented nested list items
-    # as indented code blocks causing errors MD046 and MD029.ß
+    # as indented code blocks causing errors MD046 and MD029.
     expected_error = ['MD046', 'MD029']
     check_markdown_func(numbered_nested_example, expected_txt,
                         expected_error=expected_error)
