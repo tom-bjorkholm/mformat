@@ -21,7 +21,7 @@ def bullets_example(format_name: str,
         # See example e05_heading.py for how to write a heading.
         mf.new_heading(level=1, text='Nested bullet list example')
         # To start a bullet list we simple start a bullet point item.
-        mf.new_bullet_item('This is the first bullet point item.')
+        mf.new_bullet_item('This is the first bullet point item')
         mf.add_text('at level 1.')
         # We can specify the level of the bullet point item.
         # If we do not specify the level, it is at the same level as the

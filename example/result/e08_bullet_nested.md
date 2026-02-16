@@ -1,6 +1,6 @@
 # Nested bullet list example
 
-- This is the first bullet point item. at level 1.
+- This is the first bullet point item at level 1.
 
   - This is the second bullet point item. This time at level 2.
 
