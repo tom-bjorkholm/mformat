@@ -24,13 +24,13 @@ def headings_example(format_name: str,
         mf.new_heading(level=1, text='This is the first heading,')
         # We can also add text to the heading in multiple calls
         # using add_text.
-        mf.add_text('it is at level 1.')
+        mf.add_text('it is at level 1')
         # There is no need to close the heading, it is closed automatically
         # when we start something new or when the with statement is exited.
         mf.new_heading(level=2, text='This is the second heading,')
-        mf.add_text('it is at level 2.')
+        mf.add_text('it is at level 2')
         mf.new_heading(level=3, text='This is the third heading,')
-        mf.add_text('it is at level 3.')
+        mf.add_text('it is at level 3')
         # We add a paragraph under this heading with some text.
         mf.new_paragraph('We can add text to headings with add_text(),')
         mf.add_text('just as we can add text to paragraphs.')
@@ -46,7 +46,7 @@ def headings_example(format_name: str,
         mf.add_text('specific to the output format.')
         # We add another heading at level 2 just as above.
         mf.new_heading(level=2,
-                       text='The fourth heading is again at level 2.')
+                       text='The fourth heading is again at level 2')
 
 
 if __name__ == "__main__":
