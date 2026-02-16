@@ -24,7 +24,6 @@ from e16_table_row_by_row import example_table_row_by_row  # pylint: disable=wro
 
 EXPECTED_MD_TEXT = [
     '# Table row by row example\n\n'
-
     '| Name | Age | City |\n'
     '|------|-----|------|\n'
     '| John | 25  | New York |\n'
