@@ -9,7 +9,7 @@ from e01_paragraph import example_main
 from mformat.factory import create_mf
 
 
-def example_code_blocks(format_name: str, file_name: str) -> None:
+def code_blocks_example(format_name: str, file_name: str) -> None:
     """Show how to write code blocks."""
     # We start by getting the MultiFormat class from the factory
     # as a context manager as we did in exampe e01_paragraph.py.
@@ -57,4 +57,4 @@ def hello_world(i: int) -> int:
 
 if __name__ == '__main__':
     example_main(example_text='Writing code blocks',
-                 function=example_code_blocks)
+                 function=code_blocks_example)

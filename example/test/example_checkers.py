@@ -286,6 +286,10 @@ def _reduce_equiv_seqs(html: list[str]) -> list[str]:
     return reduced_html
 
 
+DOCX_EXCLUDE_TAGS = ('<code>', '</code>', '<pre>', '</pre>')
+"""Tags to exclude from the HTML conversion to DOCX."""
+
+
 def docx_version_of_html(html: list[str]) -> list[str]:
     """Convert HTML to version that we get from mammoth."""
     reduced_html = _reduce_equiv_seqs(html)
@@ -299,6 +303,8 @@ def docx_version_of_html(html: list[str]) -> list[str]:
             continue
         if line == '</em>' and idx > 0 and reduced_html[idx-1] == '</strong>':
             continue
+        if line in DOCX_EXCLUDE_TAGS:
+            continue
         docx_html.append(line)
     return docx_html
 
@@ -311,14 +317,20 @@ HTML2ODT_TAGS = {
     '<h5>': '<h5',
     '<h6>': '<h6',
     '<p>': '<p',
-    '<ul>': '<ul'
+    '<ul>': '<ul',
 }
+
+
+ODT_EXCLUDE_TAGS = DOCX_EXCLUDE_TAGS
+"""Tags to exclude from the HTML conversion to ODT."""
 
 
 def odt_version_of_html(html: list[str]) -> list[str]:
     """Convert HTML to version that we get from odf2xhtml."""
     odt_html = []
     for line in html:
+        if line in ODT_EXCLUDE_TAGS:
+            continue
         odt_html.append(line.replace('&quot;', '"'))
     for idx, line in enumerate(odt_html):
         if line in HTML2ODT_TAGS:

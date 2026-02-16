@@ -73,7 +73,7 @@ EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_PO
 
 
 
-def test_e05_heading_md(capsys):
+def test_e06_headings_md(capsys):
     """Test the headings_example function with the md format."""
     expected_txt = EXPECTED_MD_TEXT
     check_markdown_func(headings_example, expected_txt,
@@ -81,14 +81,14 @@ def test_e05_heading_md(capsys):
     check_capsys_silent(capsys)
 
 
-def test_e05_heading_html(capsys):
+def test_e06_headings_html(capsys):
     """Test the headings_example function with the html format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_html_func(headings_example, expected_txt)
     check_capsys_silent(capsys)
 
 
-def test_e05_heading_docx(capsys):
+def test_e06_headings_docx(capsys):
     """Test the headings_example function with the docx format."""
     expected_txt = docx_version_of_html(EXPECTED_HTML_BODY_TEXT)
     expected_warnings = []
@@ -96,7 +96,7 @@ def test_e05_heading_docx(capsys):
     check_capsys_silent(capsys)
 
 
-def test_e05_heading_odt(capsys):
+def test_e06_headings_odt(capsys):
     """Test the headings_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(headings_example, expected_txt)
