@@ -6,7 +6,6 @@
 | *Copenhagen* | *Denmark*   | *Large*  |
 | ***Tokyo***  | ***Japan*** | ***Huge*** |
 
-
 | *Capital* | *Country* | *Continent* |
 |-----------|-----------|-------------|
 | Oslo      | Norway    | Europe      |

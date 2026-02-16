@@ -15,4 +15,3 @@ Now a table with italics and bold in the first row.
 | Janet      | 25        | New York    |
 | Jacob      | 30        | Los Angeles |
 | Jill       | 35        | Chicago     |
-

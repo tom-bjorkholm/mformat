@@ -27,7 +27,7 @@ def test_simple_table(capsys):
     expected = ('\n| Col1 | Col2 |\n'
                 '|------|------|\n'
                 '| A    | B    |\n'
-                '| C    | D    |\n\n')
+                '| C    | D    |\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -44,7 +44,7 @@ def test_table_with_bold_header(capsys):
     expected = ('\n| **Name** | **Age** |\n'
                 '|----------|---------|\n'
                 '| Alice    | 30      |\n'
-                '| Bob      | 25      |\n\n')
+                '| Bob      | 25      |\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -59,7 +59,7 @@ def test_table_with_italic_header(capsys):
 
     expected = ('\n| *Name* | *Age* |\n'
                 '|--------|-------|\n'
-                '| Alice  | 30    |\n\n')
+                '| Alice  | 30    |\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -77,7 +77,7 @@ def test_table_with_varied_column_widths(capsys):
     expected = ('\n| Short | Longer |\n'
                 '|-------|--------|\n'
                 '| A     | Very long text |\n'
-                '| B     | Short          |\n\n')
+                '| B     | Short          |\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -92,7 +92,7 @@ def test_write_complete_table(capsys):
     expected = ('\n| Header1  | Header2  |\n'
                 '|----------|----------|\n'
                 '| Row1Col1 | Row1Col2 |\n'
-                '| Row2Col1 | Row2Col2 |\n\n')
+                '| Row2Col1 | Row2Col2 |\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -108,7 +108,7 @@ def test_write_complete_table_with_bold_header(capsys):
     expected = ('\n| **Name** | **Value** |\n'
                 '|----------|-----------|\n'
                 '| Alpha    | 1         |\n'
-                '| Beta     | 2         |\n\n')
+                '| Beta     | 2         |\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -125,7 +125,7 @@ def test_paragraph_then_table(capsys):
     expected = ('Here is a table:\n'
                 '\n| A | B |\n'
                 '|---|---|\n'
-                '| 1 | 2 |\n\n')
+                '| 1 | 2 |\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -159,7 +159,7 @@ def test_heading_then_table(capsys):
     expected = ('## Data Table\n'
                 '\n| Col1 | Col2 |\n'
                 '|------|------|\n'
-                '| A    | B    |\n\n')
+                '| A    | B    |\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
@@ -178,7 +178,7 @@ def test_table_with_three_columns(capsys):
     expected = ('\n| Name | Age | City |\n'
                 '|------|-----|------|\n'
                 '| Alice | 30  | NYC  |\n'
-                '| Bob   | 25  | LA   |\n\n')
+                '| Bob   | 25  | LA   |\n')
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)

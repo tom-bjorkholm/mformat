@@ -246,7 +246,6 @@ class MultiFormatMd(MultiFormatTextBased):
         assert self.file is not None
         assert isinstance(num_columns, int)
         assert isinstance(num_rows, int)
-        self.file.write('\n')
 
     def _write_table_first_row(self, first_row: list[str],
                                formatting: Formatting) -> None:
