@@ -80,7 +80,7 @@ EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_PO
 
 
 def test_e03_paragraphs_bold_md(capsys):
-    """Test the paragraphs_example function with the md format."""
+    """Test the paragraphs_bold_example function with the md format."""
     expected_txt = EXPECTED_MD_TEXT
     # MD041: First line in file should be a top level heading
     expected_error = ['MD041']
@@ -89,14 +89,14 @@ def test_e03_paragraphs_bold_md(capsys):
 
 
 def test_e03_paragraphs_bold_html(capsys):
-    """Test the paragraphs_example function with the html format."""
+    """Test the paragraphs_bold_example function with the html format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_html_func(paragraphs_bold_example, expected_txt)
     check_capsys_silent(capsys)
 
 
 def test_e03_paragraphs_bold_docx(capsys):
-    """Test the paragraphs_example function with the docx format."""
+    """Test the paragraphs_bold_example function with the docx format."""
     expected_txt = docx_version_of_html(EXPECTED_HTML_BODY_TEXT)
     expected_warnings = []
     check_docx_func(paragraphs_bold_example, expected_txt, expected_warnings)
@@ -104,7 +104,7 @@ def test_e03_paragraphs_bold_docx(capsys):
 
 
 def test_e03_paragraphs_bold_odt(capsys):
-    """Test the paragraphs_example function with the odt format."""
+    """Test the paragraphs_bold_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(paragraphs_bold_example, expected_txt)
     check_capsys_silent(capsys)

@@ -30,7 +30,7 @@ def heading_example(format_name: str,
         mf.new_heading(level=1, text='This is a heading,')
         # We can also add text to the heading in multiple calls
         # using add_text.
-        mf.add_text('at level 1.')
+        mf.add_text('at level 1')
         # There is no need to close the heading, it is closed automatically
         # when we start something new or when the with statement is exited.
 
