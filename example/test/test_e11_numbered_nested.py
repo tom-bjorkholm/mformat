@@ -1,7 +1,7 @@
 #! /usr/local/bin/python3
-"""Test the e50_simple_complete example."""
+"""Test the e11_numbered_nested example."""
 
-# Copyright (c) 2025 - 2026 Tom Björkholm
+# Copyright (c) 2026 Tom Björkholm
 # MIT License
 #
 

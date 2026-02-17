@@ -1,7 +1,7 @@
 #! /usr/local/bin/python3
-"""Test the e50_simple_complete example."""
+"""Test the e16_table_row_by_row example."""
 
-# Copyright (c) 2025 - 2026 Tom Björkholm
+# Copyright (c) 2026 Tom Björkholm
 # MIT License
 #
 
