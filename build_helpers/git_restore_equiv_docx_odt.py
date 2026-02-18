@@ -23,6 +23,8 @@ try:
     import mammoth
     from odf.opendocument import load as odf_load
     from odf.odf2xhtml import ODF2XHTML
+    from htmlcompare import compare_html
+    from mformat.factory import create_mf
 except ImportError as exc:
     print('You need to run this with venv activated.')
     print(f'str(exc): {str(exc)}')
@@ -43,6 +45,8 @@ def are_odt_files_equivalent(file1: Path, file2: Path) -> bool:
     """Check if two ODT files are equivalent."""
     #  print(f'comparing: {file1} and {file2}')
     converter = ODF2XHTML()
+    html1 = ''
+    html2 = ''
     with open(file1, 'rb') as f1:
         _ = odf_load(f1)
         html1a = converter.odf2xhtml(f1)
@@ -53,8 +57,40 @@ def are_odt_files_equivalent(file1: Path, file2: Path) -> bool:
         html2a = converter.odf2xhtml(f2)
         title_pos = html2a.find('</head>')
         html2 = html2a[title_pos:]
-    return html1 == html2
+    result = compare_html(html1, html2)
+    diffs = [d for d in result.differences if 'anchor' not in d.expected]
+    if diffs:
+        #  print(f'diffs: {diffs}')
+        return False
+    return True
 
+
+def test_odt_files_equivalent() -> None:
+    """Test ODT files equivalence."""
+    with TemporaryDirectory() as temp_dir:
+        fname1 = temp_dir + '/test.odt'
+        fname2 = temp_dir + '/test2.odt'
+        fname3 = temp_dir + '/test3.odt'
+        fname4 = temp_dir + '/test4.odt'
+        head1 = 'A great heading for testing'
+        para1 = 'This is a paragraph for testing'
+        with create_mf(format_name='odt', file_name=fname1) as mf:
+            mf.new_heading(level=1, text=head1)
+            mf.new_paragraph(text=para1)
+        with create_mf(format_name='odt', file_name=fname2) as mf:
+            mf.new_heading(level=1, text=head1)
+            mf.new_paragraph(text=para1)
+        assert are_odt_files_equivalent(fname1, fname2)
+        with create_mf(format_name='odt', file_name=fname3) as mf:
+            mf.new_heading(level=1, text=head1)
+            mf.new_paragraph(text=para1 + ' extra')
+        assert not are_odt_files_equivalent(fname1, fname3)
+        assert not are_odt_files_equivalent(fname2, fname3)
+        assert are_odt_files_equivalent(fname3, fname3)
+        with create_mf(format_name='odt', file_name=fname4) as mf:
+            mf.new_heading(level=1, text=head1 + ' extra')
+            mf.new_paragraph(text=para1)
+        assert not are_odt_files_equivalent(fname1, fname4)
 
 class FileType(IntEnum):
     """Type of file."""

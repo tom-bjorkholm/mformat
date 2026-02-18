@@ -48,7 +48,7 @@ for pkg in pip pytest pytest-html flake8 flake8-html pytest-flake8 \
     wheel pypi-simple requests types-requests argcomplete \
     pylint mypy coverage build setuptools wheel lxml \
     python-docx odfdo mammoth odfpy pydoc-markdown pymarkdownlnt \
-    restructuredtext-lint html5lib
+    restructuredtext-lint html5lib htmlcompare
 do
     ${PYTHON} -m pip install --upgrade ${pkg}
 done
