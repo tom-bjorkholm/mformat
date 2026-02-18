@@ -36,7 +36,7 @@ if [ -d venv ] ; then
   read a
   rm -rf venv
 fi
-for pkg in pip setuptools build pylint mypy coverage
+for pkg in pip setuptools build pylint mypy coverage pytest
 do
     ${PYTHON} -m pip install --upgrade ${pkg}
 done

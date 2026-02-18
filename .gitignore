@@ -27,6 +27,6 @@ extend/*.egg-info
 .claude
 .claude/*
 .claudeignore
-example/result/*.docx
-example/result/*.odt
+# example/result/*.docx
+# example/result/*.odt
 example/result/.*#
