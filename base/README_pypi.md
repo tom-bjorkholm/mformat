@@ -162,6 +162,7 @@ probably provide a better introduction.
 
 | Version | Date        | Python version | Description             |
 |---------|-------------|----------------|-------------------------|
+| 0.3     | 18 Feb 2026 | 3.12 or newer  | Improved API and fixes  |
 | 0.2.2   | 31 Jan 2026 | 3.12 or newer  | Dependency corrected    |
 | 0.2.1   | 30 Jan 2026 | 3.12 or newer  | Minor documentation fix |
 | 0.2     | 30 Jan 2026 | 3.12 or newer  | First released version  |
@@ -202,7 +203,7 @@ some future version.
 
 ## Test summary
 
-- Test result: 1459 passed in 16s
+- Test result: 1480 passed in 15s
 - No Flake8 warnings.
 - No mypy errors found.
-- 0.2.3 built and tested using python version: Python 3.14.3
+- 0.3 built and tested using python version: Python 3.14.3
