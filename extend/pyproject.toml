@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mformat_ext"
-version = "0.3"
+version = "0.3.1"
 authors = [
   { name="Tom Björkholm", email="klausuler_linnet0q@icloud.com" },
 ]
@@ -12,6 +12,7 @@ description = "Uniform way to write simple text extended with DOCX and ODT files
 readme = "README_pypi.md"
 requires-python = ">=3.12"
 license = "MIT"
+license-files = ["LICENSE.txt"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",

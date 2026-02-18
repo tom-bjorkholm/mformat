@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
   name='mformat_ext',
-  version='0.3',
+  version='0.3.1',
   description='Uniform way to write simple text extended with DOCX and ODT files',
   author='Tom Björkholm',
   author_email='klausuler_linnet0q@icloud.com',
