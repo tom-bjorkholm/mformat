@@ -45,10 +45,14 @@ def are_odt_files_equivalent(file1: Path, file2: Path) -> bool:
     converter = ODF2XHTML()
     with open(file1, 'rb') as f1:
         _ = odf_load(f1)
-        html1 = converter.odf2xhtml(f1)
+        html1a = converter.odf2xhtml(f1)
+        title_pos = html1a.find('</head>')
+        html1 = html1a[title_pos:]
     with open(file2, 'rb') as f2:
         _ = odf_load(f2)
-        html2 = converter.odf2xhtml(f2)
+        html2a = converter.odf2xhtml(f2)
+        title_pos = html2a.find('</head>')
+        html2 = html2a[title_pos:]
     return html1 == html2
 
 
