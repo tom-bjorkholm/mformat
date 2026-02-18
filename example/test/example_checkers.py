@@ -137,7 +137,7 @@ def check_markdown_func(func: Callable[[str, str], None],
             check_text_in_order(text, expected_txt)
 
 
-def print_rst_errors(errors: list[restructuredtext_lint.LintError]) -> None:
+def print_rst_errors(errors: list['restructuredtext_lint.LintError']) -> None:
     """Print the errors from a restructuredtext lint result."""
     print(f'{len(errors)} unexpected errors found', file=sys.stderr)
     for error in errors:
