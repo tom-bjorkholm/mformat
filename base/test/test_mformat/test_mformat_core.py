@@ -132,6 +132,16 @@ def test_cls_method_not_overridden3(capsys, method_name):
     check_capsys(capsys)
 
 
+def test_encode_not_overridden(capsys):
+    """Test error that the _encode_text method is not overridden."""
+    mfmt = MultiFormat2(file_name='test')
+    with pytest.raises(NotImplementedError) as exc:
+        _ = mfmt._encode_text(text='test')  # pylint: disable=protected-access # noqa: E501
+    assert exc.value.args[0] == '_encode_text must be overridden by a ' + \
+        'subclass MultiFormat2'
+    check_capsys(capsys)
+
+
 def test_start_num_item_not_impl(capsys):
     """Test that the _start_numbered_item method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
@@ -595,4 +605,33 @@ def test_code_in_text(capsys):
         '_start_paragraph': 1,
         '_write_text': 1,
         '_write_code_in_text': 1}
+    check_capsys(capsys)
+
+
+def test_code_in_text_nok1(capsys):
+    """Test error that the code in text is not allowed with line breaks."""
+    code = 'print("Hello")\nprint("World")'
+    text = 'Here is code:'
+    mfmt = MultiFormat12(file_name='test', expected_code=code,
+                         expected_text=text)
+    mfmt.new_paragraph(text=text)
+    with pytest.raises(RuntimeError) as exc:
+        mfmt.add_code_in_text(text=code)
+    assert exc.value.args[0] == \
+        'Cannot add code in text with line breaks. ' + \
+        'Use write_code_block for that.'
+    check_capsys(capsys)
+
+
+def test_code_in_text_nok2(capsys):
+    """Test error that code in text is done in an invalid state."""
+    code = 'print("Hello")'
+    text = 'Here is code:'
+    mfmt = MultiFormat12(file_name='test', expected_code=code,
+                         expected_text=text)
+    mfmt.state = MultiFormatState.BULLET_LIST
+    with pytest.raises(RuntimeError) as exc:
+        mfmt.add_code_in_text(text=code)
+    assert exc.value.args[0] == 'Cannot add code in text to state ' + \
+        'BULLET_LIST'
     check_capsys(capsys)

@@ -407,7 +407,7 @@ class MultiFormatOdt(MultiFormat):
             assert isinstance(self.odt_listitem.children[-1], Paragraph)
             self._formatted_write(self.odt_listitem.children[-1],
                                   formatting, text)
-        else:
+        else:  # pragma: no cover # noqa: E501
             raise RuntimeError(f'Unexpected state: {self.state.name} for '
                                f'writing text: {text}')
 
@@ -447,7 +447,7 @@ class MultiFormatOdt(MultiFormat):
             assert isinstance(self.odt_listitem.children[-1], Paragraph)
             self._impl_write_url(self.odt_listitem.children[-1],
                                  url, text, formatting)
-        else:
+        else:  # pragma: no cover # noqa: E501
             raise RuntimeError(f'Unexpected state: {self.state.name} for '
                                f'writing url: {url} text: {text}')
 
@@ -470,7 +470,7 @@ class MultiFormatOdt(MultiFormat):
             assert self.odt_listitem is not None
             assert isinstance(self.odt_listitem.children[-1], Paragraph)
             paragraph = self.odt_listitem.children[-1]
-        else:
+        else:  # pragma: no cover
             raise RuntimeError(f'Unexpected state: {self.state.name} for '
                                f'writing code text: {text}')
         assert paragraph is not None
@@ -494,7 +494,7 @@ class MultiFormatOdt(MultiFormat):
             level: The level of the bullet list (1-9).
         """
         assert isinstance(level, int)
-        if not self.odt_list or len(self.odt_list) != level:
+        if not self.odt_list or len(self.odt_list) != level:  # pragma: no cover # noqa: E501
             print(f'len(odt_list) = {len(self.odt_list)} for bullet list '
                   f'level = {level} state: {self.state.name}')
         assert self.odt_list and len(self.odt_list) == level
@@ -549,7 +549,7 @@ class MultiFormatOdt(MultiFormat):
             level: The level of the numbered list (1-9).
         """
         assert isinstance(level, int)
-        if not self.odt_list or len(self.odt_list) != level:
+        if not self.odt_list or len(self.odt_list) != level:  # pragma: no cover # noqa: E501
             print(f'len(odt_list) = {len(self.odt_list)} for numbered list '
                   f'level = {level} state: {self.state.name}')
         assert self.odt_list and len(self.odt_list) == level
@@ -588,7 +588,7 @@ class MultiFormatOdt(MultiFormat):
         assert isinstance(level, int)
         assert isinstance(num, int)
         assert self.odt_listitem is not None
-        if not self.odt_list or len(self.odt_list) != level:
+        if not self.odt_list or len(self.odt_list) != level:  # pragma: no cover # noqa: E501
             print(f'len(odt_list) = {len(self.odt_list)} for numbered item '
                   f'level = {level} {num} state: {self.state.name}')
         assert self.odt_list and len(self.odt_list) == level
@@ -706,5 +706,5 @@ class MultiFormatOdt(MultiFormat):
 
     def _encode_text(self, text: str) -> str:
         """Encode text (escape special characters)."""
-        # No encoding needed for DOCX
+        # No encoding needed for ODT
         return text

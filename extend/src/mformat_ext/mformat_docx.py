@@ -115,7 +115,7 @@ class MultiFormatDocx(MultiFormat):
             state: The state of the current item.
             formatting: The formatting of the text.
         """
-        if self.current_paragraph is None:
+        if self.current_paragraph is None:  # pragma: no cover # noqa: E501
             raise RuntimeError('No current paragraph to write text into')
         run = self.current_paragraph.add_run(text)
         if formatting.bold:
@@ -134,7 +134,7 @@ class MultiFormatDocx(MultiFormat):
             state: The state of the current item.
             formatting: The formatting of the text.
         """  # pylint: disable=too-many-arguments,too-many-positional-arguments
-        if self.current_paragraph is None:
+        if self.current_paragraph is None:  # pragma: no cover # noqa: E501
             raise RuntimeError('No current paragraph to write URL into')
         if not text:
             text = url
@@ -204,7 +204,7 @@ class MultiFormatDocx(MultiFormat):
                          MultiFormatState.PARAGRAPH,
                          MultiFormatState.CODE_BLOCK]
         assert isinstance(text, str)
-        if self.current_paragraph is None:
+        if self.current_paragraph is None:  # pragma: no cover # noqa: E501
             raise RuntimeError('No current paragraph to write code into')
         run = self.current_paragraph.add_run(text)
         # Set monospace font
