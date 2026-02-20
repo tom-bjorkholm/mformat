@@ -398,3 +398,18 @@ def test_format_text_formatting(capsys, text, bold, italic, expected):
     formatting = Formatting(bold=bold, italic=italic)
     assert MultiFormatMd._format_text(text, formatting) == expected
     check_capsys(capsys)
+
+
+def test_add_code_in_text_heading(capsys):
+    """Test add_code_in_text in heading."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.new_heading(level=1, text='Code Example')
+        mfd.add_code_in_text(text='example()')
+        mfd.add_text('and more')
+        mfd.new_paragraph(text='A paragraph.')
+
+    expected = '# Code Example `example()` and more\n\nA paragraph.\n'
+    check_run_with_context_manager('md', '.md', test_action,
+                                   expected_text=expected,
+                                   capsys=capsys)

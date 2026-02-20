@@ -497,3 +497,39 @@ def test_special_characters_in_heading(capsys):
     assert len(headings) == 1
     # ODF handles special characters properly
     assert '<>&"\'' in headings[0][1]
+
+
+# --- Tests for add_code_in_text ---
+
+def test_add_code_in_text_heading(capsys):
+    """Test add_code_in_text in heading."""
+    def func(mfo: MultiFormatOdt) -> None:
+        mfo.new_heading(level=1, text='Code Example')
+        mfo.add_code_in_text(text='example()')
+
+    doc = silent_odt_create(capsys, func=func)
+    headings = get_heading_texts(doc)
+    assert len(headings) == 1
+    assert headings[0] == (1, 'Code Example example()')
+
+
+def test_add_code_in_bullet_item(capsys):
+    """Test add_code_in_text in bullet item."""
+    def func(mfo: MultiFormatOdt) -> None:
+        mfo.new_bullet_item(text='Code Example')
+        mfo.add_code_in_text(text='example()')
+
+    doc = silent_odt_create(capsys, func=func)
+    texts = get_all_text_content(doc)
+    assert 'Code Example example()' in texts
+
+
+def test_add_code_in_numbered_item(capsys):
+    """Test add_code_in_text in numbered item."""
+    def func(mfo: MultiFormatOdt) -> None:
+        mfo.new_numbered_point_item(text='Code Example')
+        mfo.add_code_in_text(text='example()')
+
+    doc = silent_odt_create(capsys, func=func)
+    texts = get_all_text_content(doc)
+    assert 'Code Example example()' in texts
