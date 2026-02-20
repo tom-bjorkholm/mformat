@@ -1,0 +1,5 @@
+# Code in heading example `add_code_in_text()`
+
+- Bullet items can also contain code: `example()`
+
+1. Numbered items can also contain code: `example()`

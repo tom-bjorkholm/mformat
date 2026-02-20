@@ -370,7 +370,7 @@ examples. Simpler examples are listed earlier, to help you get started.
 
     - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e25_url_as_text.odt)
 
-## Code Blocks
+## Code and Code Blocks
 
 - Show how to write code blocks.
 
@@ -386,6 +386,21 @@ examples. Simpler examples are listed earlier, to help you get started.
     - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e30_code_blocks.docx)
 
     - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e30_code_blocks.odt)
+
+- Show how to write code in a heading and list items.
+
+  - Source:
+    [e31_code_in_heading.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e31_code_in_heading.py)
+
+  - Results:
+
+    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e31_code_in_heading.html)
+
+    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e31_code_in_heading.md)
+
+    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e31_code_in_heading.docx)
+
+    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e31_code_in_heading.odt)
 
 ## Passing extra arguments
 

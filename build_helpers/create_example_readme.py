@@ -48,7 +48,7 @@ CATEGORIES: list[tuple[str, list[str]]] = [
     ('Mixed Lists', ['13']),
     ('Tables', ['14', '15', '16', '17']),
     ('URLs', ['20', '21', '22', '23', '24', '25']),
-    ('Code Blocks', ['30']),
+    ('Code and Code Blocks', ['30', '31']),
     ('Passing extra arguments', ['40', '41']),
     ('Complete Example', ['50']),
     ('Extend with own formats', ['60']),
