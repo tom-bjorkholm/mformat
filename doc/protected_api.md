@@ -54,6 +54,7 @@
     * [\_write\_word\_with\_wrapping](#mformat.mformat_textbased.MultiFormatTextBased._write_word_with_wrapping)
     * [\_write\_pending\_whitespace](#mformat.mformat_textbased.MultiFormatTextBased._write_pending_whitespace)
     * [\_wrap\_and\_write\_atomic](#mformat.mformat_textbased.MultiFormatTextBased._wrap_and_write_atomic)
+    * [\_empty\_line\_before](#mformat.mformat_textbased.MultiFormatTextBased._empty_line_before)
 * [mformat.factory](#mformat.factory)
   * [\_the\_factory](#mformat.factory._the_factory)
   * [OptArgsDict](#mformat.factory.OptArgsDict)
@@ -86,7 +87,6 @@
     * [\_start\_block\_quote](#mformat.mformat_md.MultiFormatMd._start_block_quote)
     * [\_end\_block\_quote](#mformat.mformat_md.MultiFormatMd._end_block_quote)
     * [\_end\_paragraph](#mformat.mformat_md.MultiFormatMd._end_paragraph)
-    * [\_empty\_line\_before](#mformat.mformat_md.MultiFormatMd._empty_line_before)
     * [\_start\_heading](#mformat.mformat_md.MultiFormatMd._start_heading)
     * [\_end\_heading](#mformat.mformat_md.MultiFormatMd._end_heading)
     * [\_format\_text](#mformat.mformat_md.MultiFormatMd._format_text)
@@ -977,6 +977,16 @@ Use for URLs or other content that should not be broken across lines.
 - `text` - The text to write (will not be broken).
 - `max_line_length` - Maximum characters per line.
 
+<a id="mformat.mformat_textbased.MultiFormatTextBased._empty_line_before"></a>
+
+#### \_empty\_line\_before
+
+```python
+def _empty_line_before() -> None
+```
+
+Make sure there is an empty line before next item.
+
 <a id="mformat.factory"></a>
 
 # mformat.factory
@@ -1475,16 +1485,6 @@ def _end_paragraph() -> None
 ```
 
 End a paragraph.
-
-<a id="mformat.mformat_md.MultiFormatMd._empty_line_before"></a>
-
-#### \_empty\_line\_before
-
-```python
-def _empty_line_before() -> None
-```
-
-Make sure there is an empty line before next item.
 
 <a id="mformat.mformat_md.MultiFormatMd._start_heading"></a>
 

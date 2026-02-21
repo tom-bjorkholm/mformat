@@ -208,3 +208,14 @@ class MultiFormatTextBased(MultiFormat):
             self._write_pending_whitespace()
             self.file.write(text)
             self._current_column += text_len
+
+    def _empty_line_before(self) -> None:
+        """Make sure there is an empty line before next item."""
+        assert self.file is not None
+        preceeding = self._get_last_chars_written(num_chars=2)
+        if preceeding in ('\n\n', ''):
+            pass
+        elif preceeding[-1] == '\n':
+            self.file.write('\n')
+        else:
+            self.file.write('\n\n')
