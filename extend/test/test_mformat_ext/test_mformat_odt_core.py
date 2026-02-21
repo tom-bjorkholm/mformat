@@ -533,3 +533,154 @@ def test_add_code_in_numbered_item(capsys):
     doc = silent_odt_create(capsys, func=func)
     texts = get_all_text_content(doc)
     assert 'Code Example example()' in texts
+
+
+# --- Tests for block quotes ---
+
+
+def test_simple_block_quote(capsys):
+    """Test a simple block quote."""
+    def func(mfo: MultiFormatOdt) -> None:
+        mfo.new_block_quote(text='This is a quote.')
+
+    doc = silent_odt_create(capsys, func=func)
+    all_text = get_all_text_content(doc)
+    assert 'This is a quote.' in all_text
+
+
+def test_block_quote_with_add_text(capsys):
+    """Test block quote with additional text."""
+    def func(mfo: MultiFormatOdt) -> None:
+        mfo.new_block_quote(text='Start of quote')
+        mfo.add_text(text=' and more text.')
+
+    doc = silent_odt_create(capsys, func=func)
+    all_text = get_all_text_content(doc)
+    assert 'Start of quote and more text.' in all_text
+
+
+@pytest.mark.parametrize('bold, italic, expected_style', [
+    (True, False, 'bold'),
+    (False, True, 'italic'),
+    (True, True, 'bold-italic'),
+])
+def test_block_quote_formatting(capsys, bold, italic, expected_style):
+    """Test block quote with bold and italic formatting."""
+    def func(mfo: MultiFormatOdt) -> None:
+        mfo.new_block_quote(text='Formatted quote', bold=bold, italic=italic)
+
+    doc = silent_odt_create(capsys, func=func)
+    all_text = get_all_text_content(doc)
+    assert 'Formatted quote' in all_text
+    # Check that appropriate style is used
+    for para in get_elements_by_type(doc, P):
+        if 'Formatted quote' in get_element_text(para):
+            assert has_span_with_style(para, expected_style)
+
+
+def test_block_quote_with_url(capsys):  # pylint: disable=duplicate-code
+    """Test block quote with URL."""
+    def func(mfo: MultiFormatOdt) -> None:
+        mfo.new_block_quote(text='See ')
+        mfo.add_url(url='http://any.com', text='any link')
+
+    doc = silent_odt_create(capsys, func=func)
+    all_text = get_all_text_content(doc)
+    assert 'See' in all_text
+    assert 'any link' in all_text
+    # Check that URL is present in block quote paragraph
+    for para in get_elements_by_type(doc, P):
+        if 'any link' in get_element_text(para):
+            assert has_link_with_url(para, 'http://any.com')
+
+
+def test_block_quote_with_code_in_text(capsys):
+    """Test block quote with inline code."""
+    def func(mfo: MultiFormatOdt) -> None:
+        mfo.new_block_quote(text='Use the')
+        mfo.add_code_in_text(text='print()')
+        mfo.add_text(text='function.')
+
+    doc = silent_odt_create(capsys, func=func)
+    all_text = get_all_text_content(doc)
+    assert 'Use the' in all_text
+    assert 'print()' in all_text
+    assert 'function.' in all_text
+
+
+def test_block_quote_style(capsys):
+    """Test that block quote paragraphs have the block-quote style."""
+    def func(mfo: MultiFormatOdt) -> None:
+        mfo.new_block_quote(text='Styled quote')
+
+    doc = silent_odt_create(capsys, func=func)
+    # Find paragraphs with block-quote style
+    block_quote_paragraphs = []
+    for para in get_elements_by_type(doc, P):
+        style = para.getAttribute('stylename')
+        if style == 'block-quote':
+            block_quote_paragraphs.append(para)
+    assert len(block_quote_paragraphs) >= 1
+    assert 'Styled quote' in get_element_text(block_quote_paragraphs[0])
+
+
+def test_block_quote_then_paragraph(capsys):
+    """Test block quote followed by paragraph."""
+    def func(mfo: MultiFormatOdt) -> None:
+        mfo.new_block_quote(text='A quoted text.')
+        mfo.new_paragraph(text='A normal paragraph.')
+
+    doc = silent_odt_create(capsys, func=func)
+    all_text = get_all_text_content(doc)
+    assert 'A quoted text.' in all_text
+    assert 'A normal paragraph.' in all_text
+
+
+def test_paragraph_then_block_quote(capsys):
+    """Test paragraph followed by block quote."""
+    def func(mfo: MultiFormatOdt) -> None:
+        mfo.new_paragraph(text='A normal paragraph.')
+        mfo.new_block_quote(text='A quoted text.')
+
+    doc = silent_odt_create(capsys, func=func)
+    all_text = get_all_text_content(doc)
+    assert 'A normal paragraph.' in all_text
+    assert 'A quoted text.' in all_text
+
+
+def test_heading_then_block_quote(capsys):
+    """Test heading followed by block quote."""
+    def func(mfo: MultiFormatOdt) -> None:
+        mfo.new_heading(level=2, text='Quote Section')
+        mfo.new_block_quote(text='This is quoted.')
+
+    doc = silent_odt_create(capsys, func=func)
+    headings = get_heading_texts(doc)
+    assert len(headings) == 1
+    assert headings[0] == (2, 'Quote Section')
+    all_text = get_all_text_content(doc)
+    assert 'This is quoted.' in all_text
+
+
+def test_multiple_block_quotes(capsys):
+    """Test multiple block quotes in sequence."""
+    def func(mfo: MultiFormatOdt) -> None:
+        mfo.new_block_quote(text='First quote.')
+        mfo.new_block_quote(text='Second quote.')
+
+    doc = silent_odt_create(capsys, func=func)
+    all_text = get_all_text_content(doc)
+    assert 'First quote.' in all_text
+    assert 'Second quote.' in all_text
+
+
+def test_block_quote_then_code_block(capsys):
+    """Test block quote followed by code block."""
+    def func(mfo: MultiFormatOdt) -> None:
+        mfo.new_block_quote(text='Here is some code:')
+        mfo.write_code_block(text='x = 42', programming_language='python')
+
+    doc = silent_odt_create(capsys, func=func)
+    all_text = get_all_text_content(doc)
+    assert 'Here is some code:' in all_text
+    assert 'x = 42' in all_text

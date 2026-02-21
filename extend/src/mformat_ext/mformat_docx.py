@@ -94,6 +94,38 @@ class MultiFormatDocx(MultiFormat):
         """End a paragraph."""
         self.current_paragraph = None
 
+    def _start_block_quote(self) -> None:
+        """Start a block quote with indentation and light grey background."""
+        self.current_paragraph = self.doc.add_paragraph()
+        self._apply_block_quote_style(self.current_paragraph)
+
+    def _end_block_quote(self) -> None:
+        """End a block quote."""
+        self.current_paragraph = None
+
+    def _apply_block_quote_style(self, paragraph: Paragraph) -> None:
+        """Apply block quote styling to a paragraph.
+
+        Applies left indentation and light grey shading to visually
+        distinguish block quotes from regular text and code blocks.
+
+        Args:
+            paragraph: The paragraph to style.
+        """
+        # pylint: disable=protected-access
+        p_pr = paragraph._p.get_or_add_pPr()
+        # Add left indentation (720 twips = 0.5 inch)
+        ind = OxmlElement('w:ind')
+        ind.set(qn('w:left'), '720')
+        ind.set(qn('w:right'), '720')
+        p_pr.append(ind)
+        # Add light grey shading (different from code style)
+        shd = OxmlElement('w:shd')
+        shd.set(qn('w:val'), 'clear')
+        shd.set(qn('w:color'), 'auto')
+        shd.set(qn('w:fill'), 'E8E8E8')  # Light grey background
+        p_pr.append(shd)
+
     def _start_heading(self, level: int) -> None:
         """Start a heading.
 
@@ -206,6 +238,7 @@ class MultiFormatDocx(MultiFormat):
                          MultiFormatState.NUMBERED_LIST_ITEM,
                          MultiFormatState.HEADING,
                          MultiFormatState.PARAGRAPH,
+                         MultiFormatState.BLOCK_QUOTE,
                          MultiFormatState.CODE_BLOCK]
         assert isinstance(text, str)
         if self.current_paragraph is None:  # pragma: no cover # noqa: E501

@@ -352,3 +352,41 @@ def test_multiple_code_blocks(capsys):
            '</code></pre>\n' + SFTOT)
     check_run_with_context_manager('html', '.html', test_action,
                                    expected_text=exp, capsys=capsys)
+
+# Tests for block quotes
+
+
+def test_block_quote_1(capsys):
+    """Test block quote."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.new_block_quote(text='Here is text')
+    exp = (PF_EN_NT_NC + '<blockquote>\nHere is text</blockquote>\n' +
+           SFTOT)
+    check_run_with_context_manager('html', '.html', test_action,
+                                   expected_text=exp, capsys=capsys)
+
+
+def test_block_quote_2(capsys):
+    """Test block quote."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.new_block_quote(text='Block quote')
+        mfd.add_text(text='More text')
+    exp = (PF_EN_NT_NC +
+           '<blockquote>\nBlock quote More text</blockquote>\n' +
+           SFTOT)
+    check_run_with_context_manager('html', '.html', test_action,
+                                   expected_text=exp, capsys=capsys)
+
+
+def test_block_quote_3(capsys):
+    """Test block quote."""
+    def test_action(mfd):
+        assert isinstance(mfd, MultiFormatHtml)
+        mfd.new_block_quote(text='Block quote')
+        mfd.new_paragraph(text='Paragraph text')
+    exp = (PF_EN_NT_NC + '<blockquote>\nBlock quote</blockquote>\n' +
+           '<p>\nParagraph text</p>\n' + SFTOT)
+    check_run_with_context_manager('html', '.html', test_action,
+                                   expected_text=exp, capsys=capsys)

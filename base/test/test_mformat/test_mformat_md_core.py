@@ -413,3 +413,165 @@ def test_add_code_in_text_heading(capsys):
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
+
+
+# Tests for block quotes
+
+
+def test_simple_block_quote(capsys):
+    """Test a simple block quote."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.new_block_quote(text='This is a quote.')
+
+    expected = '> This is a quote.\n'
+    check_run_with_context_manager('md', '.md', test_action,
+                                   expected_text=expected,
+                                   capsys=capsys)
+
+
+def test_block_quote_with_add_text(capsys):
+    """Test block quote with additional text."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.new_block_quote(text='Start of quote')
+        mfd.add_text(text='and more text.')
+
+    expected = '> Start of quote and more text.\n'
+    check_run_with_context_manager('md', '.md', test_action,
+                                   expected_text=expected,
+                                   capsys=capsys)
+
+
+@pytest.mark.parametrize('bold, italic, expected', [
+    (True, False, '> **Bold quote**\n'),
+    (False, True, '> *Italic quote*\n'),
+    (True, True, '> ***Bold and italic***\n'),
+])
+def test_block_quote_formatting(capsys, bold, italic, expected):
+    """Test block quote with bold and italic formatting."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        text = 'Bold quote' if bold and not italic else \
+               'Italic quote' if italic and not bold else \
+               'Bold and italic'
+        mfd.new_block_quote(text=text, bold=bold, italic=italic)
+
+    check_run_with_context_manager('md', '.md', test_action,
+                                   expected_text=expected,
+                                   capsys=capsys)
+
+
+def test_block_quote_with_url(capsys):
+    """Test block quote with URL."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.new_block_quote(text='Check ')
+        mfd.add_url(url='http://example.com', text='this link')
+
+    expected = '> Check [this link](http://example.com)\n'
+    check_run_with_context_manager('md', '.md', test_action,
+                                   expected_text=expected,
+                                   capsys=capsys)
+
+
+def test_block_quote_with_code_in_text(capsys):
+    """Test block quote with inline code."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.new_block_quote(text='Use the')
+        mfd.add_code_in_text(text='print()')
+        mfd.add_text(text='function.')
+
+    expected = '> Use the `print()` function.\n'
+    check_run_with_context_manager('md', '.md', test_action,
+                                   expected_text=expected,
+                                   capsys=capsys)
+
+
+def test_block_quote_line_wrapping(capsys):
+    """Test that block quote wraps lines with > prefix."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        long_text = ('This is a very long quote that should wrap to '
+                     'multiple lines in the output because it exceeds '
+                     'the maximum line length.')
+        mfd.new_block_quote(text=long_text)
+
+    with TemporaryDirectory() as tmp_dir:
+        fname = tmp_dir + '/test.md'
+        with MultiFormatMd(file_name=fname) as mfd:
+            test_action(mfd)
+        with open(fname, 'rt', encoding='utf-8') as f:
+            content = f.read()
+        # Check that all lines start with >
+        lines = content.strip().split('\n')
+        for line in lines:
+            msg = f"Line '{line}' should start with '> '"
+            assert line.startswith('> '), msg
+        check_capsys(capsys)
+
+
+def test_block_quote_then_paragraph(capsys):
+    """Test block quote followed by paragraph."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.new_block_quote(text='A quoted text.')
+        mfd.new_paragraph(text='A normal paragraph.')
+
+    expected = '> A quoted text.\n\nA normal paragraph.\n'
+    check_run_with_context_manager('md', '.md', test_action,
+                                   expected_text=expected,
+                                   capsys=capsys)
+
+
+def test_paragraph_then_block_quote(capsys):
+    """Test paragraph followed by block quote."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.new_paragraph(text='A normal paragraph.')
+        mfd.new_block_quote(text='A quoted text.')
+
+    expected = 'A normal paragraph.\n\n> A quoted text.\n'
+    check_run_with_context_manager('md', '.md', test_action,
+                                   expected_text=expected,
+                                   capsys=capsys)
+
+
+def test_heading_then_block_quote(capsys):
+    """Test heading followed by block quote."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.new_heading(level=2, text='Quote Section')
+        mfd.new_block_quote(text='This is quoted.')
+
+    expected = '## Quote Section\n\n> This is quoted.\n'
+    check_run_with_context_manager('md', '.md', test_action,
+                                   expected_text=expected,
+                                   capsys=capsys)
+
+
+def test_multiple_block_quotes(capsys):
+    """Test multiple block quotes in sequence."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.new_block_quote(text='First quote.')
+        mfd.new_block_quote(text='Second quote.')
+
+    expected = '> First quote.\n\n> Second quote.\n'
+    check_run_with_context_manager('md', '.md', test_action,
+                                   expected_text=expected,
+                                   capsys=capsys)
+
+
+def test_block_quote_then_code_block(capsys):
+    """Test block quote followed by code block."""
+    def test_action(mfd):
+        assert type(mfd).__name__ == 'MultiFormatMd'
+        mfd.new_block_quote(text='Here is some code:')
+        mfd.write_code_block(text='x = 42', programming_language='python')
+
+    expected = '> Here is some code:\n\n````python\nx = 42\n````\n'
+    check_run_with_context_manager('md', '.md', test_action,
+                                   expected_text=expected,
+                                   capsys=capsys)

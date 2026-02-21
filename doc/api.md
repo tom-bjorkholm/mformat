@@ -54,6 +54,7 @@
     * [close](#mformat.mformat.MultiFormat.close)
     * [new\_heading](#mformat.mformat.MultiFormat.new_heading)
     * [new\_paragraph](#mformat.mformat.MultiFormat.new_paragraph)
+    * [new\_block\_quote](#mformat.mformat.MultiFormat.new_block_quote)
     * [add\_text](#mformat.mformat.MultiFormat.add_text)
     * [add\_code\_in\_text](#mformat.mformat.MultiFormat.add_code_in_text)
     * [add\_url](#mformat.mformat.MultiFormat.add_url)
@@ -892,6 +893,35 @@ Start a new paragraph.
 - `smart_ws` - If True, leading and trailing whitespace are collapsed
   and a single space is inserted between texts (from
   new_paragraph or add_text).
+- `bold` - If True, the text is bold.
+- `italic` - If True, the text is italic.
+
+<a id="mformat.mformat.MultiFormat.new_block_quote"></a>
+
+#### new\_block\_quote
+
+```python
+def new_block_quote(text: str,
+                    smart_ws: bool = True,
+                    bold: bool = False,
+                    italic: bool = False) -> None
+```
+
+Start a new block quote.
+
+Start a new block quote with the given text and formatting.
+Additional text can be added into the block quote with add_text,
+add_code_in_text, add_url, etc.
+
+Block quotes cannot be nested. If called while already in a block
+quote, the current block quote is ended and a new one is started.
+
+**Arguments**:
+
+- `text` - The text to write in the block quote.
+- `smart_ws` - If True, leading and trailing whitespace are collapsed
+  and a single space is inserted between texts (from
+  new_block_quote or add_text).
 - `bold` - If True, the text is bold.
 - `italic` - If True, the text is italic.
 

@@ -275,3 +275,123 @@ def test_multiple_code_blocks(capsys):
     html = silent_docx_create(capsys, func=func)
     assert 'x = 1' in html
     assert 'y = 2' in html
+
+
+# Tests for block quotes
+
+
+def test_simple_block_quote(capsys):
+    """Test a simple block quote."""
+    def func(mfd: MultiFormatDocx) -> None:
+        mfd.new_block_quote(text='This is a quote.')
+
+    html = silent_docx_create(capsys, func=func)
+    assert 'This is a quote.' in html
+
+
+def test_block_quote_with_add_text(capsys):
+    """Test block quote with additional text."""
+    def func(mfd: MultiFormatDocx) -> None:
+        mfd.new_block_quote(text='Start of quote')
+        mfd.add_text(text=' and more text.')
+
+    html = silent_docx_create(capsys, func=func)
+    assert 'Start of quote' in html
+    assert 'and more text.' in html
+
+
+@pytest.mark.parametrize('bold, italic', [
+    (True, False),
+    (False, True),
+    (True, True),
+])
+def test_block_quote_formatting(capsys, bold, italic):
+    """Test block quote with bold and italic formatting."""
+    def func(mfd: MultiFormatDocx) -> None:
+        mfd.new_block_quote(text='Formatted quote', bold=bold, italic=italic)
+
+    html = silent_docx_create(capsys, func=func)
+    assert 'Formatted quote' in html
+    if bold:
+        assert '<strong>' in html
+    if italic:
+        assert '<em>' in html
+
+
+def test_block_quote_with_url(capsys):
+    """Test block quote with URL."""
+    def func(mfd: MultiFormatDocx) -> None:
+        mfd.new_block_quote(text='Check ')
+        mfd.add_url(url='http://example.com', text='this link')
+
+    html = silent_docx_create(capsys, func=func)
+    assert 'Check' in html
+    assert '<a href="http://example.com">this link</a>' in html
+
+
+def test_block_quote_with_code_in_text(capsys):
+    """Test block quote with inline code."""
+    def func(mfd: MultiFormatDocx) -> None:
+        mfd.new_block_quote(text='Use the')
+        mfd.add_code_in_text(text='print()')
+        mfd.add_text(text='function.')
+
+    html = silent_docx_create(capsys, func=func)
+    assert 'Use the' in html
+    assert 'print()' in html
+    assert 'function.' in html
+
+
+def test_block_quote_then_paragraph(capsys):
+    """Test block quote followed by paragraph."""
+    def func(mfd: MultiFormatDocx) -> None:
+        mfd.new_block_quote(text='A quoted text.')
+        mfd.new_paragraph(text='A normal paragraph.')
+
+    html = silent_docx_create(capsys, func=func)
+    assert 'A quoted text.' in html
+    assert '<p>A normal paragraph.</p>' in html
+
+
+def test_paragraph_then_block_quote(capsys):
+    """Test paragraph followed by block quote."""
+    def func(mfd: MultiFormatDocx) -> None:
+        mfd.new_paragraph(text='A normal paragraph.')
+        mfd.new_block_quote(text='A quoted text.')
+
+    html = silent_docx_create(capsys, func=func)
+    assert '<p>A normal paragraph.</p>' in html
+    assert 'A quoted text.' in html
+
+
+def test_heading_then_block_quote(capsys):
+    """Test heading followed by block quote."""
+    def func(mfd: MultiFormatDocx) -> None:
+        mfd.new_heading(level=2, text='Quote Section')
+        mfd.new_block_quote(text='This is quoted.')
+
+    html = silent_docx_create(capsys, func=func)
+    assert '<h2>Quote Section</h2>' in html
+    assert 'This is quoted.' in html
+
+
+def test_multiple_block_quotes(capsys):
+    """Test multiple block quotes in sequence."""
+    def func(mfd: MultiFormatDocx) -> None:
+        mfd.new_block_quote(text='First quote.')
+        mfd.new_block_quote(text='Second quote.')
+
+    html = silent_docx_create(capsys, func=func)
+    assert 'First quote.' in html
+    assert 'Second quote.' in html
+
+
+def test_block_quote_then_code_block(capsys):
+    """Test block quote followed by code block."""
+    def func(mfd: MultiFormatDocx) -> None:
+        mfd.new_block_quote(text='Here is some code:')
+        mfd.write_code_block(text='x = 42', programming_language='python')
+
+    html = silent_docx_create(capsys, func=func)
+    assert 'Here is some code:' in html
+    assert 'x = 42' in html

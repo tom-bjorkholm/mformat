@@ -83,6 +83,8 @@
     * [\_write\_file\_prefix](#mformat.mformat_md.MultiFormatMd._write_file_prefix)
     * [\_write\_file\_suffix](#mformat.mformat_md.MultiFormatMd._write_file_suffix)
     * [\_start\_paragraph](#mformat.mformat_md.MultiFormatMd._start_paragraph)
+    * [\_start\_block\_quote](#mformat.mformat_md.MultiFormatMd._start_block_quote)
+    * [\_end\_block\_quote](#mformat.mformat_md.MultiFormatMd._end_block_quote)
     * [\_end\_paragraph](#mformat.mformat_md.MultiFormatMd._end_paragraph)
     * [\_empty\_line\_before](#mformat.mformat_md.MultiFormatMd._empty_line_before)
     * [\_start\_heading](#mformat.mformat_md.MultiFormatMd._start_heading)
@@ -129,6 +131,7 @@
     * [close](#mformat.mformat.MultiFormat.close)
     * [new\_heading](#mformat.mformat.MultiFormat.new_heading)
     * [new\_paragraph](#mformat.mformat.MultiFormat.new_paragraph)
+    * [new\_block\_quote](#mformat.mformat.MultiFormat.new_block_quote)
     * [add\_text](#mformat.mformat.MultiFormat.add_text)
     * [add\_code\_in\_text](#mformat.mformat.MultiFormat.add_code_in_text)
     * [add\_url](#mformat.mformat.MultiFormat.add_url)
@@ -144,6 +147,8 @@
     * [\_end\_state](#mformat.mformat.MultiFormat._end_state)
     * [\_start\_paragraph](#mformat.mformat.MultiFormat._start_paragraph)
     * [\_end\_paragraph](#mformat.mformat.MultiFormat._end_paragraph)
+    * [\_start\_block\_quote](#mformat.mformat.MultiFormat._start_block_quote)
+    * [\_end\_block\_quote](#mformat.mformat.MultiFormat._end_block_quote)
     * [\_start\_heading](#mformat.mformat.MultiFormat._start_heading)
     * [\_end\_heading](#mformat.mformat.MultiFormat._end_heading)
     * [\_write\_text](#mformat.mformat.MultiFormat._write_text)
@@ -207,6 +212,8 @@
     * [\_end\_code\_block](#mformat.mformat_html.MultiFormatHtml._end_code_block)
     * [\_write\_code\_block](#mformat.mformat_html.MultiFormatHtml._write_code_block)
     * [\_encode\_text](#mformat.mformat_html.MultiFormatHtml._encode_text)
+    * [\_start\_block\_quote](#mformat.mformat_html.MultiFormatHtml._start_block_quote)
+    * [\_end\_block\_quote](#mformat.mformat_html.MultiFormatHtml._end_block_quote)
 * [mformat.reg\_pkg\_formats](#mformat.reg_pkg_formats)
   * [register\_formats\_in\_pkg](#mformat.reg_pkg_formats.register_formats_in_pkg)
 * [mformat\_ext.mformat\_odt](#mformat_ext.mformat_odt)
@@ -219,6 +226,7 @@
     * [\_create\_bullet\_list\_style](#mformat_ext.mformat_odt.MultiFormatOdt._create_bullet_list_style)
     * [\_set\_code\_text\_properties](#mformat_ext.mformat_odt.MultiFormatOdt._set_code_text_properties)
     * [\_create\_code\_paragraph\_style](#mformat_ext.mformat_odt.MultiFormatOdt._create_code_paragraph_style)
+    * [\_create\_block\_quote\_style](#mformat_ext.mformat_odt.MultiFormatOdt._create_block_quote_style)
     * [\_create\_code\_text\_style](#mformat_ext.mformat_odt.MultiFormatOdt._create_code_text_style)
     * [\_create\_link\_style](#mformat_ext.mformat_odt.MultiFormatOdt._create_link_style)
     * [\_create\_odt\_styles](#mformat_ext.mformat_odt.MultiFormatOdt._create_odt_styles)
@@ -232,6 +240,8 @@
     * [\_write\_file\_suffix](#mformat_ext.mformat_odt.MultiFormatOdt._write_file_suffix)
     * [\_start\_paragraph](#mformat_ext.mformat_odt.MultiFormatOdt._start_paragraph)
     * [\_end\_paragraph](#mformat_ext.mformat_odt.MultiFormatOdt._end_paragraph)
+    * [\_start\_block\_quote](#mformat_ext.mformat_odt.MultiFormatOdt._start_block_quote)
+    * [\_end\_block\_quote](#mformat_ext.mformat_odt.MultiFormatOdt._end_block_quote)
     * [\_start\_heading](#mformat_ext.mformat_odt.MultiFormatOdt._start_heading)
     * [\_end\_heading](#mformat_ext.mformat_odt.MultiFormatOdt._end_heading)
     * [\_formatted\_write](#mformat_ext.mformat_odt.MultiFormatOdt._formatted_write)
@@ -267,6 +277,9 @@
     * [\_write\_file\_suffix](#mformat_ext.mformat_docx.MultiFormatDocx._write_file_suffix)
     * [\_start\_paragraph](#mformat_ext.mformat_docx.MultiFormatDocx._start_paragraph)
     * [\_end\_paragraph](#mformat_ext.mformat_docx.MultiFormatDocx._end_paragraph)
+    * [\_start\_block\_quote](#mformat_ext.mformat_docx.MultiFormatDocx._start_block_quote)
+    * [\_end\_block\_quote](#mformat_ext.mformat_docx.MultiFormatDocx._end_block_quote)
+    * [\_apply\_block\_quote\_style](#mformat_ext.mformat_docx.MultiFormatDocx._apply_block_quote_style)
     * [\_start\_heading](#mformat_ext.mformat_docx.MultiFormatDocx._start_heading)
     * [\_end\_heading](#mformat_ext.mformat_docx.MultiFormatDocx._end_heading)
     * [\_write\_text](#mformat_ext.mformat_docx.MultiFormatDocx._write_text)
@@ -1433,6 +1446,26 @@ def _start_paragraph() -> None
 
 Start a paragraph.
 
+<a id="mformat.mformat_md.MultiFormatMd._start_block_quote"></a>
+
+#### \_start\_block\_quote
+
+```python
+def _start_block_quote() -> None
+```
+
+Start a block quote.
+
+<a id="mformat.mformat_md.MultiFormatMd._end_block_quote"></a>
+
+#### \_end\_block\_quote
+
+```python
+def _end_block_quote() -> None
+```
+
+End a block quote.
+
 <a id="mformat.mformat_md.MultiFormatMd._end_paragraph"></a>
 
 #### \_end\_paragraph
@@ -2011,6 +2044,35 @@ Start a new paragraph.
 - `bold` - If True, the text is bold.
 - `italic` - If True, the text is italic.
 
+<a id="mformat.mformat.MultiFormat.new_block_quote"></a>
+
+#### new\_block\_quote
+
+```python
+def new_block_quote(text: str,
+                    smart_ws: bool = True,
+                    bold: bool = False,
+                    italic: bool = False) -> None
+```
+
+Start a new block quote.
+
+Start a new block quote with the given text and formatting.
+Additional text can be added into the block quote with add_text,
+add_code_in_text, add_url, etc.
+
+Block quotes cannot be nested. If called while already in a block
+quote, the current block quote is ended and a new one is started.
+
+**Arguments**:
+
+- `text` - The text to write in the block quote.
+- `smart_ws` - If True, leading and trailing whitespace are collapsed
+  and a single space is inserted between texts (from
+  new_block_quote or add_text).
+- `bold` - If True, the text is bold.
+- `italic` - If True, the text is italic.
+
 <a id="mformat.mformat.MultiFormat.add_text"></a>
 
 #### add\_text
@@ -2295,6 +2357,26 @@ def _end_paragraph() -> None
 ```
 
 End a paragraph.
+
+<a id="mformat.mformat.MultiFormat._start_block_quote"></a>
+
+#### \_start\_block\_quote
+
+```python
+def _start_block_quote() -> None
+```
+
+Start a block quote.
+
+<a id="mformat.mformat.MultiFormat._end_block_quote"></a>
+
+#### \_end\_block\_quote
+
+```python
+def _end_block_quote() -> None
+```
+
+End a block quote.
 
 <a id="mformat.mformat.MultiFormat._start_heading"></a>
 
@@ -3015,6 +3097,26 @@ def _encode_text(text: str) -> str
 
 Encode text (escape special characters).
 
+<a id="mformat.mformat_html.MultiFormatHtml._start_block_quote"></a>
+
+#### \_start\_block\_quote
+
+```python
+def _start_block_quote() -> None
+```
+
+Start a block quote.
+
+<a id="mformat.mformat_html.MultiFormatHtml._end_block_quote"></a>
+
+#### \_end\_block\_quote
+
+```python
+def _end_block_quote() -> None
+```
+
+End a block quote.
+
 <a id="mformat.reg_pkg_formats"></a>
 
 # mformat.reg\_pkg\_formats
@@ -3168,6 +3270,22 @@ Create a code paragraph style with monospace font.
 **Returns**:
 
   A Style object for code blocks with monospace font.
+
+<a id="mformat_ext.mformat_odt.MultiFormatOdt._create_block_quote_style"></a>
+
+#### \_create\_block\_quote\_style
+
+```python
+@staticmethod
+def _create_block_quote_style() -> Style
+```
+
+Create a block quote paragraph style with indentation.
+
+**Returns**:
+
+  A Style object for block quotes with indentation and light grey
+  background (different shade from code blocks).
 
 <a id="mformat_ext.mformat_odt.MultiFormatOdt._create_code_text_style"></a>
 
@@ -3331,6 +3449,26 @@ def _end_paragraph() -> None
 ```
 
 End a paragraph.
+
+<a id="mformat_ext.mformat_odt.MultiFormatOdt._start_block_quote"></a>
+
+#### \_start\_block\_quote
+
+```python
+def _start_block_quote() -> None
+```
+
+Start a block quote with indentation and light grey background.
+
+<a id="mformat_ext.mformat_odt.MultiFormatOdt._end_block_quote"></a>
+
+#### \_end\_block\_quote
+
+```python
+def _end_block_quote() -> None
+```
+
+End a block quote.
 
 <a id="mformat_ext.mformat_odt.MultiFormatOdt._start_heading"></a>
 
@@ -3808,6 +3946,43 @@ def _end_paragraph() -> None
 ```
 
 End a paragraph.
+
+<a id="mformat_ext.mformat_docx.MultiFormatDocx._start_block_quote"></a>
+
+#### \_start\_block\_quote
+
+```python
+def _start_block_quote() -> None
+```
+
+Start a block quote with indentation and light grey background.
+
+<a id="mformat_ext.mformat_docx.MultiFormatDocx._end_block_quote"></a>
+
+#### \_end\_block\_quote
+
+```python
+def _end_block_quote() -> None
+```
+
+End a block quote.
+
+<a id="mformat_ext.mformat_docx.MultiFormatDocx._apply_block_quote_style"></a>
+
+#### \_apply\_block\_quote\_style
+
+```python
+def _apply_block_quote_style(paragraph: Paragraph) -> None
+```
+
+Apply block quote styling to a paragraph.
+
+Applies left indentation and light grey shading to visually
+distinguish block quotes from regular text and code blocks.
+
+**Arguments**:
+
+- `paragraph` - The paragraph to style.
 
 <a id="mformat_ext.mformat_docx.MultiFormatDocx._start_heading"></a>
 

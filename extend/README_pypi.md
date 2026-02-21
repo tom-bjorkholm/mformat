@@ -203,7 +203,7 @@ some future version.
 
 ## Test summary
 
-- Test result: 1495 passed in 15s
+- Test result: 1551 passed in 17s
 - No Flake8 warnings.
 - No mypy errors found.
 - 0.3.1 built and tested using python version: Python 3.14.3

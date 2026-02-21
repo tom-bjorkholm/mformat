@@ -22,6 +22,7 @@ class MultiFormatState(IntEnum):
     NUMBERED_LIST_ITEM = auto()
     TABLE = auto()
     CODE_BLOCK = auto()
+    BLOCK_QUOTE = auto()
     CLOSED = auto()
 
 

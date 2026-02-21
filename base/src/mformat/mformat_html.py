@@ -250,3 +250,13 @@ class MultiFormatHtml(MultiFormatTextBased):
     def _encode_text(self, text: str) -> str:
         """Encode text (escape special characters)."""
         return escape(text, quote=True)
+
+    def _start_block_quote(self) -> None:
+        """Start a block quote."""
+        assert self.file is not None
+        self.file.write('<blockquote>\n')
+
+    def _end_block_quote(self) -> None:
+        """End a block quote."""
+        assert self.file is not None
+        self.file.write('</blockquote>\n')

@@ -179,6 +179,33 @@ class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods 
         self._write_text(self._to_write(text, smart_ws, False),
                          self.state, formatting)
 
+    def new_block_quote(self, text: str, smart_ws: bool = True,
+                        bold: bool = False, italic: bool = False) -> None:
+        """Start a new block quote.
+
+        Start a new block quote with the given text and formatting.
+        Additional text can be added into the block quote with add_text,
+        add_code_in_text, add_url, etc.
+
+        Block quotes cannot be nested. If called while already in a block
+        quote, the current block quote is ended and a new one is started.
+
+        Args:
+            text: The text to write in the block quote.
+            smart_ws: If True, leading and trailing whitespace are collapsed
+                      and a single space is inserted between texts (from
+                      new_block_quote or add_text).
+            bold: If True, the text is bold.
+            italic: If True, the text is italic.
+        """
+        if self.state != MultiFormatState.PARAGRAPH_END:
+            self._end_state()
+        self._start_block_quote()
+        self.state = MultiFormatState.BLOCK_QUOTE
+        formatting = Formatting(bold=bold, italic=italic)
+        self._write_text(self._to_write(text, smart_ws, False),
+                         self.state, formatting)
+
     def add_text(self, text: str, smart_ws: bool = True,
                  bold: bool = False, italic: bool = False) -> None:
         """Add text to the current item (paragraph, bullet list item, etc.).
@@ -193,6 +220,7 @@ class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods 
         """
         if self.state not in (MultiFormatState.HEADING,
                               MultiFormatState.PARAGRAPH,
+                              MultiFormatState.BLOCK_QUOTE,
                               MultiFormatState.BULLET_LIST_ITEM,
                               MultiFormatState.NUMBERED_LIST_ITEM):
             err = f'Cannot add text to state {self.state.name}'
@@ -216,6 +244,7 @@ class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods 
         """
         if self.state not in (MultiFormatState.HEADING,
                               MultiFormatState.PARAGRAPH,
+                              MultiFormatState.BLOCK_QUOTE,
                               MultiFormatState.BULLET_LIST_ITEM,
                               MultiFormatState.NUMBERED_LIST_ITEM):
             err = f'Cannot add code in text to state {self.state.name}'
@@ -244,6 +273,7 @@ class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods 
         """
         if self.state not in (MultiFormatState.HEADING,
                               MultiFormatState.PARAGRAPH,
+                              MultiFormatState.BLOCK_QUOTE,
                               MultiFormatState.BULLET_LIST_ITEM,
                               MultiFormatState.NUMBERED_LIST_ITEM):
             err = f'Cannot add URL to state {self.state.name}'
@@ -475,6 +505,9 @@ class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods 
         elif self.state == MultiFormatState.PARAGRAPH:
             self._end_paragraph()
             self.state = MultiFormatState.PARAGRAPH_END
+        elif self.state == MultiFormatState.BLOCK_QUOTE:
+            self._end_block_quote()
+            self.state = MultiFormatState.PARAGRAPH_END
         elif self.state == MultiFormatState.HEADING:
             assert self.heading_level is not None
             self._end_heading(level=self.heading_level)
@@ -502,6 +535,16 @@ class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods 
     def _end_paragraph(self) -> None:
         """End a paragraph."""
         err = self._must_be_overridden('_end_paragraph')
+        raise NotImplementedError(err)
+
+    def _start_block_quote(self) -> None:
+        """Start a block quote."""
+        err = self._must_be_overridden('_start_block_quote')
+        raise NotImplementedError(err)
+
+    def _end_block_quote(self) -> None:
+        """End a block quote."""
+        err = self._must_be_overridden('_end_block_quote')
         raise NotImplementedError(err)
 
     def _start_heading(self, level: int) -> None:

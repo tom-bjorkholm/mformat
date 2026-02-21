@@ -84,7 +84,8 @@ def test_mft_init(capsys):
                          ['open', '_close',
                           '_write_file_prefix', '_write_file_suffix',
                           '_start_paragraph', '_end_paragraph', '_write_text',
-                          '_write_url'])
+                          '_write_url',
+                          '_start_block_quote', '_end_block_quote'])
 def test_cls_method_not_overridden(capsys, method_name):
     """Test that the instance method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
@@ -460,6 +461,14 @@ class MultiFormat12(MultiFormat4):
         else:
             assert text == self.expected_code
 
+    def _start_block_quote(self) -> None:
+        """Start a block quote."""
+        self.inc_count('_start_block_quote')
+
+    def _end_block_quote(self) -> None:
+        """End a block quote."""
+        self.inc_count('_end_block_quote')
+
 
 def test_write_code_block_basic(capsys):
     """Test basic code block writing."""
@@ -634,4 +643,66 @@ def test_code_in_text_nok2(capsys):
         mfmt.add_code_in_text(text=code)
     assert exc.value.args[0] == 'Cannot add code in text to state ' + \
         'BULLET_LIST'
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('text, bold, italic',
+                         [('Here is text', False, False),
+                          ('Something else', True, False),
+                          ('Third string', False, True),
+                          ('Fourth text', True, True)])
+def test_block_quote_1(capsys, text, bold, italic):
+    """Test block quote."""
+    mfmt = MultiFormat12(file_name='test', expected_text=text,
+                         expected_bold=bold, expected_italic=italic,
+                         code_in=False, expected_code='')
+    mfmt.new_block_quote(text=text, bold=bold, italic=italic)
+    assert mfmt.state == MultiFormatState.BLOCK_QUOTE
+    assert mfmt.count == {'_encode_text': 1, '_start_block_quote': 1,
+                          '_write_text': 1, '_write_file_prefix': 1}
+    check_capsys(capsys)
+
+
+def test_block_quote_2(capsys):
+    """Test block quote."""
+    mfmt = MultiFormat12(file_name='test', expected_text='Block quote',
+                         expected_bold=False, expected_italic=False,
+                         code_in=False, expected_code='')
+    mfmt.new_block_quote(text='Block quote')
+    assert mfmt.state == MultiFormatState.BLOCK_QUOTE
+    mfmt.expected_text = ' More text'
+    mfmt.add_text(text='More text')
+    assert mfmt.state == MultiFormatState.BLOCK_QUOTE
+    assert mfmt.count == {'_encode_text': 2, '_start_block_quote': 1,
+                          '_write_text': 2, '_write_file_prefix': 1}
+    check_capsys(capsys)
+
+
+def test_block_quote_3(capsys):
+    """Test block quote."""
+    mfmt = MultiFormat12(file_name='test', expected_text='Block quote',
+                         expected_bold=False, expected_italic=False,
+                         code_in=False, expected_code='')
+    mfmt.new_block_quote(text='Block quote')
+    assert mfmt.state == MultiFormatState.BLOCK_QUOTE
+    mfmt.expected_text = 'Paragraph text'
+    mfmt.new_paragraph(text='Paragraph text')
+    assert mfmt.count == {'_end_block_quote': 1, '_encode_text': 2,
+                          '_start_block_quote': 1, '_start_paragraph': 1,
+                          '_write_text': 2, '_write_file_prefix': 1}
+    check_capsys(capsys)
+
+
+def test_block_quote_4(capsys):
+    """Test block quote."""
+    mfmt = MultiFormat12(file_name='test', expected_text='Block quote 1',
+                         expected_bold=False, expected_italic=False,
+                         code_in=False, expected_code='')
+    mfmt.new_block_quote(text='Block quote 1')
+    assert mfmt.state == MultiFormatState.BLOCK_QUOTE
+    mfmt.expected_text = 'Next block quote'
+    mfmt.new_block_quote(text='Next block quote')
+    assert mfmt.count == {'_end_block_quote': 1, '_encode_text': 2,
+                          '_start_block_quote': 2,
+                          '_write_text': 2, '_write_file_prefix': 1}
     check_capsys(capsys)

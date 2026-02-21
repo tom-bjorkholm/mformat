@@ -57,6 +57,19 @@ class MultiFormatMd(MultiFormatTextBased):
         self._empty_line_before()
         self._reset_line_state()
 
+    def _start_block_quote(self) -> None:
+        """Start a block quote."""
+        self._empty_line_before()
+        assert self.file is not None
+        self.file.write('> ')
+        self._reset_line_state(continuation_indent='> ')
+        self._current_column = 2
+
+    def _end_block_quote(self) -> None:
+        """End a block quote."""
+        self._write_line_break()
+        self._reset_line_state()
+
     def _end_paragraph(self) -> None:
         """End a paragraph."""
         self._write_line_break()
@@ -108,6 +121,7 @@ class MultiFormatMd(MultiFormatTextBased):
         assert self.file is not None
         formatted_text = self._format_text(text, formatting)
         if state in (MultiFormatState.PARAGRAPH,
+                     MultiFormatState.BLOCK_QUOTE,
                      MultiFormatState.BULLET_LIST_ITEM,
                      MultiFormatState.NUMBERED_LIST_ITEM):
             self._wrap_and_write(formatted_text, self.MAX_LINE_LENGTH)
@@ -126,6 +140,7 @@ class MultiFormatMd(MultiFormatTextBased):
         formatted_url = self._format_text(url_text, formatting)
 
         if state in (MultiFormatState.PARAGRAPH,
+                     MultiFormatState.BLOCK_QUOTE,
                      MultiFormatState.BULLET_LIST_ITEM,
                      MultiFormatState.NUMBERED_LIST_ITEM):
             self._wrap_and_write_atomic(formatted_url, self.MAX_LINE_LENGTH)
@@ -141,6 +156,7 @@ class MultiFormatMd(MultiFormatTextBased):
         pre, stripped, post = split_whitespace(text)
         formatted_text = pre + f'`{stripped}`' + post
         if state in (MultiFormatState.PARAGRAPH,
+                     MultiFormatState.BLOCK_QUOTE,
                      MultiFormatState.BULLET_LIST_ITEM,
                      MultiFormatState.NUMBERED_LIST_ITEM):
             self._wrap_and_write_atomic(formatted_text, self.MAX_LINE_LENGTH)
