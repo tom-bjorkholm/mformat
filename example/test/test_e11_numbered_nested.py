@@ -58,21 +58,21 @@ EXPECTED_DOCX_HTML_BODY_TEXT = [
     '<h1>',
     'Nested numbered list example',
     '</h1>',
-#   '<ol>', '<li>',  Check if docx can make this real numbered list.
+    '<ol>', '<li>',
     'This is the first numbered item.',
     'If we do not specify the level, it is at the same level as the',
     'previous item - and when there is no previous item, it is at level 1.',
-#   '</li>', '<li>',  Check if docx can make this real numbered list.
+    '</li>', '<li>',
     'This is the second numbered item.',
-#    '</li>', '<ol>', '<li>',  Check if docx can make this real numbered list.
+    '<ol>', '<li>',
     'This is the third numbered item. This is the first item at level 2.',
-#    '</li>', '<li>',  Check if docx can make this real numbered list.
+    '</li>', '<li>',
     'Another item at level 2.',
-#    '</li>', '<ol>', '<li>',  Check if docx can make this real numbered list.
+    '<ol>', '<li>',
     'And an item at level 3.',
-#    '</li>', '</ol>', '</ol>', '<li>'  Check if docx can make this real numbered list.
+    '</li>', '</ol>', '</ol>', '</li>', '<li>',
     'The final item is back at level 1.',
-#    '</li>', '</ol>'  Check if docx can make this real numbered list.
+    '</li>', '</ol>'
 ]
 EXPECTED_ODT_HTML_BODY_TEXT = [
     '<h1>',

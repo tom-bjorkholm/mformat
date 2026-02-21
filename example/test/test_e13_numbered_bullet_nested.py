@@ -64,29 +64,29 @@ EXPECTED_DOCX_HTML_BODY_TEXT = [
     '<h1>',
     'Nesting points example',
     '</h1>',
-#    '<ol>', '<li>',  check if docx can make this real numbered list.
+    '<ol>', '<li>',
     'First item',
-#    '</li>', '<li>',  check if docx can make this real numbered list.
+    '</li>', '<li>',
     'Second item',
     '<strong>',
     'with some bold text',
     '</strong>',
-#    '</li>', '<ul>', '<li>',  check if docx can make this real numbered list.
+    '<ul>', '<li>',
     'First bullet',
-#    '</li>', '<li>',  check if docx can make this real numbered list.
+    '</li>', '<li>',
     '<em>',
     'Second bullet is italic',
     '</em>', '<strong>',
     'with some bold',
     '</strong>', 'and some non-bold and non-italic text',
-#    '</li>', '<ol>', '<li>',  check if docx can make this real numbered list.
+    '<ol>', '<li>',
     'First item in third level',
-#    '</li>', '<li>',  check if docx can make this real numbered list.
+    '</li>', '<li>',
     'Second item in third level',
-#    '</li>', '</ol>', '<li>',  check if docx can make this real numbered list.
-    'Third item on first level. By specifying a lower level we end some',
-    'nested lists.',
-#    '</li>', '</ol>',  check if docx can make this real numbered list.
+    '</li>', '</ol>', '</li>', '</ul>', '</li>', '<li>',
+    'Third item on first level.',
+    'By specifying a lower level we end some nested lists.',
+    '</li>', '</ol>',
 ]
 EXPECTED_ODT_HTML_BODY_TEXT = [
     '<h1>',

@@ -11,7 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
-    check_docx_func, check_odt_func)
+    check_docx_func, check_odt_func, docx_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
 _example_test_path = (
@@ -54,6 +54,28 @@ EXPECTED_HTML_BODY_TEXT = [
     'Item 2</li>',
     'Item 2.1</li>',
     '</ul>',
+]
+EXPECTED_DOCX_HTML_BODY_TEXT = [
+    '<h1>',
+    'Main heading of example',
+    '</h1>',
+    'With new_paragraph we can start a paragraph.',
+    'With add_text we can add text to',
+    'the paragraph.',
+    '<h2>',
+    'Sub heading of example',
+    '</h2>',
+    'There is never a need to close an item type.',
+    'the example file</a>',
+    '<ul>',
+    'Item 1</li>',
+    '<li>', 'Item 2',
+    '<ul>', '<li>', 'Item 2.1</li>',
+    '</ul>',
+    '</ul>',
+    '<ol>',
+    '<li>', 'Item 1</li>',
+    '</ol>',
 ]
 EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
 EXPECTED_ODT_BODY_TEXT = [
@@ -100,9 +122,11 @@ def test_e50_simple_complete_html(capsys):
 
 def test_e50_simple_complete_docx(capsys):
     """Test the multi_format_example function with the docx format."""
-    expected_txt = EXPECTED_HTML_BODY_TEXT
+    expected_txt = docx_version_of_html(
+        EXPECTED_DOCX_HTML_BODY_TEXT)
     expected_warnings = []
-    check_docx_func(multi_format_example, expected_txt, expected_warnings)
+    check_docx_func(multi_format_example, expected_txt,
+                     expected_warnings)
     check_capsys_silent(capsys)
 
 

@@ -256,6 +256,7 @@
     * [\_write\_code\_block](#mformat_ext.mformat_odt.MultiFormatOdt._write_code_block)
     * [\_encode\_text](#mformat_ext.mformat_odt.MultiFormatOdt._encode_text)
 * [mformat\_ext.mformat\_docx](#mformat_ext.mformat_docx)
+  * [\_MAX\_LIST\_LEVEL](#mformat_ext.mformat_docx._MAX_LIST_LEVEL)
   * [MultiFormatDocx](#mformat_ext.mformat_docx.MultiFormatDocx)
     * [\_\_init\_\_](#mformat_ext.mformat_docx.MultiFormatDocx.__init__)
     * [file\_name\_extension](#mformat_ext.mformat_docx.MultiFormatDocx.file_name_extension)
@@ -272,6 +273,16 @@
     * [\_write\_url](#mformat_ext.mformat_docx.MultiFormatDocx._write_url)
     * [\_add\_hyperlink](#mformat_ext.mformat_docx.MultiFormatDocx._add_hyperlink)
     * [\_write\_code\_in\_text](#mformat_ext.mformat_docx.MultiFormatDocx._write_code_in_text)
+    * [\_validate\_list\_depth](#mformat_ext.mformat_docx.MultiFormatDocx._validate_list_depth)
+    * [\_get\_numbering\_xml](#mformat_ext.mformat_docx.MultiFormatDocx._get_numbering_xml)
+    * [\_next\_abstract\_num\_id](#mformat_ext.mformat_docx.MultiFormatDocx._next_abstract_num_id)
+    * [\_create\_level\_xml](#mformat_ext.mformat_docx.MultiFormatDocx._create_level_xml)
+    * [\_create\_abstract\_num](#mformat_ext.mformat_docx.MultiFormatDocx._create_abstract_num)
+    * [\_create\_num\_instance](#mformat_ext.mformat_docx.MultiFormatDocx._create_num_instance)
+    * [\_update\_level\_format](#mformat_ext.mformat_docx.MultiFormatDocx._update_level_format)
+    * [\_set\_paragraph\_list\_props](#mformat_ext.mformat_docx.MultiFormatDocx._set_paragraph_list_props)
+    * [\_start\_list](#mformat_ext.mformat_docx.MultiFormatDocx._start_list)
+    * [\_end\_list](#mformat_ext.mformat_docx.MultiFormatDocx._end_list)
     * [\_start\_bullet\_list](#mformat_ext.mformat_docx.MultiFormatDocx._start_bullet_list)
     * [\_end\_bullet\_list](#mformat_ext.mformat_docx.MultiFormatDocx._end_bullet_list)
     * [\_start\_bullet\_item](#mformat_ext.mformat_docx.MultiFormatDocx._start_bullet_item)
@@ -279,7 +290,6 @@
     * [\_start\_numbered\_list](#mformat_ext.mformat_docx.MultiFormatDocx._start_numbered_list)
     * [\_end\_numbered\_list](#mformat_ext.mformat_docx.MultiFormatDocx._end_numbered_list)
     * [\_start\_numbered\_item](#mformat_ext.mformat_docx.MultiFormatDocx._start_numbered_item)
-    * [\_add\_tab\_stop](#mformat_ext.mformat_docx.MultiFormatDocx._add_tab_stop)
     * [\_end\_numbered\_item](#mformat_ext.mformat_docx.MultiFormatDocx._end_numbered_item)
     * [\_start\_table](#mformat_ext.mformat_docx.MultiFormatDocx._start_table)
     * [\_end\_table](#mformat_ext.mformat_docx.MultiFormatDocx._end_table)
@@ -3665,6 +3675,12 @@ Encode text (escape special characters).
 
 Extension of the MultiFormat class for DOCX files.
 
+<a id="mformat_ext.mformat_docx._MAX_LIST_LEVEL"></a>
+
+#### \_MAX\_LIST\_LEVEL
+
+Maximum supported list nesting level for DOCX format.
+
 <a id="mformat_ext.mformat_docx.MultiFormatDocx"></a>
 
 ## MultiFormatDocx Objects
@@ -3892,6 +3908,179 @@ or numbered point list item.
 - `text` - The text to add to the code block.
 - `state` - The state of the current item.
 
+<a id="mformat_ext.mformat_docx.MultiFormatDocx._validate_list_depth"></a>
+
+#### \_validate\_list\_depth
+
+```python
+@staticmethod
+def _validate_list_depth(level: int) -> None
+```
+
+Validate that the list level is within DOCX limits.
+
+**Arguments**:
+
+- `level` - The list nesting level to validate.
+
+**Raises**:
+
+- `RuntimeError` - If level exceeds the maximum.
+
+<a id="mformat_ext.mformat_docx.MultiFormatDocx._get_numbering_xml"></a>
+
+#### \_get\_numbering\_xml
+
+```python
+def _get_numbering_xml() -> Any
+```
+
+Get the numbering XML root element.
+
+**Returns**:
+
+  The w:numbering XML element (CT_Numbering).
+
+<a id="mformat_ext.mformat_docx.MultiFormatDocx._next_abstract_num_id"></a>
+
+#### \_next\_abstract\_num\_id
+
+```python
+def _next_abstract_num_id() -> int
+```
+
+Get the next available abstractNumId.
+
+**Returns**:
+
+  The next available abstractNumId value.
+
+<a id="mformat_ext.mformat_docx.MultiFormatDocx._create_level_xml"></a>
+
+#### \_create\_level\_xml
+
+```python
+@staticmethod
+def _create_level_xml(ilvl: int, bullet: bool) -> Any
+```
+
+Create a numbering level definition element.
+
+**Arguments**:
+
+- `ilvl` - The indent level (0-based).
+- `bullet` - True for bullet, False for decimal.
+
+**Returns**:
+
+  The w:lvl XML element.
+
+<a id="mformat_ext.mformat_docx.MultiFormatDocx._create_abstract_num"></a>
+
+#### \_create\_abstract\_num
+
+```python
+def _create_abstract_num(bullet: bool) -> Any
+```
+
+Create a multi-level abstract numbering definition.
+
+All five levels are initialized with the same
+format (bullet or decimal). Individual levels can
+be changed later via _update_level_format for mixed
+lists.
+
+**Arguments**:
+
+- `bullet` - True for bullets, False for decimal.
+
+**Returns**:
+
+  The w:abstractNum XML element.
+
+<a id="mformat_ext.mformat_docx.MultiFormatDocx._create_num_instance"></a>
+
+#### \_create\_num\_instance
+
+```python
+def _create_num_instance(abstract_num: Any) -> int
+```
+
+Create a numbering instance for an abstract def.
+
+**Arguments**:
+
+- `abstract_num` - The w:abstractNum element.
+
+**Returns**:
+
+  The numId of the new numbering instance.
+
+<a id="mformat_ext.mformat_docx.MultiFormatDocx._update_level_format"></a>
+
+#### \_update\_level\_format
+
+```python
+def _update_level_format(ilvl: int, bullet: bool) -> None
+```
+
+Update format of a level in current abstractNum.
+
+Used when a nested list has a different type than
+its parent (e.g., bullets nested in numbered).
+
+**Arguments**:
+
+- `ilvl` - The indent level to update (0-based).
+- `bullet` - True for bullet, False for decimal.
+
+<a id="mformat_ext.mformat_docx.MultiFormatDocx._set_paragraph_list_props"></a>
+
+#### \_set\_paragraph\_list\_props
+
+```python
+def _set_paragraph_list_props(ilvl: int) -> None
+```
+
+Set numbering properties on current paragraph.
+
+**Arguments**:
+
+- `ilvl` - The indent level (0-based).
+
+<a id="mformat_ext.mformat_docx.MultiFormatDocx._start_list"></a>
+
+#### \_start\_list
+
+```python
+def _start_list(level: int, bullet: bool) -> None
+```
+
+Start or continue a list group.
+
+Creates new numbering for top-level lists. For
+nested lists, updates the level format if the type
+differs from the initial list type.
+
+**Arguments**:
+
+- `level` - The list nesting level (1-based).
+- `bullet` - True for bullet, False for numbered.
+
+<a id="mformat_ext.mformat_docx.MultiFormatDocx._end_list"></a>
+
+#### \_end\_list
+
+```python
+def _end_list(level: int) -> None
+```
+
+End a list level, reset state at top level.
+
+**Arguments**:
+
+- `level` - The list nesting level (1-based).
+
 <a id="mformat_ext.mformat_docx.MultiFormatDocx._start_bullet_list"></a>
 
 #### \_start\_bullet\_list
@@ -3904,7 +4093,7 @@ Start a bullet list.
 
 **Arguments**:
 
-- `level` - The level of the bullet list (1-9).
+- `level` - The level of the bullet list (1-5).
 
 <a id="mformat_ext.mformat_docx.MultiFormatDocx._end_bullet_list"></a>
 
@@ -3918,7 +4107,7 @@ End a bullet list.
 
 **Arguments**:
 
-- `level` - The level of the bullet list (1-9).
+- `level` - The level of the bullet list (1-5).
 
 <a id="mformat_ext.mformat_docx.MultiFormatDocx._start_bullet_item"></a>
 
@@ -3932,7 +4121,7 @@ Start a bullet item.
 
 **Arguments**:
 
-- `level` - The level of the bullet item (1-9).
+- `level` - The level of the bullet item (1-5).
 
 <a id="mformat_ext.mformat_docx.MultiFormatDocx._end_bullet_item"></a>
 
@@ -3946,7 +4135,7 @@ End a bullet item.
 
 **Arguments**:
 
-- `level` - The level of the bullet item (1-9).
+- `level` - The level of the bullet item (1-5).
 
 <a id="mformat_ext.mformat_docx.MultiFormatDocx._start_numbered_list"></a>
 
@@ -3960,7 +4149,7 @@ Start a numbered list.
 
 **Arguments**:
 
-- `level` - The level of the numbered list (1-9).
+- `level` - The level of the numbered list (1-5).
 
 <a id="mformat_ext.mformat_docx.MultiFormatDocx._end_numbered_list"></a>
 
@@ -3974,7 +4163,7 @@ End a numbered list.
 
 **Arguments**:
 
-- `level` - The level of the numbered list (1-9).
+- `level` - The level of the numbered list (1-5).
 
 <a id="mformat_ext.mformat_docx.MultiFormatDocx._start_numbered_item"></a>
 
@@ -3986,27 +4175,16 @@ def _start_numbered_item(level: int, num: int, full_number: str) -> None
 
 Start a numbered item.
 
-**Arguments**:
-
-- `level` - The level of the numbered item (1-9).
-- `num` - The number of the item.
-- `full_number` - The full number of the item including all levels.
-
-<a id="mformat_ext.mformat_docx.MultiFormatDocx._add_tab_stop"></a>
-
-#### \_add\_tab\_stop
-
-```python
-@staticmethod
-def _add_tab_stop(paragraph: Paragraph, position_twips: int) -> None
-```
-
-Add a left-aligned tab stop to a paragraph.
+Word handles the numbering automatically through
+the numbering definitions. The num and full_number
+parameters are not used for DOCX output.
 
 **Arguments**:
 
-- `paragraph` - The paragraph to add the tab stop to.
-- `position_twips` - The position of the tab stop in twips.
+- `level` - The level of the numbered item (1-5).
+- `num` - The number of the item (unused in DOCX).
+- `full_number` - The full hierarchical number
+  (unused in DOCX).
 
 <a id="mformat_ext.mformat_docx.MultiFormatDocx._end_numbered_item"></a>
 
@@ -4020,7 +4198,7 @@ End a numbered item.
 
 **Arguments**:
 
-- `level` - The level of the numbered item (1-9).
+- `level` - The level of the numbered item (1-5).
 - `num` - The number of the item.
 
 <a id="mformat_ext.mformat_docx.MultiFormatDocx._start_table"></a>

@@ -5,15 +5,17 @@
 # MIT License
 #
 
-from typing import Optional, Callable
+from typing import Optional, Callable, Any
 from docx import Document
 from docx.document import Document as DocumentObject
 from docx.text.paragraph import Paragraph
-from docx.shared import Inches, Twips
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 from mformat.mformat import FormatterDescriptor, MultiFormat
 from mformat.mformat_state import MultiFormatState, Formatting
+
+_MAX_LIST_LEVEL = 5
+"""Maximum supported list nesting level for DOCX format."""
 
 
 class MultiFormatDocx(MultiFormat):
@@ -36,6 +38,8 @@ class MultiFormatDocx(MultiFormat):
         """
         self.doc: DocumentObject = Document()
         self.current_paragraph: Optional[Paragraph] = None
+        self._current_abstract_num: Any = None
+        self._current_num_id: int = -1
         super().__init__(file_name=file_name, url_as_text=url_as_text,
                          file_exists_callback=file_exists_callback)
 
@@ -210,121 +214,325 @@ class MultiFormatDocx(MultiFormat):
         # Set monospace font
         run.font.name = 'Courier New'
 
+    # ========================================================
+    # List numbering infrastructure
+    # ========================================================
+
+    @staticmethod
+    def _validate_list_depth(level: int) -> None:
+        """Validate that the list level is within DOCX limits.
+
+        Args:
+            level: The list nesting level to validate.
+        Raises:
+            RuntimeError: If level exceeds the maximum.
+        """
+        if level > _MAX_LIST_LEVEL:
+            raise RuntimeError(
+                f'DOCX format supports at most '
+                f'{_MAX_LIST_LEVEL} nesting levels for '
+                f'lists, but level {level} was requested.')
+
+    def _get_numbering_xml(self) -> Any:
+        """Get the numbering XML root element.
+
+        Returns:
+            The w:numbering XML element (CT_Numbering).
+        """
+        # pylint: disable=protected-access
+        return (
+            self.doc.part
+            .numbering_part._element
+        )
+
+    def _next_abstract_num_id(self) -> int:
+        """Get the next available abstractNumId.
+
+        Returns:
+            The next available abstractNumId value.
+        """
+        numbering = self._get_numbering_xml()
+        ids = [
+            int(an.get(qn('w:abstractNumId')))
+            for an in numbering.findall(
+                qn('w:abstractNum'))
+        ]
+        return max(ids) + 1 if ids else 0
+
+    @staticmethod
+    def _create_level_xml(
+            ilvl: int, bullet: bool) -> Any:
+        """Create a numbering level definition element.
+
+        Args:
+            ilvl: The indent level (0-based).
+            bullet: True for bullet, False for decimal.
+        Returns:
+            The w:lvl XML element.
+        """
+        lvl = OxmlElement('w:lvl')
+        lvl.set(qn('w:ilvl'), str(ilvl))
+        start = OxmlElement('w:start')
+        start.set(qn('w:val'), '1')
+        lvl.append(start)
+        num_fmt = OxmlElement('w:numFmt')
+        fmt = 'bullet' if bullet else 'decimal'
+        num_fmt.set(qn('w:val'), fmt)
+        lvl.append(num_fmt)
+        lvl_text = OxmlElement('w:lvlText')
+        if bullet:
+            lvl_text.set(qn('w:val'), '\u2022')
+        else:
+            lvl_text.set(
+                qn('w:val'), f'%{ilvl + 1}.')
+        lvl.append(lvl_text)
+        lvl_jc = OxmlElement('w:lvlJc')
+        lvl_jc.set(qn('w:val'), 'left')
+        lvl.append(lvl_jc)
+        p_pr = OxmlElement('w:pPr')
+        ind = OxmlElement('w:ind')
+        ind.set(
+            qn('w:left'), str(720 * (ilvl + 1)))
+        ind.set(qn('w:hanging'), '360')
+        p_pr.append(ind)
+        lvl.append(p_pr)
+        if bullet:
+            r_pr = OxmlElement('w:rPr')
+            r_fonts = OxmlElement('w:rFonts')
+            r_fonts.set(qn('w:ascii'), 'Symbol')
+            r_fonts.set(qn('w:hAnsi'), 'Symbol')
+            r_fonts.set(qn('w:hint'), 'default')
+            r_pr.append(r_fonts)
+            lvl.append(r_pr)
+        return lvl
+
+    def _create_abstract_num(
+            self, bullet: bool) -> Any:
+        """Create a multi-level abstract numbering definition.
+
+        All five levels are initialized with the same
+        format (bullet or decimal). Individual levels can
+        be changed later via _update_level_format for mixed
+        lists.
+
+        Args:
+            bullet: True for bullets, False for decimal.
+        Returns:
+            The w:abstractNum XML element.
+        """
+        numbering = self._get_numbering_xml()
+        abstract_id = self._next_abstract_num_id()
+        abstract_num = OxmlElement('w:abstractNum')
+        abstract_num.set(
+            qn('w:abstractNumId'), str(abstract_id))
+        multi = OxmlElement('w:multiLevelType')
+        multi.set(
+            qn('w:val'), 'hybridMultilevel')
+        abstract_num.append(multi)
+        for i in range(_MAX_LIST_LEVEL):
+            abstract_num.append(
+                self._create_level_xml(i, bullet))
+        first_num = numbering.find(qn('w:num'))
+        if first_num is not None:
+            first_num.addprevious(abstract_num)
+        else:
+            numbering.append(abstract_num)
+        return abstract_num
+
+    def _create_num_instance(
+            self,
+            abstract_num: Any) -> int:
+        """Create a numbering instance for an abstract def.
+
+        Args:
+            abstract_num: The w:abstractNum element.
+        Returns:
+            The numId of the new numbering instance.
+        """
+        numbering = self._get_numbering_xml()
+        abstract_id = int(
+            abstract_num.get(qn('w:abstractNumId')))
+        ct_num = numbering.add_num(abstract_id)
+        return ct_num.numId  # type: ignore[no-any-return]
+
+    def _update_level_format(
+            self, ilvl: int, bullet: bool) -> None:
+        """Update format of a level in current abstractNum.
+
+        Used when a nested list has a different type than
+        its parent (e.g., bullets nested in numbered).
+
+        Args:
+            ilvl: The indent level to update (0-based).
+            bullet: True for bullet, False for decimal.
+        """
+        if self._current_abstract_num is None:
+            return  # pragma: no cover
+        for lvl in self._current_abstract_num.findall(
+                qn('w:lvl')):
+            if lvl.get(qn('w:ilvl')) == str(ilvl):
+                idx = list(
+                    self._current_abstract_num
+                ).index(lvl)
+                self._current_abstract_num.remove(lvl)
+                new_lvl = self._create_level_xml(
+                    ilvl, bullet)
+                self._current_abstract_num.insert(
+                    idx, new_lvl)
+                return
+
+    def _set_paragraph_list_props(
+            self, ilvl: int) -> None:
+        """Set numbering properties on current paragraph.
+
+        Args:
+            ilvl: The indent level (0-based).
+        """
+        if self.current_paragraph is None:  # pragma: no cover # noqa: E501
+            raise RuntimeError(
+                'No current paragraph for list props')
+        # pylint: disable=protected-access
+        p_pr = (
+            self.current_paragraph._p.get_or_add_pPr()
+        )
+        num_pr = OxmlElement('w:numPr')
+        ilvl_elem = OxmlElement('w:ilvl')
+        ilvl_elem.set(qn('w:val'), str(ilvl))
+        num_pr.append(ilvl_elem)
+        num_id_elem = OxmlElement('w:numId')
+        num_id_elem.set(
+            qn('w:val'), str(self._current_num_id))
+        num_pr.append(num_id_elem)
+        p_pr.append(num_pr)
+
+    def _start_list(
+            self, level: int, bullet: bool) -> None:
+        """Start or continue a list group.
+
+        Creates new numbering for top-level lists. For
+        nested lists, updates the level format if the type
+        differs from the initial list type.
+
+        Args:
+            level: The list nesting level (1-based).
+            bullet: True for bullet, False for numbered.
+        """
+        self._validate_list_depth(level)
+        if level == 1:
+            abstract_num = self._create_abstract_num(
+                bullet)
+            self._current_abstract_num = abstract_num
+            self._current_num_id = (
+                self._create_num_instance(abstract_num))
+        else:
+            self._update_level_format(
+                level - 1, bullet)
+
+    def _end_list(self, level: int) -> None:
+        """End a list level, reset state at top level.
+
+        Args:
+            level: The list nesting level (1-based).
+        """
+        if level == 1:
+            self._current_abstract_num = None
+            self._current_num_id = -1
+
+    # ========================================================
+    # Bullet list methods
+    # ========================================================
+
     def _start_bullet_list(self, level: int) -> None:
         """Start a bullet list.
 
         Args:
-            level: The level of the bullet list (1-9).
+            level: The level of the bullet list (1-5).
         """
         assert isinstance(level, int)
-        # In python-docx, lists are created by setting paragraph styles
-        # No explicit list start/end is needed
+        self._start_list(level, bullet=True)
 
     def _end_bullet_list(self, level: int) -> None:
         """End a bullet list.
 
         Args:
-            level: The level of the bullet list (1-9).
+            level: The level of the bullet list (1-5).
         """
         assert isinstance(level, int)
-        # In python-docx, lists are created by setting paragraph styles
-        # No explicit list start/end is needed
+        self._end_list(level)
 
     def _start_bullet_item(self, level: int) -> None:
         """Start a bullet item.
 
         Args:
-            level: The level of the bullet item (1-9).
+            level: The level of the bullet item (1-5).
         """
         assert isinstance(level, int)
-        self.current_paragraph = self.doc.add_paragraph(style='List Bullet')
-        # Set the indentation level for nested lists
-        if level > 1:
-            self.current_paragraph.paragraph_format.left_indent = \
-                Inches(0.5 * (level - 1))
+        self._validate_list_depth(level)
+        self.current_paragraph = (
+            self.doc.add_paragraph())
+        self._set_paragraph_list_props(
+            ilvl=level - 1)
 
     def _end_bullet_item(self, level: int) -> None:
         """End a bullet item.
 
         Args:
-            level: The level of the bullet item (1-9).
+            level: The level of the bullet item (1-5).
         """
         assert isinstance(level, int)
         self.current_paragraph = None
+
+    # ========================================================
+    # Numbered list methods
+    # ========================================================
 
     def _start_numbered_list(self, level: int) -> None:
         """Start a numbered list.
 
         Args:
-            level: The level of the numbered list (1-9).
+            level: The level of the numbered list (1-5).
         """
         assert isinstance(level, int)
-        # In python-docx, lists are created by setting paragraph styles
-        # No explicit list start/end is needed
+        self._start_list(level, bullet=False)
 
     def _end_numbered_list(self, level: int) -> None:
         """End a numbered list.
 
         Args:
-            level: The level of the numbered list (1-9).
+            level: The level of the numbered list (1-5).
         """
         assert isinstance(level, int)
-        # In python-docx, lists are created by setting paragraph styles
-        # No explicit list start/end is needed
+        self._end_list(level)
 
     def _start_numbered_item(self, level: int, num: int,
                              full_number: str) -> None:
         """Start a numbered item.
 
+        Word handles the numbering automatically through
+        the numbering definitions. The num and full_number
+        parameters are not used for DOCX output.
+
         Args:
-            level: The level of the numbered item (1-9).
-            num: The number of the item.
-            full_number: The full number of the item including all levels.
+            level: The level of the numbered item (1-5).
+            num: The number of the item (unused in DOCX).
+            full_number: The full hierarchical number
+                         (unused in DOCX).
         """
         assert isinstance(level, int)
         assert isinstance(num, int)
         assert isinstance(full_number, str)
-        # Use regular paragraph with manual numbering for hierarchical numbers
-        # The 'List Number' style only supports simple sequential numbering
-        self.current_paragraph = self.doc.add_paragraph()
-        # Set up hanging indent with tab stop for proper text alignment
-        # Using twips: 720 twips = 0.5 inches
-        number_width_twips = 720  # Space reserved for the number
-        base_indent_twips = 720 * (level - 1)  # Additional indent per level
-        text_position_twips = base_indent_twips + number_width_twips
-        self.current_paragraph.paragraph_format.left_indent = \
-            Twips(text_position_twips)
-        self.current_paragraph.paragraph_format.first_line_indent = \
-            Twips(-number_width_twips)
-        # Add tab stop at text position so text after number aligns with
-        # wrapped lines (both start at the same position)
-        self._add_tab_stop(self.current_paragraph, text_position_twips)
-        # Add the hierarchical number followed by tab (not space)
-        self.current_paragraph.add_run(full_number)
-        self.current_paragraph.add_run('\t')
+        self._validate_list_depth(level)
+        self.current_paragraph = (
+            self.doc.add_paragraph())
+        self._set_paragraph_list_props(
+            ilvl=level - 1)
 
-    @staticmethod
-    def _add_tab_stop(paragraph: Paragraph, position_twips: int) -> None:
-        """Add a left-aligned tab stop to a paragraph.
-
-        Args:
-            paragraph: The paragraph to add the tab stop to.
-            position_twips: The position of the tab stop in twips.
-        """
-        # pylint: disable=protected-access
-        p_pr = paragraph._p.get_or_add_pPr()
-        tabs = OxmlElement('w:tabs')
-        tab = OxmlElement('w:tab')
-        tab.set(qn('w:val'), 'left')
-        tab.set(qn('w:pos'), str(position_twips))
-        tabs.append(tab)
-        p_pr.append(tabs)
-
-    def _end_numbered_item(self, level: int, num: int) -> None:
+    def _end_numbered_item(self, level: int,
+                           num: int) -> None:
         """End a numbered item.
 
         Args:
-            level: The level of the numbered item (1-9).
+            level: The level of the numbered item (1-5).
             num: The number of the item.
         """
         assert isinstance(level, int)

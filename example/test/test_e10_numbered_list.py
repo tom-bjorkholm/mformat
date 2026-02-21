@@ -49,15 +49,16 @@ EXPECTED_DOCX_HTML_BODY_TEXT = [
     '<h1>',
     'Numbered list example',
     '</h1>',
-    '<p>',  # Check if docx can make this real numbered list.
+    '<ol>', '<li>',
     'This is the first numbered item.',
     'We can add text to the numbered items with add_text(),',
     'just as we can add text to paragraphs.',
-    '</p>','<p>',  # Check if docx can make this real numbered list.
+    '</li>', '<li>',
     'This is the second numbered item.',
-    '</p>','<p>',  # Check if docx can make this real numbered list.
+    '</li>', '<li>',
     'This is the third numbered item.',
-    '</p>'
+    '</li>',
+    '</ol>'
 ]
 EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_HTML_BODY_TEXT)

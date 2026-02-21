@@ -89,48 +89,46 @@ EXPECTED_DOCX_HTML_BODY_TEXT = [
     '<h1>',
     'Numbered list with bold text example',
     '</h1>',
-#   '<ol>', '<li>',  check if docx can make this real numbered list.
+    '<ol>', '<li>',
     'This is the first numbered point item. This is not bold or italic.',
     '<strong>',
     'However, this bold text is added to it.',
     '</strong>', '<em>',
     'And this italic text is added to it.',
-    '</em>',
-#    '</li>', '<li>',  check if docx can make this real numbered list.
+    '</em>', '</li>', '<li>',
     '<strong>',
     'This is the bold numbered point item.',
-    '</strong>', 
+    '</strong>',
     'This non-bold text is added to it.',
-#    '</li>', '<li>',  check if docx can make this real numbered list.
+    '</li>', '<li>',
     '<em>',
     'This is the italic numbered point item.',
     '</em>',
     'This non-italic text is added to it.',
-#    '</li>', '<li>',  check if docx can make this real numbered list.
+    '</li>', '<li>',
     '<em>', '<strong>',
     'This is the bold and italic item.',
     '</strong>', '</em>',
     'This non-bold and non-italic text is added to it.',
-#    '</li>', '<ol>', '<li>',  check if docx can make this real numbered list.
+    '<ol>', '<li>',
     'This is in item in a nested numbered point list.',
     '<strong>',
     'Bold text added to it.',
     '</strong>', '<em>',
     'And italic text added to it.',
-    '</em>',
-#    '</li>', '<li>', '<em>',  check if docx can make this real numbered list.
+    '</em>', '</li>', '<li>',
     '<strong>',
+    '<em>',
     'Second nested numbered point item.',
-    '</strong>', '</em>',
+    '</em>', '</strong>',
     'This non-bold and non-italic text is added to it.',
     '<strong>',
     'And bold',
     '</strong>', '<em>',
     'and italic text added to it.',
-    '</em>',
-#    '</li>','</ol>', '<li>',  check if docx can make this real numbered list.
+    '</em>', '</li>', '</ol>', '</li>', '<li>',
     'The final item is back at level 1. This is the final numbered point item.',
-#    '</li>', '</ol>'  check if docx can make this real numbered list.
+    '</li>', '</ol>'
 ]
 EXPECTED_ODT_HTML_BODY_TEXT = [
     '<h1>',
