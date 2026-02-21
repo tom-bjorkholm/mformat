@@ -145,16 +145,20 @@ B_DESIGN_OF_USE = [
      'to start a new numbered point list item with some provided text '
      'content, and if needed to start the numbered point list with the '
      'number point list item.'],
+    ['new_block_quote',
+     'to start a new block quote with some provided text content.'],
     ['add_text',
      'to add more text to an already started paragraph, heading, '
-     'bullet point list item or numbered point list item.'],
+     'block quote, numbered point list item, bullet point list item or '
+     'numbered point list item.'],
     ['add_url',
      'to add a URL (link) to an already started paragraph, heading, '
-     'bullet point list item or numbered point list item.'],
+     'block quote, numbered point list item, bullet point list item or '
+     'numbered point list item.'],
     ['add_code_in_text',
-     'to add some short text (function name, variable name, etc.) ' \
-     'as code to an already started paragraph, heading, bullet point ' \
-     'list item or numbered point list item.'],
+     'to add some short text (function name, variable name, etc.) '
+     'as code to an already started paragraph, heading, block quote, '
+     'bullet point list item or numbered point list item.'],
     ['new_table', 'to start a new table with the provided first row.'],
     ['add_table_row', 'to add another row to an already started table.'],
     ['write_complete_table', 'to write a table all at once.'],
@@ -193,6 +197,7 @@ P2_API_DOCUMENTATION_2 = 'probably provide a better introduction.'
 H2_VERSION_HISTORY = 'Version history'
 VERSION_HISTORY = [
      ['Version', 'Date', 'Python version', 'Description'],
+     ['0.4', '21 Feb 2026', '3.12 or newer', 'Added block quote support'],
      ['0.3', '18 Feb 2026', '3.12 or newer', 'Improved API and fixes'],
      ['0.2.2', '31 Jan 2026', '3.12 or newer', 'Dependency corrected'],
      ['0.2.1', '30 Jan 2026', '3.12 or newer', 'Minor documentation fix'],

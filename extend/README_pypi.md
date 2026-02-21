@@ -113,15 +113,19 @@ functions:
   provided text content, and if needed to start the numbered point list with the
   number point list item.
 
-- `add_text` to add more text to an already started paragraph, heading, bullet
-  point list item or numbered point list item.
+- `new_block_quote` to start a new block quote with some provided text content.
 
-- `add_url` to add a URL (link) to an already started paragraph, heading, bullet
-  point list item or numbered point list item.
+- `add_text` to add more text to an already started paragraph, heading, block
+  quote, numbered point list item, bullet point list item or numbered point list
+  item.
+
+- `add_url` to add a URL (link) to an already started paragraph, heading, block
+  quote, numbered point list item, bullet point list item or numbered point list
+  item.
 
 - `add_code_in_text` to add some short text (function name, variable name, etc.)
-  as code to an already started paragraph, heading, bullet point list item or
-  numbered point list item.
+  as code to an already started paragraph, heading, block quote, bullet point
+  list item or numbered point list item.
 
 - `new_table` to start a new table with the provided first row.
 
@@ -160,12 +164,13 @@ probably provide a better introduction.
 
 ## Version history
 
-| Version | Date        | Python version | Description             |
-|---------|-------------|----------------|-------------------------|
-| 0.3     | 18 Feb 2026 | 3.12 or newer  | Improved API and fixes  |
-| 0.2.2   | 31 Jan 2026 | 3.12 or newer  | Dependency corrected    |
-| 0.2.1   | 30 Jan 2026 | 3.12 or newer  | Minor documentation fix |
-| 0.2     | 30 Jan 2026 | 3.12 or newer  | First released version  |
+| Version | Date        | Python version | Description               |
+|---------|-------------|----------------|---------------------------|
+| 0.4     | 21 Feb 2026 | 3.12 or newer  | Added block quote support |
+| 0.3     | 18 Feb 2026 | 3.12 or newer  | Improved API and fixes    |
+| 0.2.2   | 31 Jan 2026 | 3.12 or newer  | Dependency corrected      |
+| 0.2.1   | 30 Jan 2026 | 3.12 or newer  | Minor documentation fix   |
+| 0.2     | 30 Jan 2026 | 3.12 or newer  | First released version    |
 
 ## Output file formats
 
@@ -206,4 +211,4 @@ some future version.
 - Test result: 1551 passed in 17s
 - No Flake8 warnings.
 - No mypy errors found.
-- 0.3.1 built and tested using python version: Python 3.14.3
+- 0.4 built and tested using python version: Python 3.14.3
