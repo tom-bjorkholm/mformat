@@ -77,9 +77,7 @@ def _install_global_packages(
     Args:
         python_cmd: Command to invoke the target Python.
     """
-    for pkg in GLOBAL_PACKAGES:
-        run_command([*python_cmd, '-m', 'pip', 'install', '--upgrade', pkg])
-    for pkg in GLOBAL_PINNED_PACKAGES:
+    for pkg in GLOBAL_PACKAGES + GLOBAL_PINNED_PACKAGES:
         run_command([*python_cmd, '-m', 'pip', 'install', '--upgrade', pkg])
 
 
@@ -95,9 +93,7 @@ def _create_venv(python_cmd: list[str]) -> None:
 def _install_venv_packages() -> None:
     """Install required packages inside the venv."""
     vcmd = venv_python()
-    for pkg in VENV_PACKAGES:
-        run_command([*vcmd, '-m', 'pip', 'install', '--upgrade', pkg])
-    for pkg in VENV_PINNED_PACKAGES:
+    for pkg in VENV_PACKAGES + VENV_PINNED_PACKAGES:
         run_command([*vcmd, '-m', 'pip', 'install', '--upgrade', pkg])
 
 
