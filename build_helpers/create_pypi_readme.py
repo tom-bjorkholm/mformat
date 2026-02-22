@@ -217,15 +217,15 @@ H2_DEPRECATED = 'API changes in version 0.3 (deprecated methods)'
 P1_DEPRECATED = 'In version 0.2.x the public API was build around methods ' \
     'that started document items, like start_paragraph. However, experience ' \
     'showed that this was not intuitive for the user. Many users ' \
-    'were trying to use end or stop methods (that do not exist) in pair with ' \
-    'the start methods. ' \
+    'were trying to use end or stop methods (that do not exist) in pair '\
+    'with the start methods. ' \
     'To address this, the public API was changed in version 0.3.0 to use ' \
     'methods named new something, like new_paragraph. With this naming ' \
     'the intuition should hopefully not tell users to look for end or ' \
     'stop methods (that do not exist). People have also pointed ' \
     'out that phrases like "new paragraph" are commonly used in dictation.'
-P2_DEPRECATED = 'The old methods are still available, but are deprecated and ' \
-    'will be removed in some future version.'
+P2_DEPRECATED = 'The old methods are still available, but are deprecated '\
+    'and will be removed in some future version.'
 T_DEPRECATED = [
     ['New method', 'Deprecated method'],
     ['new_paragraph', 'start_paragraph'],
@@ -265,7 +265,7 @@ def _write_installing(mft: MultiFormat, readme_type: ReadmeType) -> None:
     mft.write_code_block(text=COMMAND_INSTALLING_B_WINDOWS,
                          programming_language='sh')
     mft.new_heading(level=2,
-                      text=DISPATCHER['installing_extend'][readme_type])
+                    text=DISPATCHER['installing_extend'][readme_type])
     mft.new_paragraph(text=EXTEND_P1)
     mft.new_paragraph(text=EXTEND_P2_1)
     mft.add_url(url=EXTEND_URL)
@@ -280,9 +280,7 @@ def _write_installing(mft: MultiFormat, readme_type: ReadmeType) -> None:
 
 def create_pypi_readme(readme_type: ReadmeType, path: Path) -> None:
     """Create the README_pypi.md file."""
-    args: OptArgsDict = {
-        'file_exists_callback': file_exists_callback
-    }
+    args: OptArgsDict = {'file_exists_callback': file_exists_callback}
     with create_mf(format_name='md', file_name=str(path), args=args) as mft:
         mft.new_heading(level=1, text=DISPATCHER['title'][readme_type])
         mft.new_paragraph(text=INTRO_P1)

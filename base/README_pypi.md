@@ -207,3 +207,8 @@ some future version.
 | new_table               | start_table               |
 
 ## Test summary
+
+- Test result: 1563 passed in 18s
+- No Flake8 warnings.
+- No mypy errors found.
+- 0.4.1 built and tested using python version: Python 3.14.3

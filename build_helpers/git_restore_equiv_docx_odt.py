@@ -6,8 +6,9 @@ every time they are regenerated, even though the actual content is unchanged.
 When this script is run it will compare the content of the current (not
 committed) version of each ODT and DOCX file in example/result with the
 content of the latest committed version of that file. If the content is
-unchanged the script will use 'git restore' to restore the already 
-committed version of the file."""
+unchanged the script will use 'git restore' to restore the already
+committed version of the file.
+"""
 
 # Copyright (c) 2026 Tom Björkholm
 # MIT License
@@ -20,10 +21,10 @@ import subprocess
 from pathlib import Path
 from tempfile import TemporaryDirectory
 try:
-    import mammoth
-    from odf.opendocument import load as odf_load
-    from odf.odf2xhtml import ODF2XHTML
-    from htmlcompare import compare_html
+    import mammoth  # type: ignore
+    from odf.opendocument import load as odf_load  # type: ignore
+    from odf.odf2xhtml import ODF2XHTML  # type: ignore
+    from htmlcompare import compare_html  # type: ignore
     from mformat.factory import create_mf
 except ImportError as exc:
     print('You need to run this with venv activated.')
@@ -38,7 +39,9 @@ def are_docx_files_equivalent(file1: Path, file2: Path) -> bool:
         content1 = mammoth.convert_to_html(f)
     with open(file2, 'rb') as f:
         content2 = mammoth.convert_to_html(f)
-    return content1.value == content2.value
+    ret = content1.value == content2.value
+    assert isinstance(ret, bool)
+    return ret
 
 
 def are_odt_files_equivalent(file1: Path, file2: Path) -> bool:
@@ -68,32 +71,34 @@ def are_odt_files_equivalent(file1: Path, file2: Path) -> bool:
 def test_odt_files_equivalent() -> None:
     """Test ODT files equivalence."""
     with TemporaryDirectory() as temp_dir:
-        fname1 = temp_dir + '/test.odt'
-        fname2 = temp_dir + '/test2.odt'
-        fname3 = temp_dir + '/test3.odt'
-        fname4 = temp_dir + '/test4.odt'
+        fname1 = Path(temp_dir) / 'test.odt'
+        fname2 = Path(temp_dir) / 'test2.odt'
+        fname3 = Path(temp_dir) / 'test3.odt'
+        fname4 = Path(temp_dir) / 'test4.odt'
         head1 = 'A great heading for testing'
         para1 = 'This is a paragraph for testing'
-        with create_mf(format_name='odt', file_name=fname1) as mf:
+        with create_mf(format_name='odt', file_name=str(fname1)) as mf:
             mf.new_heading(level=1, text=head1)
             mf.new_paragraph(text=para1)
-        with create_mf(format_name='odt', file_name=fname2) as mf:
+        with create_mf(format_name='odt', file_name=str(fname2)) as mf:
             mf.new_heading(level=1, text=head1)
             mf.new_paragraph(text=para1)
         assert are_odt_files_equivalent(fname1, fname2)
-        with create_mf(format_name='odt', file_name=fname3) as mf:
+        with create_mf(format_name='odt', file_name=str(fname3)) as mf:
             mf.new_heading(level=1, text=head1)
             mf.new_paragraph(text=para1 + ' extra')
         assert not are_odt_files_equivalent(fname1, fname3)
         assert not are_odt_files_equivalent(fname2, fname3)
         assert are_odt_files_equivalent(fname3, fname3)
-        with create_mf(format_name='odt', file_name=fname4) as mf:
+        with create_mf(format_name='odt', file_name=str(fname4)) as mf:
             mf.new_heading(level=1, text=head1 + ' extra')
             mf.new_paragraph(text=para1)
         assert not are_odt_files_equivalent(fname1, fname4)
 
+
 class FileType(IntEnum):
     """Type of file."""
+
     DOCX = auto()
     ODT = auto()
 
@@ -129,7 +134,8 @@ def is_git_status_modified(file: Path) -> bool:
     cpi = subprocess.run(git_str, shell=True, stdout=subprocess.PIPE,
                          check=True)
     if cpi.returncode != 0:
-        raise RuntimeError(f'Failed to check if {file} is modified in the git status')
+        raise RuntimeError(f'Failed to check if {file} is modified in ' +
+                           'the git status')
     return cpi.stdout.decode('utf-8').strip() != ''
 
 
@@ -165,8 +171,9 @@ def restore_unchanged_files() -> None:
 
 
 def main() -> None:
-    """Main function."""
+    """Restore unchanged DOCX and ODT files."""
     restore_unchanged_files()
+
 
 if __name__ == "__main__":
     main()
