@@ -238,8 +238,11 @@
     * [left\_corner](#mformat.plain_text_table.BorderSpec.left_corner)
     * [right\_corner](#mformat.plain_text_table.BorderSpec.right_corner)
     * [inner\_cell\_corner](#mformat.plain_text_table.BorderSpec.inner_cell_corner)
+  * [\_wrap\_cell\_text](#mformat.plain_text_table._wrap_cell_text)
   * [get\_rst\_like\_spec](#mformat.plain_text_table.get_rst_like_spec)
   * [line\_wraps\_per\_column\_width](#mformat.plain_text_table.line_wraps_per_column_width)
+  * [\_backtrack\_widths](#mformat.plain_text_table._backtrack_widths)
+  * [\_find\_optimal\_widths](#mformat.plain_text_table._find_optimal_widths)
   * [select\_column\_widths](#mformat.plain_text_table.select_column_widths)
   * [TableAlignment](#mformat.plain_text_table.TableAlignment)
   * [align\_cell\_value](#mformat.plain_text_table.align_cell_value)
@@ -247,6 +250,7 @@
   * [format\_border\_row](#mformat.plain_text_table.format_border_row)
   * [format\_top\_border](#mformat.plain_text_table.format_top_border)
   * [format\_bottom\_border](#mformat.plain_text_table.format_bottom_border)
+  * [\_wrap\_row\_cells](#mformat.plain_text_table._wrap_row_cells)
   * [get\_plain\_text\_table](#mformat.plain_text_table.get_plain_text_table)
 * [mformat.reg\_pkg\_formats](#mformat.reg_pkg_formats)
   * [register\_formats\_in\_pkg](#mformat.reg_pkg_formats.register_formats_in_pkg)
@@ -3377,6 +3381,30 @@ Pattern for cell corner at right of table away from table corners.
 
 Pattern for cell corner away from table edges.
 
+<a id="mformat.plain_text_table._wrap_cell_text"></a>
+
+#### \_wrap\_cell\_text
+
+```python
+def _wrap_cell_text(text: str, width: int) -> list[str]
+```
+
+Wrap cell text to fit within the given width.
+
+Handles the case where text already fits without wrapping
+(returning it without calling wrap_text). For text that
+needs wrapping, delegates to wrap_text.
+
+**Arguments**:
+
+- `text` - The text to wrap.
+- `width` - The maximum line width.
+  
+
+**Returns**:
+
+  A list of strings, one for each wrapped line.
+
 <a id="mformat.plain_text_table.get_rst_like_spec"></a>
 
 #### get\_rst\_like\_spec
@@ -3418,6 +3446,57 @@ in the column value.
   a given number of line wraps (that is if column width 50 and 51
   both need 5 line wraps, only the column width 50 is in the
   dictionary).
+
+<a id="mformat.plain_text_table._backtrack_widths"></a>
+
+#### \_backtrack\_widths
+
+```python
+def _backtrack_widths(prev_dp: list[float],
+                      choices: list[list[int]]) -> list[int]
+```
+
+Find the best total used space and backtrack to widths.
+
+**Arguments**:
+
+- `prev_dp` - The final DP cost array after processing all
+  columns. prev_dp[s] is the minimum total wraps when
+  exactly s total width is used.
+- `choices` - For each column, an array where
+  choices[col][s] is the width chosen for that column
+  when s total width is used for columns 0..col.
+  
+
+**Returns**:
+
+  A list of column widths, one per column.
+
+<a id="mformat.plain_text_table._find_optimal_widths"></a>
+
+#### \_find\_optimal\_widths
+
+```python
+def _find_optimal_widths(possible_widths: list[dict[int, int]],
+                         available_space: int) -> list[int]
+```
+
+Find column widths that minimize total line wraps.
+
+Uses dynamic programming to find the combination of column
+widths whose sum fits within available_space and whose total
+wrap cost is minimized.
+
+**Arguments**:
+
+- `possible_widths` - For each column, a dict mapping column
+  width to the number of line wraps at that width.
+- `available_space` - The total space available for all columns.
+  
+
+**Returns**:
+
+  A list of column widths, one per column.
 
 <a id="mformat.plain_text_table.select_column_widths"></a>
 
@@ -3551,6 +3630,32 @@ Format the bottom border of the table.
 - `border_spec` - The specification for the borders.
 - `column_widths` - The widths of the columns.
 
+<a id="mformat.plain_text_table._wrap_row_cells"></a>
+
+#### \_wrap\_row\_cells
+
+```python
+def _wrap_row_cells(row: list[str],
+                    column_widths: list[int]) -> list[list[str]]
+```
+
+Wrap cell values in a row to fit column widths.
+
+Each cell is wrapped to its column width using word-boundary
+wrapping. Cells with fewer lines than the tallest cell are
+padded with empty strings.
+
+**Arguments**:
+
+- `row` - The cell values in the row.
+- `column_widths` - The widths of the columns.
+  
+
+**Returns**:
+
+  A list of sub-rows, where each sub-row is a list of cell
+  values (one per column) for a single output line.
+
 <a id="mformat.plain_text_table.get_plain_text_table"></a>
 
 #### get\_plain\_text\_table
@@ -3558,7 +3663,7 @@ Format the bottom border of the table.
 ```python
 def get_plain_text_table(data: list[list[str]], border_spec: BorderSpec,
                          max_line_length: int,
-                         aligment: TableAlignmentSpec) -> list[str]
+                         alignment: TableAlignmentSpec) -> list[str]
 ```
 
 Get the plain text table as a list of lines.
@@ -3568,6 +3673,7 @@ Get the plain text table as a list of lines.
 - `data` - The data in the table.
 - `border_spec` - The specification for the borders.
 - `max_line_length` - The maximum length of the lines to generate.
+- `alignment` - The alignment specification for cell content.
   
 
 **Returns**:

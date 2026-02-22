@@ -40,8 +40,8 @@ def wrap_text(text: str, max_line_length: int) -> list[str]:
     if '\n' in text:
         err = 'Text arguement to wrap_text may not contain newlines'
         raise ValueError(err)
-    if max_line_length <= 10:
-        err = 'max_line_length must be greater than 10'
+    if max_line_length < 1:
+        err = 'max_line_length must be at least 1'
         raise ValueError(err)
     textleft = deepcopy(text)
     rows: list[str] = []

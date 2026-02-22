@@ -27,16 +27,16 @@ class TestWrapTextValidation:
         with pytest.raises(ValueError, match='newlines'):
             wrap_text(text, 80)
 
-    @pytest.mark.parametrize('max_len', [0, 1, 5, 10, -1])
+    @pytest.mark.parametrize('max_len', [0, -1, -10])
     def test_max_line_length_too_small_raises(self, max_len):
-        """Test that max_line_length <= 10 raises ValueError."""
-        with pytest.raises(ValueError, match='greater than 10'):
+        """Test that max_line_length < 1 raises ValueError."""
+        with pytest.raises(ValueError, match='at least 1'):
             wrap_text('hello', max_len)
 
-    def test_max_line_length_11_accepted(self):
-        """Test that max_line_length=11 is the minimum accepted value."""
-        result = wrap_text('hello', 11)
-        assert result == ['hello']
+    def test_max_line_length_1_accepted(self):
+        """Test that max_line_length=1 is the minimum accepted value."""
+        result = wrap_text('h', 1)
+        assert result == ['h']
 
 
 class TestWrapTextEmptyInput:

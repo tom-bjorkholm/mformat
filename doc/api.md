@@ -1750,7 +1750,7 @@ Format the bottom border of the table.
 ```python
 def get_plain_text_table(data: list[list[str]], border_spec: BorderSpec,
                          max_line_length: int,
-                         aligment: TableAlignmentSpec) -> list[str]
+                         alignment: TableAlignmentSpec) -> list[str]
 ```
 
 Get the plain text table as a list of lines.
@@ -1760,6 +1760,7 @@ Get the plain text table as a list of lines.
 - `data` - The data in the table.
 - `border_spec` - The specification for the borders.
 - `max_line_length` - The maximum length of the lines to generate.
+- `alignment` - The alignment specification for cell content.
   
 
 **Returns**:
