@@ -40,6 +40,13 @@
     * [\_\_init\_\_](#mformat.mformat_md.MultiFormatMd.__init__)
     * [file\_name\_extension](#mformat.mformat_md.MultiFormatMd.file_name_extension)
     * [get\_arg\_desciption](#mformat.mformat_md.MultiFormatMd.get_arg_desciption)
+* [mformat.underline\_text](#mformat.underline_text)
+  * [UnderlineSpec](#mformat.underline_text.UnderlineSpec)
+    * [pattern](#mformat.underline_text.UnderlineSpec.pattern)
+    * [empty\_lines\_between](#mformat.underline_text.UnderlineSpec.empty_lines_between)
+    * [empty\_lines\_after](#mformat.underline_text.UnderlineSpec.empty_lines_after)
+  * [wrap\_text](#mformat.underline_text.wrap_text)
+  * [underline\_text](#mformat.underline_text.underline_text)
 * [mformat.mformat](#mformat.mformat)
   * [FormatterDescriptor](#mformat.mformat.FormatterDescriptor)
   * [TableInformation](#mformat.mformat.TableInformation)
@@ -691,6 +698,96 @@ def get_arg_desciption(cls) -> FormatterDescriptor
 ```
 
 Get the description of the arguments for the formatter.
+
+<a id="mformat.underline_text"></a>
+
+# mformat.underline\_text
+
+Underline row(s) of text in a text based format.
+
+<a id="mformat.underline_text.UnderlineSpec"></a>
+
+## UnderlineSpec Objects
+
+```python
+class UnderlineSpec(NamedTuple)
+```
+
+Specification for underlining text.
+
+<a id="mformat.underline_text.UnderlineSpec.pattern"></a>
+
+#### pattern
+
+Pattern to use repeatedly to underline the text.
+
+<a id="mformat.underline_text.UnderlineSpec.empty_lines_between"></a>
+
+#### empty\_lines\_between
+
+Number of empty lines to insert between each row of underlined text.
+
+<a id="mformat.underline_text.UnderlineSpec.empty_lines_after"></a>
+
+#### empty\_lines\_after
+
+Number of empty lines after the last row of underlined text.
+
+<a id="mformat.underline_text.wrap_text"></a>
+
+#### wrap\_text
+
+```python
+def wrap_text(text: str, max_line_length: int) -> list[str]
+```
+
+Wrap text into rows of length max_line_length.
+
+Wraps text at word boundaries to keep lines within the specified
+maximum length. Handles whitespace at wrap points by collapsing
+multiple spaces/newlines into the line break. Trying to preserve
+any multiple spaces that are present in the text away from the
+wrap points. If a single word is longer than max_line_length, it
+will be alone at a line of its own that is longer than max_line_length.
+
+**Arguments**:
+
+- `text` - The text to wrap. May not contain newlines.
+- `max_line_length` - The maximum length of the lines to generate.
+  
+
+**Returns**:
+
+  A list of strings, one for each row limited to max_line_length.
+
+<a id="mformat.underline_text.underline_text"></a>
+
+#### underline\_text
+
+```python
+def underline_text(text: str, underline_spec: UnderlineSpec,
+                   max_line_length: int) -> list[str]
+```
+
+Underline text according to the specification.
+
+**Arguments**:
+
+- `text` - The text to underline. This will be wrapped into rows of length
+  max_line_length and each row will be underlined. If a single word
+  is longer than max_line_length, that word will be alone at a line
+  of its own that is longer than max_line_length. If the text is
+  empty, no rows will be generated. No newlines are allowed in the
+  text argument.
+- `underline_spec` - The specification for the underlining.
+- `max_line_length` - The maximum length of the lines to generate.
+  
+
+**Returns**:
+
+  A list of strings, one for each row to pass to output function.
+  This will contain also the underlining pattern and the empty lines
+  between and after the text rows.
 
 <a id="mformat.mformat"></a>
 
