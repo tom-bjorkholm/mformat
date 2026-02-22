@@ -82,6 +82,33 @@
     * [\_\_init\_\_](#mformat.mformat_html.MultiFormatHtml.__init__)
     * [file\_name\_extension](#mformat.mformat_html.MultiFormatHtml.file_name_extension)
     * [get\_arg\_desciption](#mformat.mformat_html.MultiFormatHtml.get_arg_desciption)
+* [mformat.plain\_text\_table](#mformat.plain_text_table)
+  * [BorderSpec](#mformat.plain_text_table.BorderSpec)
+    * [top](#mformat.plain_text_table.BorderSpec.top)
+    * [bottom](#mformat.plain_text_table.BorderSpec.bottom)
+    * [left](#mformat.plain_text_table.BorderSpec.left)
+    * [right](#mformat.plain_text_table.BorderSpec.right)
+    * [top\_left](#mformat.plain_text_table.BorderSpec.top_left)
+    * [top\_right](#mformat.plain_text_table.BorderSpec.top_right)
+    * [bottom\_left](#mformat.plain_text_table.BorderSpec.bottom_left)
+    * [bottom\_right](#mformat.plain_text_table.BorderSpec.bottom_right)
+    * [inner\_horizontal](#mformat.plain_text_table.BorderSpec.inner_horizontal)
+    * [inner\_vertical](#mformat.plain_text_table.BorderSpec.inner_vertical)
+    * [top\_corner](#mformat.plain_text_table.BorderSpec.top_corner)
+    * [bottom\_corner](#mformat.plain_text_table.BorderSpec.bottom_corner)
+    * [left\_corner](#mformat.plain_text_table.BorderSpec.left_corner)
+    * [right\_corner](#mformat.plain_text_table.BorderSpec.right_corner)
+    * [inner\_cell\_corner](#mformat.plain_text_table.BorderSpec.inner_cell_corner)
+  * [get\_rst\_like\_spec](#mformat.plain_text_table.get_rst_like_spec)
+  * [line\_wraps\_per\_column\_width](#mformat.plain_text_table.line_wraps_per_column_width)
+  * [select\_column\_widths](#mformat.plain_text_table.select_column_widths)
+  * [TableAlignment](#mformat.plain_text_table.TableAlignment)
+  * [align\_cell\_value](#mformat.plain_text_table.align_cell_value)
+  * [format\_one\_table\_row](#mformat.plain_text_table.format_one_table_row)
+  * [format\_border\_row](#mformat.plain_text_table.format_border_row)
+  * [format\_top\_border](#mformat.plain_text_table.format_top_border)
+  * [format\_bottom\_border](#mformat.plain_text_table.format_bottom_border)
+  * [get\_plain\_text\_table](#mformat.plain_text_table.get_plain_text_table)
 * [mformat.reg\_pkg\_formats](#mformat.reg_pkg_formats)
   * [register\_formats\_in\_pkg](#mformat.reg_pkg_formats.register_formats_in_pkg)
 * [mformat\_ext.mformat\_odt](#mformat_ext.mformat_odt)
@@ -1405,6 +1432,343 @@ def get_arg_desciption(cls) -> FormatterDescriptor
 ```
 
 Get the description of the arguments for the formatter.
+
+<a id="mformat.plain_text_table"></a>
+
+# mformat.plain\_text\_table
+
+Format a table as plain text with borders.
+
+<a id="mformat.plain_text_table.BorderSpec"></a>
+
+## BorderSpec Objects
+
+```python
+class BorderSpec(NamedTuple)
+```
+
+Specification for plain text table borders.
+
+The pattern strings are used to create the borders. The patterns are
+repeated to create the borders. The patterns for vertical borders
+shall include any spacing between the border and the cell content.
+The following picture of a 3x3 table shows which patterns are used
+for which border:
+
+1aaaa2aaaa2aaaa3
+X    |    |    Y
+4----5----5----6
+X    |    |    Y
+4----5----5----6
+X    |    |    Y
+7cccc8cccc8cccc9
+
+- top is a
+- bottom is c
+- left is X
+- right is Y
+- top_left is 1
+- top_right is 3
+- bottom_left is 7
+- bottom_right is 9
+- inner_horizontal is -
+- inner_vertical is |
+- top_corner is 2
+- bottom_corner is 8
+- left_corner is 4
+- right_corner is 6
+- inner_cell_corner is 5
+
+<a id="mformat.plain_text_table.BorderSpec.top"></a>
+
+#### top
+
+Top border pattern away from corners.
+
+<a id="mformat.plain_text_table.BorderSpec.bottom"></a>
+
+#### bottom
+
+Bottom border pattern away from corners.
+
+<a id="mformat.plain_text_table.BorderSpec.left"></a>
+
+#### left
+
+Left border pattern away from corners.
+
+<a id="mformat.plain_text_table.BorderSpec.right"></a>
+
+#### right
+
+Right border pattern away from corners.
+
+<a id="mformat.plain_text_table.BorderSpec.top_left"></a>
+
+#### top\_left
+
+Top left corner pattern.
+
+<a id="mformat.plain_text_table.BorderSpec.top_right"></a>
+
+#### top\_right
+
+Top right corner pattern.
+
+<a id="mformat.plain_text_table.BorderSpec.bottom_left"></a>
+
+#### bottom\_left
+
+Bottom left corner pattern.
+
+<a id="mformat.plain_text_table.BorderSpec.bottom_right"></a>
+
+#### bottom\_right
+
+Bottom right corner pattern.
+
+<a id="mformat.plain_text_table.BorderSpec.inner_horizontal"></a>
+
+#### inner\_horizontal
+
+Inner horizontal border pattern away from cell corners.
+
+<a id="mformat.plain_text_table.BorderSpec.inner_vertical"></a>
+
+#### inner\_vertical
+
+Inner vertical border pattern away from cell corners.
+
+<a id="mformat.plain_text_table.BorderSpec.top_corner"></a>
+
+#### top\_corner
+
+Pattern for cell corner at top of table away from table corners.
+
+<a id="mformat.plain_text_table.BorderSpec.bottom_corner"></a>
+
+#### bottom\_corner
+
+Pattern for cell corner at bottom of table away from table corners.
+
+<a id="mformat.plain_text_table.BorderSpec.left_corner"></a>
+
+#### left\_corner
+
+Pattern for cell corner at left of table away from table corners.
+
+<a id="mformat.plain_text_table.BorderSpec.right_corner"></a>
+
+#### right\_corner
+
+Pattern for cell corner at right of table away from table corners.
+
+<a id="mformat.plain_text_table.BorderSpec.inner_cell_corner"></a>
+
+#### inner\_cell\_corner
+
+Pattern for cell corner away from table edges.
+
+<a id="mformat.plain_text_table.get_rst_like_spec"></a>
+
+#### get\_rst\_like\_spec
+
+```python
+def get_rst_like_spec() -> BorderSpec
+```
+
+Get a specification for RST like plain text table borders.
+
+<a id="mformat.plain_text_table.line_wraps_per_column_width"></a>
+
+#### line\_wraps\_per\_column\_width
+
+```python
+def line_wraps_per_column_width(
+        column_values: Sequence[str]) -> dict[int, int]
+```
+
+Get the number of line wraps for different column widths.
+
+The number of line wraps is calculated by wrapping the column values
+at word boundaries and counting the number of lines for each column width.
+The column width is varying from the longest column value unwrapped
+to the shortest possible column width that can hold the longest word
+in the column value.
+
+**Arguments**:
+
+- `column_values` - The values in the columns.
+  
+
+**Returns**:
+
+  A dictionary with the column width as key and the number of line
+  wraps needed for that column width as value.
+  The unit of the column width is the number of characters.
+  The dictionary only holds the smallest column width needed for
+  a given number of line wraps (that is if column width 50 and 51
+  both need 5 line wraps, only the column width 50 is in the
+  dictionary).
+
+<a id="mformat.plain_text_table.select_column_widths"></a>
+
+#### select\_column\_widths
+
+```python
+def select_column_widths(data: list[list[str]], border_spec: BorderSpec,
+                         max_line_length: int) -> list[int]
+```
+
+Select the column widths for a table.
+
+**Arguments**:
+
+- `data` - The data in the table.
+- `border_spec` - The specification for the borders.
+- `max_line_length` - The maximum length of the lines to generate.
+  
+
+**Returns**:
+
+  A list of column widths that are needed to fit the data in the table
+  with the given border specification and maximum line length and as
+  few line wraps as possible.
+  
+
+**Raises**:
+
+- `ValueError` - If the data is empty.
+- `ValueError` - If the data rows have different number of columns.
+- `ValueError` - If the border specification is invalid.
+- `ValueError` - If the maximum line length is less than 10.
+- `ValueError` - If the data is not a list of lists of strings.
+- `RuntimeError` - If the table cannot be formatted with the given border
+  specification and maximum line length.
+
+<a id="mformat.plain_text_table.TableAlignment"></a>
+
+## TableAlignment Objects
+
+```python
+class TableAlignment(IntEnum)
+```
+
+Alignment of the data inside a table cell.
+
+<a id="mformat.plain_text_table.align_cell_value"></a>
+
+#### align\_cell\_value
+
+```python
+def align_cell_value(value: str, alignment: TableAlignment,
+                     column_width: int) -> str
+```
+
+Align a cell value.
+
+**Arguments**:
+
+- `value` - The value to align.
+- `alignment` - The alignment to use.
+- `column_width` - The width of the column.
+
+<a id="mformat.plain_text_table.format_one_table_row"></a>
+
+#### format\_one\_table\_row
+
+```python
+def format_one_table_row(row: list[str], column_widths: list[int],
+                         border_spec: BorderSpec,
+                         alignment: list[TableAlignment]) -> str
+```
+
+Format one table row.
+
+**Arguments**:
+
+- `row` - The row to format.
+- `column_widths` - The widths of the columns.
+- `border_spec` - The specification for the borders.
+- `alignment` - The alignment to use.
+
+<a id="mformat.plain_text_table.format_border_row"></a>
+
+#### format\_border\_row
+
+```python
+def format_border_row(left: str, right: str, horizontal: str, vertical: str,
+                      column_widths: list[int]) -> str
+```
+
+Format a border row.
+
+**Arguments**:
+
+- `left` - The left border.
+- `right` - The right border.
+- `horizontal` - The horizontal border.
+- `vertical` - The vertical border.
+- `column_widths` - The widths of the columns.
+
+<a id="mformat.plain_text_table.format_top_border"></a>
+
+#### format\_top\_border
+
+```python
+def format_top_border(border_spec: BorderSpec,
+                      column_widths: list[int]) -> str
+```
+
+Format the top border of the table.
+
+**Arguments**:
+
+- `border_spec` - The specification for the borders.
+- `column_widths` - The widths of the columns.
+
+<a id="mformat.plain_text_table.format_bottom_border"></a>
+
+#### format\_bottom\_border
+
+```python
+def format_bottom_border(border_spec: BorderSpec,
+                         column_widths: list[int]) -> str
+```
+
+Format the bottom border of the table.
+
+**Arguments**:
+
+- `border_spec` - The specification for the borders.
+- `column_widths` - The widths of the columns.
+
+<a id="mformat.plain_text_table.get_plain_text_table"></a>
+
+#### get\_plain\_text\_table
+
+```python
+def get_plain_text_table(data: list[list[str]], border_spec: BorderSpec,
+                         max_line_length: int,
+                         aligment: TableAlignmentSpec) -> list[str]
+```
+
+Get the plain text table as a list of lines.
+
+**Arguments**:
+
+- `data` - The data in the table.
+- `border_spec` - The specification for the borders.
+- `max_line_length` - The maximum length of the lines to generate.
+  
+
+**Returns**:
+
+  The plain text table including the borders as a list of lines.
+  Each line to be output is one element in the list in the
+  order it is to be output. The first line is the top border
+  (if any), the second line is the first row of the table,
+  the last line is the bottom border (if any).
 
 <a id="mformat.reg_pkg_formats"></a>
 
