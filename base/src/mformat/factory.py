@@ -20,6 +20,7 @@ class OptArgsDict(TypedDict, total=False):
     lang: Optional[str]
     title: Optional[str]
     css_file: Optional[str]
+    line_length: Optional[int]
 
 
 type OptArgs = Optional[OptArgsDict]

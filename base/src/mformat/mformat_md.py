@@ -162,28 +162,11 @@ class MultiFormatMd(MultiFormatTextBased):
         assert self.file is not None
         assert isinstance(level, int)
 
-    def _indent(self, level: int) -> str:
-        """Get the indentation for a level."""
-        assert self.file is not None
-        assert isinstance(level, int)
-        return 2*(level-1)*' '
-
     def _start_bullet_item(self, level: int) -> None:
         """Start a bullet item."""
-        assert self.file is not None
-        assert isinstance(level, int)
-        self._empty_line_before()
-        indent = self._indent(level)
-        marker = '- '
-        self.file.write(indent + marker)
-        # Continuation indent aligns with text after marker
-        self._reset_line_state(continuation_indent=indent + '  ')
-        self._current_column = len(indent) + len(marker)
-
-    def _end_bullet_item(self, level: int) -> None:
-        """End a bullet item."""
-        assert isinstance(level, int)
-        self._write_line_break()
+        self._start_bullet_item_common(level=level,
+                                       empty_line_before=True,
+                                       marker='- ')
 
     def _start_numbered_list(self, level: int) -> None:
         """Start a numbered list."""
@@ -198,22 +181,9 @@ class MultiFormatMd(MultiFormatTextBased):
     def _start_numbered_item(self, level: int, num: int,
                              full_number: str) -> None:
         """Start a numbered item."""
-        assert self.file is not None
-        assert isinstance(level, int)
-        assert isinstance(num, int)
-        self._empty_line_before()
-        indent = self._indent(level)
-        marker = full_number + ' '
-        self.file.write(indent + marker)
-        # Continuation indent aligns with text after marker
-        self._reset_line_state(continuation_indent=indent + ' ' * len(marker))
-        self._current_column = len(indent) + len(marker)
-
-    def _end_numbered_item(self, level: int, num: int) -> None:
-        """End a numbered item."""
-        assert isinstance(level, int)
-        assert isinstance(num, int)
-        self._write_line_break()
+        self._start_numbered_item_common(level=level, num=num,
+                                         full_number=full_number,
+                                         empty_line_before=True)
 
     def _start_code_block(self, programming_language: Optional[str]) -> None:
         """Start a code block."""

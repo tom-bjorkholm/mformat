@@ -55,6 +55,11 @@
     * [\_write\_pending\_whitespace](#mformat.mformat_textbased.MultiFormatTextBased._write_pending_whitespace)
     * [\_wrap\_and\_write\_atomic](#mformat.mformat_textbased.MultiFormatTextBased._wrap_and_write_atomic)
     * [\_empty\_line\_before](#mformat.mformat_textbased.MultiFormatTextBased._empty_line_before)
+    * [\_indent2](#mformat.mformat_textbased.MultiFormatTextBased._indent2)
+    * [\_start\_bullet\_item\_common](#mformat.mformat_textbased.MultiFormatTextBased._start_bullet_item_common)
+    * [\_end\_bullet\_item](#mformat.mformat_textbased.MultiFormatTextBased._end_bullet_item)
+    * [\_start\_numbered\_item\_common](#mformat.mformat_textbased.MultiFormatTextBased._start_numbered_item_common)
+    * [\_end\_numbered\_item](#mformat.mformat_textbased.MultiFormatTextBased._end_numbered_item)
 * [mformat.factory](#mformat.factory)
   * [\_the\_factory](#mformat.factory._the_factory)
   * [OptArgsDict](#mformat.factory.OptArgsDict)
@@ -95,13 +100,10 @@
     * [\_write\_code\_in\_text](#mformat.mformat_md.MultiFormatMd._write_code_in_text)
     * [\_start\_bullet\_list](#mformat.mformat_md.MultiFormatMd._start_bullet_list)
     * [\_end\_bullet\_list](#mformat.mformat_md.MultiFormatMd._end_bullet_list)
-    * [\_indent](#mformat.mformat_md.MultiFormatMd._indent)
     * [\_start\_bullet\_item](#mformat.mformat_md.MultiFormatMd._start_bullet_item)
-    * [\_end\_bullet\_item](#mformat.mformat_md.MultiFormatMd._end_bullet_item)
     * [\_start\_numbered\_list](#mformat.mformat_md.MultiFormatMd._start_numbered_list)
     * [\_end\_numbered\_list](#mformat.mformat_md.MultiFormatMd._end_numbered_list)
     * [\_start\_numbered\_item](#mformat.mformat_md.MultiFormatMd._start_numbered_item)
-    * [\_end\_numbered\_item](#mformat.mformat_md.MultiFormatMd._end_numbered_item)
     * [\_start\_code\_block](#mformat.mformat_md.MultiFormatMd._start_code_block)
     * [\_end\_code\_block](#mformat.mformat_md.MultiFormatMd._end_code_block)
     * [\_write\_code\_block](#mformat.mformat_md.MultiFormatMd._write_code_block)
@@ -221,6 +223,36 @@
     * [\_encode\_text](#mformat.mformat_html.MultiFormatHtml._encode_text)
     * [\_start\_block\_quote](#mformat.mformat_html.MultiFormatHtml._start_block_quote)
     * [\_end\_block\_quote](#mformat.mformat_html.MultiFormatHtml._end_block_quote)
+* [mformat.mformat\_txt](#mformat.mformat_txt)
+  * [MultiFormatTxt](#mformat.mformat_txt.MultiFormatTxt)
+    * [\_\_init\_\_](#mformat.mformat_txt.MultiFormatTxt.__init__)
+    * [file\_name\_extension](#mformat.mformat_txt.MultiFormatTxt.file_name_extension)
+    * [get\_arg\_desciption](#mformat.mformat_txt.MultiFormatTxt.get_arg_desciption)
+    * [\_write\_file\_prefix](#mformat.mformat_txt.MultiFormatTxt._write_file_prefix)
+    * [\_write\_file\_suffix](#mformat.mformat_txt.MultiFormatTxt._write_file_suffix)
+    * [\_start\_paragraph](#mformat.mformat_txt.MultiFormatTxt._start_paragraph)
+    * [\_start\_block\_quote](#mformat.mformat_txt.MultiFormatTxt._start_block_quote)
+    * [\_end\_block\_quote](#mformat.mformat_txt.MultiFormatTxt._end_block_quote)
+    * [\_end\_paragraph](#mformat.mformat_txt.MultiFormatTxt._end_paragraph)
+    * [\_start\_heading](#mformat.mformat_txt.MultiFormatTxt._start_heading)
+    * [\_end\_heading](#mformat.mformat_txt.MultiFormatTxt._end_heading)
+    * [\_write\_text](#mformat.mformat_txt.MultiFormatTxt._write_text)
+    * [\_write\_url](#mformat.mformat_txt.MultiFormatTxt._write_url)
+    * [\_write\_code\_in\_text](#mformat.mformat_txt.MultiFormatTxt._write_code_in_text)
+    * [\_start\_bullet\_list](#mformat.mformat_txt.MultiFormatTxt._start_bullet_list)
+    * [\_end\_bullet\_list](#mformat.mformat_txt.MultiFormatTxt._end_bullet_list)
+    * [\_start\_bullet\_item](#mformat.mformat_txt.MultiFormatTxt._start_bullet_item)
+    * [\_start\_numbered\_list](#mformat.mformat_txt.MultiFormatTxt._start_numbered_list)
+    * [\_end\_numbered\_list](#mformat.mformat_txt.MultiFormatTxt._end_numbered_list)
+    * [\_start\_numbered\_item](#mformat.mformat_txt.MultiFormatTxt._start_numbered_item)
+    * [\_start\_code\_block](#mformat.mformat_txt.MultiFormatTxt._start_code_block)
+    * [\_end\_code\_block](#mformat.mformat_txt.MultiFormatTxt._end_code_block)
+    * [\_write\_code\_block](#mformat.mformat_txt.MultiFormatTxt._write_code_block)
+    * [\_start\_table](#mformat.mformat_txt.MultiFormatTxt._start_table)
+    * [\_end\_table](#mformat.mformat_txt.MultiFormatTxt._end_table)
+    * [\_write\_table\_first\_row](#mformat.mformat_txt.MultiFormatTxt._write_table_first_row)
+    * [\_write\_table\_row](#mformat.mformat_txt.MultiFormatTxt._write_table_row)
+    * [\_encode\_text](#mformat.mformat_txt.MultiFormatTxt._encode_text)
 * [mformat.plain\_text\_table](#mformat.plain_text_table)
   * [BorderSpec](#mformat.plain_text_table.BorderSpec)
     * [top](#mformat.plain_text_table.BorderSpec.top)
@@ -1025,6 +1057,59 @@ def _empty_line_before() -> None
 
 Make sure there is an empty line before next item.
 
+<a id="mformat.mformat_textbased.MultiFormatTextBased._indent2"></a>
+
+#### \_indent2
+
+```python
+def _indent2(level: int) -> str
+```
+
+Get the indentation for a level.
+
+<a id="mformat.mformat_textbased.MultiFormatTextBased._start_bullet_item_common"></a>
+
+#### \_start\_bullet\_item\_common
+
+```python
+def _start_bullet_item_common(level: int,
+                              empty_line_before: bool = True,
+                              marker: str = '- ') -> None
+```
+
+Start a bullet item.
+
+<a id="mformat.mformat_textbased.MultiFormatTextBased._end_bullet_item"></a>
+
+#### \_end\_bullet\_item
+
+```python
+def _end_bullet_item(level: int) -> None
+```
+
+End a bullet item.
+
+<a id="mformat.mformat_textbased.MultiFormatTextBased._start_numbered_item_common"></a>
+
+#### \_start\_numbered\_item\_common
+
+```python
+def _start_numbered_item_common(level: int, num: int, full_number: str,
+                                empty_line_before: bool) -> None
+```
+
+Start a numbered item.
+
+<a id="mformat.mformat_textbased.MultiFormatTextBased._end_numbered_item"></a>
+
+#### \_end\_numbered\_item
+
+```python
+def _end_numbered_item(level: int, num: int) -> None
+```
+
+End a numbered list item.
+
 <a id="mformat.factory"></a>
 
 # mformat.factory
@@ -1613,16 +1698,6 @@ def _end_bullet_list(level: int) -> None
 
 End a bullet list.
 
-<a id="mformat.mformat_md.MultiFormatMd._indent"></a>
-
-#### \_indent
-
-```python
-def _indent(level: int) -> str
-```
-
-Get the indentation for a level.
-
 <a id="mformat.mformat_md.MultiFormatMd._start_bullet_item"></a>
 
 #### \_start\_bullet\_item
@@ -1632,16 +1707,6 @@ def _start_bullet_item(level: int) -> None
 ```
 
 Start a bullet item.
-
-<a id="mformat.mformat_md.MultiFormatMd._end_bullet_item"></a>
-
-#### \_end\_bullet\_item
-
-```python
-def _end_bullet_item(level: int) -> None
-```
-
-End a bullet item.
 
 <a id="mformat.mformat_md.MultiFormatMd._start_numbered_list"></a>
 
@@ -1672,16 +1737,6 @@ def _start_numbered_item(level: int, num: int, full_number: str) -> None
 ```
 
 Start a numbered item.
-
-<a id="mformat.mformat_md.MultiFormatMd._end_numbered_item"></a>
-
-#### \_end\_numbered\_item
-
-```python
-def _end_numbered_item(level: int, num: int) -> None
-```
-
-End a numbered item.
 
 <a id="mformat.mformat_md.MultiFormatMd._start_code_block"></a>
 
@@ -3244,6 +3299,329 @@ def _end_block_quote() -> None
 ```
 
 End a block quote.
+
+<a id="mformat.mformat_txt"></a>
+
+# mformat.mformat\_txt
+
+Plain text format class.
+
+<a id="mformat.mformat_txt.MultiFormatTxt"></a>
+
+## MultiFormatTxt Objects
+
+```python
+class MultiFormatTxt(MultiFormatTextBased)
+```
+
+Plain text format class.
+
+<a id="mformat.mformat_txt.MultiFormatTxt.__init__"></a>
+
+#### \_\_init\_\_
+
+```python
+def __init__(file_name: str,
+             url_as_text: bool = False,
+             file_exists_callback: Optional[Callable[[str], None]] = None,
+             line_length: int = 79)
+```
+
+Initialize the MultiFormatTxt class.
+
+**Arguments**:
+
+- `file_name` - The name of the file to write to.
+- `url_as_text` - Format URLs as text not clickable URLs.
+- `file_exists_callback` - A callback function to call if the file
+  already exists. Return to allow the file to
+  be overwritten. Raise an exception to prevent
+  the file from being overwritten.
+  (May for instance save existing file as
+  backup.)
+  (Default is to raise an exception.)
+
+<a id="mformat.mformat_txt.MultiFormatTxt.file_name_extension"></a>
+
+#### file\_name\_extension
+
+```python
+@classmethod
+def file_name_extension(cls) -> str
+```
+
+Get the file name extension for the formatter.
+
+<a id="mformat.mformat_txt.MultiFormatTxt.get_arg_desciption"></a>
+
+#### get\_arg\_desciption
+
+```python
+@classmethod
+def get_arg_desciption(cls) -> FormatterDescriptor
+```
+
+Get the description of the arguments for the formatter.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._write_file_prefix"></a>
+
+#### \_write\_file\_prefix
+
+```python
+def _write_file_prefix() -> None
+```
+
+Write the file prefix.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._write_file_suffix"></a>
+
+#### \_write\_file\_suffix
+
+```python
+def _write_file_suffix() -> None
+```
+
+Write the file suffix.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._start_paragraph"></a>
+
+#### \_start\_paragraph
+
+```python
+def _start_paragraph() -> None
+```
+
+Start a paragraph.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._start_block_quote"></a>
+
+#### \_start\_block\_quote
+
+```python
+def _start_block_quote() -> None
+```
+
+Start a block quote.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._end_block_quote"></a>
+
+#### \_end\_block\_quote
+
+```python
+def _end_block_quote() -> None
+```
+
+End a block quote.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._end_paragraph"></a>
+
+#### \_end\_paragraph
+
+```python
+def _end_paragraph() -> None
+```
+
+End a paragraph.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._start_heading"></a>
+
+#### \_start\_heading
+
+```python
+def _start_heading(level: int) -> None
+```
+
+Start a heading.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._end_heading"></a>
+
+#### \_end\_heading
+
+```python
+def _end_heading(level: int) -> None
+```
+
+End a heading.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._write_text"></a>
+
+#### \_write\_text
+
+```python
+def _write_text(text: str, state: MultiFormatState,
+                formatting: Formatting) -> None
+```
+
+Write text into current item (paragraph, bullet list item, etc.).
+
+**Arguments**:
+
+- `text` - The text to write into the current item.
+- `state` - The state of the current item.
+- `formatting` - The formatting of the text.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._write_url"></a>
+
+#### \_write\_url
+
+```python
+def _write_url(url: str, text: Optional[str], state: MultiFormatState,
+               formatting: Formatting) -> None
+```
+
+Write a URL into current item (paragraph, bullet list item...).
+
+<a id="mformat.mformat_txt.MultiFormatTxt._write_code_in_text"></a>
+
+#### \_write\_code\_in\_text
+
+```python
+def _write_code_in_text(text: str, state: MultiFormatState) -> None
+```
+
+Write code into current item (paragraph, bullet list item...).
+
+<a id="mformat.mformat_txt.MultiFormatTxt._start_bullet_list"></a>
+
+#### \_start\_bullet\_list
+
+```python
+def _start_bullet_list(level: int) -> None
+```
+
+Start a bullet list.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._end_bullet_list"></a>
+
+#### \_end\_bullet\_list
+
+```python
+def _end_bullet_list(level: int) -> None
+```
+
+End a bullet list.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._start_bullet_item"></a>
+
+#### \_start\_bullet\_item
+
+```python
+def _start_bullet_item(level: int) -> None
+```
+
+Start a bullet item.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._start_numbered_list"></a>
+
+#### \_start\_numbered\_list
+
+```python
+def _start_numbered_list(level: int) -> None
+```
+
+Start a numbered list.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._end_numbered_list"></a>
+
+#### \_end\_numbered\_list
+
+```python
+def _end_numbered_list(level: int) -> None
+```
+
+End a numbered list.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._start_numbered_item"></a>
+
+#### \_start\_numbered\_item
+
+```python
+def _start_numbered_item(level: int, num: int, full_number: str) -> None
+```
+
+Start a numbered list item.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._start_code_block"></a>
+
+#### \_start\_code\_block
+
+```python
+def _start_code_block(programming_language: Optional[str]) -> None
+```
+
+Start a code block.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._end_code_block"></a>
+
+#### \_end\_code\_block
+
+```python
+def _end_code_block(programming_language: Optional[str]) -> None
+```
+
+End a code block.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._write_code_block"></a>
+
+#### \_write\_code\_block
+
+```python
+def _write_code_block(text: str, programming_language: Optional[str]) -> None
+```
+
+Write a code block.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._start_table"></a>
+
+#### \_start\_table
+
+```python
+def _start_table(num_columns: int) -> None
+```
+
+Start a table.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._end_table"></a>
+
+#### \_end\_table
+
+```python
+def _end_table(num_columns: int, num_rows: int) -> None
+```
+
+End a table.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._write_table_first_row"></a>
+
+#### \_write\_table\_first\_row
+
+```python
+def _write_table_first_row(first_row: list[str],
+                           formatting: Formatting) -> None
+```
+
+Write the first row of a table.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._write_table_row"></a>
+
+#### \_write\_table\_row
+
+```python
+def _write_table_row(row: list[str], formatting: Formatting,
+                     row_number: int) -> None
+```
+
+Write a row of a table.
+
+<a id="mformat.mformat_txt.MultiFormatTxt._encode_text"></a>
+
+#### \_encode\_text
+
+```python
+def _encode_text(text: str) -> str
+```
+
+No encoding for plain text.
 
 <a id="mformat.plain_text_table"></a>
 

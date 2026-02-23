@@ -82,6 +82,11 @@
     * [\_\_init\_\_](#mformat.mformat_html.MultiFormatHtml.__init__)
     * [file\_name\_extension](#mformat.mformat_html.MultiFormatHtml.file_name_extension)
     * [get\_arg\_desciption](#mformat.mformat_html.MultiFormatHtml.get_arg_desciption)
+* [mformat.mformat\_txt](#mformat.mformat_txt)
+  * [MultiFormatTxt](#mformat.mformat_txt.MultiFormatTxt)
+    * [\_\_init\_\_](#mformat.mformat_txt.MultiFormatTxt.__init__)
+    * [file\_name\_extension](#mformat.mformat_txt.MultiFormatTxt.file_name_extension)
+    * [get\_arg\_desciption](#mformat.mformat_txt.MultiFormatTxt.get_arg_desciption)
 * [mformat.plain\_text\_table](#mformat.plain_text_table)
   * [BorderSpec](#mformat.plain_text_table.BorderSpec)
     * [top](#mformat.plain_text_table.BorderSpec.top)
@@ -1423,6 +1428,69 @@ def file_name_extension(cls) -> str
 Get the file name extension for the formatter.
 
 <a id="mformat.mformat_html.MultiFormatHtml.get_arg_desciption"></a>
+
+#### get\_arg\_desciption
+
+```python
+@classmethod
+def get_arg_desciption(cls) -> FormatterDescriptor
+```
+
+Get the description of the arguments for the formatter.
+
+<a id="mformat.mformat_txt"></a>
+
+# mformat.mformat\_txt
+
+Plain text format class.
+
+<a id="mformat.mformat_txt.MultiFormatTxt"></a>
+
+## MultiFormatTxt Objects
+
+```python
+class MultiFormatTxt(MultiFormatTextBased)
+```
+
+Plain text format class.
+
+<a id="mformat.mformat_txt.MultiFormatTxt.__init__"></a>
+
+#### \_\_init\_\_
+
+```python
+def __init__(file_name: str,
+             url_as_text: bool = False,
+             file_exists_callback: Optional[Callable[[str], None]] = None,
+             line_length: int = 79)
+```
+
+Initialize the MultiFormatTxt class.
+
+**Arguments**:
+
+- `file_name` - The name of the file to write to.
+- `url_as_text` - Format URLs as text not clickable URLs.
+- `file_exists_callback` - A callback function to call if the file
+  already exists. Return to allow the file to
+  be overwritten. Raise an exception to prevent
+  the file from being overwritten.
+  (May for instance save existing file as
+  backup.)
+  (Default is to raise an exception.)
+
+<a id="mformat.mformat_txt.MultiFormatTxt.file_name_extension"></a>
+
+#### file\_name\_extension
+
+```python
+@classmethod
+def file_name_extension(cls) -> str
+```
+
+Get the file name extension for the formatter.
+
+<a id="mformat.mformat_txt.MultiFormatTxt.get_arg_desciption"></a>
 
 #### get\_arg\_desciption
 

@@ -5,14 +5,14 @@
 # MIT License
 #
 
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 from copy import deepcopy
 
 
 class UnderlineSpec(NamedTuple):
     """Specification for underlining text."""
 
-    pattern: str
+    pattern: Optional[str]
     """Pattern to use repeatedly to underline the text."""
     empty_lines_between: int
     """Number of empty lines to insert between each row of underlined text."""
@@ -78,15 +78,16 @@ def underline_text(text: str, underline_spec: UnderlineSpec,
         This will contain also the underlining pattern and the empty lines
         between and after the text rows.
     """
-    if not underline_spec.pattern:
+    if underline_spec.pattern is not None and not underline_spec.pattern:
         raise ValueError('underline_spec.pattern must not be empty')
     rows: list[str] = wrap_text(text=text, max_line_length=max_line_length)
     ret: list[str] = []
     for i, row in enumerate(rows):
         ret.append(row)
-        num_patterns = len(row) // len(underline_spec.pattern) + 1
-        underline = underline_spec.pattern * num_patterns
-        ret.append(underline[:len(row)])
+        if underline_spec.pattern:
+            num_patterns = len(row) // len(underline_spec.pattern) + 1
+            underline = underline_spec.pattern * num_patterns
+            ret.append(underline[:len(row)])
         if i < len(rows) - 1:
             for _ in range(underline_spec.empty_lines_between):
                 ret.append('')

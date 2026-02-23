@@ -1,0 +1,10 @@
+CSS in HTML gefiltert für andere Formate
+****************************************
+
+Dieses Beispiel zeigt, wie Sie eine CSS-Datei für HTML gefiltert haben, so dass
+sie nicht für andere Formate verfügbar ist.
+
+Die CSS-Datei liegt unter example/css/ und wird per relativem Pfad eingebunden
+(für lokale Anzeige). Die Ausgabe ist auf Deutsch; in HTML wird lang="de" im
+erzeugten <html>-Tag gesetzt. Für ODT wird sprache auch als "de" gesetzt. Für
+andere Formate wird die Sprache ignoriert.

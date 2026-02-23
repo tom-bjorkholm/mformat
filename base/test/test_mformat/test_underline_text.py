@@ -274,6 +274,22 @@ class TestUnderlineTextMultiLine:
             'foo', '---',
         ]
 
+    def test_two_lines_no_pattern(self):
+        """Test two wrapped lines with no pattern."""
+        spec = UnderlineSpec(
+            pattern=None, empty_lines_between=0, empty_lines_after=0
+        )
+        result = underline_text('hello world foo', spec, 11)
+        assert result == ['hello world', 'foo']
+
+    def test_two_lines_no_pattern_1_between(self):
+        """Test two wrapped lines with no pattern and 1 empty line between."""
+        spec = UnderlineSpec(
+            pattern=None, empty_lines_between=1, empty_lines_after=0
+        )
+        result = underline_text('hello world foo', spec, 11)
+        assert result == ['hello world', '', 'foo']
+
     def test_two_lines_with_empty_between(self):
         """Test two wrapped lines with empty lines between."""
         spec = UnderlineSpec(

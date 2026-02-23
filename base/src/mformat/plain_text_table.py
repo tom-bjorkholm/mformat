@@ -103,8 +103,8 @@ def get_rst_like_spec() -> BorderSpec:
     return BorderSpec(
         top='-',
         bottom='-',
-        left='|',
-        right='|',
+        left='| ',
+        right=' |',
         top_left='+-',
         top_right='-+',
         bottom_left='+-',

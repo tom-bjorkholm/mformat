@@ -12,6 +12,7 @@ from check_capsys import check_capsys
 from mformat.reg_pkg_formats import register_formats_in_pkg
 from mformat.mformat_html import MultiFormatHtml
 from mformat.mformat_md import MultiFormatMd
+from mformat.mformat_txt import MultiFormatTxt
 
 
 def test_register_pkg_formats1(capsys, monkeypatch):
@@ -34,7 +35,8 @@ def test_register_pkg_formats1(capsys, monkeypatch):
     monkeypatch.delitem(sys.modules, "mformat_ext", raising=False)
     # Intercept imports
     monkeypatch.setattr(builtins, "__import__", fake_import)
-    assert register_formats_in_pkg() == [MultiFormatHtml, MultiFormatMd]
+    assert register_formats_in_pkg() == \
+        [MultiFormatHtml, MultiFormatMd, MultiFormatTxt]
     check_capsys(capsys)
 
 
@@ -44,5 +46,6 @@ def test_register_pkg_formats2(capsys):
     from mformat_ext.mformat_docx import MultiFormatDocx
     from mformat_ext.mformat_odt import MultiFormatOdt
     assert register_formats_in_pkg() == \
-        [MultiFormatHtml, MultiFormatMd, MultiFormatDocx, MultiFormatOdt]
+        [MultiFormatHtml, MultiFormatMd, MultiFormatTxt,
+         MultiFormatDocx, MultiFormatOdt]
     check_capsys(capsys)

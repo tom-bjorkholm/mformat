@@ -219,3 +219,48 @@ class MultiFormatTextBased(MultiFormat):
             self.file.write('\n')
         else:
             self.file.write('\n\n')
+
+    def _indent2(self, level: int) -> str:
+        """Get the indentation for a level."""
+        return 2*(level-1)*' '
+
+    def _start_bullet_item_common(self, level: int,
+                                  empty_line_before: bool = True,
+                                  marker: str = '- ') -> None:
+        """Start a bullet item."""
+        assert self.file is not None
+        assert isinstance(level, int)
+        if empty_line_before:
+            self._empty_line_before()
+        indent = self._indent2(level)
+        self.file.write(indent + marker)
+        # Continuation indent aligns with text after marker
+        self._reset_line_state(continuation_indent=indent + '  ')
+        self._current_column = len(indent) + len(marker)
+
+    def _end_bullet_item(self, level: int) -> None:
+        """End a bullet item."""
+        _ = level  # pylint: disable=unused-variable
+        self._write_line_break()
+
+    def _start_numbered_item_common(self, level: int, num: int,
+                                    full_number: str,
+                                    empty_line_before: bool) -> None:
+        """Start a numbered item."""
+        assert self.file is not None
+        assert isinstance(level, int)
+        assert isinstance(num, int)
+        if empty_line_before:
+            self._empty_line_before()
+        indent = self._indent2(level)
+        marker = full_number + ' '
+        self.file.write(indent + marker)
+        # Continuation indent aligns with text after marker
+        self._reset_line_state(continuation_indent=indent + ' ' * len(marker))
+        self._current_column = len(indent) + len(marker)
+
+    def _end_numbered_item(self, level: int, num: int) -> None:
+        """End a numbered list item."""
+        _ = level  # pylint: disable=unused-variable§
+        _ = num  # pylint: disable=unused-variable
+        self._write_line_break()

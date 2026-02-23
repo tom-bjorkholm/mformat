@@ -53,8 +53,8 @@ class TestBorderSpec:
         spec = get_rst_like_spec()
         assert spec.top == '-'
         assert spec.bottom == '-'
-        assert spec.left == '|'
-        assert spec.right == '|'
+        assert spec.left == '| '
+        assert spec.right == ' |'
         assert spec.inner_horizontal == '-'
         assert spec.inner_vertical == ' | '
         assert spec.inner_cell_corner == '-+-'
@@ -81,8 +81,8 @@ class TestGetRstLikeSpec:
         spec = get_rst_like_spec()
         assert spec.top == '-'
         assert spec.bottom == '-'
-        assert spec.left == '|'
-        assert spec.right == '|'
+        assert spec.left == '| '
+        assert spec.right == ' |'
 
     def test_corner_patterns(self):
         """Test corner patterns."""
@@ -719,7 +719,7 @@ class TestGetPlainTextTableRst:
         result = get_plain_text_table(
             [['AB']], spec, 80, TableAlignment.LEFT)
         assert result[0] == '+----+'
-        assert result[1] == '|AB|'
+        assert result[1] == '| AB |'
         assert result[2] == '+----+'
 
     def test_rst_border_rows_consistent_width(self):
