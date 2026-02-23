@@ -1,5 +1,28 @@
 # Table of Contents
 
+* [mformat.mformat\_plaintextlike](#mformat.mformat_plaintextlike)
+  * [MultiFormatPlainTextLike](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike)
+    * [\_\_init\_\_](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike.__init__)
+    * [\_reset\_line\_state](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._reset_line_state)
+    * [\_write\_line\_break](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._write_line_break)
+    * [\_wrap\_and\_write](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._wrap_and_write)
+    * [\_write\_word\_with\_wrapping](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._write_word_with_wrapping)
+    * [\_write\_pending\_whitespace](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._write_pending_whitespace)
+    * [\_wrap\_and\_write\_atomic](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._wrap_and_write_atomic)
+    * [\_empty\_line\_before](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._empty_line_before)
+    * [\_indent2](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._indent2)
+    * [\_start\_paragraph](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_paragraph)
+    * [\_end\_paragraph](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_paragraph)
+    * [\_start\_block\_quote](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_block_quote)
+    * [\_end\_block\_quote](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_block_quote)
+    * [\_start\_bullet\_list](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_bullet_list)
+    * [\_end\_bullet\_list](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_bullet_list)
+    * [\_start\_bullet\_item\_common](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_bullet_item_common)
+    * [\_end\_bullet\_item](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_bullet_item)
+    * [\_start\_numbered\_list](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_numbered_list)
+    * [\_end\_numbered\_list](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_numbered_list)
+    * [\_start\_numbered\_item\_common](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_numbered_item_common)
+    * [\_end\_numbered\_item](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_numbered_item)
 * [mformat.mformat\_lists\_impl](#mformat.mformat_lists_impl)
   * [PointListType](#mformat.mformat_lists_impl.PointListType)
   * [LevelFunc](#mformat.mformat_lists_impl.LevelFunc)
@@ -48,18 +71,6 @@
     * [open](#mformat.mformat_textbased.MultiFormatTextBased.open)
     * [\_close](#mformat.mformat_textbased.MultiFormatTextBased._close)
     * [\_get\_last\_chars\_written](#mformat.mformat_textbased.MultiFormatTextBased._get_last_chars_written)
-    * [\_reset\_line\_state](#mformat.mformat_textbased.MultiFormatTextBased._reset_line_state)
-    * [\_write\_line\_break](#mformat.mformat_textbased.MultiFormatTextBased._write_line_break)
-    * [\_wrap\_and\_write](#mformat.mformat_textbased.MultiFormatTextBased._wrap_and_write)
-    * [\_write\_word\_with\_wrapping](#mformat.mformat_textbased.MultiFormatTextBased._write_word_with_wrapping)
-    * [\_write\_pending\_whitespace](#mformat.mformat_textbased.MultiFormatTextBased._write_pending_whitespace)
-    * [\_wrap\_and\_write\_atomic](#mformat.mformat_textbased.MultiFormatTextBased._wrap_and_write_atomic)
-    * [\_empty\_line\_before](#mformat.mformat_textbased.MultiFormatTextBased._empty_line_before)
-    * [\_indent2](#mformat.mformat_textbased.MultiFormatTextBased._indent2)
-    * [\_start\_bullet\_item\_common](#mformat.mformat_textbased.MultiFormatTextBased._start_bullet_item_common)
-    * [\_end\_bullet\_item](#mformat.mformat_textbased.MultiFormatTextBased._end_bullet_item)
-    * [\_start\_numbered\_item\_common](#mformat.mformat_textbased.MultiFormatTextBased._start_numbered_item_common)
-    * [\_end\_numbered\_item](#mformat.mformat_textbased.MultiFormatTextBased._end_numbered_item)
 * [mformat.factory](#mformat.factory)
   * [\_the\_factory](#mformat.factory._the_factory)
   * [OptArgsDict](#mformat.factory.OptArgsDict)
@@ -88,21 +99,13 @@
     * [get\_arg\_desciption](#mformat.mformat_md.MultiFormatMd.get_arg_desciption)
     * [\_write\_file\_prefix](#mformat.mformat_md.MultiFormatMd._write_file_prefix)
     * [\_write\_file\_suffix](#mformat.mformat_md.MultiFormatMd._write_file_suffix)
-    * [\_start\_paragraph](#mformat.mformat_md.MultiFormatMd._start_paragraph)
-    * [\_start\_block\_quote](#mformat.mformat_md.MultiFormatMd._start_block_quote)
-    * [\_end\_block\_quote](#mformat.mformat_md.MultiFormatMd._end_block_quote)
-    * [\_end\_paragraph](#mformat.mformat_md.MultiFormatMd._end_paragraph)
     * [\_start\_heading](#mformat.mformat_md.MultiFormatMd._start_heading)
     * [\_end\_heading](#mformat.mformat_md.MultiFormatMd._end_heading)
     * [\_format\_text](#mformat.mformat_md.MultiFormatMd._format_text)
     * [\_write\_text](#mformat.mformat_md.MultiFormatMd._write_text)
     * [\_write\_url](#mformat.mformat_md.MultiFormatMd._write_url)
     * [\_write\_code\_in\_text](#mformat.mformat_md.MultiFormatMd._write_code_in_text)
-    * [\_start\_bullet\_list](#mformat.mformat_md.MultiFormatMd._start_bullet_list)
-    * [\_end\_bullet\_list](#mformat.mformat_md.MultiFormatMd._end_bullet_list)
     * [\_start\_bullet\_item](#mformat.mformat_md.MultiFormatMd._start_bullet_item)
-    * [\_start\_numbered\_list](#mformat.mformat_md.MultiFormatMd._start_numbered_list)
-    * [\_end\_numbered\_list](#mformat.mformat_md.MultiFormatMd._end_numbered_list)
     * [\_start\_numbered\_item](#mformat.mformat_md.MultiFormatMd._start_numbered_item)
     * [\_start\_code\_block](#mformat.mformat_md.MultiFormatMd._start_code_block)
     * [\_end\_code\_block](#mformat.mformat_md.MultiFormatMd._end_code_block)
@@ -230,20 +233,12 @@
     * [get\_arg\_desciption](#mformat.mformat_txt.MultiFormatTxt.get_arg_desciption)
     * [\_write\_file\_prefix](#mformat.mformat_txt.MultiFormatTxt._write_file_prefix)
     * [\_write\_file\_suffix](#mformat.mformat_txt.MultiFormatTxt._write_file_suffix)
-    * [\_start\_paragraph](#mformat.mformat_txt.MultiFormatTxt._start_paragraph)
-    * [\_start\_block\_quote](#mformat.mformat_txt.MultiFormatTxt._start_block_quote)
-    * [\_end\_block\_quote](#mformat.mformat_txt.MultiFormatTxt._end_block_quote)
-    * [\_end\_paragraph](#mformat.mformat_txt.MultiFormatTxt._end_paragraph)
     * [\_start\_heading](#mformat.mformat_txt.MultiFormatTxt._start_heading)
     * [\_end\_heading](#mformat.mformat_txt.MultiFormatTxt._end_heading)
     * [\_write\_text](#mformat.mformat_txt.MultiFormatTxt._write_text)
     * [\_write\_url](#mformat.mformat_txt.MultiFormatTxt._write_url)
     * [\_write\_code\_in\_text](#mformat.mformat_txt.MultiFormatTxt._write_code_in_text)
-    * [\_start\_bullet\_list](#mformat.mformat_txt.MultiFormatTxt._start_bullet_list)
-    * [\_end\_bullet\_list](#mformat.mformat_txt.MultiFormatTxt._end_bullet_list)
     * [\_start\_bullet\_item](#mformat.mformat_txt.MultiFormatTxt._start_bullet_item)
-    * [\_start\_numbered\_list](#mformat.mformat_txt.MultiFormatTxt._start_numbered_list)
-    * [\_end\_numbered\_list](#mformat.mformat_txt.MultiFormatTxt._end_numbered_list)
     * [\_start\_numbered\_item](#mformat.mformat_txt.MultiFormatTxt._start_numbered_item)
     * [\_start\_code\_block](#mformat.mformat_txt.MultiFormatTxt._start_code_block)
     * [\_end\_code\_block](#mformat.mformat_txt.MultiFormatTxt._end_code_block)
@@ -384,6 +379,287 @@
     * [\_encode\_text](#mformat_ext.mformat_docx.MultiFormatDocx._encode_text)
 * [mformat\_ext.reg\_extpkg\_formats](#mformat_ext.reg_extpkg_formats)
   * [register\_formats\_in\_ext\_pkg](#mformat_ext.reg_extpkg_formats.register_formats_in_ext_pkg)
+
+<a id="mformat.mformat_plaintextlike"></a>
+
+# mformat.mformat\_plaintextlike
+
+Base class for plain-text-like format classes.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike"></a>
+
+## MultiFormatPlainTextLike Objects
+
+```python
+class MultiFormatPlainTextLike(MultiFormatTextBased)
+```
+
+Base class for plain-text-like format classes.
+
+Provides common functionality for formats that use plain text
+with line wrapping, indentation, and simple text markers
+(e.g. Markdown, plain text, reStructuredText), as opposed to
+tag-based formats (e.g. HTML, LaTeX).
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike.__init__"></a>
+
+#### \_\_init\_\_
+
+```python
+def __init__(file_name: PathLike,
+             url_as_text: bool = False,
+             file_exists_callback: Optional[Callable[[str], None]] = None)
+```
+
+Initialize the MultiFormatPlainTextLike class.
+
+**Arguments**:
+
+- `file_name` - The name of the file to write to.
+- `url_as_text` - Format URLs as text not clickable URLs.
+- `file_exists_callback` - A callback function to call if the
+  file already exists. Return to allow the file to be
+  overwritten. Raise an exception to prevent the file
+  from being overwritten.
+  (May for instance save existing file as backup.)
+  (Default is to raise an exception.)
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._reset_line_state"></a>
+
+#### \_reset\_line\_state
+
+```python
+def _reset_line_state(continuation_indent: str = '') -> None
+```
+
+Reset line tracking state for new wrappable content.
+
+Call this when starting a new paragraph or list item.
+
+**Arguments**:
+
+- `continuation_indent` - Indent string for wrapped
+  continuation lines.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._write_line_break"></a>
+
+#### \_write\_line\_break
+
+```python
+def _write_line_break() -> None
+```
+
+Write a line break, discarding any pending whitespace.
+
+Call this when ending a paragraph or list item.
+Pending whitespace is discarded to avoid trailing spaces.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._wrap_and_write"></a>
+
+#### \_wrap\_and\_write
+
+```python
+def _wrap_and_write(text: str, max_line_length: int) -> None
+```
+
+Wrap text to fit within max line length and write to file.
+
+Wraps text at word boundaries to keep lines within the
+specified maximum length. Handles whitespace at wrap points
+by collapsing multiple spaces/newlines into the line break.
+
+**Arguments**:
+
+- `text` - The text to write (may be wrapped).
+- `max_line_length` - Maximum characters per line.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._write_word_with_wrapping"></a>
+
+#### \_write\_word\_with\_wrapping
+
+```python
+def _write_word_with_wrapping(word: str, max_line_length: int,
+                              indent_len: int) -> None
+```
+
+Write a word, wrapping to new line if needed.
+
+**Arguments**:
+
+- `word` - The word to write (non-whitespace token).
+- `max_line_length` - Maximum characters per line.
+- `indent_len` - Length of continuation indent.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._write_pending_whitespace"></a>
+
+#### \_write\_pending\_whitespace
+
+```python
+def _write_pending_whitespace() -> None
+```
+
+Write any pending whitespace and clear it.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._wrap_and_write_atomic"></a>
+
+#### \_wrap\_and\_write\_atomic
+
+```python
+def _wrap_and_write_atomic(text: str, max_line_length: int) -> None
+```
+
+Write text as atomic unit, wrapping before if needed.
+
+Use for URLs or other content that should not be broken
+across lines.
+
+**Arguments**:
+
+- `text` - The text to write (will not be broken).
+- `max_line_length` - Maximum characters per line.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._empty_line_before"></a>
+
+#### \_empty\_line\_before
+
+```python
+def _empty_line_before() -> None
+```
+
+Make sure there is an empty line before next item.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._indent2"></a>
+
+#### \_indent2
+
+```python
+def _indent2(level: int) -> str
+```
+
+Get the indentation for a level.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_paragraph"></a>
+
+#### \_start\_paragraph
+
+```python
+def _start_paragraph() -> None
+```
+
+Start a paragraph.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_paragraph"></a>
+
+#### \_end\_paragraph
+
+```python
+def _end_paragraph() -> None
+```
+
+End a paragraph.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_block_quote"></a>
+
+#### \_start\_block\_quote
+
+```python
+def _start_block_quote() -> None
+```
+
+Start a block quote.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_block_quote"></a>
+
+#### \_end\_block\_quote
+
+```python
+def _end_block_quote() -> None
+```
+
+End a block quote.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_bullet_list"></a>
+
+#### \_start\_bullet\_list
+
+```python
+def _start_bullet_list(level: int) -> None
+```
+
+Start a bullet list (no-op for plain-text-like formats).
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_bullet_list"></a>
+
+#### \_end\_bullet\_list
+
+```python
+def _end_bullet_list(level: int) -> None
+```
+
+End a bullet list (no-op for plain-text-like formats).
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_bullet_item_common"></a>
+
+#### \_start\_bullet\_item\_common
+
+```python
+def _start_bullet_item_common(level: int,
+                              empty_line_before: bool = True,
+                              marker: str = '- ') -> None
+```
+
+Start a bullet item.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_bullet_item"></a>
+
+#### \_end\_bullet\_item
+
+```python
+def _end_bullet_item(level: int) -> None
+```
+
+End a bullet item.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_numbered_list"></a>
+
+#### \_start\_numbered\_list
+
+```python
+def _start_numbered_list(level: int) -> None
+```
+
+Start a numbered list (no-op for plain-text-like).
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_numbered_list"></a>
+
+#### \_end\_numbered\_list
+
+```python
+def _end_numbered_list(level: int) -> None
+```
+
+End a numbered list (no-op for plain-text-like).
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_numbered_item_common"></a>
+
+#### \_start\_numbered\_item\_common
+
+```python
+def _start_numbered_item_common(level: int, num: int, full_number: str,
+                                empty_line_before: bool) -> None
+```
+
+Start a numbered item.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_numbered_item"></a>
+
+#### \_end\_numbered\_item
+
+```python
+def _end_numbered_item(level: int, num: int) -> None
+```
+
+End a numbered list item.
 
 <a id="mformat.mformat_lists_impl"></a>
 
@@ -955,161 +1231,6 @@ Keep the file pointer at the same position, i.e. at the end of the
 file, so that we can continue writing after the last characters.
 Returns the last characters written to the file.
 
-<a id="mformat.mformat_textbased.MultiFormatTextBased._reset_line_state"></a>
-
-#### \_reset\_line\_state
-
-```python
-def _reset_line_state(continuation_indent: str = '') -> None
-```
-
-Reset line tracking state for new wrappable content.
-
-Call this when starting a new paragraph or list item.
-
-**Arguments**:
-
-- `continuation_indent` - Indent string for wrapped continuation lines.
-
-<a id="mformat.mformat_textbased.MultiFormatTextBased._write_line_break"></a>
-
-#### \_write\_line\_break
-
-```python
-def _write_line_break() -> None
-```
-
-Write a line break, discarding any pending whitespace.
-
-Call this when ending a paragraph or list item.
-Pending whitespace is discarded to avoid trailing spaces.
-
-<a id="mformat.mformat_textbased.MultiFormatTextBased._wrap_and_write"></a>
-
-#### \_wrap\_and\_write
-
-```python
-def _wrap_and_write(text: str, max_line_length: int) -> None
-```
-
-Wrap text to fit within max line length and write to file.
-
-Wraps text at word boundaries to keep lines within the specified
-maximum length. Handles whitespace at wrap points by collapsing
-multiple spaces/newlines into the line break.
-
-**Arguments**:
-
-- `text` - The text to write (may be wrapped).
-- `max_line_length` - Maximum characters per line.
-
-<a id="mformat.mformat_textbased.MultiFormatTextBased._write_word_with_wrapping"></a>
-
-#### \_write\_word\_with\_wrapping
-
-```python
-def _write_word_with_wrapping(word: str, max_line_length: int,
-                              indent_len: int) -> None
-```
-
-Write a word, wrapping to new line if needed.
-
-**Arguments**:
-
-- `word` - The word to write (non-whitespace token).
-- `max_line_length` - Maximum characters per line.
-- `indent_len` - Length of continuation indent.
-
-<a id="mformat.mformat_textbased.MultiFormatTextBased._write_pending_whitespace"></a>
-
-#### \_write\_pending\_whitespace
-
-```python
-def _write_pending_whitespace() -> None
-```
-
-Write any pending whitespace and clear it.
-
-<a id="mformat.mformat_textbased.MultiFormatTextBased._wrap_and_write_atomic"></a>
-
-#### \_wrap\_and\_write\_atomic
-
-```python
-def _wrap_and_write_atomic(text: str, max_line_length: int) -> None
-```
-
-Write text as atomic unit (no breaking), wrapping before if needed.
-
-Use for URLs or other content that should not be broken across lines.
-
-**Arguments**:
-
-- `text` - The text to write (will not be broken).
-- `max_line_length` - Maximum characters per line.
-
-<a id="mformat.mformat_textbased.MultiFormatTextBased._empty_line_before"></a>
-
-#### \_empty\_line\_before
-
-```python
-def _empty_line_before() -> None
-```
-
-Make sure there is an empty line before next item.
-
-<a id="mformat.mformat_textbased.MultiFormatTextBased._indent2"></a>
-
-#### \_indent2
-
-```python
-def _indent2(level: int) -> str
-```
-
-Get the indentation for a level.
-
-<a id="mformat.mformat_textbased.MultiFormatTextBased._start_bullet_item_common"></a>
-
-#### \_start\_bullet\_item\_common
-
-```python
-def _start_bullet_item_common(level: int,
-                              empty_line_before: bool = True,
-                              marker: str = '- ') -> None
-```
-
-Start a bullet item.
-
-<a id="mformat.mformat_textbased.MultiFormatTextBased._end_bullet_item"></a>
-
-#### \_end\_bullet\_item
-
-```python
-def _end_bullet_item(level: int) -> None
-```
-
-End a bullet item.
-
-<a id="mformat.mformat_textbased.MultiFormatTextBased._start_numbered_item_common"></a>
-
-#### \_start\_numbered\_item\_common
-
-```python
-def _start_numbered_item_common(level: int, num: int, full_number: str,
-                                empty_line_before: bool) -> None
-```
-
-Start a numbered item.
-
-<a id="mformat.mformat_textbased.MultiFormatTextBased._end_numbered_item"></a>
-
-#### \_end\_numbered\_item
-
-```python
-def _end_numbered_item(level: int, num: int) -> None
-```
-
-End a numbered list item.
-
 <a id="mformat.factory"></a>
 
 # mformat.factory
@@ -1498,7 +1619,7 @@ Markdown format class.
 ## MultiFormatMd Objects
 
 ```python
-class MultiFormatMd(MultiFormatTextBased)
+class MultiFormatMd(MultiFormatPlainTextLike)
 ```
 
 Markdown format class.
@@ -1569,46 +1690,6 @@ def _write_file_suffix() -> None
 
 Write the file suffix.
 
-<a id="mformat.mformat_md.MultiFormatMd._start_paragraph"></a>
-
-#### \_start\_paragraph
-
-```python
-def _start_paragraph() -> None
-```
-
-Start a paragraph.
-
-<a id="mformat.mformat_md.MultiFormatMd._start_block_quote"></a>
-
-#### \_start\_block\_quote
-
-```python
-def _start_block_quote() -> None
-```
-
-Start a block quote.
-
-<a id="mformat.mformat_md.MultiFormatMd._end_block_quote"></a>
-
-#### \_end\_block\_quote
-
-```python
-def _end_block_quote() -> None
-```
-
-End a block quote.
-
-<a id="mformat.mformat_md.MultiFormatMd._end_paragraph"></a>
-
-#### \_end\_paragraph
-
-```python
-def _end_paragraph() -> None
-```
-
-End a paragraph.
-
 <a id="mformat.mformat_md.MultiFormatMd._start_heading"></a>
 
 #### \_start\_heading
@@ -1678,26 +1759,6 @@ def _write_code_in_text(text: str, state: MultiFormatState) -> None
 
 Write code into current item (paragraph, bullet list item...).
 
-<a id="mformat.mformat_md.MultiFormatMd._start_bullet_list"></a>
-
-#### \_start\_bullet\_list
-
-```python
-def _start_bullet_list(level: int) -> None
-```
-
-Start a bullet list.
-
-<a id="mformat.mformat_md.MultiFormatMd._end_bullet_list"></a>
-
-#### \_end\_bullet\_list
-
-```python
-def _end_bullet_list(level: int) -> None
-```
-
-End a bullet list.
-
 <a id="mformat.mformat_md.MultiFormatMd._start_bullet_item"></a>
 
 #### \_start\_bullet\_item
@@ -1707,26 +1768,6 @@ def _start_bullet_item(level: int) -> None
 ```
 
 Start a bullet item.
-
-<a id="mformat.mformat_md.MultiFormatMd._start_numbered_list"></a>
-
-#### \_start\_numbered\_list
-
-```python
-def _start_numbered_list(level: int) -> None
-```
-
-Start a numbered list.
-
-<a id="mformat.mformat_md.MultiFormatMd._end_numbered_list"></a>
-
-#### \_end\_numbered\_list
-
-```python
-def _end_numbered_list(level: int) -> None
-```
-
-End a numbered list.
 
 <a id="mformat.mformat_md.MultiFormatMd._start_numbered_item"></a>
 
@@ -3311,7 +3352,7 @@ Plain text format class.
 ## MultiFormatTxt Objects
 
 ```python
-class MultiFormatTxt(MultiFormatTextBased)
+class MultiFormatTxt(MultiFormatPlainTextLike)
 ```
 
 Plain text format class.
@@ -3383,46 +3424,6 @@ def _write_file_suffix() -> None
 
 Write the file suffix.
 
-<a id="mformat.mformat_txt.MultiFormatTxt._start_paragraph"></a>
-
-#### \_start\_paragraph
-
-```python
-def _start_paragraph() -> None
-```
-
-Start a paragraph.
-
-<a id="mformat.mformat_txt.MultiFormatTxt._start_block_quote"></a>
-
-#### \_start\_block\_quote
-
-```python
-def _start_block_quote() -> None
-```
-
-Start a block quote.
-
-<a id="mformat.mformat_txt.MultiFormatTxt._end_block_quote"></a>
-
-#### \_end\_block\_quote
-
-```python
-def _end_block_quote() -> None
-```
-
-End a block quote.
-
-<a id="mformat.mformat_txt.MultiFormatTxt._end_paragraph"></a>
-
-#### \_end\_paragraph
-
-```python
-def _end_paragraph() -> None
-```
-
-End a paragraph.
-
 <a id="mformat.mformat_txt.MultiFormatTxt._start_heading"></a>
 
 #### \_start\_heading
@@ -3481,26 +3482,6 @@ def _write_code_in_text(text: str, state: MultiFormatState) -> None
 
 Write code into current item (paragraph, bullet list item...).
 
-<a id="mformat.mformat_txt.MultiFormatTxt._start_bullet_list"></a>
-
-#### \_start\_bullet\_list
-
-```python
-def _start_bullet_list(level: int) -> None
-```
-
-Start a bullet list.
-
-<a id="mformat.mformat_txt.MultiFormatTxt._end_bullet_list"></a>
-
-#### \_end\_bullet\_list
-
-```python
-def _end_bullet_list(level: int) -> None
-```
-
-End a bullet list.
-
 <a id="mformat.mformat_txt.MultiFormatTxt._start_bullet_item"></a>
 
 #### \_start\_bullet\_item
@@ -3510,26 +3491,6 @@ def _start_bullet_item(level: int) -> None
 ```
 
 Start a bullet item.
-
-<a id="mformat.mformat_txt.MultiFormatTxt._start_numbered_list"></a>
-
-#### \_start\_numbered\_list
-
-```python
-def _start_numbered_list(level: int) -> None
-```
-
-Start a numbered list.
-
-<a id="mformat.mformat_txt.MultiFormatTxt._end_numbered_list"></a>
-
-#### \_end\_numbered\_list
-
-```python
-def _end_numbered_list(level: int) -> None
-```
-
-End a numbered list.
 
 <a id="mformat.mformat_txt.MultiFormatTxt._start_numbered_item"></a>
 

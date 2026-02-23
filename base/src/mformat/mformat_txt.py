@@ -7,7 +7,7 @@
 
 from copy import deepcopy
 from typing import Optional, Callable
-from mformat.mformat_textbased import MultiFormatTextBased
+from mformat.mformat_plaintextlike import MultiFormatPlainTextLike
 from mformat.mformat_state import MultiFormatState, Formatting
 from mformat.mformat import FormatterDescriptor, PathLike
 from mformat.plain_text_table import get_plain_text_table, \
@@ -26,7 +26,7 @@ _UNDERLINE_SPEC: list[UnderlineSpec] = [
 ]
 
 
-class MultiFormatTxt(MultiFormatTextBased):
+class MultiFormatTxt(MultiFormatPlainTextLike):
     """Plain text format class."""
 
     MAX_LINE_LENGTH = 80
@@ -74,28 +74,6 @@ class MultiFormatTxt(MultiFormatTextBased):
     def _write_file_suffix(self) -> None:
         """Write the file suffix."""
 
-    def _start_paragraph(self) -> None:
-        """Start a paragraph."""
-        self._empty_line_before()
-        self._reset_line_state()
-
-    def _start_block_quote(self) -> None:
-        """Start a block quote."""
-        assert self.file is not None
-        self._empty_line_before()
-        self._reset_line_state(continuation_indent='> ')
-        self.file.write('> ')
-        self._current_column = 2
-
-    def _end_block_quote(self) -> None:
-        """End a block quote."""
-        self._write_line_break()
-        self._reset_line_state()
-
-    def _end_paragraph(self) -> None:
-        """End a paragraph."""
-        self._write_line_break()
-
     def _start_heading(self, level: int) -> None:
         """Start a heading."""
         self.txt_heading = ''
@@ -142,8 +120,7 @@ class MultiFormatTxt(MultiFormatTextBased):
             return
         self._wrap_and_write(formatted_url, self.line_length)
 
-    def _write_code_in_text(self, text: str,
-                            state: MultiFormatState) -> None:
+    def _write_code_in_text(self, text: str, state: MultiFormatState) -> None:
         """Write code into current item (paragraph, bullet list item...)."""
         assert self.file is not None
         assert isinstance(text, str)
@@ -153,27 +130,10 @@ class MultiFormatTxt(MultiFormatTextBased):
             return
         self._wrap_and_write_atomic(text, self.line_length)
 
-    def _start_bullet_list(self, level: int) -> None:
-        """Start a bullet list."""
-        _ = level  # pylint: disable=unused-variable
-
-    def _end_bullet_list(self, level: int) -> None:
-        """End a bullet list."""
-        _ = level  # pylint: disable=unused-variable
-
     def _start_bullet_item(self, level: int) -> None:
         """Start a bullet item."""
-        self._start_bullet_item_common(level=level,
-                                       empty_line_before=False,
+        self._start_bullet_item_common(level=level, empty_line_before=False,
                                        marker='- ')
-
-    def _start_numbered_list(self, level: int) -> None:
-        """Start a numbered list."""
-        _ = level  # pylint: disable=unused-variable
-
-    def _end_numbered_list(self, level: int) -> None:
-        """End a numbered list."""
-        _ = level  # pylint: disable=unused-variable
 
     def _start_numbered_item(self, level: int, num: int,
                              full_number: str) -> None:

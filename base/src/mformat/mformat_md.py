@@ -7,12 +7,13 @@
 
 from copy import deepcopy
 from typing import Optional, Callable
-from mformat.mformat_textbased import MultiFormatTextBased, split_whitespace
+from mformat.mformat_plaintextlike import MultiFormatPlainTextLike
+from mformat.mformat_textbased import split_whitespace
 from mformat.mformat_state import MultiFormatState, Formatting
 from mformat.mformat import FormatterDescriptor, PathLike
 
 
-class MultiFormatMd(MultiFormatTextBased):
+class MultiFormatMd(MultiFormatPlainTextLike):
     """Markdown format class."""
 
     MAX_LINE_LENGTH = 80
@@ -51,28 +52,6 @@ class MultiFormatMd(MultiFormatTextBased):
 
     def _write_file_suffix(self) -> None:
         """Write the file suffix."""
-
-    def _start_paragraph(self) -> None:
-        """Start a paragraph."""
-        self._empty_line_before()
-        self._reset_line_state()
-
-    def _start_block_quote(self) -> None:
-        """Start a block quote."""
-        self._empty_line_before()
-        assert self.file is not None
-        self.file.write('> ')
-        self._reset_line_state(continuation_indent='> ')
-        self._current_column = 2
-
-    def _end_block_quote(self) -> None:
-        """End a block quote."""
-        self._write_line_break()
-        self._reset_line_state()
-
-    def _end_paragraph(self) -> None:
-        """End a paragraph."""
-        self._write_line_break()
 
     def _start_heading(self, level: int) -> None:
         """Start a heading."""
@@ -118,8 +97,7 @@ class MultiFormatMd(MultiFormatTextBased):
             self.file.write(formatted_text)
 
     def _write_url(self,  # pylint: disable=unused-argument,too-many-arguments,too-many-positional-arguments # noqa: E501
-                   url: str, text: Optional[str],
-                   state: MultiFormatState,
+                   url: str, text: Optional[str], state: MultiFormatState,
                    formatting: Formatting) -> None:
         """Write a URL into current item (paragraph, bullet list item...)."""
         assert self.file is not None
@@ -136,8 +114,7 @@ class MultiFormatMd(MultiFormatTextBased):
         else:
             self.file.write(formatted_url)
 
-    def _write_code_in_text(self, text: str,
-                            state: MultiFormatState) -> None:
+    def _write_code_in_text(self, text: str, state: MultiFormatState) -> None:
         """Write code into current item (paragraph, bullet list item...)."""
         assert self.file is not None
         assert isinstance(text, str)
@@ -152,31 +129,10 @@ class MultiFormatMd(MultiFormatTextBased):
         else:
             self.file.write(formatted_text)
 
-    def _start_bullet_list(self, level: int) -> None:
-        """Start a bullet list."""
-        assert self.file is not None
-        assert isinstance(level, int)
-
-    def _end_bullet_list(self, level: int) -> None:
-        """End a bullet list."""
-        assert self.file is not None
-        assert isinstance(level, int)
-
     def _start_bullet_item(self, level: int) -> None:
         """Start a bullet item."""
-        self._start_bullet_item_common(level=level,
-                                       empty_line_before=True,
+        self._start_bullet_item_common(level=level, empty_line_before=True,
                                        marker='- ')
-
-    def _start_numbered_list(self, level: int) -> None:
-        """Start a numbered list."""
-        assert self.file is not None
-        assert isinstance(level, int)
-
-    def _end_numbered_list(self, level: int) -> None:
-        """End a numbered list."""
-        assert self.file is not None
-        assert isinstance(level, int)
 
     def _start_numbered_item(self, level: int, num: int,
                              full_number: str) -> None:

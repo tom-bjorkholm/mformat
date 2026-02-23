@@ -94,36 +94,3 @@ def test_get_last_chars_written(capsys, wr1, wr2, wr1end, num):
             content = file.read()
             assert content == wr1 + wr2
     check_capsys(capsys)
-
-
-class MultiFormatTextBased3(MultiFormatTextBased):
-    """Test class for the mformat_textbased module."""
-
-    def __init__(self, file_name: str):
-        """Initialize the MultiFormatTextBased3 class."""
-        super().__init__(file_name=file_name)
-
-    @classmethod
-    def file_name_extension(cls) -> str:
-        """Test the file_name_extension method."""
-        return '.test'
-
-
-@pytest.mark.parametrize('before, now, expected',
-                         [('\n\n', 'Hello', '\n\nHello'),
-                          ('', 'Hi', 'Hi'),
-                          ('Hallo\n', 'Welt', 'Hallo\n\nWelt'),
-                          ('Hello', 'World', 'Hello\n\nWorld')])
-def test_empty_line_before(capsys, before, now, expected):
-    """Test the empty_line_before method."""
-    with TemporaryDirectory() as temp_dir:
-        file_name = temp_dir + '/' + 'test.test'
-        with MultiFormatTextBased3(file_name=file_name) as mf:
-            assert mf.file is not None
-            mf.file.write(before)
-            # pylint: disable=protected-access
-            mf._empty_line_before()
-            mf.file.write(now)
-        with open(file=file_name, mode='rt', encoding='utf-8') as file:
-            assert file.read() == expected
-    check_capsys(capsys)

@@ -1,5 +1,8 @@
 # Table of Contents
 
+* [mformat.mformat\_plaintextlike](#mformat.mformat_plaintextlike)
+  * [MultiFormatPlainTextLike](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike)
+    * [\_\_init\_\_](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike.__init__)
 * [mformat.mformat\_lists\_impl](#mformat.mformat_lists_impl)
   * [PointListType](#mformat.mformat_lists_impl.PointListType)
   * [LevelFunc](#mformat.mformat_lists_impl.LevelFunc)
@@ -131,6 +134,50 @@
     * [open](#mformat_ext.mformat_docx.MultiFormatDocx.open)
 * [mformat\_ext.reg\_extpkg\_formats](#mformat_ext.reg_extpkg_formats)
   * [register\_formats\_in\_ext\_pkg](#mformat_ext.reg_extpkg_formats.register_formats_in_ext_pkg)
+
+<a id="mformat.mformat_plaintextlike"></a>
+
+# mformat.mformat\_plaintextlike
+
+Base class for plain-text-like format classes.
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike"></a>
+
+## MultiFormatPlainTextLike Objects
+
+```python
+class MultiFormatPlainTextLike(MultiFormatTextBased)
+```
+
+Base class for plain-text-like format classes.
+
+Provides common functionality for formats that use plain text
+with line wrapping, indentation, and simple text markers
+(e.g. Markdown, plain text, reStructuredText), as opposed to
+tag-based formats (e.g. HTML, LaTeX).
+
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike.__init__"></a>
+
+#### \_\_init\_\_
+
+```python
+def __init__(file_name: PathLike,
+             url_as_text: bool = False,
+             file_exists_callback: Optional[Callable[[str], None]] = None)
+```
+
+Initialize the MultiFormatPlainTextLike class.
+
+**Arguments**:
+
+- `file_name` - The name of the file to write to.
+- `url_as_text` - Format URLs as text not clickable URLs.
+- `file_exists_callback` - A callback function to call if the
+  file already exists. Return to allow the file to be
+  overwritten. Raise an exception to prevent the file
+  from being overwritten.
+  (May for instance save existing file as backup.)
+  (Default is to raise an exception.)
 
 <a id="mformat.mformat_lists_impl"></a>
 
@@ -680,7 +727,7 @@ Markdown format class.
 ## MultiFormatMd Objects
 
 ```python
-class MultiFormatMd(MultiFormatTextBased)
+class MultiFormatMd(MultiFormatPlainTextLike)
 ```
 
 Markdown format class.
@@ -1449,7 +1496,7 @@ Plain text format class.
 ## MultiFormatTxt Objects
 
 ```python
-class MultiFormatTxt(MultiFormatTextBased)
+class MultiFormatTxt(MultiFormatPlainTextLike)
 ```
 
 Plain text format class.
