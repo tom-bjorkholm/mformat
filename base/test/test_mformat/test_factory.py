@@ -7,6 +7,7 @@
 
 from tempfile import TemporaryDirectory
 from io import StringIO
+from pathlib import Path
 import sys
 import pytest
 from check_capsys import check_capsys
@@ -242,7 +243,7 @@ class FileExistsCB:  # pylint: disable=too-few-public-methods
             raise FileExistsError(f'File {file_name} already exists.')
 
 
-@pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt'])
+@pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt', 'txt'])
 def test_create_file_exists_y(capsys, fmt):
     """Test the create function with file exists and overwrite OK."""
     file_exists_cb = FileExistsCB(ask_user=False, overwrite=True)
@@ -254,7 +255,33 @@ def test_create_file_exists_y(capsys, fmt):
         with create_mf(format_name=fmt, file_name=file_name,
                        args=args) as mf:
             mf.new_heading(1, 'Test heading')
-        if fmt in ['html', 'md']:
+        if fmt in ['html', 'md', 'txt']:
+            with open(file_name, 'r', encoding='utf-8') as f:
+                content = f.read()
+                assert 'Original content' not in content
+                assert 'Test heading' in content
+        else:
+            with open(file_name, 'rb') as f:
+                content = f.read()
+                assert b'Original content' not in content
+    assert file_exists_cb.num_calls == 1
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt', 'txt'])
+def test_create_file_exists_y2(capsys, fmt):
+    """Test the create function with file exists and overwrite OK."""
+    file_exists_cb = FileExistsCB(ask_user=False, overwrite=True)
+    args: OptArgs = {'file_exists_callback': file_exists_cb}
+    with TemporaryDirectory() as tmp_dir:
+        file_with_ext = f'test.{fmt}'
+        file_name = Path(tmp_dir) / file_with_ext
+        with open(file_name, 'w', encoding='utf-8') as f:
+            f.write('Original content')
+        with create_mf(format_name=fmt, file_name=file_name,
+                       args=args) as mf:
+            mf.new_heading(1, 'Test heading')
+        if fmt in ['html', 'md', 'txt']:
             with open(file_name, 'r', encoding='utf-8') as f:
                 content = f.read()
                 assert 'Original content' not in content

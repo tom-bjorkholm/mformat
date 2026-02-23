@@ -9,7 +9,7 @@ from copy import deepcopy
 from typing import Optional, Callable
 from mformat.mformat_textbased import MultiFormatTextBased, split_whitespace
 from mformat.mformat_state import MultiFormatState, Formatting
-from mformat.mformat import FormatterDescriptor
+from mformat.mformat import FormatterDescriptor, PathLike
 
 
 class MultiFormatMd(MultiFormatTextBased):
@@ -17,7 +17,7 @@ class MultiFormatMd(MultiFormatTextBased):
 
     MAX_LINE_LENGTH = 80
 
-    def __init__(self, file_name: str, url_as_text: bool = False,
+    def __init__(self, file_name: PathLike, url_as_text: bool = False,
                  file_exists_callback: Optional[Callable[[str], None]] = None):
         """Initialize the MdFormat class.
 

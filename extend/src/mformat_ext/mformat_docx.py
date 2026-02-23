@@ -11,7 +11,7 @@ from docx.document import Document as DocumentObject
 from docx.text.paragraph import Paragraph
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
-from mformat.mformat import FormatterDescriptor, MultiFormat
+from mformat.mformat import FormatterDescriptor, MultiFormat, PathLike
 from mformat.mformat_state import MultiFormatState, Formatting
 
 _MAX_LIST_LEVEL = 5
@@ -21,7 +21,7 @@ _MAX_LIST_LEVEL = 5
 class MultiFormatDocx(MultiFormat):
     """Extension of the MultiFormat class for DOCX files."""
 
-    def __init__(self, file_name: str, url_as_text: bool = False,
+    def __init__(self, file_name: PathLike, url_as_text: bool = False,
                  file_exists_callback: Optional[Callable[[str], None]] = None):
         """Initialize the MultiFormatDocx class.
 

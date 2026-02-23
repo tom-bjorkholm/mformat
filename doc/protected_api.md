@@ -896,7 +896,7 @@ Base class for all text based format classes.
 #### \_\_init\_\_
 
 ```python
-def __init__(file_name: str,
+def __init__(file_name: PathLike,
              url_as_text: bool = False,
              file_exists_callback: Optional[Callable[[str], None]] = None)
 ```
@@ -1200,7 +1200,7 @@ Internally register a MultiFormat subclass with the factory.
 ```python
 @staticmethod
 def create(format_name: str,
-           file_name: str,
+           file_name: PathLike,
            url_as_text: bool = False,
            args: OptArgs = None) -> MultiFormat
 ```
@@ -1229,7 +1229,7 @@ Create an instance of a registered MultiFormat subclass.
 
 ```python
 def i_create(format_name: str,
-             file_name: str,
+             file_name: PathLike,
              url_as_text: bool = False,
              args: OptArgs = None) -> MultiFormat
 ```
@@ -1357,7 +1357,7 @@ Internally get the usage information for a registered format.
 
 ```python
 def create_mf(format_name: str,
-              file_name: str,
+              file_name: PathLike,
               url_as_text: bool = False,
               args: OptArgs = None) -> MultiFormat
 ```
@@ -1508,7 +1508,7 @@ Markdown format class.
 #### \_\_init\_\_
 
 ```python
-def __init__(file_name: str,
+def __init__(file_name: PathLike,
              url_as_text: bool = False,
              file_exists_callback: Optional[Callable[[str], None]] = None)
 ```
@@ -2074,7 +2074,7 @@ Base class for all multi file format classes.
 #### \_\_init\_\_
 
 ```python
-def __init__(file_name: str,
+def __init__(file_name: PathLike,
              url_as_text: bool = False,
              file_exists_callback: Optional[Callable[[str], None]] = None)
 ```
@@ -2619,7 +2619,7 @@ Write code into current item (paragraph, bullet list item...).
 
 ```python
 @staticmethod
-def file_name_with_extension(file_name: str, extension: str) -> str
+def file_name_with_extension(file_name: PathLike, extension: str) -> str
 ```
 
 Get the file name with the extension.
@@ -2973,7 +2973,7 @@ HTML format class.
 #### \_\_init\_\_
 
 ```python
-def __init__(file_name: str,
+def __init__(file_name: PathLike,
              url_as_text: bool = False,
              file_exists_callback: Optional[Callable[[str], None]] = None,
              title: str = 'HTML file',
@@ -3321,7 +3321,7 @@ Plain text format class.
 #### \_\_init\_\_
 
 ```python
-def __init__(file_name: str,
+def __init__(file_name: PathLike,
              url_as_text: bool = False,
              file_exists_callback: Optional[Callable[[str], None]] = None,
              line_length: int = 79)
@@ -4109,7 +4109,7 @@ Extension of the MultiFormat class for ODT files.
 #### \_\_init\_\_
 
 ```python
-def __init__(file_name: str,
+def __init__(file_name: PathLike,
              url_as_text: bool = False,
              file_exists_callback: Optional[Callable[[str], None]] = None,
              lang: str = 'en-UK')
@@ -4779,7 +4779,7 @@ Extension of the MultiFormat class for DOCX files.
 #### \_\_init\_\_
 
 ```python
-def __init__(file_name: str,
+def __init__(file_name: PathLike,
              url_as_text: bool = False,
              file_exists_callback: Optional[Callable[[str], None]] = None)
 ```

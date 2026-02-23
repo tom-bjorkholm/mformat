@@ -8,7 +8,7 @@
 from typing import Optional, Callable, NamedTuple
 from odfdo import Document, Paragraph, Header, Table, Row, Cell, \
     Link, List, ListItem, Style, Span, Element
-from mformat.mformat import FormatterDescriptor, MultiFormat
+from mformat.mformat import FormatterDescriptor, MultiFormat, PathLike
 from mformat.mformat_state import MultiFormatState, Formatting
 
 
@@ -27,7 +27,7 @@ class OdtStyles(NamedTuple):
 class MultiFormatOdt(MultiFormat):
     """Extension of the MultiFormat class for ODT files."""
 
-    def __init__(self, file_name: str, url_as_text: bool = False,
+    def __init__(self, file_name: PathLike, url_as_text: bool = False,
                  file_exists_callback: Optional[Callable[[str], None]] = None,
                  lang: str = 'en-UK'):
         """Initialize the MultiFormatOdt class.

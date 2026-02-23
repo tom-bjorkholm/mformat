@@ -9,14 +9,14 @@ from typing import Optional, Callable
 from html import escape
 from mformat.mformat_textbased import MultiFormatTextBased, split_whitespace
 from mformat.mformat_state import MultiFormatState, Formatting
-from mformat.mformat import FormatterDescriptor
+from mformat.mformat import FormatterDescriptor, PathLike
 
 
 class MultiFormatHtml(MultiFormatTextBased):
     """HTML format class."""
 
     def __init__(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                 file_name: str, url_as_text: bool = False,
+                 file_name: PathLike, url_as_text: bool = False,
                  file_exists_callback: Optional[Callable[[str], None]] = None,
                  title: str = 'HTML file', css_file: Optional[str] = None,
                  lang: str = 'en'):

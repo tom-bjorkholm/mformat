@@ -7,12 +7,17 @@
 
 from types import TracebackType
 from typing import NamedTuple, Callable, Optional
+from pathlib import Path
 import sys
 import os
 import warnings
 from mformat.mformat_lists_impl import ListHandlerMixin, PointListType
 from mformat.mformat_state import MultiFormatState, FormattingWithWS, \
     Formatting
+
+
+type PathLike = str | Path
+"""Type for file name as string or pathlib.Path."""
 
 
 class FormatterDescriptor(NamedTuple):
@@ -36,7 +41,7 @@ class TableInformation:  # pylint: disable=too-few-public-methods
 class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods # noqa: E501
     """Base class for all multi file format classes."""
 
-    def __init__(self, file_name: str,
+    def __init__(self, file_name: PathLike,
                  url_as_text: bool = False,
                  file_exists_callback: Optional[Callable[[str], None]]
                  = None):
@@ -590,13 +595,15 @@ class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods 
         raise NotImplementedError(err)
 
     @staticmethod
-    def file_name_with_extension(file_name: str, extension: str) -> str:
+    def file_name_with_extension(file_name: PathLike, extension: str) -> str:
         """Get the file name with the extension."""
+        file_name_str: str = file_name if isinstance(file_name, str) \
+            else str(file_name)
         if not extension.startswith('.'):
             extension = f'.{extension}'
-        if file_name.endswith(extension):
-            return file_name
-        return f'{file_name}{extension}'
+        if file_name_str.endswith(extension):
+            return file_name_str
+        return f'{file_name_str}{extension}'
 
     @classmethod
     def _must_be_overridden(cls, func_name: str) -> str:

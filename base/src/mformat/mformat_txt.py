@@ -9,7 +9,7 @@ from copy import deepcopy
 from typing import Optional, Callable
 from mformat.mformat_textbased import MultiFormatTextBased
 from mformat.mformat_state import MultiFormatState, Formatting
-from mformat.mformat import FormatterDescriptor
+from mformat.mformat import FormatterDescriptor, PathLike
 from mformat.plain_text_table import get_plain_text_table, \
     get_rst_like_spec, TableAlignment
 from mformat.underline_text import underline_text, UnderlineSpec
@@ -31,7 +31,7 @@ class MultiFormatTxt(MultiFormatTextBased):
 
     MAX_LINE_LENGTH = 80
 
-    def __init__(self, file_name: str, url_as_text: bool = False,
+    def __init__(self, file_name: PathLike, url_as_text: bool = False,
                  file_exists_callback: Optional[Callable[[str], None]] = None,
                  line_length: int = 79):
         """Initialize the MultiFormatTxt class.

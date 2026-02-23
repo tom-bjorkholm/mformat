@@ -6,6 +6,7 @@
 #
 
 from typing import Optional
+from pathlib import Path
 import pytest
 from check_capsys import check_capsys
 from test_helpers import (
@@ -27,6 +28,22 @@ from mformat.mformat_lists_impl import PointStackItem
                           ('test.txt', 'csv', 'test.txt.csv'),
                           ('test.txt', 'json', 'test.txt.json')])
 def test_file_name_with_extension(file_name, extension, res):
+    """Test the file_name_with_extension method."""
+    assert MultiFormat.file_name_with_extension(file_name, extension) == res
+
+
+@pytest.mark.parametrize('file_name, extension, res',
+                         [(Path('test'), 'txt', 'test.txt'),
+                          (Path('test.txt'), 'txt', 'test.txt'),
+                          (Path('test.txt'), 'html', 'test.txt.html'),
+                          (Path('test'), 'md', 'test.md'),
+                          (Path('test.txt'), 'docx', 'test.txt.docx'),
+                          (Path('test.txt'), 'pdf', 'test.txt.pdf'),
+                          (Path('test.txt'), 'csv', 'test.txt.csv'),
+                          (Path('test.txt'), 'json', 'test.txt.json'),
+                          (Path(__file__).parent / 'test.txt', 'txt',
+                           str(Path(__file__).parent / 'test.txt'))])
+def test_file_name_with_extension2(file_name, extension, res):
     """Test the file_name_with_extension method."""
     assert MultiFormat.file_name_with_extension(file_name, extension) == res
 

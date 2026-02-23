@@ -8,7 +8,7 @@
 import io
 import re
 from typing import TextIO, Optional, Callable
-from mformat.mformat import MultiFormat
+from mformat.mformat import MultiFormat, PathLike
 
 
 def split_whitespace(text: str) -> tuple[str, str, str]:
@@ -28,7 +28,7 @@ def split_whitespace(text: str) -> tuple[str, str, str]:
 class MultiFormatTextBased(MultiFormat):
     """Base class for all text based format classes."""
 
-    def __init__(self, file_name: str, url_as_text: bool = False,
+    def __init__(self, file_name: PathLike, url_as_text: bool = False,
                  file_exists_callback: Optional[Callable[[str], None]] = None):
         """Initialize the TextBasedFormat class.
 

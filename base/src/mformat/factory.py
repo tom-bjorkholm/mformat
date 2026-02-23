@@ -6,7 +6,7 @@
 #
 
 from typing import Optional, TypedDict, Callable
-from mformat.mformat import MultiFormat, FormatterDescriptor
+from mformat.mformat import MultiFormat, FormatterDescriptor, PathLike
 from mformat.reg_pkg_formats import register_formats_in_pkg
 
 
@@ -79,7 +79,7 @@ class MultiFormatFactory:
         self._lower2correct[desc.name.lower()] = desc.name
 
     @staticmethod
-    def create(format_name: str, file_name: str,
+    def create(format_name: str, file_name: PathLike,
                url_as_text: bool = False,
                args: OptArgs = None) -> MultiFormat:
         """Create an instance of a registered MultiFormat subclass.
@@ -101,7 +101,7 @@ class MultiFormatFactory:
                                 url_as_text=url_as_text,
                                 args=args)
 
-    def i_create(self, format_name: str, file_name: str,
+    def i_create(self, format_name: str, file_name: PathLike,
                  url_as_text: bool = False,
                  args: OptArgs = None) -> MultiFormat:
         """Internally create an instance of a registered subclass."""
@@ -226,7 +226,7 @@ class MultiFormatFactory:
         return self._usage[correct_name]
 
 
-def create_mf(format_name: str, file_name: str,
+def create_mf(format_name: str, file_name: PathLike,
               url_as_text: bool = False,
               args: OptArgs = None) -> MultiFormat:
     """Create an instance of a registered MultiFormat subclass.
