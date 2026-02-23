@@ -211,7 +211,8 @@ FORMATS = [
     ['docx', 'Microsoft Word', 'mformat-ext', '0.2'],
     ['html', 'HTML Web page', 'mformat', '0.2'],
     ['md', 'Markdown', 'mformat', '0.2'],
-    ['odt', 'Open Document Text', 'mformat-ext', '0.2']
+    ['odt', 'Open Document Text', 'mformat-ext', '0.2'],
+    ['txt', 'Plain text', 'mformat', '0.5']
 ]
 H2_DEPRECATED = 'API changes in version 0.3 (deprecated methods)'
 P1_DEPRECATED = 'In version 0.2.x the public API was build around methods ' \

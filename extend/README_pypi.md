@@ -183,6 +183,7 @@ format was introduced.
 | html   | HTML Web page       | mformat       | 0.2                 |
 | md     | Markdown            | mformat       | 0.2                 |
 | odt    | Open Document Text  | mformat-ext   | 0.2                 |
+| txt    | Plain text          | mformat       | 0.5                 |
 
 ## API changes in version 0.3 (deprecated methods)
 
@@ -208,7 +209,7 @@ some future version.
 
 ## Test summary
 
-- Test result: 1741 passed in 19s
+- Test result: 1743 passed in 19s
 - No Flake8 warnings.
 - No mypy errors found.
 - 0.4.1 built and tested using python version: Python 3.14.3

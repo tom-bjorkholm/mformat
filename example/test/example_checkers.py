@@ -102,6 +102,23 @@ def _get_pymarkdown_config_path() -> str:
     return str(Path(__file__).parent.parent.parent / '.pymarkdown')
 
 
+def check_txt_func(func: Callable[[str, str], None],
+                   expected_txt: list[str]) -> None:
+    """Check that function produces expected text.
+
+    Args:
+        func: The function to check.
+        expected_txt: Fragments of the expected text in the order they
+                      should appear.
+    """
+    with TemporaryDirectory() as tmp_dir:
+        file_name = tmp_dir + '/test.txt'
+        func(format_name='txt', file_name=file_name)
+        with open(file_name, 'r', encoding='utf-8') as file:
+            text = file.read()
+            check_text_in_order(text, expected_txt)
+
+
 def check_markdown_func(func: Callable[[str, str], None],
                         expected_txt: list[str],
                         expected_error: list[str]) -> None:

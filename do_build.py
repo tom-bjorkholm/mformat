@@ -131,16 +131,6 @@ def _build_and_install(vcmd: list[str]) -> None:
     run_command_logged([*vcmd, '-m', 'pip', 'install', f'dist/{whl2}'],
                        log_file=BUILD_LOG)
 
-
-def _generate_api_docs() -> None:
-    """Generate API documentation with pydoc-markdown."""
-    pydoc_md = venv_script('pydoc-markdown')
-    for yml in ['build_helpers/pydoc-markdown.yml',
-                'build_helpers/pydoc-markdown_protected.yml']:
-        run_command_logged([pydoc_md, '--render-toc', yml],
-                           log_file=BUILD_LOG)
-
-
 # ---------------------------------------------------
 # Phase 3: Lint and test
 # ---------------------------------------------------
@@ -358,6 +348,15 @@ def _update_readmes() -> None:
             _replace_test_summary_in_readme(readme, tsum)
 
 
+def _generate_api_docs() -> None:
+    """Generate API documentation with pydoc-markdown."""
+    pydoc_md = venv_script('pydoc-markdown')
+    for yml in ['build_helpers/pydoc-markdown.yml',
+                'build_helpers/pydoc-markdown_protected.yml']:
+        run_command_logged([pydoc_md, '--render-toc', yml],
+                           log_file=BUILD_LOG)
+
+
 def _generate_report(version: str, vcmd: list[str]) -> int:
     """Generate reports and return the test status.
 
@@ -419,7 +418,6 @@ def do_build(python_name: str | None = None) -> int:
         encoding='utf-8',
     )
     _build_and_install(vcmd)
-    _generate_api_docs()
     now = datetime.now().astimezone()
     with open(BUILD_LOG, 'a', encoding='utf-8') as f:
         f.write(now.strftime('Build ready %Y-%m-%d %H:%M:%S %Z\n'))
@@ -429,6 +427,7 @@ def do_build(python_name: str | None = None) -> int:
     _run_pytest()
     _run_examples(vcmd)
     _run_readme_generators(vcmd)
+    _generate_api_docs()
     return _generate_report(version, vcmd)
 
 
