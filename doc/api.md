@@ -1489,7 +1489,11 @@ Get the description of the arguments for the formatter.
 
 # mformat.mformat\_txt
 
-Plain text format class.
+Plain-text formatter implementation.
+
+The formatter writes plain text with line wrapping and indentation.
+Headings use underline styles for levels 1-6, while level 7 and above
+are rendered without underlines.
 
 <a id="mformat.mformat_txt.MultiFormatTxt"></a>
 
@@ -1499,7 +1503,11 @@ Plain text format class.
 class MultiFormatTxt(MultiFormatPlainTextLike)
 ```
 
-Plain text format class.
+Plain-text formatter.
+
+Text is wrapped at word boundaries. Bold and italic formatting
+arguments are ignored because plain text has no inline markup.
+Tables are rendered with ASCII-like borders.
 
 <a id="mformat.mformat_txt.MultiFormatTxt.__init__"></a>
 
@@ -1509,7 +1517,10 @@ Plain text format class.
 def __init__(file_name: PathLike,
              url_as_text: bool = False,
              file_exists_callback: Optional[Callable[[str], None]] = None,
-             line_length: int = 79)
+             line_length: int = 79,
+             table_max_line_length: Optional[int] = None,
+             table_alignment: TableAlignmentSpec = TableAlignment.
+             CENTER_BUT_DIGITS_RIGHT)
 ```
 
 Initialize the MultiFormatTxt class.
@@ -1525,6 +1536,14 @@ Initialize the MultiFormatTxt class.
   (May for instance save existing file as
   backup.)
   (Default is to raise an exception.)
+- `line_length` - The maximum length of a line.
+  Must be an integer greater than 10.
+- `table_max_line_length` - The maximum length of a line when writing
+  a table. If None, line_length is used.
+  Must be at least 10 when provided.
+- `table_alignment` - The alignment of cell values in tables.
+  Can be one alignment for all columns or
+  a list of per-column alignments.
 
 <a id="mformat.mformat_txt.MultiFormatTxt.file_name_extension"></a>
 

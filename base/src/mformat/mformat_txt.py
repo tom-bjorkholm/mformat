@@ -1,5 +1,10 @@
 #! /usr/local/bin/python3
-"""Plain text format class."""
+"""Plain-text formatter implementation.
+
+The formatter writes plain text with line wrapping and indentation.
+Headings use underline styles for levels 1-6, while level 7 and above
+are rendered without underlines.
+"""
 
 # Copyright (c) 2026 Tom Björkholm
 # MIT License
@@ -11,7 +16,7 @@ from mformat.mformat_plaintextlike import MultiFormatPlainTextLike
 from mformat.mformat_state import MultiFormatState, Formatting
 from mformat.mformat import FormatterDescriptor, PathLike
 from mformat.plain_text_table import get_plain_text_table, \
-    get_rst_like_spec, TableAlignment
+    get_rst_like_spec, TableAlignment, TableAlignmentSpec
 from mformat.underline_text import underline_text, UnderlineSpec
 
 
@@ -27,13 +32,22 @@ _UNDERLINE_SPEC: list[UnderlineSpec] = [
 
 
 class MultiFormatTxt(MultiFormatPlainTextLike):
-    """Plain text format class."""
+    """Plain-text formatter.
+
+    Text is wrapped at word boundaries. Bold and italic formatting
+    arguments are ignored because plain text has no inline markup.
+    Tables are rendered with ASCII-like borders.
+    """
 
     MAX_LINE_LENGTH = 80
 
-    def __init__(self, file_name: PathLike, url_as_text: bool = False,
+    def __init__(self,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+                 file_name: PathLike, url_as_text: bool = False,
                  file_exists_callback: Optional[Callable[[str], None]] = None,
-                 line_length: int = 79):
+                 line_length: int = 79,
+                 table_max_line_length: Optional[int] = None,
+                 table_alignment: TableAlignmentSpec =
+                 TableAlignment.CENTER_BUT_DIGITS_RIGHT):
         """Initialize the MultiFormatTxt class.
 
         Args:
@@ -46,16 +60,33 @@ class MultiFormatTxt(MultiFormatPlainTextLike):
                                   (May for instance save existing file as
                                   backup.)
                                   (Default is to raise an exception.)
+            line_length: The maximum length of a line.
+                         Must be an integer greater than 10.
+            table_max_line_length: The maximum length of a line when writing
+                                   a table. If None, line_length is used.
+                                   Must be at least 10 when provided.
+            table_alignment: The alignment of cell values in tables.
+                             Can be one alignment for all columns or
+                             a list of per-column alignments.
         """
         assert line_length and isinstance(line_length, int)
         if line_length <= 10:
             raise ValueError('Line length must be greater than 10, '
                              f'got {line_length}')
+        assert table_max_line_length is None or \
+            isinstance(table_max_line_length, int)
+        if table_max_line_length is not None and table_max_line_length < 10:
+            raise ValueError('Table max line length must be at least 10, '
+                             f'got {table_max_line_length}')
         super().__init__(file_name=file_name, url_as_text=url_as_text,
                          file_exists_callback=file_exists_callback)
         self.txt_heading: str = ''
         self.txt_table: list[list[str]] = []
-        self.line_length = line_length
+        self.line_length: int = line_length
+        self.table_max_line_length: int = (
+            line_length if table_max_line_length is None
+            else table_max_line_length)
+        self.table_alignment: TableAlignmentSpec = table_alignment
 
     @classmethod
     def file_name_extension(cls) -> str:
@@ -66,7 +97,9 @@ class MultiFormatTxt(MultiFormatPlainTextLike):
     def get_arg_desciption(cls) -> FormatterDescriptor:
         """Get the description of the arguments for the formatter."""
         return FormatterDescriptor(name='txt', mandatory_args=[],
-                                   optional_args=['line_length'])
+                                   optional_args=['line_length',
+                                                  'table_max_line_length',
+                                                  'table_alignment'])
 
     def _write_file_prefix(self) -> None:
         """Write the file prefix."""
@@ -75,11 +108,18 @@ class MultiFormatTxt(MultiFormatPlainTextLike):
         """Write the file suffix."""
 
     def _start_heading(self, level: int) -> None:
-        """Start a heading."""
+        """Start a heading.
+
+        Heading text is buffered and rendered when _end_heading is called.
+        """
         self.txt_heading = ''
 
     def _end_heading(self, level: int) -> None:
-        """End a heading."""
+        """End a heading.
+
+        Levels 1-6 use different underline patterns.
+        Level 7 and above are rendered without underlines.
+        """
         assert self.file is not None
         self._empty_line_before()
         assert level > 0
@@ -100,7 +140,8 @@ class MultiFormatTxt(MultiFormatPlainTextLike):
         Args:
             text: The text to write into the current item.
             state: The state of the current item.
-            formatting: The formatting of the text.
+            formatting: The formatting of the text. Ignored for
+                        plain-text output.
         """
         assert self.file is not None
         if state == MultiFormatState.HEADING:
@@ -121,7 +162,11 @@ class MultiFormatTxt(MultiFormatPlainTextLike):
         self._wrap_and_write(formatted_url, self.line_length)
 
     def _write_code_in_text(self, text: str, state: MultiFormatState) -> None:
-        """Write code into current item (paragraph, bullet list item...)."""
+        """Write code into current item (paragraph, bullet list item...).
+
+        Code-in-text is written as an atomic token and is not split
+        across lines.
+        """
         assert self.file is not None
         assert isinstance(text, str)
         assert isinstance(state, MultiFormatState)
@@ -163,22 +208,29 @@ class MultiFormatTxt(MultiFormatPlainTextLike):
         self.file.write(text)
 
     def _start_table(self, num_columns: int) -> None:
-        """Start a table."""
+        """Start a table.
+
+        Table rows are buffered and rendered when _end_table is called.
+        """
         assert self.file is not None
         assert isinstance(num_columns, int)
         self._empty_line_before()
         self.txt_table = []
 
     def _end_table(self, num_columns: int, num_rows: int) -> None:
-        """End a table."""
+        """End a table.
+
+        Uses table_max_line_length for table width and table_alignment
+        for alignment behavior.
+        """
         assert self.file is not None
         assert isinstance(num_columns, int)
         assert isinstance(num_rows, int)
-        alignment = TableAlignment.CENTER_BUT_DIGITS_RIGHT
+        tline_length = self.table_max_line_length
         lines = get_plain_text_table(data=self.txt_table,
                                      border_spec=get_rst_like_spec(),
-                                     alignment=alignment,
-                                     max_line_length=self.line_length)
+                                     alignment=self.table_alignment,
+                                     max_line_length=tline_length)
         for line in lines:
             self.file.write(line + '\n')
         self.txt_table = []

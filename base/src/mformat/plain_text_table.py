@@ -468,7 +468,12 @@ def get_plain_text_table(data: list[list[str]], border_spec: BorderSpec,
         data, border_spec, max_line_length)
     if isinstance(alignment, TableAlignment):
         alignment = [alignment] * len(column_widths)
-    assert isinstance(alignment, list)
+    if not isinstance(alignment, list):
+        raise ValueError('Alignment specification must be TableAlignment '
+                         'or list of TableAlignment')
+    if not all(isinstance(item, TableAlignment) for item in alignment):
+        raise ValueError('Alignment specification contains invalid '
+                         'element')
     if len(alignment) != len(column_widths):
         raise ValueError('Alignment specification has wrong number of '
                          'elements')

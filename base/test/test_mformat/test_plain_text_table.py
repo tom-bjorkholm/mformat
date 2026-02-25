@@ -517,6 +517,22 @@ class TestFormatBottomBorder:
 class TestGetPlainTextTableValidation:
     """Test input validation in get_plain_text_table."""
 
+    def test_invalid_alignment_type_raises(self):
+        """Test non-list/non-enum alignment type raises ValueError."""
+        with pytest.raises(ValueError,
+                           match='must be TableAlignment'):
+            get_plain_text_table(
+                [['AB']], _simple_spec(), 80,
+                1)
+
+    def test_invalid_alignment_element_raises(self):
+        """Test invalid item in alignment list raises ValueError."""
+        with pytest.raises(ValueError,
+                           match='contains invalid'):
+            get_plain_text_table(
+                [['AB']], _simple_spec(), 80,
+                [TableAlignment.LEFT, 'bad'])
+
     def test_wrong_alignment_count_raises(self):
         """Test wrong number of alignment elements."""
         with pytest.raises(ValueError,

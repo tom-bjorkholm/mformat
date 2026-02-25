@@ -3345,7 +3345,11 @@ End a block quote.
 
 # mformat.mformat\_txt
 
-Plain text format class.
+Plain-text formatter implementation.
+
+The formatter writes plain text with line wrapping and indentation.
+Headings use underline styles for levels 1-6, while level 7 and above
+are rendered without underlines.
 
 <a id="mformat.mformat_txt.MultiFormatTxt"></a>
 
@@ -3355,7 +3359,11 @@ Plain text format class.
 class MultiFormatTxt(MultiFormatPlainTextLike)
 ```
 
-Plain text format class.
+Plain-text formatter.
+
+Text is wrapped at word boundaries. Bold and italic formatting
+arguments are ignored because plain text has no inline markup.
+Tables are rendered with ASCII-like borders.
 
 <a id="mformat.mformat_txt.MultiFormatTxt.__init__"></a>
 
@@ -3365,7 +3373,10 @@ Plain text format class.
 def __init__(file_name: PathLike,
              url_as_text: bool = False,
              file_exists_callback: Optional[Callable[[str], None]] = None,
-             line_length: int = 79)
+             line_length: int = 79,
+             table_max_line_length: Optional[int] = None,
+             table_alignment: TableAlignmentSpec = TableAlignment.
+             CENTER_BUT_DIGITS_RIGHT)
 ```
 
 Initialize the MultiFormatTxt class.
@@ -3381,6 +3392,14 @@ Initialize the MultiFormatTxt class.
   (May for instance save existing file as
   backup.)
   (Default is to raise an exception.)
+- `line_length` - The maximum length of a line.
+  Must be an integer greater than 10.
+- `table_max_line_length` - The maximum length of a line when writing
+  a table. If None, line_length is used.
+  Must be at least 10 when provided.
+- `table_alignment` - The alignment of cell values in tables.
+  Can be one alignment for all columns or
+  a list of per-column alignments.
 
 <a id="mformat.mformat_txt.MultiFormatTxt.file_name_extension"></a>
 
@@ -3434,6 +3453,8 @@ def _start_heading(level: int) -> None
 
 Start a heading.
 
+Heading text is buffered and rendered when _end_heading is called.
+
 <a id="mformat.mformat_txt.MultiFormatTxt._end_heading"></a>
 
 #### \_end\_heading
@@ -3443,6 +3464,9 @@ def _end_heading(level: int) -> None
 ```
 
 End a heading.
+
+Levels 1-6 use different underline patterns.
+Level 7 and above are rendered without underlines.
 
 <a id="mformat.mformat_txt.MultiFormatTxt._write_text"></a>
 
@@ -3459,7 +3483,8 @@ Write text into current item (paragraph, bullet list item, etc.).
 
 - `text` - The text to write into the current item.
 - `state` - The state of the current item.
-- `formatting` - The formatting of the text.
+- `formatting` - The formatting of the text. Ignored for
+  plain-text output.
 
 <a id="mformat.mformat_txt.MultiFormatTxt._write_url"></a>
 
@@ -3481,6 +3506,9 @@ def _write_code_in_text(text: str, state: MultiFormatState) -> None
 ```
 
 Write code into current item (paragraph, bullet list item...).
+
+Code-in-text is written as an atomic token and is not split
+across lines.
 
 <a id="mformat.mformat_txt.MultiFormatTxt._start_bullet_item"></a>
 
@@ -3542,6 +3570,8 @@ def _start_table(num_columns: int) -> None
 
 Start a table.
 
+Table rows are buffered and rendered when _end_table is called.
+
 <a id="mformat.mformat_txt.MultiFormatTxt._end_table"></a>
 
 #### \_end\_table
@@ -3551,6 +3581,9 @@ def _end_table(num_columns: int, num_rows: int) -> None
 ```
 
 End a table.
+
+Uses table_max_line_length for table width and table_alignment
+for alignment behavior.
 
 <a id="mformat.mformat_txt.MultiFormatTxt._write_table_first_row"></a>
 

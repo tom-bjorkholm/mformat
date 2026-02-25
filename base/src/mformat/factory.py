@@ -7,6 +7,7 @@
 
 from typing import Optional, TypedDict, Callable
 from mformat.mformat import MultiFormat, FormatterDescriptor, PathLike
+from mformat.plain_text_table import TableAlignmentSpec
 from mformat.reg_pkg_formats import register_formats_in_pkg
 
 
@@ -21,6 +22,8 @@ class OptArgsDict(TypedDict, total=False):
     title: Optional[str]
     css_file: Optional[str]
     line_length: Optional[int]
+    table_max_line_length: Optional[int]
+    table_alignment: Optional[TableAlignmentSpec]
 
 
 type OptArgs = Optional[OptArgsDict]
