@@ -72,7 +72,7 @@ def _ensure_venv(python_name: str | None) -> None:
 
 def _prepare_directories() -> None:
     """Clean and create build output directories."""
-    for dirname in [ 'build', 'dist', 'base/build', 'base/dist',
+    for dirname in ['build', 'dist', 'base/build', 'base/dist',
                     'extend/build', 'extend/dist']:
         shutil.rmtree(dirname, ignore_errors=True)
     shutil.rmtree(REPORT_DIR, ignore_errors=True)
@@ -135,6 +135,7 @@ def _build_and_install(vcmd: list[str]) -> None:
 # Phase 3: Lint and test
 # ---------------------------------------------------
 
+
 def _collect_py_files(*dirs: str) -> list[str]:
     """Collect all .py file paths from directories."""
     files: list[str] = []
@@ -162,6 +163,7 @@ def _run_linters(vcmd: list[str]) -> None:
                         'base/src', 'base/test', 'extend/src',
                         'extend/test', 'example/src', 'build_helpers'],
                        log_file=FLAKE_LOG, check=False, append=False)
+
 
 def _run_pytest() -> int:
     """Run pytest with coverage. Returns exit code."""
@@ -253,7 +255,10 @@ def _get_python_version_str(vcmd: list[str]) -> str:
         text=True,
         check=False,
     )
-    return result.stdout.strip()
+    version_str = result.stdout.strip()
+    if version_str:
+        return version_str
+    return result.stderr.strip()
 
 
 def _write_html_report(version: str, test_result: str,

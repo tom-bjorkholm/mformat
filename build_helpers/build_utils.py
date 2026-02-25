@@ -21,19 +21,21 @@ def resolve_python_command(python_name: str) -> list[str]:
     """Resolve a Python name to a subprocess command list.
 
     Given a name like 'python3.14', returns the command
-    needed to invoke that Python version. On Windows, falls
-    back to the py launcher if the name is not directly
-    available in PATH.
+    needed to invoke that Python version. Uses the absolute
+    executable path from PATH when available. On Windows,
+    falls back to the py launcher if the name is not directly
+    available.
 
     Args:
         python_name: e.g. 'python3.14'.
 
     Returns:
-        Command list, e.g. ['python3.14'] or
+        Command list, e.g. ['C:/.../python3.14.exe'] or
         ['py', '-3.14']. Empty list if not found.
     """
-    if shutil.which(python_name):
-        return [python_name]
+    executable_path = shutil.which(python_name)
+    if executable_path:
+        return [executable_path]
     return _try_py_launcher(python_name)
 
 
