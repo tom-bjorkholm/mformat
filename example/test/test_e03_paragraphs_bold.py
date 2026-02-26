@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -107,4 +108,41 @@ def test_e03_paragraphs_bold_odt(capsys):
     """Test the paragraphs_bold_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(paragraphs_bold_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'With new_paragraph we can start a paragraph with the first sentence '
+        'in bold.\n'
+        'Use add_text to add text without bold to the paragraph. Use '
+        'add_text to add\n'
+        'text in italic to the paragraph. Use add_text to add text in bold '
+        'and italic.\n'
+        '\n'
+    ),
+    (
+        'With new_paragraph we can start a second paragraph with the first '
+        'sentence in\n'
+        'italic. Use add_text to add text without italic to the second '
+        'paragraph. Use\n'
+        'add_text to add text in bold to the second paragraph. Use add_text '
+        'to add text\n'
+        'in italic and bold to the second paragraph.\n'
+        '\n'
+    ),
+    (
+        '(As this example does not have a heading the generated markdown '
+        'file will not\n'
+        'have a heading. If markdownlint is used on the generated markdown '
+        'file it will\n'
+        'report an error for the missing heading.)\n'
+    ),
+]
+
+
+def test_e03_paragraphs_bold_txt(capsys):
+    """Test the paragraphs_bold_example function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(paragraphs_bold_example, expected_txt)
     check_capsys_silent(capsys)

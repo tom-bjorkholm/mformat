@@ -24,6 +24,8 @@ def example_url_in_heading(format_name: str, file_name: str) -> None:
                    url=EXAMPLES_URL)
         # Then another heading with a bold URL
         mf.new_heading(text='A heading with a bold URL:', level=2)
+        # Plain text output has no visible bold/italic, but this code
+        # still runs. Bold/italic are visible in other formats.
         # Add a bold URL to the heading.
         mf.add_url(text='This bold URL link to the example source code.',
                    bold=True, url=f'{EXAMPLES_URL}/src')

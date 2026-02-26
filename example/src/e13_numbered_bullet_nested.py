@@ -19,6 +19,8 @@ def example_nest_numbers_bullets(format_name: str, file_name: str) -> None:
         # The lists are created as needed for the items.
         mf.new_numbered_point_item('First item')
         mf.new_numbered_point_item('Second item')
+        # Plain text output has no visible bold/italic, but this code
+        # still runs. Bold/italic are visible in other formats.
         mf.add_text('with some bold text', bold=True)
         # We get nesting by specifying a level.
         mf.new_bullet_item('First bullet', level=2)

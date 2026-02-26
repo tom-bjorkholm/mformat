@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -205,4 +206,41 @@ def test_e12_numbered_bold_odt(capsys):
     """Test the numbered_bold_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(numbered_bold_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'Numbered list with bold text example\n'
+        '************************************\n'
+        '\n'
+    ),
+    (
+        '1. This is the first numbered point item. This is not bold or '
+        'italic. However,\n'
+        '   this bold text is added to it. And this italic text is added to '
+        'it.\n'
+        '2. This is the bold numbered point item. This non-bold text is '
+        'added to it.\n'
+        '3. This is the italic numbered point item. This non-italic text is '
+        'added to it.\n'
+        '4. This is the bold and italic item. This non-bold and non-italic '
+        'text is added\n'
+        '   to it.\n'
+        '  4.1. This is in item in a nested numbered point list. Bold text '
+        'added to it.\n'
+        '       And italic text added to it.\n'
+        '  4.2. Second nested numbered point item. This non-bold and '
+        'non-italic text is\n'
+        '       added to it. And bold and italic text added to it.\n'
+        '5. The final item is back at level 1. This is the final numbered '
+        'point item.\n'
+    ),
+]
+
+
+def test_e12_numbered_bold_txt(capsys):
+    """Test the numbered_bold_example function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(numbered_bold_example, expected_txt)
     check_capsys_silent(capsys)

@@ -23,6 +23,8 @@ def example_url_in_paragraph_bold(format_name: str, file_name: str) -> None:
         # Start a paragraph.
         mf.new_paragraph(text='This is a paragraph with a URL: ')
         # add an italic URL.
+        # Plain text output has no visible bold/italic, but this code
+        # still runs. Bold/italic are visible in other formats.
         mf.add_url(text='This italic URL link to the examples', italic=True,
                    url=EXAMPLES_URL)
         # add some text between the URLs.

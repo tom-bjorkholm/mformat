@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -197,4 +198,39 @@ def test_e09_bullet_bold_odt(capsys):
     """Test the bullet_bold_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(bullet_bold_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'Bullet list with bold text example\n'
+        '**********************************\n'
+        '\n'
+    ),
+    (
+        '- This is the first bullet point item. This is not bold or italic. '
+        'However,\n'
+        '  this bold text is added to it. And this italic text is added to '
+        'it.\n'
+        '- This is the bold bullet point item. This non-bold text is added '
+        'to it.\n'
+        '- This is the italic bullet point item. This non-italic text is '
+        'added to it.\n'
+        '- This is the bold and italic bullet point item. This non-bold and '
+        'non-italic\n'
+        '  text is added to it.\n'
+        '  - This is in item in a nested bullet list. Bold text added to it. '
+        'And italic\n'
+        '    text added to it.\n'
+        '  - Second nested bullet point item. This non-bold and non-italic '
+        'text is added\n'
+        '    to it. And bold and italic text added to it.\n'
+    ),
+]
+
+
+def test_e09_bullet_bold_txt(capsys):
+    """Test the bullet_bold_example function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(bullet_bold_example, expected_txt)
     check_capsys_silent(capsys)

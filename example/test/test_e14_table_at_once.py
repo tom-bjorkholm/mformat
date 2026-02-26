@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -90,4 +91,31 @@ def test_e14_table_at_once_odt(capsys):
     """Test the example_table_at_once function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(example_table_at_once, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'Table in one call example\n'
+        '*************************\n'
+        '\n'
+    ),
+    (
+        '+------+-----+-------------+\n'
+        '| Name | Age |     City    |\n'
+        '+------+-----+-------------+\n'
+        '| John |  25 |   New York  |\n'
+        '+------+-----+-------------+\n'
+        '| Jane |  30 | Los Angeles |\n'
+        '+------+-----+-------------+\n'
+        '| Jim  |  35 |   Chicago   |\n'
+        '+------+-----+-------------+\n'
+    ),
+]
+
+
+def test_e14_table_at_once_txt(capsys):
+    """Test the example_table_at_once function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(example_table_at_once, expected_txt)
     check_capsys_silent(capsys)

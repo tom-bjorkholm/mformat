@@ -53,6 +53,8 @@ def paragraphs_smart_ws_example(format_name: str,
         mf.add_text('by ommitting the smart_ws=False argument,')
         # Naturally we can also explicitly set smart_ws=True.
         mf.add_text('or by explicitly setting smart_ws=True.', smart_ws=True)
+        # Plain text output has no visible bold/italic, but this code
+        # still runs. Bold/italic are visible in other formats.
         mf.new_paragraph(NO_HEADING_TEXT, bold=True)
 
 

@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -115,3 +116,34 @@ def test_41_use_css_in_html_odt(capsys):
 def test_odt_body_text():
     """Test the odt body text."""
     assert EXPECTED_ODT_BODY_TEXT == EXPECTED_ODT_BODY_TEXT2
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'CSS und Sprache in HTML\n'
+        '***********************\n'
+        '\n'
+    ),
+    (
+        'Dieses Beispiel zeigt, wie Sie eine CSS-Datei und die '
+        'Dokumentensprache (lang)\n'
+        'mit mformat setzen. Übergeben Sie OptArgs mit "css_file" und "lang" '
+        'an\n'
+        'create_mf, wenn das Format HTML ist.\n'
+        '\n'
+    ),
+    (
+        'Die CSS-Datei liegt unter example/css/ und wird per relativem Pfad '
+        'eingebunden\n'
+        '(für lokale Anzeige). Die Ausgabe ist auf Deutsch; lang="de" steht '
+        'im erzeugten\n'
+        '<html>-Tag.\n'
+    ),
+]
+
+
+def test_41_use_css_in_html_txt(capsys):
+    """Test the use_css_in_html_example function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(use_css_in_html_example, expected_txt)
+    check_capsys_silent(capsys)

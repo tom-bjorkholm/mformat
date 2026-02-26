@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -93,4 +94,41 @@ def test_e16_table_row_by_row_odt(capsys):
     """Test the example_table_row_by_row function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(example_table_row_by_row, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'Table row by row example\n'
+        '************************\n'
+        '\n'
+    ),
+    (
+        '+------+-----+-------------+\n'
+        '| Name | Age |     City    |\n'
+        '+------+-----+-------------+\n'
+        '| John |  25 |   New York  |\n'
+        '+------+-----+-------------+\n'
+        '| Jane |  30 | Los Angeles |\n'
+        '+------+-----+-------------+\n'
+        '| Jim  |  35 |   Chicago   |\n'
+        '+------+-----+-------------+\n'
+        '\n'
+    ),
+    (
+        'Note: As the rows are added and written one by one, the library '
+        'cannot know the\n'
+        'width of columns in future rows, this will make markdown formatted '
+        'output look\n'
+        'a bit odd when reading the markdown file, however any further '
+        'formatting from\n'
+        'markdown will hide this and make the table look as expected.\n'
+    ),
+]
+
+
+def test_e16_table_row_by_row_txt(capsys):
+    """Test the example_table_row_by_row function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(example_table_row_by_row, expected_txt)
     check_capsys_silent(capsys)

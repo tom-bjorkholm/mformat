@@ -589,11 +589,13 @@ def custom_format_example(format_name: str, file_name: str) -> None:
         mf.write_code_block('def example():\n    print("Hello, World!")',
                             programming_language='python')
         # Write a paragraph with formatting
+        # Plain text output has no visible bold/italic, but this code
+        # still runs. Bold/italic are visible in other formats.
         mf.new_paragraph('This text is ', bold=False, italic=False)
         mf.add_text('bold', bold=True, italic=False)
         mf.add_text(' and this is ', bold=False, italic=False)
         mf.add_text('italic', bold=False, italic=True)
-        mf.add_text('.', bold=False, italic=False)
+        mf.add_text('.', smart_ws=False, bold=False, italic=False)
         # Write a URL
         mf.new_paragraph('Visit ')
         mf.add_url('https://example.com', text='our website',

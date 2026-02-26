@@ -46,6 +46,8 @@ def multi_format_example(format_name: str,  # pylint: disable=too-many-statement
         mf.add_text('Add text does not automatically close the previous')
         mf.add_text('item type, instead it just adds text to that item.')
         # For any text we can add bold and italic formatting.
+        # Plain text output has no visible bold/italic, but this code
+        # still runs. Bold/italic are visible in other formats.
         mf.add_text('There is never a need to close an item type.',
                     bold=True, italic=True)
         # Starting a heading automatically closes the paragraph.

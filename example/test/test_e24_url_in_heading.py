@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -149,4 +150,73 @@ def test_e24_url_in_headings_odt(capsys):
     """Test the example_url_in_heading function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(example_url_in_heading, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'URL in heading example\n'
+        '**********************\n'
+        '\n'
+    ),
+    (
+        'A heading with a URL: This URL link to the examples.\n'
+        '****************************************************\n'
+        '\n'
+    ),
+    (
+        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example\n'
+        '**************************************************************\n'
+        '\n'
+    ),
+    (
+        'A heading with a bold URL: This bold URL link to the example source '
+        'code.\n'
+        '===================================================================='
+        '=====\n'
+        '\n'
+    ),
+    (
+        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src\n'
+        '==================================================================\n'
+        '\n'
+    ),
+    (
+        'A heading with an italic URL: This italic URL link to the examples '
+        'result.\n'
+        '===================================================================='
+        '======\n'
+        '\n'
+    ),
+    (
+        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/'
+        'result\n'
+        '===================================================================='
+        '=\n'
+        '\n'
+    ),
+    (
+        'And with an italic and bold URL: This italic and bold URL link to '
+        'the examples.\n'
+        '===================================================================='
+        '===========\n'
+        '\n'
+    ),
+    (
+        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src\n'
+        '==================================================================\n'
+        '\n'
+    ),
+    (
+        'The add_url function can be used to add a URL to a heading, as well '
+        'as to\n'
+        'paragraphs, bullet lists, and numbered point lists.\n'
+    ),
+]
+
+
+def test_e24_url_in_headings_txt(capsys):
+    """Test the example_url_in_heading function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(example_url_in_heading, expected_txt)
     check_capsys_silent(capsys)

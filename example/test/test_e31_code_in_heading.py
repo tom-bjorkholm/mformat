@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -87,4 +88,24 @@ def test_e31_code_in_heading_odt(capsys):
     """Test the code_in_heading_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(code_in_heading_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'Code in heading example add_code_in_text()\n'
+        '******************************************\n'
+        '\n'
+    ),
+    (
+        '- Bullet items can also contain code: example()\n'
+        '1. Numbered items can also contain code: example()\n'
+    ),
+]
+
+
+def test_e31_code_in_heading_txt(capsys):
+    """Test the code_in_heading_example function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(code_in_heading_example, expected_txt)
     check_capsys_silent(capsys)

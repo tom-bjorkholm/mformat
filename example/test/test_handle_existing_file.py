@@ -15,13 +15,17 @@ _example_test_path = (
     Path(__file__).parent.parent / 'src'
 )
 sys.path.insert(0, str(_example_test_path))
-from e40_handle_existing_file import existing_file_example # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
+from e40_handle_existing_file import existing_file_example  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
 
-def test_existing_file_example1(capsys):
+
+@pytest.mark.parametrize('format_name, extension',
+                         [('md', 'md'),
+                          ('txt', 'txt')])
+def test_existing_file_example1(capsys, format_name, extension):
     """Test the existing file example."""
     with TemporaryDirectory() as tmp_dir:
-        file_name =  tmp_dir + '/test.md'
-        existing_file_example(format_name="md", file_name=file_name)
+        file_name = tmp_dir + f'/test.{extension}'
+        existing_file_example(format_name=format_name, file_name=file_name)
         with open(file_name, "rt", encoding="utf-8") as file:
             content = file.read()
         assert 'Existing File Example' in content
@@ -33,14 +37,17 @@ def test_existing_file_example1(capsys):
 @pytest.mark.parametrize('env_var, txt_out',
                          [('overwrite', 'Overwriting file'),
                           ('backup', 'Backed up file')])
-def test_existing_file_example2(capsys, monkeypatch, env_var, txt_out):
+@pytest.mark.parametrize('format_name',
+                         ['md', 'txt'])
+def test_existing_file_example2(capsys, monkeypatch, env_var, txt_out,
+                                format_name):
     """Test the existing file example."""
     with TemporaryDirectory() as tmp_dir:
-        file_name =  tmp_dir + '/test.md'
+        file_name = tmp_dir + f'/test.{format_name}'
         monkeypatch.setenv('MFORMAT_FILE_EXISTS', env_var)
         with open(file=file_name, mode='wt', encoding='utf-8') as file:
             file.write('Some old content.')
-        existing_file_example(format_name="md", file_name=file_name)
+        existing_file_example(format_name=format_name, file_name=file_name)
         with open(file_name, "rt", encoding="utf-8") as file:
             content = file.read()
         assert 'Existing File Example' in content
@@ -50,15 +57,17 @@ def test_existing_file_example2(capsys, monkeypatch, env_var, txt_out):
     assert '' == out
 
 
-def test_existing_file_example3(capsys, monkeypatch):
+@pytest.mark.parametrize('format_name',
+                         ['md', 'txt'])
+def test_existing_file_example3(capsys, monkeypatch, format_name):
     """Test the existing file example."""
     with TemporaryDirectory() as tmp_dir:
-        file_name =  tmp_dir + '/test.md'
+        file_name = tmp_dir + f'/test.{format_name}'
         monkeypatch.delenv('MFORMAT_FILE_EXISTS', raising=False)
         with open(file=file_name, mode='wt', encoding='utf-8') as file:
             file.write('Some old content.')
         with pytest.raises(FileExistsError):
-            existing_file_example(format_name="md", file_name=file_name)
+            existing_file_example(format_name=format_name, file_name=file_name)
     out, err = capsys.readouterr()
     assert '' == out
     assert 'File ' + file_name + ' already exists' in err

@@ -21,6 +21,8 @@ def block_quote_example(format_name: str, file_name: str) -> None:
                            'with indentation and/or styling depending on '
                            'the output format.')
         mf.new_heading(level=2, text='Block Quote with Formatting')
+        # Plain text output has no visible bold/italic, but this code
+        # still runs. Bold/italic are visible in other formats.
         mf.new_block_quote(text='Block quotes can have ', bold=False)
         mf.add_text(text='bold', bold=True)
         mf.add_text(text=' and ')

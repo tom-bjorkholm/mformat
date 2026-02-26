@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -146,4 +147,29 @@ def test_e08_bullet_nested_odt(capsys):
     """Test the bullets_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(bullets_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'Nested bullet list example\n'
+        '**************************\n'
+        '\n'
+    ),
+    (
+        '- This is the first bullet point item at level 1.\n'
+        '  - This is the second bullet point item. This time at level 2.\n'
+        '  - Another point item without specifying level. This means that it '
+        'is at the\n'
+        '    same level as the previous item.\n'
+        '    - This is a bullet point item at level 3.\n'
+        '- This is final bullet point item. This time at level 1\n'
+    ),
+]
+
+
+def test_e08_bullet_nested_txt(capsys):
+    """Test the bullets_example function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(bullets_example, expected_txt)
     check_capsys_silent(capsys)

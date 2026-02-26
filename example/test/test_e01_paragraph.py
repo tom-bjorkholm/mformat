@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest  # pylint: disable=unused-import
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
-    check_docx_func, check_odt_func)
+    check_docx_func, check_odt_func, check_txt_func)
 # Add example/src to path
 # pylint: disable=duplicate-code
 _example_test_path = (
@@ -31,6 +31,7 @@ EXPECTED_MD_TEXT = [
     'on the generated markdown file\n'
     'it will report an error for the missing heading.)'
 ]
+EXPECTED_TXT_TEXT = EXPECTED_MD_TEXT
 EXPECTED_HTML_PRE = [
     '<!DOCTYPE html>',
     '<html lang="en">',
@@ -99,4 +100,11 @@ def test_e01_paragraph_odt(capsys):
     """Test the paragraph_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(paragraph_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e01_paragraph_txt(capsys):
+    """Test the paragraph_example function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(paragraph_example, expected_txt)
     check_capsys_silent(capsys)

@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -106,4 +107,53 @@ def test_e25_url_as_text_odt(capsys):
     """Test the example_url_as_text function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(example_url_as_text, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'URL in paragraph example\n'
+        '************************\n'
+        '\n'
+    ),
+    (
+        'This is a paragraph with a URL: The examples are here.\n'
+        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example\n'
+        '\n'
+    ),
+    (
+        'The URL was added as a link using add_url(text, url)\n'
+        '\n'
+    ),
+    (
+        'By not specifying the text, the URL is shows as text:\n'
+        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example\n'
+        '\n'
+    ),
+    (
+        'A paragraph can of course have multiple URLs. The source code of '
+        'the examples\n'
+        'are here. https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+        'example/src\n'
+        'and The produced output files are here.\n'
+        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/'
+        'result\n'
+        '\n'
+    ),
+    (
+        'The URLs are shown as text instead of clickable links. This might '
+        'be useful\n'
+        'when you want to copy the URLs to the clipboard and paste them into '
+        'another\n'
+        'application. This is done by passing the url_as_text argument to '
+        'the create_mf\n'
+        'factory function.\n'
+    ),
+]
+
+
+def test_e25_url_as_text_txt(capsys):
+    """Test the example_url_as_text function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(example_url_as_text, expected_txt)
     check_capsys_silent(capsys)

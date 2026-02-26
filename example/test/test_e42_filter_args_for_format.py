@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -96,4 +97,35 @@ def test_42_filter_args_for_format_odt(capsys):
     """Test the filter_args_for_format_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(filter_args_for_format_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'CSS in HTML gefiltert für andere Formate\n'
+        '****************************************\n'
+        '\n'
+    ),
+    (
+        'Dieses Beispiel zeigt, wie Sie eine CSS-Datei für HTML gefiltert '
+        'haben, so dass\n'
+        'sie nicht für andere Formate verfügbar ist.\n'
+        '\n'
+    ),
+    (
+        'Die CSS-Datei liegt unter example/css/ und wird per relativem Pfad '
+        'eingebunden\n'
+        '(für lokale Anzeige). Die Ausgabe ist auf Deutsch; in HTML wird '
+        'lang="de" im\n'
+        'erzeugten <html>-Tag gesetzt. Für ODT wird sprache auch als "de" '
+        'gesetzt. Für\n'
+        'andere Formate wird die Sprache ignoriert.\n'
+    ),
+]
+
+
+def test_42_filter_args_for_format_txt(capsys):
+    """Test the filter_args_for_format_example function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(filter_args_for_format_example, expected_txt)
     check_capsys_silent(capsys)

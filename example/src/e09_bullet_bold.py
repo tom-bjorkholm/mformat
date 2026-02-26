@@ -24,6 +24,8 @@ def bullet_bold_example(format_name: str,
         # It will not be bold or italic unless we specify it.
         mf.new_bullet_item('This is the first bullet point item.')
         mf.add_text('This is not bold or italic.')
+        # Plain text output has no visible bold/italic, but this code
+        # still runs. Bold/italic are visible in other formats.
         mf.add_text('However, this bold text is added to it.', bold=True)
         mf.add_text('And this italic text is added to it.', italic=True)
         mf.new_bullet_item('This is the bold bullet point item.', bold=True)

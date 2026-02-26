@@ -12,6 +12,7 @@ from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, \
     EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -201,4 +202,73 @@ def test_e32_block_quote_odt(capsys):
     """Test the block_quote_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(block_quote_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'Block Quote Example\n'
+        '*******************\n'
+        '\n'
+    ),
+    (
+        'Block quotes are used to highlight quoted text or to draw attention '
+        'to\n'
+        'important information.\n'
+        '\n'
+    ),
+    (
+        'Simple Block Quote\n'
+        '==================\n'
+        '\n'
+    ),
+    (
+        '> This is a simple block quote. Block quotes are visually '
+        'distinguished from\n'
+        '> regular text with indentation and/or styling depending on the '
+        'output format.\n'
+        '\n'
+    ),
+    (
+        'Block Quote with Formatting\n'
+        '===========================\n'
+        '\n'
+    ),
+    (
+        '> Block quotes can have bold and italic text just like paragraphs.\n'
+        '\n'
+    ),
+    (
+        'Block Quote with URL\n'
+        '====================\n'
+        '\n'
+    ),
+    (
+        '> For more information, visit Example Website http://example.com '
+        'for details.\n'
+        '\n'
+    ),
+    (
+        'Block Quote with Code\n'
+        '=====================\n'
+        '\n'
+    ),
+    (
+        '> The function new_block_quote() starts a new block quote, and '
+        'add_text() adds\n'
+        '> more text to it.\n'
+        '\n'
+    ),
+    (
+        'Block quotes cannot be nested. Starting a new block quote while '
+        'inside one ends\n'
+        'the current quote and starts a fresh one.\n'
+    ),
+]
+
+
+def test_e32_block_quote_txt(capsys):
+    """Test the block_quote_example function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(block_quote_example, expected_txt)
     check_capsys_silent(capsys)

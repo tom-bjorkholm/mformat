@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -172,4 +173,58 @@ def test_e30_code_blocks_odt(capsys):
     """Test the code_blocks_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(code_blocks_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'Code blocks example\n'
+        '*******************\n'
+        '\n'
+    ),
+    (
+        'This is a normal paragraph with some text. Paragraphs are not '
+        'useable for\n'
+        'showing code as the text is usually shown in variable width fonts, '
+        'and line\n'
+        'wrapping is not easy to control. Code blocks on the other hand are '
+        'designed to\n'
+        'show code in a monospace font, and line wrapping is easy to '
+        'control.\n'
+        '\n'
+    ),
+    (
+        'Code blocks are written using the write_code_block() method. The '
+        'function names\n'
+        'mentioned in this paragraph are written using the '
+        'add_code_in_text() method.\n'
+        '\n'
+    ),
+    (
+        '----- Start of python code block -----\n'
+        '\n'
+    ),
+    (
+        'def hello_world(i: int) -> int:\n'
+        '    print("Hello, World!")\n'
+        '    if i > 0:\n'
+        '        print("i is positive")\n'
+        '    elif i < 0:\n'
+        '        print("i is negative")\n'
+        '    else:\n'
+        '        print("i is zero")\n'
+        '    print("This is another line of code.")\n'
+        '    return 42\n'
+        '\n'
+    ),
+    (
+        '------ End of python code block ------\n'
+    ),
+]
+
+
+def test_e30_code_blocks_txt(capsys):
+    """Test the code_blocks_example function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(code_blocks_example, expected_txt)
     check_capsys_silent(capsys)

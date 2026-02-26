@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -80,4 +81,27 @@ def test_e07_bullet_list_odt(capsys):
     """Test the bullet_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(bullet_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'Bullet list example\n'
+        '*******************\n'
+        '\n'
+    ),
+    (
+        '- This is the first bullet point item.\n'
+        '- This is the second bullet point item. We can add text to the '
+        'bullet point\n'
+        '  items with add_text(), just as we can add text to paragraphs.\n'
+        '- This is the third bullet point item.\n'
+    ),
+]
+
+
+def test_e07_bullet_list_txt(capsys):
+    """Test the bullet_example function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(bullet_example, expected_txt)
     check_capsys_silent(capsys)

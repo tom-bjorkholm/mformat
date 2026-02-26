@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -88,4 +89,35 @@ def test_e02_paragraphs_odt(capsys):
     """Test the paragraphs_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(paragraphs_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'With new_paragraph we can start a paragraph. With add_text we can '
+        'add text to\n'
+        'the paragraph. As described in the example file e01_paragraph.py.\n'
+        '\n'
+    ),
+    (
+        'With new_paragraph we can start a second paragraph. With add_text '
+        'we can add\n'
+        'text to the second paragraph just as we did with the first '
+        'paragraph.\n'
+        '\n'
+    ),
+    (
+        '(As this example does not have a heading the generated markdown '
+        'file will not\n'
+        'have a heading. If markdownlint is used on the generated markdown '
+        'file it will\n'
+        'report an error for the missing heading.)\n'
+    ),
+]
+
+
+def test_e02_paragraphs_txt(capsys):
+    """Test the paragraphs_example function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(paragraphs_example, expected_txt)
     check_capsys_silent(capsys)

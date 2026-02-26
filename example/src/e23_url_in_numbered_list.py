@@ -24,6 +24,8 @@ def example_url_in_numbered_list(format_name: str, file_name: str) -> None:
                    url=f'{EXAMPLES_URL}/src')
         # Then another numbered point with a bold URL
         mf.new_numbered_point_item(text='A numbered point with a bold URL:')
+        # Plain text output has no visible bold/italic, but this code
+        # still runs. Bold/italic are visible in other formats.
         # Add a bold URL to the item.
         mf.add_url(text='This bold URL link to the example source code.',
                    bold=True, url=f'{EXAMPLES_URL}/src')

@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -131,4 +132,33 @@ def test_e11_numbered_nested_list_odt(capsys):
     """Test the numbered_nested_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(numbered_nested_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'Nested numbered list example\n'
+        '****************************\n'
+        '\n'
+    ),
+    (
+        '1. This is the first numbered item. If we do not specify the level, '
+        'it is at\n'
+        '   the same level as the previous item - and when there is no '
+        'previous item, it\n'
+        '   is at level 1.\n'
+        '2. This is the second numbered item.\n'
+        '  2.1. This is the third numbered item. This is the first item at '
+        'level 2.\n'
+        '  2.2. Another item at level 2.\n'
+        '    2.2.1. And an item at level 3.\n'
+        '3. The final item is back at level 1.\n'
+    ),
+]
+
+
+def test_e11_numbered_nested_list_txt(capsys):
+    """Test the numbered_nested_example function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(numbered_nested_example, expected_txt)
     check_capsys_silent(capsys)

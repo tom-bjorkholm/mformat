@@ -13,6 +13,7 @@ from test_e01_paragraph import EXPECTED_HTML_PRE, \
     EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, odt_version_of_html,
     check_text_in_order)
 # Add example/src to path
@@ -117,4 +118,68 @@ def test_60_custom_format_tree(capsys):
         with open(file_name, 'r', encoding='utf-8') as file:
             text = file.read()
             check_text_in_order(text, EXPECTED_TREE_TEXT)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'Custom Format Example\n'
+        '*********************\n'
+        '\n'
+    ),
+    (
+        'This example demonstrates how to create and use a custom format in '
+        'the mformat\n'
+        'framework. The same code can be used to write to different formats, '
+        'just by\n'
+        'changing the format name.\n'
+        '\n'
+    ),
+    (
+        'Features\n'
+        '========\n'
+        '\n'
+    ),
+    (
+        '- Easy to extend the framework\n'
+        '- Supports most standard document elements\n'
+        '- Format-agnostic API\n'
+        '1. First step: Create a format class\n'
+        '2. Second step: Implement required methods\n'
+        '3. Third step: Register the format\n'
+        '\n'
+    ),
+    (
+        '+-----------+-------------------+\n'
+        '|  Element  |       Method      |\n'
+        '+-----------+-------------------+\n'
+        '| Paragraph |  new_paragraph()  |\n'
+        '+-----------+-------------------+\n'
+        '|  Heading  |   new_heading()   |\n'
+        '+-----------+-------------------+\n'
+        '|    List   | new_bullet_item() |\n'
+        '+-----------+-------------------+\n'
+        '\n'
+    ),
+    (
+        '----- Start of python code block -----\n'
+        'def example():\n'
+        '    print("Hello, World!")\n'
+        '------ End of python code block ------\n'
+        '\n'
+    ),
+    (
+        'This text is bold and this is italic.\n'
+        '\n'
+    ),
+    (
+        'Visit our website https://example.com\n'
+    ),
+]
+
+
+def test_60_custom_format_txt(capsys):
+    """Test the custom_format_example function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(custom_format_example, expected_txt)
     check_capsys_silent(capsys)

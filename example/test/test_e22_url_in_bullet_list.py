@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -106,4 +107,38 @@ def test_e22_url_in_bullet_list_odt(capsys):
     """Test the example_url_in_bullet_list function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(example_url_in_bullet_list, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'URL in bullet list example\n'
+        '**************************\n'
+        '\n'
+    ),
+    (
+        '- This is a bullet list with a URL: This URL link to the examples.\n'
+        '  https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/'
+        'src\n'
+        '- Another bullet point with a bold URL: This bold URL link to the '
+        'example\n'
+        '  source code.\n'
+        '  https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/'
+        'src\n'
+        '- A bullet point with an italic URL: This italic URL link to the '
+        'examples\n'
+        '  result. https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+        'example/result\n'
+        '- Last point with an italic and bold URL: This italic and bold URL '
+        'link to the\n'
+        '  examples. https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+        'example/src\n'
+    ),
+]
+
+
+def test_e22_url_in_bullet_list_txt(capsys):
+    """Test the example_url_in_bullet_list function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(example_url_in_bullet_list, expected_txt)
     check_capsys_silent(capsys)

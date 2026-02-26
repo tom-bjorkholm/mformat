@@ -25,6 +25,8 @@ def example_table_at_once_bold(format_name: str, file_name: str) -> None:
         ]
         # Write explanation before the table.
         mf.new_paragraph('This is a table with bold text in first row.')
+        # Plain text output has no visible bold/italic, but this code
+        # still runs. Bold/italic are visible in other formats.
         # Write the table
         mf.write_complete_table(table=table_data, bold_first_row=True)
         # Now we show italics and bold in the first row.

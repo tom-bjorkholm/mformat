@@ -17,6 +17,8 @@ def paragraphs_bold_example(format_name: str,
     # We start by getting a formatter from the factory, using the format name
     # and the output file name as shown in the example file e01_paragraph.py.
     with create_mf(format_name=format_name, file_name=file_name) as mf:
+        # Plain text output has no visible bold/italic, but this code
+        # still runs. Bold/italic are visible in other formats.
         # Start a paragraph with first sentence in bold.
         mf.new_paragraph('With new_paragraph we can start a paragraph '
                          'with the first sentence in bold.',

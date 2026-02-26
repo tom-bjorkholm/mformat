@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -124,4 +125,57 @@ def test_e17_table_row_by_row_bold_odt(capsys):
     """Test the example_table_row_by_row_bold function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(example_table_row_by_row_bold, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'Table row by row with bold & italic example\n'
+        '*******************************************\n'
+        '\n'
+    ),
+    (
+        '+------------+---------+-------+\n'
+        '|    City    | Country |  Size |\n'
+        '+------------+---------+-------+\n'
+        '| Mariehamn  | Finland | Small |\n'
+        '+------------+---------+-------+\n'
+        '| Copenhagen | Denmark | Large |\n'
+        '+------------+---------+-------+\n'
+        '|   Tokyo    |  Japan  |  Huge |\n'
+        '+------------+---------+-------+\n'
+        '\n'
+    ),
+    (
+        '+----------+---------+-----------+\n'
+        '| Capital  | Country | Continent |\n'
+        '+----------+---------+-----------+\n'
+        '|   Oslo   |  Norway |   Europe  |\n'
+        '+----------+---------+-----------+\n'
+        '|  Tokyo   |  Japan  |    Asia   |\n'
+        '+----------+---------+-----------+\n'
+        '|  Berlin  | Germany |   Europe  |\n'
+        '+----------+---------+-----------+\n'
+        '|  Kairo   |  Egypt  |   Africa  |\n'
+        '+----------+---------+-----------+\n'
+        '| Brussels | Belgium |   Europe  |\n'
+        '+----------+---------+-----------+\n'
+        '\n'
+    ),
+    (
+        'Note: As the rows are added and written one by one, the library '
+        'cannot know the\n'
+        'width of columns in future rows, this will make markdown formatted '
+        'output look\n'
+        'a bit odd when reading the markdown file, however any further '
+        'formatting from\n'
+        'markdown will hide this and make the table look as expected.\n'
+    ),
+]
+
+
+def test_e17_table_row_by_row_bold_txt(capsys):
+    """Test the example_table_row_by_row_bold function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(example_table_row_by_row_bold, expected_txt)
     check_capsys_silent(capsys)

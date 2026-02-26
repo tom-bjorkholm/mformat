@@ -18,6 +18,8 @@ def example_table_row_by_row_bold(format_name: str, file_name: str) -> None:
         mf.new_heading(level=1,
                        text='Table row by row with bold & italic example')
         # Start first row of table with bold first line.
+        # Plain text output has no visible bold/italic, but this code
+        # still runs. Bold/italic are visible in other formats.
         mf.new_table(first_row=['City', 'Country', 'Size'], bold=True)
         # Add a row.
         mf.add_table_row(row=['Mariehamn', 'Finland', 'Small'])

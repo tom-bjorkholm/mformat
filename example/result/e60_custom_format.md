@@ -29,6 +29,6 @@ def example():
     print("Hello, World!")
 ````
 
-This text is **bold** and this is *italic* .
+This text is **bold** and this is *italic*.
 
 Visit [our website](https://example.com)

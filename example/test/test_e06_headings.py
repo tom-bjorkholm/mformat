@@ -11,6 +11,7 @@ import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
+    check_txt_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -100,4 +101,55 @@ def test_e06_headings_odt(capsys):
     """Test the headings_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(headings_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+EXPECTED_TXT_TEXT = [
+    (
+        'This is the first heading, it is at level 1\n'
+        '*******************************************\n'
+        '\n'
+    ),
+    (
+        'This is the second heading, it is at level 2\n'
+        '============================================\n'
+        '\n'
+    ),
+    (
+        'This is the third heading, it is at level 3\n'
+        '-------------------------------------------\n'
+        '\n'
+    ),
+    (
+        'We can add text to headings with add_text(), just as we can add '
+        'text to\n'
+        'paragraphs. New headings can be added at any level. The argument '
+        'smart_ws is\n'
+        'used to control how whitespace is handled in headings just as in '
+        'paragraphs.\n'
+        '\n'
+    ),
+    (
+        'new_heading() also obeys the arguments bold and italic, just as in '
+        'paragraphs.\n'
+        'However, they make less sense for headings. Explicitly setting bold '
+        'or italic\n'
+        'on a heading may not produce the expected readability, as the '
+        'heading has\n'
+        'formatting from the heading definition that is specific to the '
+        'output format.\n'
+        '\n'
+    ),
+    (
+        'The fourth heading is again at level 2\n'
+        '======================================\n'
+        '\n'
+    ),
+]
+
+
+def test_e06_headings_txt(capsys):
+    """Test the headings_example function with the txt format."""
+    expected_txt = EXPECTED_TXT_TEXT
+    check_txt_func(headings_example, expected_txt)
     check_capsys_silent(capsys)
