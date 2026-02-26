@@ -12,12 +12,14 @@ import sys
 import pytest
 from check_capsys import check_capsys
 from mformat_ext.mformat_docx import MultiFormatDocx
+from mformat_ext.mformat_odt import MultiFormatOdt
 from mformat.factory import MultiFormatFactory
 from mformat.factory import create_mf, register_mf, \
     list_registered_mf, usage_mf, OptArgs, filter_args_mf
 from mformat.mformat import MultiFormat, FormatterDescriptor
 from mformat.mformat_html import MultiFormatHtml
 from mformat.mformat_md import MultiFormatMd
+from mformat.mformat_txt import MultiFormatTxt
 
 
 class MultiFormat2T(MultiFormat):
@@ -243,13 +245,79 @@ class FileExistsCB:  # pylint: disable=too-few-public-methods
             raise FileExistsError(f'File {file_name} already exists.')
 
 
+def _build_file_name(tmp_dir: str, fmt: str,
+                     as_path: bool) -> str | Path:
+    """Build test file name as str or Path."""
+    file_name: Path = Path(tmp_dir) / f'test.{fmt}'
+    if as_path:
+        return file_name
+    return str(file_name)
+
+
+@pytest.mark.parametrize('fmt, expected_cls',
+                         [('html', MultiFormatHtml),
+                          ('md', MultiFormatMd),
+                          ('docx', MultiFormatDocx),
+                          ('odt', MultiFormatOdt),
+                          ('txt', MultiFormatTxt)])
+@pytest.mark.parametrize('as_path', [False, True])
+def test_create_mf_file_name_type_matrix(capsys, fmt, expected_cls, as_path):
+    """Test create_mf supports str and Path file names."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name = _build_file_name(tmp_dir, fmt, as_path)
+        with create_mf(format_name=fmt, file_name=file_name) as mf:
+            assert isinstance(mf, expected_cls)
+            assert str(Path(mf.file_name)) == str(Path(file_name))
+            mf.new_heading(1, 'Test heading')
+        assert Path(file_name).exists()
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt', 'txt'])
+@pytest.mark.parametrize('as_path', [False, True])
+@pytest.mark.parametrize('allow_overwrite', [False, True])
+def test_create_mf_file_exists_callback_matrix(
+        capsys, fmt, as_path, allow_overwrite):
+    """Test file_exists_callback for str and Path file names."""
+    file_exists_cb = FileExistsCB(ask_user=False, overwrite=allow_overwrite)
+    args: OptArgs = {'file_exists_callback': file_exists_cb}
+    with TemporaryDirectory() as tmp_dir:
+        file_name = _build_file_name(tmp_dir, fmt, as_path)
+        with open(file_name, 'w', encoding='utf-8') as f:
+            f.write('Original content')
+        if allow_overwrite:
+            with create_mf(format_name=fmt, file_name=file_name,
+                           args=args) as mf:
+                mf.new_heading(1, 'Test heading')
+            assert file_exists_cb.num_calls == 1
+            assert str(file_exists_cb.file_name) == str(file_name)
+            if fmt in ['html', 'md', 'txt']:
+                with open(file_name, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                assert 'Original content' not in content
+                assert 'Test heading' in content
+            else:
+                with open(file_name, 'rb') as f:
+                    content = f.read()
+                assert b'Original content' not in content
+        else:
+            with pytest.raises(FileExistsError) as exc:
+                with create_mf(format_name=fmt, file_name=file_name,
+                               args=args) as mf:
+                    mf.new_heading(1, 'Test heading')
+            assert exc.value.args[0] == f'File {file_name} already exists.'
+            assert file_exists_cb.num_calls == 1
+            assert str(file_exists_cb.file_name) == str(file_name)
+    check_capsys(capsys)
+
+
 @pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt', 'txt'])
 def test_create_file_exists_y(capsys, fmt):
     """Test the create function with file exists and overwrite OK."""
     file_exists_cb = FileExistsCB(ask_user=False, overwrite=True)
     args: OptArgs = {'file_exists_callback': file_exists_cb}
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.' + fmt
+        file_name = str(Path(tmp_dir) / f'test.{fmt}')
         with open(file_name, 'w', encoding='utf-8') as f:
             f.write('Original content')
         with create_mf(format_name=fmt, file_name=file_name,
@@ -302,7 +370,7 @@ def test_create_file_exists_ay(capsys, monkeypatch, fmt):
     monkeypatch.setattr(sys, 'stdin', mock_input)
     args: OptArgs = {'file_exists_callback': file_exists_cb}
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.' + fmt
+        file_name = str(Path(tmp_dir) / f'test.{fmt}')
         with open(file_name, 'w', encoding='utf-8') as f:
             f.write('Original content')
         with create_mf(format_name=fmt, file_name=file_name,
@@ -329,7 +397,7 @@ def test_create_file_exists_n(capsys, fmt):
     file_exists_cb = FileExistsCB(ask_user=False, overwrite=False)
     args: OptArgs = {'file_exists_callback': file_exists_cb}
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.' + fmt
+        file_name = str(Path(tmp_dir) / f'test.{fmt}')
         with open(file_name, 'w', encoding='utf-8') as f:
             f.write('Original content')
         with pytest.raises(FileExistsError) as exc:
@@ -352,7 +420,7 @@ def test_create_file_exists_an(capsys, monkeypatch, fmt):
     monkeypatch.setattr(sys, 'stdin', mock_input)
     args: OptArgs = {'file_exists_callback': file_exists_cb}
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.' + fmt
+        file_name = str(Path(tmp_dir) / f'test.{fmt}')
         with open(file_name, 'w', encoding='utf-8') as f:
             f.write('Original content')
         with pytest.raises(FileExistsError) as exc:
@@ -739,7 +807,7 @@ def wrap_create_mf(format_name: str, file_name: str, url_as_text: bool,
 @pytest.mark.parametrize('wrap_func',
                          [wrap_i_create, wrap_create, wrap_create_mf])
 @pytest.mark.parametrize('url_as_text', [True, False])
-@pytest.mark.parametrize('file_name', ['/tmp/a', '/tmp/b'])
+@pytest.mark.parametrize('file_name', ['tmp_a', 'tmp_b'])
 @pytest.mark.parametrize('format_name,args, expected_cls',
                          [('Case1', OPTARG_LANG, MultiFormatCase1),
                           ('case1', OPTARG_LANG, MultiFormatCase1),
@@ -765,7 +833,7 @@ def test_create_wrap(capsys,  # pylint: disable=too-many-arguments,too-many-posi
     result = wrap_func(format_name=format_name, file_name=file_name,
                        url_as_text=url_as_text, args=args)
     assert isinstance(result, expected_cls)
-    assert result.file_name[:len(file_name)] == file_name
+    assert str(result.file_name).startswith(str(file_name))
     assert result.url_as_text == url_as_text
     check_capsys(capsys)
 
@@ -779,7 +847,7 @@ def test_create_wrap_nok(capsys, monkeypatch, wrap_func, format_name):
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
     with pytest.raises(KeyError) as exc:
-        wrap_func(format_name=format_name, file_name='/tmp/a',
+        wrap_func(format_name=format_name, file_name='tmp_a',
                   url_as_text=False, args=None)
     assert f'Format "{format_name}" is not registered.' in exc.value.args[0]
     check_capsys(capsys)

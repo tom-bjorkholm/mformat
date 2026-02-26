@@ -5,6 +5,7 @@
 # MIT License
 #
 
+from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Optional, Any, Callable
 import pytest
@@ -33,7 +34,7 @@ def run_with_context_manager(
         The contents of the file after the test action runs
     """
     with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test' + file_extension
+        fname = str(Path(tmp_dir) / f'test{file_extension}')
         kwargs = {'file_name': fname}
         if args is not None:
             kwargs['args'] = args
@@ -93,7 +94,7 @@ def run_protected_method(
         The contents of the file after the method runs
     """
     with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test' + file_extension
+        fname = str(Path(tmp_dir) / f'test{file_extension}')
         kwargs = {'file_name': fname}
         if args is not None:
             kwargs['args'] = args

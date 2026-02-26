@@ -6,6 +6,7 @@
 #
 
 from tempfile import TemporaryDirectory
+from pathlib import Path
 import pytest
 from check_capsys import check_capsys
 from test_helpers import (
@@ -22,7 +23,7 @@ from mformat.factory import create_mf
 def test_new_paragraph(capsys, text, expected):
     """Test the new_paragraph method."""
     with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.md'
+        fname = str(Path(tmp_dir) / 'test.md')
         with create_mf('md', file_name=fname) as mfd:
             assert type(mfd).__name__ == 'MultiFormatMd'
             assert mfd.state == MultiFormatState.EMPTY

@@ -6,6 +6,7 @@
 #
 
 from tempfile import TemporaryDirectory
+from pathlib import Path
 import pytest
 from check_capsys import check_capsys
 from mformat.mformat_plaintextlike import MultiFormatPlainTextLike
@@ -36,7 +37,7 @@ def _write_and_read(callback) -> str:
     PARAGRAPH_END so that close does not trigger abstract methods.
     """
     with TemporaryDirectory() as temp_dir:
-        file_name = temp_dir + '/test.test'
+        file_name = str(Path(temp_dir) / 'test.test')
         with PlainTextLikeTestImpl(file_name=file_name) as mf:
             callback(mf)
             mf.state = MultiFormatState.PARAGRAPH_END
@@ -52,7 +53,7 @@ def _write_and_read(callback) -> str:
 def test_init_line_wrapping_state(capsys):
     """Test that line wrapping state is initialized."""
     with TemporaryDirectory() as temp_dir:
-        file_name = temp_dir + '/test.test'
+        file_name = str(Path(temp_dir) / 'test.test')
         # pylint: disable=protected-access
         mf = PlainTextLikeTestImpl(file_name=file_name)
         assert mf._current_column == 0
@@ -69,7 +70,7 @@ def test_init_line_wrapping_state(capsys):
 def test_reset_line_state(capsys, indent):
     """Test _reset_line_state resets all tracking fields."""
     with TemporaryDirectory() as temp_dir:
-        file_name = temp_dir + '/test.test'
+        file_name = str(Path(temp_dir) / 'test.test')
         # pylint: disable=protected-access
         mf = PlainTextLikeTestImpl(file_name=file_name)
         mf._current_column = 42
@@ -134,7 +135,7 @@ def test_empty_line_before(capsys, before, now, expected):
 def test_indent2(capsys, level, expected):
     """Test _indent2 returns correct indentation per level."""
     with TemporaryDirectory() as temp_dir:
-        file_name = temp_dir + '/test.test'
+        file_name = str(Path(temp_dir) / 'test.test')
         # pylint: disable=protected-access
         mf = PlainTextLikeTestImpl(file_name=file_name)
         assert mf._indent2(level) == expected

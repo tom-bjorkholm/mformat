@@ -113,7 +113,7 @@ EXPECTED_TREE_TEXT = [
 def test_60_custom_format_tree(capsys):
     """Test the custom_format_example function with the tree format."""
     with TemporaryDirectory() as temp_dir:
-        file_name = temp_dir + '/custom_format.tree'
+        file_name = str(Path(temp_dir) / 'custom_format.tree')
         custom_format_example('tree', file_name)
         with open(file_name, 'r', encoding='utf-8') as file:
             text = file.read()

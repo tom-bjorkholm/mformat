@@ -112,7 +112,7 @@ def check_txt_func(func: Callable[[str, str], None],
                       should appear.
     """
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.txt'
+        file_name = str(Path(tmp_dir) / 'test.txt')
         func(format_name='txt', file_name=file_name)
         with open(file_name, 'r', encoding='utf-8') as file:
             text = file.read()
@@ -131,7 +131,7 @@ def check_markdown_func(func: Callable[[str, str], None],
         expected_error: Rules to be suppressed.
     """
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.md'
+        file_name = str(Path(tmp_dir) / 'test.md')
         func(format_name='md', file_name=file_name)
         try:
             config_path = _get_pymarkdown_config_path()
@@ -180,7 +180,7 @@ def check_rst_func(func: Callable[[str, str], None],
         expected_error: Expected error messages to suppress.
     """
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.rst'
+        file_name = str(Path(tmp_dir) / 'test.rst')
         func(format_name='rst', file_name=file_name)
         errors = restructuredtext_lint.lint_file(filepath=file_name)
         unexpected_errors = [error for error in errors
@@ -203,7 +203,7 @@ def check_html_func(func: Callable[[str, str], None],
                       should appear.
     """
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.html'
+        file_name = str(Path(tmp_dir) / 'test.html')
         func(format_name='html', file_name=file_name)
         with open(file_name, 'r', encoding='utf-8') as file:
             html = file.read()
@@ -235,7 +235,7 @@ def check_docx_func(func: Callable[[str, str], None],
     """
     all_expected_warnings = COMMON_EXPECTED_DOCX_WARNINGS + expected_warnings
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.docx'
+        file_name = str(Path(tmp_dir) / 'test.docx')
         func(format_name='docx', file_name=file_name)
         with open(file_name, 'rb') as f:
             content = mammoth.convert_to_html(f)
@@ -259,7 +259,7 @@ def check_odt_func(func: Callable[[str, str], None],
                       should appear.
     """
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.odt'
+        file_name = str(Path(tmp_dir) / 'test.odt')
         func(format_name='odt', file_name=file_name)
         with open(file_name, 'rb') as file:
             _ = odf_load(file)  #  test if loads without raising exception

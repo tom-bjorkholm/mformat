@@ -7,7 +7,6 @@
 
 import sys
 from typing import Callable
-import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import pytest
@@ -57,11 +56,11 @@ def silent_docx_create(capsys,
         The content of the created file converted to HTML.
     """
     with TemporaryDirectory() as tmp_dir:
-        fpath = tmp_dir + '/' + fname
+        fpath = str(Path(tmp_dir) / fname)
         with create_mf('docx', file_name=fpath) as mfd:
             func(mfd)
-        assert os.path.exists(fpath)
-        assert os.path.getsize(fpath) > 0
+        assert Path(fpath).exists()
+        assert Path(fpath).stat().st_size > 0
         check_capsys(capsys)
         with open(fpath, 'rb') as f:
             content = mammoth.convert_to_html(f)

@@ -7,7 +7,6 @@
 
 import sys
 from typing import Callable, Any
-import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import pytest
@@ -81,7 +80,7 @@ def silent_odt_create(
         The loaded ODF document (using odfpy).
     """
     with TemporaryDirectory() as tmp_dir:
-        fpath = tmp_dir + '/' + fname
+        fpath = str(Path(tmp_dir) / fname)
         args = {'lang': lang} if lang != 'en-UK' else None
         if args:
             with create_mf('odt', file_name=fpath, args=args) as mfo:
@@ -89,8 +88,8 @@ def silent_odt_create(
         else:
             with create_mf('odt', file_name=fpath) as mfo:
                 func(mfo)
-        assert os.path.exists(fpath)
-        assert os.path.getsize(fpath) > 0
+        assert Path(fpath).exists()
+        assert Path(fpath).stat().st_size > 0
         check_capsys(capsys)
         return odf_load(fpath)
 
@@ -476,7 +475,7 @@ def test_empty_document(capsys):
         assert mfo is not None  # Silence unused argument warning
 
     with TemporaryDirectory() as tmp_dir:
-        fpath = tmp_dir + '/empty.odt'
+        fpath = str(Path(tmp_dir) / 'empty.odt')
         with create_mf('odt', file_name=fpath) as mfo:
             func(mfo)
         # Empty documents should not create a file (state is EMPTY)

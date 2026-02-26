@@ -6,6 +6,7 @@
 #
 
 from tempfile import TemporaryDirectory
+from pathlib import Path
 import pytest
 from check_capsys import check_capsys
 from test_helpers import (
@@ -84,7 +85,7 @@ def test_methods(capsys,  # pylint: disable=too-many-arguments, too-many-positio
                  method, arg, expected):
     """Test the trivial methods of the MultiFormatMd class."""
     with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.md'
+        fname = str(Path(tmp_dir) / 'test.md')
         with MultiFormatMd(file_name=fname) as mfd:
             assert type(mfd).__name__ == 'MultiFormatMd'
             assert mfd.state == MultiFormatState.EMPTY
@@ -499,7 +500,7 @@ def test_block_quote_line_wrapping(capsys):
         mfd.new_block_quote(text=long_text)
 
     with TemporaryDirectory() as tmp_dir:
-        fname = tmp_dir + '/test.md'
+        fname = str(Path(tmp_dir) / 'test.md')
         with MultiFormatMd(file_name=fname) as mfd:
             test_action(mfd)
         with open(fname, 'rt', encoding='utf-8') as f:

@@ -6,6 +6,7 @@
 #
 
 from tempfile import TemporaryDirectory
+from pathlib import Path
 import pytest
 from mformat.factory import create_mf
 
@@ -33,7 +34,7 @@ class FileExistsCallback:  # pylint: disable=too-few-public-methods
 def test_file_exists_overwrite(format_name, file_name):
     """Test the file already exists functionality."""
     with TemporaryDirectory() as temp_dir:
-        full_file_name = temp_dir + '/' + file_name
+        full_file_name = str(Path(temp_dir) / file_name)
         with open(full_file_name, 'w', encoding='utf-8') as f:
             f.write('Test')
         file_exists_callback = FileExistsCallback(allow_overwrite=True)
@@ -51,7 +52,7 @@ def test_file_exists_overwrite(format_name, file_name):
 def test_file_exists_no_overwrite(format_name, file_name):
     """Test the file already exists functionality not allowing overwrite."""
     with TemporaryDirectory() as temp_dir:
-        full_file_name = temp_dir + '/' + file_name
+        full_file_name = str(Path(temp_dir) / file_name)
         with open(full_file_name, 'w', encoding='utf-8') as f:
             f.write('Test')
         file_exists_callback = FileExistsCallback(allow_overwrite=False)
@@ -71,7 +72,7 @@ def test_file_exists_no_overwrite(format_name, file_name):
 def test_file_exists_no_callback(format_name, file_name):
     """Test the file already exists functionality without a callback."""
     with TemporaryDirectory() as temp_dir:
-        full_file_name = temp_dir + '/' + file_name
+        full_file_name = str(Path(temp_dir) / file_name)
         with open(full_file_name, 'w', encoding='utf-8') as f:
             f.write('Test')
         with pytest.raises(FileExistsError) as exc:
@@ -89,7 +90,7 @@ def test_file_exists_no_callback(format_name, file_name):
 def test_file_does_not_exist(format_name, file_name):
     """Test the file exists functionality when the file does not exist."""
     with TemporaryDirectory() as temp_dir:
-        full_file_name = temp_dir + '/' + file_name
+        full_file_name = str(Path(temp_dir) / file_name)
         file_exists_callback = FileExistsCallback(allow_overwrite=False)
         args = {'file_exists_callback': file_exists_callback}
         with create_mf(format_name=format_name, file_name=full_file_name,

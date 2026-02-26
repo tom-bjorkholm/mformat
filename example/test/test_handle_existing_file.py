@@ -24,7 +24,7 @@ from e40_handle_existing_file import existing_file_example  # pylint: disable=wr
 def test_existing_file_example1(capsys, format_name, extension):
     """Test the existing file example."""
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + f'/test.{extension}'
+        file_name = str(Path(tmp_dir) / f'test.{extension}')
         existing_file_example(format_name=format_name, file_name=file_name)
         with open(file_name, "rt", encoding="utf-8") as file:
             content = file.read()
@@ -43,7 +43,7 @@ def test_existing_file_example2(capsys, monkeypatch, env_var, txt_out,
                                 format_name):
     """Test the existing file example."""
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + f'/test.{format_name}'
+        file_name = str(Path(tmp_dir) / f'test.{format_name}')
         monkeypatch.setenv('MFORMAT_FILE_EXISTS', env_var)
         with open(file=file_name, mode='wt', encoding='utf-8') as file:
             file.write('Some old content.')
@@ -62,7 +62,7 @@ def test_existing_file_example2(capsys, monkeypatch, env_var, txt_out,
 def test_existing_file_example3(capsys, monkeypatch, format_name):
     """Test the existing file example."""
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + f'/test.{format_name}'
+        file_name = str(Path(tmp_dir) / f'test.{format_name}')
         monkeypatch.delenv('MFORMAT_FILE_EXISTS', raising=False)
         with open(file=file_name, mode='wt', encoding='utf-8') as file:
             file.write('Some old content.')
@@ -70,5 +70,5 @@ def test_existing_file_example3(capsys, monkeypatch, format_name):
             existing_file_example(format_name=format_name, file_name=file_name)
     out, err = capsys.readouterr()
     assert '' == out
-    assert 'File ' + file_name + ' already exists' in err
-    assert 'Not overwriting file ' + file_name in err
+    assert f'File {file_name} already exists' in err
+    assert f'Not overwriting file {file_name}' in err

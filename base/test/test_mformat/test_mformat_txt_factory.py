@@ -31,7 +31,7 @@ class FileExistsCallbackCounter:  # pylint: disable=too-few-public-methods
 def test_create_mf_txt_returns_txt_formatter(capsys):
     """Test create_mf creates MultiFormatTxt."""
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.txt'
+        file_name = str(Path(tmp_dir) / 'test.txt')
         with create_mf('txt', file_name) as mfd:
             assert isinstance(mfd, MultiFormatTxt)
             assert mfd.file_name == file_name
@@ -41,7 +41,7 @@ def test_create_mf_txt_returns_txt_formatter(capsys):
 def test_create_mf_txt_is_case_insensitive(capsys):
     """Test create_mf accepts TXT format in upper case."""
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.txt'
+        file_name = str(Path(tmp_dir) / 'test.txt')
         with create_mf('TXT', file_name) as mfd:
             assert isinstance(mfd, MultiFormatTxt)
     check_capsys(capsys)
@@ -50,7 +50,7 @@ def test_create_mf_txt_is_case_insensitive(capsys):
 def test_create_mf_txt_optional_args(capsys):
     """Test create_mf passes optional TXT args to constructor."""
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test'
+        file_name = str(Path(tmp_dir) / 'test')
         args = {
             'line_length': 42,
             'table_max_line_length': 26,
@@ -68,7 +68,7 @@ def test_create_mf_txt_optional_args(capsys):
 def test_create_mf_txt_invalid_line_length(capsys):
     """Test constructor validation is propagated through create_mf."""
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.txt'
+        file_name = str(Path(tmp_dir) / 'test.txt')
         with pytest.raises(ValueError) as exc:
             _ = create_mf('txt', file_name, args={'line_length': 10})
         assert exc.value.args[0] == 'Line length must be greater than 10, '\

@@ -7,6 +7,7 @@
 #
 
 from tempfile import TemporaryDirectory
+from pathlib import Path
 import pytest
 from check_capsys import check_capsys
 from mformat.mformat_md import MultiFormatMd
@@ -19,7 +20,7 @@ class TestEncodeTextEmpty:
     def test_empty_string(self, capsys):
         """Test that empty string returns empty string."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 assert mfd._encode_text('') == ''
         check_capsys(capsys)
@@ -27,7 +28,7 @@ class TestEncodeTextEmpty:
     def test_none_like_empty(self, capsys):
         """Test that falsy empty string returns as-is."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 result = mfd._encode_text('')
                 assert result == ''
@@ -40,7 +41,7 @@ class TestEncodeTextCodeBlock:
     def test_code_block_triple_backticks(self, capsys):
         """Test that triple backticks are escaped in code blocks."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 # Set CODE_BLOCK state to test the branch
                 mfd.state = MultiFormatState.CODE_BLOCK
@@ -51,7 +52,7 @@ class TestEncodeTextCodeBlock:
     def test_code_block_quadruple_backticks(self, capsys):
         """Test that quadruple backticks are escaped in code blocks."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 # Set CODE_BLOCK state to test the branch
                 mfd.state = MultiFormatState.CODE_BLOCK
@@ -62,7 +63,7 @@ class TestEncodeTextCodeBlock:
     def test_code_block_other_chars_not_escaped(self, capsys):
         """Test that other special chars are NOT escaped in code blocks."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 # Set CODE_BLOCK state to test the branch
                 mfd.state = MultiFormatState.CODE_BLOCK
@@ -73,7 +74,7 @@ class TestEncodeTextCodeBlock:
     def test_code_block_multiple_triple_backticks(self, capsys):
         """Test multiple occurrences of triple backticks."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 # Set CODE_BLOCK state to test the branch
                 mfd.state = MultiFormatState.CODE_BLOCK
@@ -84,7 +85,7 @@ class TestEncodeTextCodeBlock:
     def test_code_block_multiple_quadruple_backticks(self, capsys):
         """Test multiple occurrences of quadruple backticks."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 # Set CODE_BLOCK state to test the branch
                 mfd.state = MultiFormatState.CODE_BLOCK
@@ -109,7 +110,7 @@ class TestEncodeTextAlwaysEscaped:
     def test_always_escaped_single(self, capsys, char, escaped):
         """Test that single always-escape characters are escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text(char)
@@ -127,7 +128,7 @@ class TestEncodeTextAlwaysEscaped:
     def test_always_escaped_in_context(self, capsys, text, expected):
         """Test always-escape characters in realistic contexts."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text(text)
@@ -137,7 +138,7 @@ class TestEncodeTextAlwaysEscaped:
     def test_multiple_always_escaped(self, capsys):
         """Test text with multiple always-escaped characters."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('\\`[]{}|<')
@@ -151,7 +152,7 @@ class TestEncodeTextParenthesis:
     def test_paren_after_bracket_escaped(self, capsys):
         """Test that ( after ] is escaped (link syntax)."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('](url)')
@@ -161,7 +162,7 @@ class TestEncodeTextParenthesis:
     def test_paren_not_after_bracket_not_escaped(self, capsys):
         """Test that ( not after ] is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('function(arg)')
@@ -171,7 +172,7 @@ class TestEncodeTextParenthesis:
     def test_paren_at_start(self, capsys):
         """Test that ( at start is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('(parenthesized)')
@@ -181,7 +182,7 @@ class TestEncodeTextParenthesis:
     def test_closing_paren_not_escaped(self, capsys):
         """Test that ) is never escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('text) more')
@@ -195,7 +196,7 @@ class TestEncodeTextExclamation:
     def test_exclamation_before_bracket_escaped(self, capsys):
         """Test that ! before [ is escaped (image syntax)."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('![alt](img.png)')
@@ -205,7 +206,7 @@ class TestEncodeTextExclamation:
     def test_exclamation_not_before_bracket_not_escaped(self, capsys):
         """Test that ! not before [ is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('Hello! World')
@@ -215,7 +216,7 @@ class TestEncodeTextExclamation:
     def test_exclamation_at_end(self, capsys):
         """Test that ! at end is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('Exciting!')
@@ -225,7 +226,7 @@ class TestEncodeTextExclamation:
     def test_exclamation_before_other_char(self, capsys):
         """Test that ! before non-[ is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('!important')
@@ -239,7 +240,7 @@ class TestEncodeTextTilde:
     def test_double_tilde_escaped(self, capsys):
         """Test that ~~ (strikethrough) is escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('~~strikethrough~~')
@@ -249,7 +250,7 @@ class TestEncodeTextTilde:
     def test_single_tilde_not_escaped(self, capsys):
         """Test that single ~ is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('approximately ~100')
@@ -259,7 +260,7 @@ class TestEncodeTextTilde:
     def test_tilde_separated_not_escaped(self, capsys):
         """Test that separated tildes are NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('~a~ b ~c~')
@@ -269,7 +270,7 @@ class TestEncodeTextTilde:
     def test_triple_tilde(self, capsys):
         """Test that ~~~ is escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('~~~')
@@ -283,7 +284,7 @@ class TestEncodeTextGreaterThan:
     def test_greater_than_at_line_start_escaped(self, capsys):
         """Test that > at line start is escaped (blockquote)."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('> quoted')
@@ -293,7 +294,7 @@ class TestEncodeTextGreaterThan:
     def test_greater_than_after_newline_escaped(self, capsys):
         """Test that > after newline is escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('line1\n> quoted')
@@ -303,7 +304,7 @@ class TestEncodeTextGreaterThan:
     def test_greater_than_mid_line_not_escaped(self, capsys):
         """Test that > mid-line is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('a > b')
@@ -313,7 +314,7 @@ class TestEncodeTextGreaterThan:
     def test_greater_than_after_less_than_escaped(self, capsys):
         """Test that > after < is escaped (HTML tag)."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 # Note: > is only escaped at line start or directly after <
@@ -325,7 +326,7 @@ class TestEncodeTextGreaterThan:
     def test_greater_than_directly_after_less_than(self, capsys):
         """Test that > directly after < is escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 # Empty tag: > is directly after <
@@ -336,7 +337,7 @@ class TestEncodeTextGreaterThan:
     def test_comparison_operators(self, capsys):
         """Test comparison operators in code-like text."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('x > 5 and y > 3')
@@ -350,7 +351,7 @@ class TestEncodeTextHash:
     def test_hash_at_line_start_escaped(self, capsys):
         """Test that # at line start is escaped (heading)."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('# heading')
@@ -360,7 +361,7 @@ class TestEncodeTextHash:
     def test_hash_after_newline_escaped(self, capsys):
         """Test that # after newline is escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('text\n## heading')
@@ -370,7 +371,7 @@ class TestEncodeTextHash:
     def test_hash_mid_line_not_escaped(self, capsys):
         """Test that # mid-line is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('C# programming')
@@ -380,7 +381,7 @@ class TestEncodeTextHash:
     def test_hashtag_mid_line(self, capsys):
         """Test hashtag mid-line is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('trending #topic')
@@ -390,7 +391,7 @@ class TestEncodeTextHash:
     def test_multiple_hashes_at_start(self, capsys):
         """Test multiple # at line start."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('### heading')
@@ -410,7 +411,7 @@ class TestEncodeTextListMarkers:
     def test_list_marker_at_start_with_space(self, capsys, text, expected):
         """Test list markers at line start with space/tab."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text(text)
@@ -420,7 +421,7 @@ class TestEncodeTextListMarkers:
     def test_dash_at_start_alone(self, capsys):
         """Test single dash at start (end of text) is escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('-')
@@ -430,7 +431,7 @@ class TestEncodeTextListMarkers:
     def test_horizontal_rule_dashes(self, capsys):
         """Test --- at line start - only first dash is escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 # Only the first dash at line start is escaped
@@ -441,7 +442,7 @@ class TestEncodeTextListMarkers:
     def test_dash_mid_line_not_escaped(self, capsys):
         """Test dash mid-line is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('a-b-c')
@@ -451,7 +452,7 @@ class TestEncodeTextListMarkers:
     def test_dash_mid_line_with_spaces(self, capsys):
         """Test dash mid-line with spaces NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('a - b')
@@ -461,7 +462,7 @@ class TestEncodeTextListMarkers:
     def test_plus_mid_line_not_escaped(self, capsys):
         """Test plus mid-line is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('a+b')
@@ -471,7 +472,7 @@ class TestEncodeTextListMarkers:
     def test_list_after_newline(self, capsys):
         """Test list marker after newline is escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('line\n- item')
@@ -481,7 +482,7 @@ class TestEncodeTextListMarkers:
     def test_dash_at_start_no_space(self, capsys):
         """Test dash at start without space is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('-text')
@@ -501,7 +502,7 @@ class TestEncodeTextEmphasis:
     def test_emphasis_markers_at_boundaries(self, capsys, text, expected):
         """Test emphasis markers at word boundaries."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text(text)
@@ -511,7 +512,7 @@ class TestEncodeTextEmphasis:
     def test_asterisk_between_alphanumerics_not_escaped(self, capsys):
         """Test * between alphanumerics is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('a*b*c')
@@ -521,7 +522,7 @@ class TestEncodeTextEmphasis:
     def test_underscore_between_alphanumerics_not_escaped(self, capsys):
         """Test _ between alphanumerics is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('snake_case_name')
@@ -531,7 +532,7 @@ class TestEncodeTextEmphasis:
     def test_asterisk_at_line_start_with_space(self, capsys):
         """Test * at line start with space is escaped (list)."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('* item')
@@ -541,7 +542,7 @@ class TestEncodeTextEmphasis:
     def test_asterisk_horizontal_rule(self, capsys):
         """Test *** at line start is escaped (horizontal rule)."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('***')
@@ -551,7 +552,7 @@ class TestEncodeTextEmphasis:
     def test_underscore_horizontal_rule(self, capsys):
         """Test ___ at line start is escaped (all underscores at boundary)."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 # All underscores are at word boundaries
@@ -562,7 +563,7 @@ class TestEncodeTextEmphasis:
     def test_asterisk_after_punctuation(self, capsys):
         """Test * after punctuation is escaped (word boundary)."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('word.*bold*')
@@ -572,7 +573,7 @@ class TestEncodeTextEmphasis:
     def test_asterisk_before_punctuation(self, capsys):
         """Test * before punctuation is escaped (word boundary)."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('*bold*.')
@@ -586,7 +587,7 @@ class TestEncodeTextEquals:
     def test_equals_at_line_start_followed_by_equals(self, capsys):
         """Test = at line start followed by = is escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('===')
@@ -596,7 +597,7 @@ class TestEncodeTextEquals:
     def test_equals_at_line_start_alone(self, capsys):
         """Test single = at line start (end of text) is escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('=')
@@ -606,7 +607,7 @@ class TestEncodeTextEquals:
     def test_equals_mid_line_not_escaped(self, capsys):
         """Test = mid-line is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('a=b')
@@ -616,7 +617,7 @@ class TestEncodeTextEquals:
     def test_equals_in_equation(self, capsys):
         """Test = in equation is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('x = y + z')
@@ -626,7 +627,7 @@ class TestEncodeTextEquals:
     def test_equals_after_newline(self, capsys):
         """Test = after newline followed by = is escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('heading\n===')
@@ -636,7 +637,7 @@ class TestEncodeTextEquals:
     def test_equals_at_start_not_followed_by_equals(self, capsys):
         """Test = at start not followed by = is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('=value')
@@ -662,7 +663,7 @@ class TestEncodeTextRegularText:  # pylint: disable=too-few-public-methods
     def test_regular_text_unchanged(self, capsys, text):
         """Test that regular text passes through unchanged."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text(text)
@@ -676,7 +677,7 @@ class TestEncodeTextComplexCases:
     def test_markdown_link_syntax(self, capsys):
         """Test escaping of markdown link syntax."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('[link text](http://example.com)')
@@ -688,7 +689,7 @@ class TestEncodeTextComplexCases:
     def test_markdown_image_syntax(self, capsys):
         """Test escaping of markdown image syntax."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('![alt text](image.png)')
@@ -699,7 +700,7 @@ class TestEncodeTextComplexCases:
     def test_html_tag(self, capsys):
         """Test escaping of HTML-like tags."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 # Only < is always escaped; > is only escaped at line start
@@ -713,7 +714,7 @@ class TestEncodeTextComplexCases:
     def test_inline_code_backticks(self, capsys):
         """Test escaping of inline code backticks."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('use `code` here')
@@ -723,7 +724,7 @@ class TestEncodeTextComplexCases:
     def test_table_pipe_syntax(self, capsys):
         """Test escaping of table pipe syntax."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('| col1 | col2 |')
@@ -733,7 +734,7 @@ class TestEncodeTextComplexCases:
     def test_multiple_lines_with_special_chars(self, capsys):
         """Test multiline text with various special characters."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 text = '# heading\n- list\n> quote\n*emphasis*'
@@ -747,7 +748,7 @@ class TestEncodeTextComplexCases:
     def test_programming_example(self, capsys):
         """Test text that looks like programming code."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('if (x > 5 && y < 10)')
@@ -758,7 +759,7 @@ class TestEncodeTextComplexCases:
     def test_variable_names_with_underscores(self, capsys):
         """Test variable names with underscores."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('my_variable_name')
@@ -768,7 +769,7 @@ class TestEncodeTextComplexCases:
     def test_math_expressions(self, capsys):
         """Test mathematical expressions."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('a*b + c*d = e')
@@ -778,7 +779,7 @@ class TestEncodeTextComplexCases:
     def test_file_path_with_special_chars(self, capsys):
         """Test file path that might contain special chars."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('/path/to/my_file.txt')
@@ -788,7 +789,7 @@ class TestEncodeTextComplexCases:
     def test_url_with_special_chars(self, capsys):
         """Test URL-like text."""
         with TemporaryDirectory() as tmp_dir:
-            fname = tmp_dir + '/test.md'
+            fname = str(Path(tmp_dir) / 'test.md')
             with MultiFormatMd(file_name=fname) as mfd:
                 mfd.new_paragraph(text='x')
                 result = mfd._encode_text('https://example.com/path?a=1&b=2')

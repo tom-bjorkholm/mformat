@@ -6,6 +6,7 @@
 #
 
 from tempfile import TemporaryDirectory
+from pathlib import Path
 import pytest
 from check_capsys import check_capsys
 from test_helpers import check_run_with_context_manager
@@ -36,7 +37,7 @@ def test_get_arg_desciption(capsys):
 def test_constructor_defaults(capsys):
     """Test constructor defaults for TXT formatter."""
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test'
+        file_name = str(Path(tmp_dir) / 'test')
         mfd = MultiFormatTxt(file_name=file_name)
         assert mfd.file_name.endswith('.txt')
         assert mfd.line_length == 79
@@ -48,7 +49,7 @@ def test_constructor_defaults(capsys):
 def test_constructor_table_max_line_length_none(capsys):
     """Test table_max_line_length None fallback to line_length."""
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test'
+        file_name = str(Path(tmp_dir) / 'test')
         mfd = MultiFormatTxt(file_name=file_name, line_length=42,
                              table_max_line_length=None)
         assert mfd.table_max_line_length == 42
@@ -60,7 +61,7 @@ def test_constructor_table_max_line_length_too_short(
         capsys, table_max_line_length):
     """Test table_max_line_length validation for short values."""
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.txt'
+        file_name = str(Path(tmp_dir) / 'test.txt')
         with pytest.raises(ValueError) as exc:
             _ = MultiFormatTxt(file_name=file_name, line_length=20,
                                table_max_line_length=table_max_line_length)
@@ -75,7 +76,7 @@ def test_constructor_table_max_line_length_must_be_int(
         capsys, table_max_line_length):
     """Test table_max_line_length assertion for invalid types."""
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.txt'
+        file_name = str(Path(tmp_dir) / 'test.txt')
         with pytest.raises(AssertionError):
             _ = MultiFormatTxt(file_name=file_name, line_length=20,
                                table_max_line_length=table_max_line_length)
@@ -86,7 +87,7 @@ def test_constructor_table_max_line_length_must_be_int(
 def test_constructor_line_length_too_short(capsys, line_length):
     """Test constructor line length validation for short line lengths."""
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.txt'
+        file_name = str(Path(tmp_dir) / 'test.txt')
         with pytest.raises(ValueError) as exc:
             _ = MultiFormatTxt(file_name=file_name, line_length=line_length)
         assert exc.value.args[0] == \
@@ -98,7 +99,7 @@ def test_constructor_line_length_too_short(capsys, line_length):
 def test_constructor_line_length_must_be_int(capsys, line_length):
     """Test constructor line length assertion for invalid types."""
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.txt'
+        file_name = str(Path(tmp_dir) / 'test.txt')
         with pytest.raises(AssertionError):
             _ = MultiFormatTxt(file_name=file_name,
                                line_length=line_length)
@@ -190,7 +191,7 @@ def test_write_code_block(capsys, programming_language, expected):
 def test_encode_text_no_changes(capsys):
     """Test _encode_text returns plain text unchanged."""
     with TemporaryDirectory() as tmp_dir:
-        file_name = tmp_dir + '/test.txt'
+        file_name = str(Path(tmp_dir) / 'test.txt')
         with create_mf('txt', file_name) as mfd:
             assert type(mfd).__name__ == 'MultiFormatTxt'
             # pylint: disable=protected-access
