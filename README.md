@@ -25,6 +25,27 @@ To make it easy for a programmer new to mformat to start using it there are a nu
 
 ## For developers
 
+### Cloning
+
+The mformat repo uses submodules. To clone it use the command:
+
+````sh
+git clone --recurse-submodules git@bitbucket.org:tom-bjorkholm/mformat.git
+````
+
+If you forgot to include the `--recurse-submodules` in your `git clone` command
+you can fix it later with the command:
+
+````sh
+git submodule update --init --recursive 
+````
+
+To update the version of thr submodule repo that you see in the main repo use the command:
+
+````sh
+git submodule update --remote --merge
+````
+
 ### Needed environment
 
 #### OS
@@ -49,15 +70,15 @@ The scripts are all zsh. zsh is available by default on modern macs. zsh can eas
 
 There are 3 main scripts (and 2 extra convinience scripts) for building the application:
 
-- `setup_build_environment.zsh` Run this script first to get the environment set up for building
-- `doBuild.zsh` Run this script to build an installation package (.whl) and to run the tests on it in a venv (virtual environment).
-- `clean.zsh` Deletes all files that was produced by the build to start over from a clean state.
-- `cleanBuild.zsh` Combines the use of `clean.zsh`, `setup_build_environment.zsh` and `doBuild.zsh` into one script. Pylint discover some duplicate code warnings only on a clean build so this is useful.
-- `doPypiBuild.zsh` Builds for PyPI upload and can do the upload too.
+- `setup_build_environment.py` Run this script first to get the environment set up for building
+- `do_build.py` Run this script to build an installation package (.whl) and to run the tests on it in a venv (virtual environment).
+- `clean.py` Deletes all files that was produced by the build to start over from a clean state.
+- `clean_build.py` Combines the use of `clean.py`, `setup_build_environment.py` and `do_build.py` into one script. Pylint discover some duplicate code warnings only on a clean build so this is useful.
+- `do_pypi_build.py` Builds for PyPI upload and can do the upload too.
 
 The "testing" includes pytest, pylint, flake8 and mypy.
 
-After running `doBuild.zsh` you can open `reports/index.html` to see all test reports.
+After running `do_build.py` you can open `reports/index.html` to see all test reports.
 
 ### The readme files for PyPI
 
@@ -66,7 +87,7 @@ The script `build_helpers/create_pypi_readme.py` creates the 2 readme files for 
 
 ## Test summary
 
-- Test result: 2313 passed in 19s
+- Test result: 2313 passed in 22s
 - No Flake8 warnings.
 - No mypy errors found.
 - 0.4.1 built and tested using python version: Python 3.14.3
