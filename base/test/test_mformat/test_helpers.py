@@ -7,12 +7,29 @@
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Optional, Any, Callable
+from typing import Optional, Any, Callable, TypeAlias
 import pytest
 from check_capsys import check_capsys
 from mformat.mformat import MultiFormat
 from mformat.mformat_state import MultiFormatState, Formatting
 from mformat.factory import create_mf
+
+
+MethodCall: TypeAlias = tuple[str, dict[str, Any]]
+
+
+class FileExistsCallbackCounter:  # pylint: disable=too-few-public-methods
+    """Count callback calls for existing file checks."""
+
+    def __init__(self) -> None:
+        """Initialize callback counter."""
+        self.called = 0
+        self.last_file_name = ''
+
+    def __call__(self, file_name: str) -> None:
+        """Record callback invocation."""
+        self.called += 1
+        self.last_file_name = file_name
 
 
 def run_with_context_manager(
@@ -73,6 +90,98 @@ def check_run_with_context_manager(    # pylint: disable=too-many-arguments,too-
         assert capsys is not None
     if capsys is not None:
         check_capsys(capsys, err_msgs, out_msgs)
+
+
+def create_method_call_action(
+        expected_type_name: str,
+        method_calls: list[MethodCall]) -> Callable[[Any], None]:
+    """Create test action to run formatter method calls."""
+
+    def test_action(mfd: Any) -> None:
+        assert type(mfd).__name__ == expected_type_name
+        for method_name, kwargs in method_calls:
+            method = getattr(mfd, method_name)
+            method(**kwargs)
+
+    return test_action
+
+
+def check_method_calls_output(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+        format_name: str,
+        file_extension: str,
+        expected_type_name: str,
+        method_calls: list[MethodCall],
+        expected_text: str,
+        args: Optional[dict[str, Any]] = None,
+        url_as_text: bool = False,
+        capsys: Optional[pytest.CaptureFixture[str]] = None) -> None:
+    """Run formatter method calls and verify emitted text."""
+    test_action = create_method_call_action(expected_type_name,
+                                            method_calls)
+    check_run_with_context_manager(
+        format_name=format_name,
+        file_extension=file_extension,
+        test_action=test_action,
+        expected_text=expected_text,
+        args=args,
+        url_as_text=url_as_text,
+        capsys=capsys)
+
+
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+def run_method_calls_output(
+        format_name: str,
+        file_extension: str,
+        expected_type_name: str,
+        method_calls: list[MethodCall],
+        args: Optional[dict[str, Any]] = None,
+        url_as_text: bool = False) -> str:
+    """Run formatter method calls and return output text."""
+    test_action = create_method_call_action(expected_type_name,
+                                            method_calls)
+    return run_with_context_manager(
+        format_name=format_name,
+        file_extension=file_extension,
+        test_action=test_action,
+        args=args,
+        url_as_text=url_as_text)
+# pylint: enable=too-many-arguments,too-many-positional-arguments
+
+
+def check_formatter_constructor_attributes(
+        formatter_class: Callable[..., Any],
+        file_extension: str,
+        constructor_args: Optional[dict[str, Any]],
+        expected_attrs: dict[str, Any],
+        expected_file_extension: Optional[str] = None) -> None:
+    """Create formatter and assert selected constructor attributes."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name = str(Path(tmp_dir) / f'test{file_extension}')
+        kwargs: dict[str, Any] = {'file_name': file_name}
+        if constructor_args is not None:
+            kwargs.update(constructor_args)
+        mfd = formatter_class(**kwargs)
+        if expected_file_extension is not None:
+            assert mfd.file_name.endswith(expected_file_extension)
+        for attr_name, expected_value in expected_attrs.items():
+            assert getattr(mfd, attr_name) == expected_value
+
+
+def check_formatter_constructor_raises(
+        formatter_class: Callable[..., Any],
+        file_extension: str,
+        constructor_args: dict[str, Any],
+        exception_type: type[BaseException],
+        expected_message: Optional[str] = None) -> None:
+    """Assert formatter constructor raises expected exception."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name = str(Path(tmp_dir) / f'test{file_extension}')
+        kwargs = {'file_name': file_name}
+        kwargs.update(constructor_args)
+        with pytest.raises(exception_type) as exc:
+            _ = formatter_class(**kwargs)
+        if expected_message is not None:
+            assert str(exc.value) == expected_message
 
 
 def run_protected_method(

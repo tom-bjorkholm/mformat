@@ -9,23 +9,10 @@ from tempfile import TemporaryDirectory
 from pathlib import Path
 import pytest
 from check_capsys import check_capsys
+from test_helpers import FileExistsCallbackCounter
 from mformat.factory import create_mf, filter_args_mf
 from mformat.mformat_txt import MultiFormatTxt
 from mformat.plain_text_table import TableAlignment
-
-
-class FileExistsCallbackCounter:  # pylint: disable=too-few-public-methods
-    """Count callback calls for existing file checks."""
-
-    def __init__(self):
-        """Initialize callback counter."""
-        self.called = 0
-        self.last_file_name = ''
-
-    def __call__(self, file_name: str):
-        """Record callback invocation."""
-        self.called += 1
-        self.last_file_name = file_name
 
 
 def test_create_mf_txt_returns_txt_formatter(capsys):
