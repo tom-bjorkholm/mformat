@@ -82,15 +82,27 @@ class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods 
                  traceback: TracebackType | None) -> bool:
         """Exit the context manager.
 
+        Closes the file. If the with block raised an exception,
+        close errors are noted on it to preserve it as primary.
+
         Args:
             exc_type: The type of the exception.
             exc_value: The value of the exception.
             traceback: The traceback of the exception.
         Returns:
-            True if the exception was handled, False otherwise.
+            False if an exception should propagate, True otherwise.
         """
-        self.close()
-        return exc_type is None
+        if exc_type is None:
+            self.close()
+            return True
+        try:
+            self.close()
+        # pylint: disable-next=broad-exception-caught
+        except Exception as close_exc:
+            assert exc_value is not None
+            exc_value.add_note(
+                f'Additionally, close() raised: {close_exc}')
+        return False
 
     @classmethod
     def get_arg_desciption(cls) -> FormatterDescriptor:
@@ -130,11 +142,14 @@ class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods 
         Avoid using this method directly.
         Use MultiFormat as a context manager instead, using a with statement.
         """
-        if self.state != MultiFormatState.EMPTY:
-            self._end_state()
-            self._write_file_suffix()
-        self._close()
-        self.state = MultiFormatState.CLOSED
+        try:  # we need to close the file even if an exception is raised
+            if self.state != MultiFormatState.EMPTY:
+                self._end_state()
+                self._write_file_suffix()
+        finally:
+            self._close()
+            self.state = MultiFormatState.CLOSED
+        # The _close method should internally guard against multiple closes.
 
     def new_heading(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                     level: int, text: str, smart_ws: bool = True,

@@ -66,6 +66,47 @@ class MultiFormatTextBased(MultiFormat):
         self.file.close()
         self.file = None
 
+    def _get_last_chars_written_impl(self, num_chars: int, end_pos: int,
+                                     rec_count: int) -> str:
+        """Get the last characters written to the file.
+
+        This is an implementation detail of the _get_last_chars_written method.
+        Keep the file pointer at the same position, i.e. at the end of the
+        file, so that we can continue writing after the last characters.
+        Returns the last characters written to the file.
+        As utf-8 encode characters may be 1-6 bytes long, we need to read
+        more than num_chars characters to get the last characters.
+        (On Microsoft Windows the newline character is 2 bytes long CR/LF.)
+        If we start reading bytes that are in the middle of a character,
+        the utf-8 decoder will raise and exception. If we read 6 bytes for
+        every character we are guaranteed to get the last characters.
+        If the reading happens to be in the middle of a character it will
+        be a character before the characters we are looking for. If
+        decoding fails we will try again with a larger number of bytes,
+        to try to find a place in the file where some preceeding character
+        starts.
+        Args:
+            num_chars: The number of characters to get.
+            end_pos: The position at end of file to start reading from.
+            rec_count: The number of recursive calls.
+        Returns:
+            The last characters written to the file.
+        """
+        assert self.file is not None
+        assert num_chars > 0
+        if rec_count > 8:
+            # Limit 8 is bigger than longest utf-8 encoded character (6 bytes)
+            return ''
+        number_of_bytes = min(num_chars * 6 + rec_count, end_pos)
+        self.file.seek(end_pos - number_of_bytes, io.SEEK_SET)
+        try:
+            last_chars = self.file.read(number_of_bytes)
+        except UnicodeDecodeError:
+            return self._get_last_chars_written_impl(num_chars, end_pos,
+                                                     rec_count + 1)
+        self.file.seek(end_pos, io.SEEK_SET)
+        return last_chars[-num_chars:]
+
     def _get_last_chars_written(self, num_chars: int) -> str:
         """Get the last characters written to the file.
 
@@ -76,8 +117,6 @@ class MultiFormatTextBased(MultiFormat):
         assert self.file is not None
         assert num_chars > 0
         cur_pos = self.file.tell()
-        number_of_chars = min(num_chars, cur_pos)
-        self.file.seek(cur_pos - number_of_chars, io.SEEK_SET)
-        last_chars = self.file.read(number_of_chars)
+        last_chars = self._get_last_chars_written_impl(num_chars, cur_pos, 0)
         self.file.seek(cur_pos, io.SEEK_SET)
         return last_chars

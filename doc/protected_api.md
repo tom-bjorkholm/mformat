@@ -70,6 +70,7 @@
     * [\_\_init\_\_](#mformat.mformat_textbased.MultiFormatTextBased.__init__)
     * [open](#mformat.mformat_textbased.MultiFormatTextBased.open)
     * [\_close](#mformat.mformat_textbased.MultiFormatTextBased._close)
+    * [\_get\_last\_chars\_written\_impl](#mformat.mformat_textbased.MultiFormatTextBased._get_last_chars_written_impl)
     * [\_get\_last\_chars\_written](#mformat.mformat_textbased.MultiFormatTextBased._get_last_chars_written)
 * [mformat.factory](#mformat.factory)
   * [\_the\_factory](#mformat.factory._the_factory)
@@ -1217,6 +1218,43 @@ Close the file.
 Avoid using this method directly.
 Use as a context manager instead, using a with statement.
 
+<a id="mformat.mformat_textbased.MultiFormatTextBased._get_last_chars_written_impl"></a>
+
+#### \_get\_last\_chars\_written\_impl
+
+```python
+def _get_last_chars_written_impl(num_chars: int, end_pos: int,
+                                 rec_count: int) -> str
+```
+
+Get the last characters written to the file.
+
+This is an implementation detail of the _get_last_chars_written method.
+Keep the file pointer at the same position, i.e. at the end of the
+file, so that we can continue writing after the last characters.
+Returns the last characters written to the file.
+As utf-8 encode characters may be 1-6 bytes long, we need to read
+more than num_chars characters to get the last characters.
+(On Microsoft Windows the newline character is 2 bytes long CR/LF.)
+If we start reading bytes that are in the middle of a character,
+the utf-8 decoder will raise and exception. If we read 6 bytes for
+every character we are guaranteed to get the last characters.
+If the reading happens to be in the middle of a character it will
+be a character before the characters we are looking for. If
+decoding fails we will try again with a larger number of bytes,
+to try to find a place in the file where some preceeding character
+starts.
+
+**Arguments**:
+
+- `num_chars` - The number of characters to get.
+- `end_pos` - The position at end of file to start reading from.
+- `rec_count` - The number of recursive calls.
+
+**Returns**:
+
+  The last characters written to the file.
+
 <a id="mformat.mformat_textbased.MultiFormatTextBased._get_last_chars_written"></a>
 
 #### \_get\_last\_chars\_written
@@ -2156,6 +2194,9 @@ def __exit__(exc_type: type[BaseException] | None,
 
 Exit the context manager.
 
+Closes the file. If the with block raised an exception,
+close errors are noted on it to preserve it as primary.
+
 **Arguments**:
 
 - `exc_type` - The type of the exception.
@@ -2164,7 +2205,7 @@ Exit the context manager.
 
 **Returns**:
 
-  True if the exception was handled, False otherwise.
+  False if an exception should propagate, True otherwise.
 
 <a id="mformat.mformat.MultiFormat.get_arg_desciption"></a>
 

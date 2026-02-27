@@ -23,31 +23,30 @@ from build_helpers.build_utils import (
     exit_if_in_virtualenv, extract_python_name, run_command, venv_python)
 
 GLOBAL_PACKAGES = [
-    'pip', 'setuptools', 'build', 'pylint',
-    'mypy', 'coverage', 'pytest',
+    'pip'
 ]
 
 GLOBAL_PINNED_PACKAGES = [
-    'twine==6.0.1',
+    'twine==6.0.1'
 ]
 
 VENV_PACKAGES = [
-    'pip', 'pytest', 'pytest-html',
+    'pip', 'pylint', 'mypy', 'coverage',
+    'build', 'setuptools', 'wheel',
+    'pytest', 'pytest-html',
     'flake8', 'flake8-html', 'pytest-flake8',
     'pytest-skip-slow', 'flake8-docstrings',
     'pytest-pylint', 'pytest-cov',
     'wheel', 'pypi-simple', 'requests',
     'types-requests', 'argcomplete',
-    'pylint', 'mypy', 'coverage',
-    'build', 'setuptools', 'wheel',
     'lxml', 'python-docx', 'odfdo',
     'mammoth', 'odfpy', 'pydoc-markdown',
     'pymarkdownlnt', 'restructuredtext-lint',
-    'html5lib', 'htmlcompare',
+    'html5lib', 'htmlcompare'
 ]
 
 VENV_PINNED_PACKAGES = [
-    'twine==6.0.1',
+    'twine==6.0.1'
 ]
 
 

@@ -960,6 +960,9 @@ def __exit__(exc_type: type[BaseException] | None,
 
 Exit the context manager.
 
+Closes the file. If the with block raised an exception,
+close errors are noted on it to preserve it as primary.
+
 **Arguments**:
 
 - `exc_type` - The type of the exception.
@@ -968,7 +971,7 @@ Exit the context manager.
 
 **Returns**:
 
-  True if the exception was handled, False otherwise.
+  False if an exception should propagate, True otherwise.
 
 <a id="mformat.mformat.MultiFormat.get_arg_desciption"></a>
 
