@@ -107,7 +107,7 @@ def test_factory_obj_create_nok(capsys):
                          args={'arg1': 'value1'})
     assert exc.value.args[0] == \
         'Format "something" is not registered. Available formats: ' + \
-        'docx, html, md, odt, txt'
+        'docx, html, md, odt, reST, txt'
     check_capsys(capsys)
 
 
@@ -115,7 +115,7 @@ def test_factory_obj_get_regs(capsys):
     """Test the factory object get_registered_formats method."""
     factory = MultiFormatFactory()
     assert sorted(factory.i_get_registered_formats()) == \
-        ['docx', 'html', 'md', 'odt', 'txt']
+        ['docx', 'html', 'md', 'odt', 'reST', 'txt']
     check_capsys(capsys)
 
 
@@ -135,7 +135,7 @@ def test_factory_obj_get_usage_nok(capsys):
         factory.i_get_usage('something')
     assert exc.value.args[0] == \
         'Format "something" is not registered. Available formats: ' + \
-        'docx, html, md, odt, txt'
+        'docx, html, md, odt, reST, txt'
     check_capsys(capsys)
 
 
@@ -176,7 +176,8 @@ def test_factory_reg_ok(  # pylint: disable=too-many-arguments,too-many-position
     mf2to4 = create_func('mf2t', 'test.test', url_as_text=True)
     assert mf2to4.arg1 == ''
     assert mf2to4.arg2 == ''
-    assert sorted(list_func()) == ['docx', 'html', 'md', 'mf2t', 'odt', 'txt']
+    assert sorted(list_func()) == ['docx', 'html', 'md', 'mf2t', 'odt',
+                                   'reST', 'txt']
     assert usage_func('mf2t') == \
         FormatterDescriptor(name='mf2t', mandatory_args=[],
                             optional_args=['arg1', 'arg2'])
@@ -585,7 +586,7 @@ def wrap_list_reg_mf(lower: bool, upper: bool) -> list[str]:
                           wrap_list_reg_mf])
 @pytest.mark.parametrize('lower, upper, expected',
                          [(False, False,
-                           ['Case1', 'docx', 'html', 'md', 'odt',
+                           ['Case1', 'docx', 'html', 'md', 'odt', 'reST',
                             'txt']),
                           (False, True,
                            ['Case1', 'CASE1',
@@ -593,14 +594,17 @@ def wrap_list_reg_mf(lower: bool, upper: bool) -> list[str]:
                             'html', 'HTML',
                             'md', 'MD',
                             'odt', 'ODT',
+                            'reST', 'REST',
                             'txt', 'TXT']),
                           (True, False,
                            ['Case1', 'case1',
-                            'docx', 'html', 'md', 'odt', 'txt']),
+                            'docx', 'html', 'md', 'odt', 'reST', 'rest',
+                            'txt']),
                           (True, True,
                            ['Case1', 'case1', 'CASE1',
                             'docx', 'DOCX', 'html', 'HTML',
                             'md', 'MD', 'odt', 'ODT',
+                            'reST', 'rest', 'REST',
                             'txt', 'TXT'])])
 def test_factory_reg_ident5(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                             monkeypatch, wrap_func, lower, upper, expected):

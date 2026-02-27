@@ -1,0 +1,31 @@
+Block Quote Example
+===================
+
+Block quotes are used to highlight quoted text or to draw attention to
+important information.
+
+Simple Block Quote
+------------------
+
+  This is a simple block quote. Block quotes are visually distinguished from
+  regular text with indentation and/or styling depending on the output format.
+
+Block Quote with Formatting
+---------------------------
+
+  Block quotes can have **bold** and *italic* text just like paragraphs.
+
+Block Quote with URL
+--------------------
+
+  For more information, visit `Example Website <http://example.com>`_ for
+  details.
+
+Block Quote with Code
+---------------------
+
+  The function ``new_block_quote()`` starts a new block quote, and
+   ``add_text()`` adds more text to it.
+
+Block quotes cannot be nested. Starting a new block quote while inside one ends
+the current quote and starts a fresh one.

@@ -10,6 +10,7 @@
     * [\_write\_pending\_whitespace](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._write_pending_whitespace)
     * [\_wrap\_and\_write\_atomic](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._wrap_and_write_atomic)
     * [\_empty\_line\_before](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._empty_line_before)
+    * [\_indent\_for\_level](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._indent_for_level)
     * [\_indent2](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._indent2)
     * [\_start\_paragraph](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_paragraph)
     * [\_end\_paragraph](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_paragraph)
@@ -23,6 +24,36 @@
     * [\_end\_numbered\_list](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_numbered_list)
     * [\_start\_numbered\_item\_common](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_numbered_item_common)
     * [\_end\_numbered\_item](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_numbered_item)
+* [mformat.mformat\_rst](#mformat.mformat_rst)
+  * [MultiFormatRst](#mformat.mformat_rst.MultiFormatRst)
+    * [\_\_init\_\_](#mformat.mformat_rst.MultiFormatRst.__init__)
+    * [file\_name\_extension](#mformat.mformat_rst.MultiFormatRst.file_name_extension)
+    * [get\_arg\_desciption](#mformat.mformat_rst.MultiFormatRst.get_arg_desciption)
+    * [\_write\_file\_prefix](#mformat.mformat_rst.MultiFormatRst._write_file_prefix)
+    * [\_write\_file\_suffix](#mformat.mformat_rst.MultiFormatRst._write_file_suffix)
+    * [\_start\_heading](#mformat.mformat_rst.MultiFormatRst._start_heading)
+    * [\_end\_heading](#mformat.mformat_rst.MultiFormatRst._end_heading)
+    * [\_format\_text](#mformat.mformat_rst.MultiFormatRst._format_text)
+    * [\_write\_text](#mformat.mformat_rst.MultiFormatRst._write_text)
+    * [\_write\_url](#mformat.mformat_rst.MultiFormatRst._write_url)
+    * [\_write\_code\_in\_text](#mformat.mformat_rst.MultiFormatRst._write_code_in_text)
+    * [\_start\_block\_quote](#mformat.mformat_rst.MultiFormatRst._start_block_quote)
+    * [\_end\_block\_quote](#mformat.mformat_rst.MultiFormatRst._end_block_quote)
+    * [\_start\_bullet\_list](#mformat.mformat_rst.MultiFormatRst._start_bullet_list)
+    * [\_end\_bullet\_list](#mformat.mformat_rst.MultiFormatRst._end_bullet_list)
+    * [\_start\_bullet\_item](#mformat.mformat_rst.MultiFormatRst._start_bullet_item)
+    * [\_start\_numbered\_list](#mformat.mformat_rst.MultiFormatRst._start_numbered_list)
+    * [\_end\_numbered\_list](#mformat.mformat_rst.MultiFormatRst._end_numbered_list)
+    * [\_start\_numbered\_item](#mformat.mformat_rst.MultiFormatRst._start_numbered_item)
+    * [\_indent\_for\_level](#mformat.mformat_rst.MultiFormatRst._indent_for_level)
+    * [\_start\_code\_block](#mformat.mformat_rst.MultiFormatRst._start_code_block)
+    * [\_end\_code\_block](#mformat.mformat_rst.MultiFormatRst._end_code_block)
+    * [\_write\_code\_block](#mformat.mformat_rst.MultiFormatRst._write_code_block)
+    * [\_start\_table](#mformat.mformat_rst.MultiFormatRst._start_table)
+    * [\_end\_table](#mformat.mformat_rst.MultiFormatRst._end_table)
+    * [\_write\_table\_first\_row](#mformat.mformat_rst.MultiFormatRst._write_table_first_row)
+    * [\_write\_table\_row](#mformat.mformat_rst.MultiFormatRst._write_table_row)
+    * [\_encode\_text](#mformat.mformat_rst.MultiFormatRst._encode_text)
 * [mformat.mformat\_lists\_impl](#mformat.mformat_lists_impl)
   * [PointListType](#mformat.mformat_lists_impl.PointListType)
   * [LevelFunc](#mformat.mformat_lists_impl.LevelFunc)
@@ -533,6 +564,16 @@ def _empty_line_before() -> None
 
 Make sure there is an empty line before next item.
 
+<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._indent_for_level"></a>
+
+#### \_indent\_for\_level
+
+```python
+def _indent_for_level(level: int) -> str
+```
+
+Get indentation for a list level.
+
 <a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._indent2"></a>
 
 #### \_indent2
@@ -542,6 +583,11 @@ def _indent2(level: int) -> str
 ```
 
 Get the indentation for a level.
+
+.. deprecated:: 0.4.1
+  Use :meth:`_indent_for_level` instead.
+
+Kept as compatibility wrapper. Use _indent_for_level in new code.
 
 <a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_paragraph"></a>
 
@@ -665,6 +711,345 @@ def _end_numbered_item(level: int, num: int) -> None
 ```
 
 End a numbered list item.
+
+<a id="mformat.mformat_rst"></a>
+
+# mformat.mformat\_rst
+
+reStructuredText formatter implementation.
+
+The formatter writes reStructuredText with line wrapping and indentation.
+Headings use underline styles by heading level.
+
+<a id="mformat.mformat_rst.MultiFormatRst"></a>
+
+## MultiFormatRst Objects
+
+```python
+class MultiFormatRst(MultiFormatPlainTextLike)
+```
+
+reStructuredText formatter.
+
+Text is wrapped at word boundaries. Bold and italic formatting
+are rendered using reStructuredText inline markup. Tables are
+rendered as reStructuredText grid tables.
+
+<a id="mformat.mformat_rst.MultiFormatRst.__init__"></a>
+
+#### \_\_init\_\_
+
+```python
+def __init__(file_name: PathLike,
+             url_as_text: bool = False,
+             file_exists_callback: Optional[Callable[[str], None]] = None,
+             character_encoding: str = 'utf-8',
+             line_length: int = 79,
+             table_max_line_length: Optional[int] = None,
+             table_alignment: TableAlignmentSpec = TableAlignment.LEFT)
+```
+
+Initialize the MultiFormatRst class.
+
+**Arguments**:
+
+- `file_name` - The name of the file to write to.
+- `url_as_text` - Format URLs as text not clickable URLs.
+- `file_exists_callback` - A callback function to call if the file
+  already exists. Return to allow the file to
+  be overwritten. Raise an exception to prevent
+  the file from being overwritten.
+  (May for instance save existing file as
+  backup.)
+  (Default is to raise an exception.)
+- `character_encoding` - The character encoding to use.
+  Default is 'utf-8'. Keep it as default unless
+  you have a good specific reason to change it.
+- `line_length` - The maximum length of a line.
+  Must be an integer greater than 10.
+- `table_max_line_length` - The maximum length of a line when writing
+  a table. If None, line_length is used.
+  Must be at least 10 when provided.
+- `table_alignment` - The alignment of cell values in tables.
+  Can be one alignment for all columns or
+  a list of per-column alignments.
+
+<a id="mformat.mformat_rst.MultiFormatRst.file_name_extension"></a>
+
+#### file\_name\_extension
+
+```python
+@classmethod
+def file_name_extension(cls) -> str
+```
+
+Get the file name extension for the formatter.
+
+<a id="mformat.mformat_rst.MultiFormatRst.get_arg_desciption"></a>
+
+#### get\_arg\_desciption
+
+```python
+@classmethod
+def get_arg_desciption(cls) -> FormatterDescriptor
+```
+
+Get the description of the arguments for the formatter.
+
+<a id="mformat.mformat_rst.MultiFormatRst._write_file_prefix"></a>
+
+#### \_write\_file\_prefix
+
+```python
+def _write_file_prefix() -> None
+```
+
+Write the file prefix.
+
+<a id="mformat.mformat_rst.MultiFormatRst._write_file_suffix"></a>
+
+#### \_write\_file\_suffix
+
+```python
+def _write_file_suffix() -> None
+```
+
+Write the file suffix.
+
+<a id="mformat.mformat_rst.MultiFormatRst._start_heading"></a>
+
+#### \_start\_heading
+
+```python
+def _start_heading(level: int) -> None
+```
+
+Start a heading.
+
+<a id="mformat.mformat_rst.MultiFormatRst._end_heading"></a>
+
+#### \_end\_heading
+
+```python
+def _end_heading(level: int) -> None
+```
+
+End a heading.
+
+<a id="mformat.mformat_rst.MultiFormatRst._format_text"></a>
+
+#### \_format\_text
+
+```python
+@staticmethod
+def _format_text(text: str, formatting: Formatting) -> str
+```
+
+Format text with bold and italic markup.
+
+<a id="mformat.mformat_rst.MultiFormatRst._write_text"></a>
+
+#### \_write\_text
+
+```python
+def _write_text(text: str, state: MultiFormatState,
+                formatting: Formatting) -> None
+```
+
+Write text into current item (paragraph, bullet list item...).
+
+<a id="mformat.mformat_rst.MultiFormatRst._write_url"></a>
+
+#### \_write\_url
+
+```python
+def _write_url(url: str, text: Optional[str], state: MultiFormatState,
+               formatting: Formatting) -> None
+```
+
+Write a URL into current item (paragraph, bullet list item...).
+
+<a id="mformat.mformat_rst.MultiFormatRst._write_code_in_text"></a>
+
+#### \_write\_code\_in\_text
+
+```python
+def _write_code_in_text(text: str, state: MultiFormatState) -> None
+```
+
+Write code into current item (paragraph, bullet list item...).
+
+<a id="mformat.mformat_rst.MultiFormatRst._start_block_quote"></a>
+
+#### \_start\_block\_quote
+
+```python
+def _start_block_quote() -> None
+```
+
+Start a block quote.
+
+<a id="mformat.mformat_rst.MultiFormatRst._end_block_quote"></a>
+
+#### \_end\_block\_quote
+
+```python
+def _end_block_quote() -> None
+```
+
+End a block quote.
+
+<a id="mformat.mformat_rst.MultiFormatRst._start_bullet_list"></a>
+
+#### \_start\_bullet\_list
+
+```python
+def _start_bullet_list(level: int) -> None
+```
+
+Start a bullet list.
+
+<a id="mformat.mformat_rst.MultiFormatRst._end_bullet_list"></a>
+
+#### \_end\_bullet\_list
+
+```python
+def _end_bullet_list(level: int) -> None
+```
+
+End a bullet list.
+
+<a id="mformat.mformat_rst.MultiFormatRst._start_bullet_item"></a>
+
+#### \_start\_bullet\_item
+
+```python
+def _start_bullet_item(level: int) -> None
+```
+
+Start a bullet item.
+
+<a id="mformat.mformat_rst.MultiFormatRst._start_numbered_list"></a>
+
+#### \_start\_numbered\_list
+
+```python
+def _start_numbered_list(level: int) -> None
+```
+
+Start a numbered list.
+
+<a id="mformat.mformat_rst.MultiFormatRst._end_numbered_list"></a>
+
+#### \_end\_numbered\_list
+
+```python
+def _end_numbered_list(level: int) -> None
+```
+
+End a numbered list.
+
+<a id="mformat.mformat_rst.MultiFormatRst._start_numbered_item"></a>
+
+#### \_start\_numbered\_item
+
+```python
+def _start_numbered_item(level: int, num: int, full_number: str) -> None
+```
+
+Start a numbered list item.
+
+<a id="mformat.mformat_rst.MultiFormatRst._indent_for_level"></a>
+
+#### \_indent\_for\_level
+
+```python
+def _indent_for_level(level: int) -> str
+```
+
+Get list indentation for reStructuredText output.
+
+<a id="mformat.mformat_rst.MultiFormatRst._start_code_block"></a>
+
+#### \_start\_code\_block
+
+```python
+def _start_code_block(programming_language: Optional[str]) -> None
+```
+
+Start a code block.
+
+<a id="mformat.mformat_rst.MultiFormatRst._end_code_block"></a>
+
+#### \_end\_code\_block
+
+```python
+def _end_code_block(programming_language: Optional[str]) -> None
+```
+
+End a code block.
+
+<a id="mformat.mformat_rst.MultiFormatRst._write_code_block"></a>
+
+#### \_write\_code\_block
+
+```python
+def _write_code_block(text: str, programming_language: Optional[str]) -> None
+```
+
+Write a code block.
+
+<a id="mformat.mformat_rst.MultiFormatRst._start_table"></a>
+
+#### \_start\_table
+
+```python
+def _start_table(num_columns: int) -> None
+```
+
+Start a table.
+
+<a id="mformat.mformat_rst.MultiFormatRst._end_table"></a>
+
+#### \_end\_table
+
+```python
+def _end_table(num_columns: int, num_rows: int) -> None
+```
+
+End a table.
+
+<a id="mformat.mformat_rst.MultiFormatRst._write_table_first_row"></a>
+
+#### \_write\_table\_first\_row
+
+```python
+def _write_table_first_row(first_row: list[str],
+                           formatting: Formatting) -> None
+```
+
+Write the first row of a table.
+
+<a id="mformat.mformat_rst.MultiFormatRst._write_table_row"></a>
+
+#### \_write\_table\_row
+
+```python
+def _write_table_row(row: list[str], formatting: Formatting,
+                     row_number: int) -> None
+```
+
+Write a row of a table.
+
+<a id="mformat.mformat_rst.MultiFormatRst._encode_text"></a>
+
+#### \_encode\_text
+
+```python
+def _encode_text(text: str) -> str
+```
+
+Encode text for reStructuredText output.
 
 <a id="mformat.mformat_lists_impl"></a>
 

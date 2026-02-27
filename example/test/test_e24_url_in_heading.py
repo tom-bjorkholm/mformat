@@ -12,6 +12,7 @@ from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_O
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
+    check_rst_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -219,4 +220,17 @@ def test_e24_url_in_headings_txt(capsys):
     """Test the example_url_in_heading function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(example_url_in_heading, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e24_url_in_heading_rst(capsys):
+    """Test example_url_in_heading with the reST format."""
+    expected_txt = [
+        'URL in heading example',
+        'A heading with a URL: `This URL link to the examples.',
+        'A heading with a bold URL: **`This bold URL link',
+        'The add_url function can be used to add a URL to a heading',
+    ]
+    expected_error: list[str] = []
+    check_rst_func(example_url_in_heading, expected_txt, expected_error)
     check_capsys_silent(capsys)

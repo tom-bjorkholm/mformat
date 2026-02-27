@@ -8,13 +8,14 @@
 from mformat.mformat import MultiFormat
 from mformat.mformat_html import MultiFormatHtml
 from mformat.mformat_md import MultiFormatMd
+from mformat.mformat_rst import MultiFormatRst
 from mformat.mformat_txt import MultiFormatTxt
 
 
 def register_formats_in_pkg() -> list[type[MultiFormat]]:
     """Get formats defined in the package to register with the factory."""
     ret: list[type[MultiFormat]] = [MultiFormatHtml, MultiFormatMd,
-                                    MultiFormatTxt]
+                                    MultiFormatRst, MultiFormatTxt]
     try:
         # try to also register the formats defined in the extension package
         # pylint: disable=import-outside-toplevel,wrong-import-order

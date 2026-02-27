@@ -12,6 +12,7 @@ from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_O
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
+    check_rst_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -131,4 +132,17 @@ def test_e21_url_in_paragraph_bold_txt(capsys):
     """Test the example_url_in_paragraph_bold function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(example_url_in_paragraph_bold, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e21_url_in_paragraph_bold_rst(capsys):
+    """Test example_url_in_paragraph_bold with the reST format."""
+    expected_txt = [
+        'URL in paragraph with bold & italic example',
+        '*`This italic URL link to the examples <https://bitbucket.org',
+        '**`this bold URL link to the example source code.',
+    ]
+    expected_error: list[str] = []
+    check_rst_func(example_url_in_paragraph_bold, expected_txt,
+                   expected_error)
     check_capsys_silent(capsys)

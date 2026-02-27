@@ -212,6 +212,7 @@ FORMATS = [
     ['html', 'HTML Web page', 'mformat', '0.2'],
     ['md', 'Markdown', 'mformat', '0.2'],
     ['odt', 'Open Document Text', 'mformat-ext', '0.2'],
+    ['reST', 'reStructured Text', 'mformat', '0.5'],
     ['txt', 'Plain text', 'mformat', '0.5']
 ]
 H2_DEPRECATED = 'API changes in version 0.3 (deprecated methods)'

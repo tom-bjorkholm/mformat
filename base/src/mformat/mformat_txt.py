@@ -39,8 +39,6 @@ class MultiFormatTxt(MultiFormatPlainTextLike):
     Tables are rendered with ASCII-like borders.
     """
 
-    MAX_LINE_LENGTH = 80
-
     def __init__(self,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
                  file_name: PathLike, url_as_text: bool = False,
                  file_exists_callback: Optional[Callable[[str], None]] = None,

@@ -1,0 +1,7 @@
+URL in paragraph with bold & italic example
+===========================================
+
+This is a paragraph with a URL:
+*`This italic URL link to the examples <https://bitbucket.org/tom-bjorkholm/mformat/src/master/example>`_*
+and
+**`this bold URL link to the example source code. <https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src>`_**

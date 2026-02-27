@@ -6,6 +6,7 @@
 #
 
 import re
+import warnings
 from typing import Optional, Callable
 from mformat.mformat_textbased import MultiFormatTextBased
 from mformat.mformat import PathLike
@@ -176,9 +177,23 @@ class MultiFormatPlainTextLike(MultiFormatTextBased):
         else:
             self.file.write('\n\n')
 
-    def _indent2(self, level: int) -> str:
-        """Get the indentation for a level."""
+    def _indent_for_level(self, level: int) -> str:
+        """Get indentation for a list level."""
         return 2 * (level - 1) * ' '
+
+    def _indent2(self, level: int) -> str:
+        """Get the indentation for a level.
+
+        .. deprecated:: 0.4.1
+          Use :meth:`_indent_for_level` instead.
+
+        Kept as compatibility wrapper. Use _indent_for_level in new code.
+        """
+        warnings.warn('_indent2 is deprecated. '
+                      'Use _indent_for_level instead.',
+                      DeprecationWarning,
+                      stacklevel=3)
+        return self._indent_for_level(level)
 
     # =================================================================
     # Paragraph and block quote
@@ -227,7 +242,7 @@ class MultiFormatPlainTextLike(MultiFormatTextBased):
         assert isinstance(level, int)
         if empty_line_before:
             self._empty_line_before()
-        indent = self._indent2(level)
+        indent = self._indent_for_level(level)
         self.file.write(indent + marker)
         self._reset_line_state(
             continuation_indent=indent + '  ')
@@ -256,7 +271,7 @@ class MultiFormatPlainTextLike(MultiFormatTextBased):
         assert isinstance(num, int)
         if empty_line_before:
             self._empty_line_before()
-        indent = self._indent2(level)
+        indent = self._indent_for_level(level)
         marker = full_number + ' '
         self.file.write(indent + marker)
         self._reset_line_state(

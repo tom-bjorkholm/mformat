@@ -181,7 +181,7 @@ def check_rst_func(func: Callable[[str, str], None],
     """
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.rst')
-        func(format_name='rst', file_name=file_name)
+        func(format_name='reST', file_name=file_name)
         errors = restructuredtext_lint.lint_file(filepath=file_name)
         unexpected_errors = [error for error in errors
                              if error.message not in expected_error]
@@ -214,7 +214,6 @@ def check_html_func(func: Callable[[str, str], None],
             print(str(exc))
             assert False, 'HTML parse error'
         check_text_in_order(html, expected_txt)
-
 
 
 COMMON_EXPECTED_DOCX_WARNINGS = [
@@ -262,7 +261,7 @@ def check_odt_func(func: Callable[[str, str], None],
         file_name = str(Path(tmp_dir) / 'test.odt')
         func(format_name='odt', file_name=file_name)
         with open(file_name, 'rb') as file:
-            _ = odf_load(file)  #  test if loads without raising exception
+            _ = odf_load(file)  # test if loads without raising exception
             converter = ODF2XHTML()
             html = converter.odf2xhtml(file)
             check_text_in_order(html, expected_txt)
@@ -286,7 +285,7 @@ EQUIV_SEQS = [
 
 def _reduce_equiv_seqs(html: list[str]) -> list[str]:
     """Reduce equivalent sequences of HTML tags.
-    
+
     When the html input contains a sequence of values (tags)
     that is a key in EQUIV_SEQS, the sequence is replaced by the value.
     """
@@ -354,12 +353,12 @@ def odt_version_of_html(html: list[str]) -> list[str]:
         if line in HTML2ODT_TAGS:
             odt_html[idx] = HTML2ODT_TAGS[line]
         elif line in ('<em>', '<strong>'):
-            if idx > 0  and odt_html[idx-1] == '<span':
+            if idx > 0 and odt_html[idx-1] == '<span':
                 odt_html[idx] = ''
             else:
                 odt_html[idx] = '<span'
         elif line in ('</em>', '</strong>'):
-            if idx > 0  and odt_html[idx-1] == '</span':
+            if idx > 0 and odt_html[idx-1] == '</span':
                 odt_html[idx] = ''
             else:
                 odt_html[idx] = '</span'

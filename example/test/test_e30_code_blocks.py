@@ -12,6 +12,7 @@ from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_O
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
+    check_rst_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -227,4 +228,17 @@ def test_e30_code_blocks_txt(capsys):
     """Test the code_blocks_example function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(code_blocks_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e30_code_blocks_rst(capsys):
+    """Test the code_blocks_example function with the reST format."""
+    expected_txt = [
+        'Code blocks example',
+        '``write_code_block()``',
+        '.. code:: python',
+        'def hello_world(i: int) -> int:',
+    ]
+    expected_error: list[str] = []
+    check_rst_func(code_blocks_example, expected_txt, expected_error)
     check_capsys_silent(capsys)

@@ -12,6 +12,7 @@ from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_O
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
+    check_rst_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -131,4 +132,17 @@ def test_e16_table_row_by_row_txt(capsys):
     """Test the example_table_row_by_row function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(example_table_row_by_row, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e16_table_row_by_row_rst(capsys):
+    """Test example_table_row_by_row with the reST format."""
+    expected_txt = [
+        'Table row by row example',
+        '| Jane | 30  | Los Angeles |',
+        'Note: As the rows are added and written one by one',
+        'markdown will hide this and make the table look as expected.',
+    ]
+    expected_error: list[str] = []
+    check_rst_func(example_table_row_by_row, expected_txt, expected_error)
     check_capsys_silent(capsys)

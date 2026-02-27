@@ -13,6 +13,7 @@ from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, \
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
+    check_rst_func,
     check_docx_func, check_odt_func)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -271,4 +272,18 @@ def test_e32_block_quote_txt(capsys):
     """Test the block_quote_example function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(block_quote_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e32_block_quote_rst(capsys):
+    """Test block_quote_example with the reST format."""
+    expected_txt = [
+        'Block Quote Example',
+        'Simple Block Quote',
+        '  This is a simple block quote.',
+        '  For more information, visit `Example Website',
+        'Block quotes cannot be nested.',
+    ]
+    expected_error: list[str] = []
+    check_rst_func(block_quote_example, expected_txt, expected_error)
     check_capsys_silent(capsys)

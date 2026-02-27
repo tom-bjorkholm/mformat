@@ -7,11 +7,11 @@
 
 import sys
 from pathlib import Path
-import pytest  # pylint: disable=unused-import
-from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
+from test_e01_paragraph import (
+    EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE)
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
-    check_txt_func,
+    check_txt_func, check_rst_func,
     check_docx_func, check_odt_func, docx_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -20,8 +20,6 @@ _example_test_path = (
 )
 sys.path.insert(0, str(_example_test_path))
 from e50_simple_complete import multi_format_example  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
-
-
 
 EXPECTED_MD_TEXT = [
     '# Main heading of example',
@@ -178,6 +176,33 @@ EXPECTED_TXT_TEXT = [
         '------ End of python code block ------\n'
     ),
 ]
+EXPECTED_RST_TEXT = [
+    (
+        'Main heading of example\n'
+        '=======================\n'
+    ),
+    (
+        'Sub heading of example where add_text adds text to the sub heading\n'
+        '------------------------------------------------------------------\n'
+    ),
+    (
+        'Heading with URL to `the example file <https://bitbucket.org/'
+        'tom-bjorkholm/mformat/src/master/example/src/simple_complete.py>`_'
+    ),
+    '* Item 1',
+    '* Item 2',
+    '   * Item 2.1',
+    '1. Item 1',
+    '3. Item 3',
+    '   1. Item 3.1',
+    '      * Item 3.1.1',
+    '4. Item 4',
+    '| Full Name | Street and Number | City or Town |',
+    '| Jim Doe   | 789 Main St       | The Village  |',
+    '.. code:: python',
+    'def my_function(x: int) -> int:',
+    'print(my_function(1))'
+]
 EXPECTED_HTML_BODY_TEXT = [
     '<h1>',
     'Main heading of example',
@@ -218,7 +243,8 @@ EXPECTED_DOCX_HTML_BODY_TEXT = [
     '<li>', 'Item 1</li>',
     '</ol>',
 ]
-EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_HTML_TEXT = (
+    EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST)
 EXPECTED_ODT_BODY_TEXT = [
     '<h1 class="P-">',
     'Main heading of example',
@@ -240,8 +266,8 @@ EXPECTED_ODT_BODY_TEXT = [
     '<li>', '<p>', 'Item 1', '</p>', '</li>',
     '</ol>'
 ]
-EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
-
+EXPECTED_ODT_TEXT = (
+    EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST)
 
 
 def test_e50_simple_complete_md(capsys):
@@ -261,6 +287,14 @@ def test_e50_simple_complete_txt(capsys):
     check_capsys_silent(capsys)
 
 
+def test_e50_simple_complete_rst(capsys):
+    """Test the multi_format_example function with the reST format."""
+    expected_txt = EXPECTED_RST_TEXT
+    expected_error: list[str] = []
+    check_rst_func(multi_format_example, expected_txt, expected_error)
+    check_capsys_silent(capsys)
+
+
 def test_e50_simple_complete_html(capsys):
     """Test the multi_format_example function with the html format."""
     expected_txt = EXPECTED_HTML_TEXT
@@ -274,7 +308,7 @@ def test_e50_simple_complete_docx(capsys):
         EXPECTED_DOCX_HTML_BODY_TEXT)
     expected_warnings = []
     check_docx_func(multi_format_example, expected_txt,
-                     expected_warnings)
+                    expected_warnings)
     check_capsys_silent(capsys)
 
 

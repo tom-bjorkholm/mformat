@@ -3,6 +3,11 @@
 * [mformat.mformat\_plaintextlike](#mformat.mformat_plaintextlike)
   * [MultiFormatPlainTextLike](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike)
     * [\_\_init\_\_](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike.__init__)
+* [mformat.mformat\_rst](#mformat.mformat_rst)
+  * [MultiFormatRst](#mformat.mformat_rst.MultiFormatRst)
+    * [\_\_init\_\_](#mformat.mformat_rst.MultiFormatRst.__init__)
+    * [file\_name\_extension](#mformat.mformat_rst.MultiFormatRst.file_name_extension)
+    * [get\_arg\_desciption](#mformat.mformat_rst.MultiFormatRst.get_arg_desciption)
 * [mformat.mformat\_lists\_impl](#mformat.mformat_lists_impl)
   * [PointListType](#mformat.mformat_lists_impl.PointListType)
   * [LevelFunc](#mformat.mformat_lists_impl.LevelFunc)
@@ -182,6 +187,90 @@ Initialize the MultiFormatPlainTextLike class.
 - `character_encoding` - The character encoding to use.
   Default is 'utf-8'. Keep it as default unless
   you have a good specific reason to change it.
+
+<a id="mformat.mformat_rst"></a>
+
+# mformat.mformat\_rst
+
+reStructuredText formatter implementation.
+
+The formatter writes reStructuredText with line wrapping and indentation.
+Headings use underline styles by heading level.
+
+<a id="mformat.mformat_rst.MultiFormatRst"></a>
+
+## MultiFormatRst Objects
+
+```python
+class MultiFormatRst(MultiFormatPlainTextLike)
+```
+
+reStructuredText formatter.
+
+Text is wrapped at word boundaries. Bold and italic formatting
+are rendered using reStructuredText inline markup. Tables are
+rendered as reStructuredText grid tables.
+
+<a id="mformat.mformat_rst.MultiFormatRst.__init__"></a>
+
+#### \_\_init\_\_
+
+```python
+def __init__(file_name: PathLike,
+             url_as_text: bool = False,
+             file_exists_callback: Optional[Callable[[str], None]] = None,
+             character_encoding: str = 'utf-8',
+             line_length: int = 79,
+             table_max_line_length: Optional[int] = None,
+             table_alignment: TableAlignmentSpec = TableAlignment.LEFT)
+```
+
+Initialize the MultiFormatRst class.
+
+**Arguments**:
+
+- `file_name` - The name of the file to write to.
+- `url_as_text` - Format URLs as text not clickable URLs.
+- `file_exists_callback` - A callback function to call if the file
+  already exists. Return to allow the file to
+  be overwritten. Raise an exception to prevent
+  the file from being overwritten.
+  (May for instance save existing file as
+  backup.)
+  (Default is to raise an exception.)
+- `character_encoding` - The character encoding to use.
+  Default is 'utf-8'. Keep it as default unless
+  you have a good specific reason to change it.
+- `line_length` - The maximum length of a line.
+  Must be an integer greater than 10.
+- `table_max_line_length` - The maximum length of a line when writing
+  a table. If None, line_length is used.
+  Must be at least 10 when provided.
+- `table_alignment` - The alignment of cell values in tables.
+  Can be one alignment for all columns or
+  a list of per-column alignments.
+
+<a id="mformat.mformat_rst.MultiFormatRst.file_name_extension"></a>
+
+#### file\_name\_extension
+
+```python
+@classmethod
+def file_name_extension(cls) -> str
+```
+
+Get the file name extension for the formatter.
+
+<a id="mformat.mformat_rst.MultiFormatRst.get_arg_desciption"></a>
+
+#### get\_arg\_desciption
+
+```python
+@classmethod
+def get_arg_desciption(cls) -> FormatterDescriptor
+```
+
+Get the description of the arguments for the formatter.
 
 <a id="mformat.mformat_lists_impl"></a>
 

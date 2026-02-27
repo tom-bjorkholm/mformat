@@ -12,6 +12,7 @@ from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_O
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
+    check_rst_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -243,4 +244,17 @@ def test_e12_numbered_bold_txt(capsys):
     """Test the numbered_bold_example function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(numbered_bold_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e12_numbered_bold_rst(capsys):
+    """Test the numbered_bold_example function with the reST format."""
+    expected_txt = [
+        'Numbered list with bold text example',
+        '**However, this bold text is added',
+        '   2. ***Second nested numbered point item.***',
+        '5. The final item is back at level 1.',
+    ]
+    expected_error: list[str] = []
+    check_rst_func(numbered_bold_example, expected_txt, expected_error)
     check_capsys_silent(capsys)

@@ -174,12 +174,16 @@ def test_empty_line_before(capsys, before, now, expected):
                           (3, '    '),
                           (4, '      ')])
 def test_indent2(capsys, level, expected):
-    """Test _indent2 returns correct indentation per level."""
+    """Test _indent2 returns indentation and warns as deprecated."""
     with TemporaryDirectory() as temp_dir:
         file_name = str(Path(temp_dir) / 'test.test')
         # pylint: disable=protected-access
         mf = PlainTextLikeTestImpl(file_name=file_name)
-        assert mf._indent2(level) == expected
+        with pytest.deprecated_call(
+                match='_indent2 is deprecated. '
+                'Use _indent_for_level instead.'):
+            assert mf._indent2(level) == expected
+        assert mf._indent_for_level(level) == expected
     check_capsys(capsys)
 
 

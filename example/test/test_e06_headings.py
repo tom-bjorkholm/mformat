@@ -12,6 +12,7 @@ from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_O
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
+    check_rst_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -152,4 +153,35 @@ def test_e06_headings_txt(capsys):
     """Test the headings_example function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(headings_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e06_headings_rst(capsys):
+    """Test the headings_example function with the reST format."""
+    expected_txt = [
+        'This is the first heading, it is at level 1\n'
+        '===========================================\n'
+        '\n'
+        'This is the second heading, it is at level 2\n'
+        '--------------------------------------------\n'
+        '\n'
+        'This is the third heading, it is at level 3\n'
+        '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n'
+        '\n',
+        'We can add text to headings with add_text(), just as we can add '
+        'text to\n'
+        'paragraphs. New headings can be added at any level. The argument '
+        'smart_ws is\n'
+        'used to control how whitespace is handled in headings just as in '
+        'paragraphs.\n'
+        '\n'
+        'new_heading() also obeys the arguments bold and italic, just as in '
+        'paragraphs.',
+        'output format.\n'
+        '\n'
+        'The fourth heading is again at level 2\n'
+        '--------------------------------------',
+    ]
+    expected_error: list[str] = []
+    check_rst_func(headings_example, expected_txt, expected_error)
     check_capsys_silent(capsys)

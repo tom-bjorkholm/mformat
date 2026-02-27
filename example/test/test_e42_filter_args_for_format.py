@@ -12,6 +12,7 @@ from test_e01_paragraph import EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
+    check_rst_func,
     check_docx_func, check_odt_func, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -128,4 +129,18 @@ def test_42_filter_args_for_format_txt(capsys):
     """Test the filter_args_for_format_example function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(filter_args_for_format_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_42_filter_args_for_format_rst(capsys):
+    """Test filter_args_for_format_example with the reST format."""
+    expected_txt = [
+        'CSS in HTML gefiltert für andere Formate',
+        'so dass',
+        'Für ODT wird sprache auch als "de" gesetzt.',
+        'andere Formate wird die Sprache ignoriert.',
+    ]
+    expected_error: list[str] = []
+    check_rst_func(filter_args_for_format_example, expected_txt,
+                   expected_error)
     check_capsys_silent(capsys)

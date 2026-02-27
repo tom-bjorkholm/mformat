@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest  # pylint: disable=unused-import
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
-    check_docx_func, check_odt_func, check_txt_func)
+    check_docx_func, check_odt_func, check_txt_func, check_rst_func)
 # Add example/src to path
 # pylint: disable=duplicate-code
 _example_test_path = (
@@ -107,4 +107,16 @@ def test_e01_paragraph_txt(capsys):
     """Test the paragraph_example function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(paragraph_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e01_paragraph_rst(capsys):
+    """Test the paragraph_example function with the reST format."""
+    expected_txt = [
+        'With new_paragraph we can start a paragraph.',
+        'We can also add text to the paragraph',
+        'report an error for the missing heading.',
+    ]
+    expected_error: list[str] = []
+    check_rst_func(paragraph_example, expected_txt, expected_error)
     check_capsys_silent(capsys)

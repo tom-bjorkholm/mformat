@@ -12,6 +12,7 @@ from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_O
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
+    check_rst_func,
     check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -143,4 +144,16 @@ def test_e04_paragraphs_smart_ws_txt(capsys):
     """Test the paragraphs_smart_ws_example function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(paragraphs_smart_ws_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e04_paragraphs_smart_ws_rst(capsys):
+    """Test the paragraphs_smart_ws_example function with the reST format."""
+    expected_txt = [
+        'With new_paragraph we can start a paragraph.',
+        'With smart_ws=False the',
+        '**(As this example does not have a heading',
+    ]
+    expected_error: list[str] = []
+    check_rst_func(paragraphs_smart_ws_example, expected_txt, expected_error)
     check_capsys_silent(capsys)

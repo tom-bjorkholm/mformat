@@ -12,6 +12,7 @@ from test_e01_paragraph import EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
+    check_rst_func,
     check_docx_func, check_odt_func, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -146,4 +147,17 @@ def test_41_use_css_in_html_txt(capsys):
     """Test the use_css_in_html_example function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(use_css_in_html_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_41_use_css_in_html_rst(capsys):
+    """Test use_css_in_html_example with the reST format."""
+    expected_txt = [
+        'CSS und Sprache in HTML',
+        'Dieses Beispiel zeigt, wie Sie eine CSS-Datei',
+        'lang="de" steht im erzeugten',
+        '<html>-Tag.',
+    ]
+    expected_error: list[str] = []
+    check_rst_func(use_css_in_html_example, expected_txt, expected_error)
     check_capsys_silent(capsys)

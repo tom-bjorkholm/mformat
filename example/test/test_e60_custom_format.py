@@ -14,6 +14,7 @@ from test_e01_paragraph import EXPECTED_HTML_PRE, \
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
+    check_rst_func,
     check_docx_func, check_odt_func, odt_version_of_html,
     check_text_in_order)
 # Add example/src to path
@@ -182,4 +183,18 @@ def test_60_custom_format_txt(capsys):
     """Test the custom_format_example function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(custom_format_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_60_custom_format_rst(capsys):
+    """Test custom_format_example with the reST format."""
+    expected_txt = [
+        'Custom Format Example',
+        'Features',
+        '* Format-agnostic API',
+        '.. code:: python',
+        'Visit `our website <https://example.com>`_',
+    ]
+    expected_error: list[str] = []
+    check_rst_func(custom_format_example, expected_txt, expected_error)
     check_capsys_silent(capsys)
