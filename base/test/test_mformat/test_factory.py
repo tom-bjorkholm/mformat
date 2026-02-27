@@ -11,6 +11,11 @@ from pathlib import Path
 import sys
 import pytest
 from check_capsys import check_capsys
+from test_helpers import (
+    create_paragraph_file_bytes_factory,
+    check_character_encoding_bytes,
+    check_invalid_character_encoding_factory,
+)
 from mformat_ext.mformat_docx import MultiFormatDocx
 from mformat_ext.mformat_odt import MultiFormatOdt
 from mformat.factory import MultiFormatFactory
@@ -119,7 +124,7 @@ def test_factory_obj_get_usage(capsys):
     factory = MultiFormatFactory()
     assert factory.i_get_usage('md') == \
         FormatterDescriptor(name='md', mandatory_args=[],
-                            optional_args=[])
+                            optional_args=['character_encoding'])
     check_capsys(capsys)
 
 
@@ -177,10 +182,11 @@ def test_factory_reg_ok(  # pylint: disable=too-many-arguments,too-many-position
                             optional_args=['arg1', 'arg2'])
     assert usage_func('md') == \
         FormatterDescriptor(name='md', mandatory_args=[],
-                            optional_args=[])
+                            optional_args=['character_encoding'])
     assert usage_func('html') == \
         FormatterDescriptor(name='html', mandatory_args=[],
-                            optional_args=['title', 'css_file', 'lang'])
+                            optional_args=['title', 'css_file', 'lang',
+                                           'character_encoding'])
     assert usage_func('docx') == \
         FormatterDescriptor(name='docx', mandatory_args=[],
                             optional_args=[])
@@ -270,6 +276,39 @@ def test_create_mf_file_name_type_matrix(capsys, fmt, expected_cls, as_path):
             assert str(Path(mf.file_name)) == str(Path(file_name))
             mf.new_heading(1, 'Test heading')
         assert Path(file_name).exists()
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('format_name, file_extension',
+                         [('html', '.html'),
+                          ('md', '.md'),
+                          ('txt', '.txt')])
+@pytest.mark.parametrize('character_encoding, expected_text_bytes',
+                         [('utf-8', b'Caf\xc3\xa9'),
+                          ('iso-8859-1', b'Caf\xe9')])
+def test_create_mf_character_encoding_writes_bytes(
+        capsys, format_name, file_extension, character_encoding,
+        expected_text_bytes):
+    """Test create_mf writes bytes in the selected character encoding."""
+    raw_content = create_paragraph_file_bytes_factory(
+        format_name=format_name, file_extension=file_extension,
+        character_encoding=character_encoding)
+    check_character_encoding_bytes(
+        raw_content=raw_content, character_encoding=character_encoding,
+        expected_text_bytes=expected_text_bytes,
+        expected_html_meta=format_name == 'html')
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('format_name, file_extension',
+                         [('html', '.html'),
+                          ('md', '.md'),
+                          ('txt', '.txt')])
+def test_create_mf_invalid_character_encoding(
+        capsys, format_name, file_extension):
+    """Test create_mf propagates invalid encoding from Python open."""
+    check_invalid_character_encoding_factory(
+        format_name=format_name, file_extension=file_extension)
     check_capsys(capsys)
 
 
@@ -611,21 +650,25 @@ def wrap_usage_mf(format_name: str) -> FormatterDescriptor:
                                                mandatory_args=[],
                                                optional_args=[])),
                           ('html',
-                           FormatterDescriptor(name='html',
-                                               mandatory_args=[],
-                                               optional_args=['title',
-                                                              'css_file',
-                                                              'lang'])),
+                           FormatterDescriptor(
+                               name='html',
+                               mandatory_args=[],
+                               optional_args=[
+                                   'title', 'css_file',
+                                   'lang',
+                                   'character_encoding'])),
                           ('Docx',
                            FormatterDescriptor(name='docx',
                                                mandatory_args=[],
                                                optional_args=[])),
                           ('HTML',
-                           FormatterDescriptor(name='html',
-                                               mandatory_args=[],
-                                               optional_args=['title',
-                                                              'css_file',
-                                                              'lang']))])
+                           FormatterDescriptor(
+                               name='html',
+                               mandatory_args=[],
+                               optional_args=[
+                                   'title', 'css_file',
+                                   'lang',
+                                   'character_encoding']))])
 def test_get_usage_wrap(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                         monkeypatch, wrap_func, format_name, usage):
     """Test the get_usage functions with lower and upper case names."""
@@ -760,6 +803,29 @@ def test_filter_args_wrap(capsys,  # pylint: disable=too-many-arguments,too-many
                          [wrap_filter_args,
                           wrap_i_filter_args,
                           wrap_filter_args_mf])
+@pytest.mark.parametrize('format_name, expected',
+                         [('case1', OPTARG_EMPTY),
+                          ('md', {'character_encoding': 'iso-8859-1'}),
+                          ('MD', {'character_encoding': 'iso-8859-1'}),
+                          ('txt', {'character_encoding': 'iso-8859-1'}),
+                          ('TXT', {'character_encoding': 'iso-8859-1'}),
+                          ('html', {'character_encoding': 'iso-8859-1'}),
+                          ('HTML', {'character_encoding': 'iso-8859-1'}),
+                          ('docx', OPTARG_EMPTY),
+                          ('odt', OPTARG_EMPTY)])
+def test_filter_args_wrap_character_encoding(
+        capsys, monkeypatch, wrap_func, format_name, expected):
+    """Test filter_args keeps character_encoding only for text formats."""
+    args: OptArgs = {'character_encoding': 'iso-8859-1'}
+    monkeypatch.setattr('mformat.factory._the_factory', None)
+    assert wrap_func(args=args, format_name=format_name) == expected
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('wrap_func',
+                         [wrap_filter_args,
+                          wrap_i_filter_args,
+                          wrap_filter_args_mf])
 @pytest.mark.parametrize('args, format_name',
                          [(OPTARG_EMPTY, 'MDS'),
                           (OPTARG_EMPTY, 'docxx'),
@@ -835,6 +901,24 @@ def test_create_wrap(capsys,  # pylint: disable=too-many-arguments,too-many-posi
     assert isinstance(result, expected_cls)
     assert str(result.file_name).startswith(str(file_name))
     assert result.url_as_text == url_as_text
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('wrap_func',
+                         [wrap_i_create, wrap_create, wrap_create_mf])
+@pytest.mark.parametrize('format_name, expected_cls',
+                         [('html', MultiFormatHtml),
+                          ('md', MultiFormatMd),
+                          ('txt', MultiFormatTxt)])
+def test_create_wrap_character_encoding(
+        capsys, monkeypatch, wrap_func, format_name, expected_cls):
+    """Test create wrappers propagate character_encoding argument."""
+    args: OptArgs = {'character_encoding': 'iso-8859-1'}
+    monkeypatch.setattr('mformat.factory._the_factory', None)
+    result = wrap_func(format_name=format_name, file_name='tmp_a',
+                       url_as_text=False, args=args)
+    assert isinstance(result, expected_cls)
+    assert result.character_encoding == 'iso-8859-1'
     check_capsys(capsys)
 
 

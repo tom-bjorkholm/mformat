@@ -9,7 +9,12 @@ from tempfile import TemporaryDirectory
 from pathlib import Path
 import pytest
 from check_capsys import check_capsys
-from test_helpers import check_run_with_context_manager
+from test_helpers import (
+    check_run_with_context_manager,
+    create_paragraph_file_bytes,
+    check_character_encoding_bytes,
+    check_invalid_character_encoding_constructor,
+)
 from mformat.factory import create_mf
 from mformat.mformat import FormatterDescriptor
 from mformat.mformat_txt import MultiFormatTxt
@@ -29,7 +34,8 @@ def test_get_arg_desciption(capsys):
             name='txt',
             mandatory_args=[],
             optional_args=['line_length', 'table_max_line_length',
-                           'table_alignment']
+                           'table_alignment',
+                           'character_encoding']
         )
     check_capsys(capsys)
 
@@ -197,4 +203,26 @@ def test_encode_text_no_changes(capsys):
             # pylint: disable=protected-access
             assert mfd._encode_text(
                 'a*b [c] {d}') == 'a*b [c] {d}'
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('character_encoding, expected_text_bytes',
+                         [('utf-8', b'Caf\xc3\xa9'),
+                          ('iso-8859-1', b'Caf\xe9')])
+def test_character_encoding_writes_expected_bytes(
+        capsys, character_encoding, expected_text_bytes):
+    """Test that TXT output bytes match selected character encoding."""
+    raw_content = create_paragraph_file_bytes(
+        formatter_class=MultiFormatTxt, file_extension='.txt',
+        character_encoding=character_encoding)
+    check_character_encoding_bytes(
+        raw_content=raw_content, character_encoding=character_encoding,
+        expected_text_bytes=expected_text_bytes)
+    check_capsys(capsys)
+
+
+def test_invalid_character_encoding_raises_lookup_error(capsys):
+    """Test invalid encoding is propagated from Python open."""
+    check_invalid_character_encoding_constructor(
+        formatter_class=MultiFormatTxt, file_extension='.txt')
     check_capsys(capsys)

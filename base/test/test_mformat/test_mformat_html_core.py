@@ -5,13 +5,15 @@
 # MIT License
 #
 
-
 from typing import Optional
 import pytest
 from check_capsys import check_capsys
 from test_helpers import (
     check_run_with_context_manager,
-    run_protected_method
+    run_protected_method,
+    create_paragraph_file_bytes,
+    check_character_encoding_bytes,
+    check_invalid_character_encoding_constructor,
 )
 from mformat.mformat_html import MultiFormatHtml
 from mformat.mformat_state import MultiFormatState, Formatting
@@ -28,7 +30,8 @@ def test_get_arg_desciption(capsys):
     """Test the get_arg_desciption method."""
     assert MultiFormatHtml.get_arg_desciption() == \
         FormatterDescriptor(name='html', mandatory_args=[],
-                            optional_args=['title', 'css_file', 'lang'])
+                            optional_args=['title', 'css_file', 'lang',
+                                           'character_encoding'])
     check_capsys(capsys)
 
 
@@ -390,3 +393,25 @@ def test_block_quote_3(capsys):
            '<p>\nParagraph text</p>\n' + SFTOT)
     check_run_with_context_manager('html', '.html', test_action,
                                    expected_text=exp, capsys=capsys)
+
+
+@pytest.mark.parametrize('character_encoding, expected_text_bytes',
+                         [('utf-8', b'Caf\xc3\xa9'),
+                          ('iso-8859-1', b'Caf\xe9')])
+def test_character_encoding_writes_expected_bytes(
+        capsys, character_encoding, expected_text_bytes):
+    """Test that HTML output bytes match the selected character encoding."""
+    raw_content = create_paragraph_file_bytes(
+        formatter_class=MultiFormatHtml, file_extension='.html',
+        character_encoding=character_encoding)
+    check_character_encoding_bytes(
+        raw_content=raw_content, character_encoding=character_encoding,
+        expected_text_bytes=expected_text_bytes, expected_html_meta=True)
+    check_capsys(capsys)
+
+
+def test_invalid_character_encoding_raises_lookup_error(capsys):
+    """Test invalid encoding is propagated from Python open."""
+    check_invalid_character_encoding_constructor(
+        formatter_class=MultiFormatHtml, file_extension='.html')
+    check_capsys(capsys)

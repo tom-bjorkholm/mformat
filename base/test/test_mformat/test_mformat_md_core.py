@@ -11,7 +11,9 @@ import pytest
 from check_capsys import check_capsys
 from test_helpers import (
     run_protected_method,
-    check_run_with_context_manager
+    check_run_with_context_manager,
+    check_formatter_character_encoding,
+    check_invalid_character_encoding_constructor,
 )
 from mformat.mformat_md import MultiFormatMd, split_whitespace
 from mformat.mformat_state import MultiFormatState, Formatting
@@ -43,7 +45,7 @@ def test_get_arg_desciption(capsys):
     """Test the get_arg_desciption method."""
     assert MultiFormatMd.get_arg_desciption() == \
         FormatterDescriptor(name='md', mandatory_args=[],
-                            optional_args=[])
+                            optional_args=['character_encoding'])
     check_capsys(capsys)
 
 
@@ -576,3 +578,23 @@ def test_block_quote_then_code_block(capsys):
     check_run_with_context_manager('md', '.md', test_action,
                                    expected_text=expected,
                                    capsys=capsys)
+
+
+@pytest.mark.parametrize('character_encoding, expected_text_bytes',
+                         [('utf-8', b'Caf\xc3\xa9'),
+                          ('iso-8859-1', b'Caf\xe9')])
+def test_character_encoding_writes_expected_bytes(
+        capsys, character_encoding, expected_text_bytes):
+    """Test that Markdown output bytes match selected character encoding."""
+    check_formatter_character_encoding(
+        formatter_class=MultiFormatMd, file_extension='.md',
+        character_encoding=character_encoding,
+        expected_text_bytes=expected_text_bytes)
+    check_capsys(capsys)
+
+
+def test_invalid_character_encoding_raises_lookup_error(capsys):
+    """Test invalid encoding is propagated from Python open."""
+    check_invalid_character_encoding_constructor(
+        formatter_class=MultiFormatMd, file_extension='.md')
+    check_capsys(capsys)

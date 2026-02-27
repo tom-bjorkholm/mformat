@@ -28,7 +28,8 @@ class MultiFormatTextBased(MultiFormat):
     """Base class for all text based format classes."""
 
     def __init__(self, file_name: PathLike, url_as_text: bool = False,
-                 file_exists_callback: Optional[Callable[[str], None]] = None):
+                 file_exists_callback: Optional[Callable[[str], None]] = None,
+                 character_encoding: str = 'utf-8'):
         """Initialize the TextBasedFormat class.
 
         Args:
@@ -41,10 +42,14 @@ class MultiFormatTextBased(MultiFormat):
                                   (May for instance save existing file as
                                   backup.)
                                   (Default is to raise an exception.)
+            character_encoding: The character encoding to use.
+                                Default is 'utf-8'. Keep it as default unless
+                                you have a good specific reason to change it.
         """
         super().__init__(file_name=file_name, url_as_text=url_as_text,
                          file_exists_callback=file_exists_callback)
         self.file: Optional[TextIO] = None
+        self.character_encoding: str = character_encoding
 
     def open(self) -> None:
         """Open the file.
@@ -53,7 +58,7 @@ class MultiFormatTextBased(MultiFormat):
         Use as a context manager instead, using a with statement.
         """
         self.file = open(self.file_name,  # pylint: disable=consider-using-with
-                         mode='w+t', encoding='utf-8')
+                         mode='w+t', encoding=self.character_encoding)
 
     def _close(self) -> None:
         """Close the file.

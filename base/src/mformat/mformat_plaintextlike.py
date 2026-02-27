@@ -21,7 +21,8 @@ class MultiFormatPlainTextLike(MultiFormatTextBased):
     """
 
     def __init__(self, file_name: PathLike, url_as_text: bool = False,
-                 file_exists_callback: Optional[Callable[[str], None]] = None):
+                 file_exists_callback: Optional[Callable[[str], None]] = None,
+                 character_encoding: str = 'utf-8'):
         """Initialize the MultiFormatPlainTextLike class.
 
         Args:
@@ -33,9 +34,13 @@ class MultiFormatPlainTextLike(MultiFormatTextBased):
                 from being overwritten.
                 (May for instance save existing file as backup.)
                 (Default is to raise an exception.)
+            character_encoding: The character encoding to use.
+                                Default is 'utf-8'. Keep it as default unless
+                                you have a good specific reason to change it.
         """
         super().__init__(file_name=file_name, url_as_text=url_as_text,
-                         file_exists_callback=file_exists_callback)
+                         file_exists_callback=file_exists_callback,
+                         character_encoding=character_encoding)
         self._current_column = 0
         self._continuation_indent = ''
         self._pending_whitespace = ''

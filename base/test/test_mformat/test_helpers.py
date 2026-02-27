@@ -110,6 +110,138 @@ def run_protected_method(
             return file.read()
 
 
+def create_paragraph_file_bytes(
+        formatter_class: Callable[..., Any], file_extension: str,
+        character_encoding: str,
+        text: str = 'Café') -> bytes:
+    """Create a paragraph file via formatter constructor and return bytes.
+
+    Args:
+        formatter_class: Formatter class or constructor callable.
+        file_extension: Output file extension (e.g. '.html').
+        character_encoding: Character encoding argument to pass.
+        text: Paragraph text to write.
+    Returns:
+        Raw file bytes.
+    """
+    with TemporaryDirectory() as tmp_dir:
+        fname = str(Path(tmp_dir) / f'test{file_extension}')
+        with formatter_class(file_name=fname,
+                             character_encoding=character_encoding) as mfd:
+            mfd.new_paragraph(text=text)
+        with open(fname, 'rb') as file:
+            return file.read()
+
+
+def create_paragraph_file_bytes_factory(
+        format_name: str, file_extension: str,
+        character_encoding: str,
+        text: str = 'Café') -> bytes:
+    """Create a paragraph file via create_mf and return bytes.
+
+    Args:
+        format_name: Registered format name.
+        file_extension: Output file extension (e.g. '.md').
+        character_encoding: Character encoding argument to pass.
+        text: Paragraph text to write.
+    Returns:
+        Raw file bytes.
+    """
+    args = {'character_encoding': character_encoding}
+    with TemporaryDirectory() as tmp_dir:
+        fname = str(Path(tmp_dir) / f'test{file_extension}')
+        with create_mf(format_name=format_name, file_name=fname,
+                       args=args) as mfd:
+            mfd.new_paragraph(text=text)
+        with open(fname, 'rb') as file:
+            return file.read()
+
+
+def check_character_encoding_bytes(
+        raw_content: bytes, character_encoding: str,
+        expected_text_bytes: bytes,
+        expected_html_meta: bool = False) -> None:
+    """Check that raw output bytes match selected character encoding.
+
+    Args:
+        raw_content: Raw file bytes to verify.
+        character_encoding: Encoding used for writing.
+        expected_text_bytes: Expected byte sequence for written text.
+        expected_html_meta: If True, assert HTML charset meta tag.
+    """
+    assert expected_text_bytes in raw_content
+    if expected_html_meta:
+        meta = f'<meta charset="{character_encoding}">\n'
+        assert meta.encode('ascii') in raw_content
+    if character_encoding == 'iso-8859-1':
+        with pytest.raises(UnicodeDecodeError):
+            raw_content.decode('utf-8')
+
+
+def check_invalid_character_encoding_constructor(
+        formatter_class: Callable[..., Any], file_extension: str,
+        invalid_encoding: str = 'invalid-encoding') -> None:
+    """Check constructor path propagates invalid encoding LookupError.
+
+    Args:
+        formatter_class: Formatter class or constructor callable.
+        file_extension: Output file extension for temporary file.
+        invalid_encoding: Invalid encoding name to test.
+    """
+    with TemporaryDirectory() as tmp_dir:
+        fname = str(Path(tmp_dir) / f'test{file_extension}')
+        with pytest.raises(LookupError) as exc:
+            with formatter_class(file_name=fname,
+                                 character_encoding=invalid_encoding):
+                pass
+        assert invalid_encoding in str(exc.value)
+
+
+def check_invalid_character_encoding_factory(
+        format_name: str, file_extension: str,
+        invalid_encoding: str = 'invalid-encoding') -> None:
+    """Check factory path propagates invalid encoding LookupError.
+
+    Args:
+        format_name: Registered format name.
+        file_extension: Output file extension for temporary file.
+        invalid_encoding: Invalid encoding name to test.
+    """
+    args = {'character_encoding': invalid_encoding}
+    with TemporaryDirectory() as tmp_dir:
+        fname = str(Path(tmp_dir) / f'test{file_extension}')
+        with pytest.raises(LookupError) as exc:
+            with create_mf(format_name=format_name, file_name=fname,
+                           args=args):
+                pass
+        assert invalid_encoding in str(exc.value)
+
+
+def check_formatter_character_encoding(
+        formatter_class: Callable[..., Any],
+        file_extension: str, character_encoding: str,
+        expected_text_bytes: bytes,
+        expected_html_meta: bool = False) -> None:
+    """Check selected encoding output for formatter constructor path.
+
+    Args:
+        formatter_class: Formatter class or constructor callable.
+        file_extension: Output file extension.
+        character_encoding: Encoding passed to formatter.
+        expected_text_bytes: Expected byte sequence for paragraph text.
+        expected_html_meta: If True, verify HTML charset meta tag.
+    """
+    raw_content = create_paragraph_file_bytes(
+        formatter_class=formatter_class,
+        file_extension=file_extension,
+        character_encoding=character_encoding)
+    check_character_encoding_bytes(
+        raw_content=raw_content,
+        character_encoding=character_encoding,
+        expected_text_bytes=expected_text_bytes,
+        expected_html_meta=expected_html_meta)
+
+
 class MultiFormat2(MultiFormat):
     """Class used for testing."""
 

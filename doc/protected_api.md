@@ -409,7 +409,8 @@ tag-based formats (e.g. HTML, LaTeX).
 ```python
 def __init__(file_name: PathLike,
              url_as_text: bool = False,
-             file_exists_callback: Optional[Callable[[str], None]] = None)
+             file_exists_callback: Optional[Callable[[str], None]] = None,
+             character_encoding: str = 'utf-8')
 ```
 
 Initialize the MultiFormatPlainTextLike class.
@@ -424,6 +425,9 @@ Initialize the MultiFormatPlainTextLike class.
   from being overwritten.
   (May for instance save existing file as backup.)
   (Default is to raise an exception.)
+- `character_encoding` - The character encoding to use.
+  Default is 'utf-8'. Keep it as default unless
+  you have a good specific reason to change it.
 
 <a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._reset_line_state"></a>
 
@@ -1175,7 +1179,8 @@ Base class for all text based format classes.
 ```python
 def __init__(file_name: PathLike,
              url_as_text: bool = False,
-             file_exists_callback: Optional[Callable[[str], None]] = None)
+             file_exists_callback: Optional[Callable[[str], None]] = None,
+             character_encoding: str = 'utf-8')
 ```
 
 Initialize the TextBasedFormat class.
@@ -1191,6 +1196,9 @@ Initialize the TextBasedFormat class.
   (May for instance save existing file as
   backup.)
   (Default is to raise an exception.)
+- `character_encoding` - The character encoding to use.
+  Default is 'utf-8'. Keep it as default unless
+  you have a good specific reason to change it.
 
 <a id="mformat.mformat_textbased.MultiFormatTextBased.open"></a>
 
@@ -1669,7 +1677,8 @@ Markdown format class.
 ```python
 def __init__(file_name: PathLike,
              url_as_text: bool = False,
-             file_exists_callback: Optional[Callable[[str], None]] = None)
+             file_exists_callback: Optional[Callable[[str], None]] = None,
+             character_encoding: str = 'utf-8')
 ```
 
 Initialize the MdFormat class.
@@ -1685,6 +1694,9 @@ Initialize the MdFormat class.
   (May for instance save existing file as
   backup.)
   (Default is to raise an exception.)
+- `character_encoding` - The character encoding to use.
+  Default is 'utf-8'. Keep it as default unless
+  you have a good specific reason to change it.
 
 <a id="mformat.mformat_md.MultiFormatMd.file_name_extension"></a>
 
@@ -3058,6 +3070,7 @@ HTML format class.
 def __init__(file_name: PathLike,
              url_as_text: bool = False,
              file_exists_callback: Optional[Callable[[str], None]] = None,
+             character_encoding: str = 'utf-8',
              title: str = 'HTML file',
              css_file: Optional[str] = None,
              lang: str = 'en')
@@ -3076,6 +3089,9 @@ Initialize the HtmlFormat class.
   (May for instance save existing file as
   backup.)
   (Default is to raise an exception.)
+- `character_encoding` - The character encoding to use.
+  Default is 'utf-8'. Keep it as default unless
+  you have a good specific reason to change it.
 - `title` - The title of the HTML file.
 - `css_file` - The name of the CSS file to use.
 - `lang` - The language of the HTML file.
@@ -3414,6 +3430,7 @@ Tables are rendered with ASCII-like borders.
 def __init__(file_name: PathLike,
              url_as_text: bool = False,
              file_exists_callback: Optional[Callable[[str], None]] = None,
+             character_encoding: str = 'utf-8',
              line_length: int = 79,
              table_max_line_length: Optional[int] = None,
              table_alignment: TableAlignmentSpec = TableAlignment.
@@ -3433,6 +3450,9 @@ Initialize the MultiFormatTxt class.
   (May for instance save existing file as
   backup.)
   (Default is to raise an exception.)
+- `character_encoding` - The character encoding to use.
+  Default is 'utf-8'. Keep it as default unless
+  you have a good specific reason to change it.
 - `line_length` - The maximum length of a line.
   Must be an integer greater than 10.
 - `table_max_line_length` - The maximum length of a line when writing

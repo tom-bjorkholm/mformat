@@ -9,6 +9,7 @@ from tempfile import TemporaryDirectory
 from pathlib import Path
 import pytest
 from check_capsys import check_capsys
+from test_helpers import check_invalid_character_encoding_constructor
 from mformat.mformat_textbased import MultiFormatTextBased
 from mformat.mformat_state import MultiFormatState
 
@@ -114,4 +115,31 @@ def test_get_last_chars_written2(capsys, num, laststr,
                 mf.file.write(laststr)
             last = mf._get_last_chars_written(num)  # pylint: disable=protected-access # noqa: E501
             assert last == laststr[-num:]
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('character_encoding, expected_bytes',
+                         [('utf-8', b'Caf\xc3\xa9'),
+                          ('iso-8859-1', b'Caf\xe9')])
+def test_open_writes_selected_character_encoding(
+        capsys, character_encoding, expected_bytes):
+    """Test that open uses the selected character encoding."""
+    with TemporaryDirectory() as temp_dir:
+        file_name = str(Path(temp_dir) / 'test.test')
+        with MultiFormatTextBased2(
+                file_name=file_name,
+                character_encoding=character_encoding) as mf:
+            assert mf.file is not None
+            assert mf.character_encoding == character_encoding
+            mf.file.write('Café')
+            mf.state = MultiFormatState.PARAGRAPH
+        with open(file_name, 'rb') as file:
+            assert file.read() == expected_bytes
+    check_capsys(capsys)
+
+
+def test_open_with_invalid_character_encoding(capsys):
+    """Test invalid encoding is propagated from Python open."""
+    check_invalid_character_encoding_constructor(
+        formatter_class=MultiFormatTextBased2, file_extension='.test')
     check_capsys(capsys)

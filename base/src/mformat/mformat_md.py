@@ -19,7 +19,8 @@ class MultiFormatMd(MultiFormatPlainTextLike):
     MAX_LINE_LENGTH = 80
 
     def __init__(self, file_name: PathLike, url_as_text: bool = False,
-                 file_exists_callback: Optional[Callable[[str], None]] = None):
+                 file_exists_callback: Optional[Callable[[str], None]] = None,
+                 character_encoding: str = 'utf-8'):
         """Initialize the MdFormat class.
 
         Args:
@@ -32,9 +33,13 @@ class MultiFormatMd(MultiFormatPlainTextLike):
                                   (May for instance save existing file as
                                   backup.)
                                   (Default is to raise an exception.)
+            character_encoding: The character encoding to use.
+                                Default is 'utf-8'. Keep it as default unless
+                                you have a good specific reason to change it.
         """
         super().__init__(file_name=file_name, url_as_text=url_as_text,
-                         file_exists_callback=file_exists_callback)
+                         file_exists_callback=file_exists_callback,
+                         character_encoding=character_encoding)
 
     @classmethod
     def file_name_extension(cls) -> str:
@@ -45,7 +50,7 @@ class MultiFormatMd(MultiFormatPlainTextLike):
     def get_arg_desciption(cls) -> FormatterDescriptor:
         """Get the description of the arguments for the formatter."""
         return FormatterDescriptor(name='md', mandatory_args=[],
-                                   optional_args=[])
+                                   optional_args=['character_encoding'])
 
     def _write_file_prefix(self) -> None:
         """Write the file prefix."""

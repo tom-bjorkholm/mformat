@@ -18,6 +18,7 @@ class OptArgsDict(TypedDict, total=False):
     """Optional arguments for the MultiFormat constructor."""
 
     file_exists_callback: Optional[Callable[[str], None]]
+    character_encoding: Optional[str]
     lang: Optional[str]
     title: Optional[str]
     css_file: Optional[str]

@@ -44,6 +44,7 @@ class MultiFormatTxt(MultiFormatPlainTextLike):
     def __init__(self,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
                  file_name: PathLike, url_as_text: bool = False,
                  file_exists_callback: Optional[Callable[[str], None]] = None,
+                 character_encoding: str = 'utf-8',
                  line_length: int = 79,
                  table_max_line_length: Optional[int] = None,
                  table_alignment: TableAlignmentSpec =
@@ -60,6 +61,9 @@ class MultiFormatTxt(MultiFormatPlainTextLike):
                                   (May for instance save existing file as
                                   backup.)
                                   (Default is to raise an exception.)
+            character_encoding: The character encoding to use.
+                                Default is 'utf-8'. Keep it as default unless
+                                you have a good specific reason to change it.
             line_length: The maximum length of a line.
                          Must be an integer greater than 10.
             table_max_line_length: The maximum length of a line when writing
@@ -79,7 +83,8 @@ class MultiFormatTxt(MultiFormatPlainTextLike):
             raise ValueError('Table max line length must be at least 10, '
                              f'got {table_max_line_length}')
         super().__init__(file_name=file_name, url_as_text=url_as_text,
-                         file_exists_callback=file_exists_callback)
+                         file_exists_callback=file_exists_callback,
+                         character_encoding=character_encoding)
         self.txt_heading: str = ''
         self.txt_table: list[list[str]] = []
         self.line_length: int = line_length
@@ -99,7 +104,8 @@ class MultiFormatTxt(MultiFormatPlainTextLike):
         return FormatterDescriptor(name='txt', mandatory_args=[],
                                    optional_args=['line_length',
                                                   'table_max_line_length',
-                                                  'table_alignment'])
+                                                  'table_alignment',
+                                                  'character_encoding'])
 
     def _write_file_prefix(self) -> None:
         """Write the file prefix."""

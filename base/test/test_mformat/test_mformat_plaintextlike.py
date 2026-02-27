@@ -9,6 +9,7 @@ from tempfile import TemporaryDirectory
 from pathlib import Path
 import pytest
 from check_capsys import check_capsys
+from test_helpers import check_invalid_character_encoding_constructor
 from mformat.mformat_plaintextlike import MultiFormatPlainTextLike
 from mformat.mformat_state import MultiFormatState
 
@@ -46,6 +47,24 @@ def _write_and_read(callback) -> str:
             return f.read()
 
 
+def _write_and_read_bytes(callback, character_encoding: str) -> bytes:
+    """Create a temp file, run callback, and return file bytes.
+
+    The callback receives the opened MultiFormatPlainTextLike
+    instance. After the callback returns, state is set to
+    PARAGRAPH_END so that close does not trigger abstract methods.
+    """
+    with TemporaryDirectory() as temp_dir:
+        file_name = str(Path(temp_dir) / 'test.test')
+        with PlainTextLikeTestImpl(
+                file_name=file_name,
+                character_encoding=character_encoding) as mf:
+            callback(mf)
+            mf.state = MultiFormatState.PARAGRAPH_END
+        with open(file=file_name, mode='rb') as f:
+            return f.read()
+
+
 # =================================================================
 # Init state
 # =================================================================
@@ -59,6 +78,28 @@ def test_init_line_wrapping_state(capsys):
         assert mf._current_column == 0
         assert mf._continuation_indent == ''
         assert mf._pending_whitespace == ''
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('character_encoding, expected_bytes',
+                         [('utf-8', b'Caf\xc3\xa9'),
+                          ('iso-8859-1', b'Caf\xe9')])
+def test_init_character_encoding(capsys, character_encoding, expected_bytes):
+    """Test that selected character encoding is used for written bytes."""
+    # pylint: disable=protected-access
+    def callback(mf):
+        assert mf.file is not None
+        mf.file.write('Café')
+
+    assert _write_and_read_bytes(callback, character_encoding) == \
+        expected_bytes
+    check_capsys(capsys)
+
+
+def test_init_invalid_character_encoding(capsys):
+    """Test invalid encoding is propagated from Python open."""
+    check_invalid_character_encoding_constructor(
+        formatter_class=PlainTextLikeTestImpl, file_extension='.test')
     check_capsys(capsys)
 
 

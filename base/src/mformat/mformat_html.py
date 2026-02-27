@@ -18,6 +18,7 @@ class MultiFormatHtml(MultiFormatTextBased):
     def __init__(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                  file_name: PathLike, url_as_text: bool = False,
                  file_exists_callback: Optional[Callable[[str], None]] = None,
+                 character_encoding: str = 'utf-8',
                  title: str = 'HTML file', css_file: Optional[str] = None,
                  lang: str = 'en'):
         """Initialize the HtmlFormat class.
@@ -32,12 +33,16 @@ class MultiFormatHtml(MultiFormatTextBased):
                                   (May for instance save existing file as
                                   backup.)
                                   (Default is to raise an exception.)
+            character_encoding: The character encoding to use.
+                                Default is 'utf-8'. Keep it as default unless
+                                you have a good specific reason to change it.
             title: The title of the HTML file.
             css_file: The name of the CSS file to use.
             lang: The language of the HTML file.
         """
         super().__init__(file_name=file_name, url_as_text=url_as_text,
-                         file_exists_callback=file_exists_callback)
+                         file_exists_callback=file_exists_callback,
+                         character_encoding=character_encoding)
         self.title: str = title
         self.css_file: Optional[str] = css_file
         self.lang: str = lang
@@ -51,8 +56,8 @@ class MultiFormatHtml(MultiFormatTextBased):
     def get_arg_desciption(cls) -> FormatterDescriptor:
         """Get the description of the arguments for the formatter."""
         return FormatterDescriptor(name='html', mandatory_args=[],
-                                   optional_args=['title', 'css_file',
-                                                  'lang'])
+                                   optional_args=['title', 'css_file', 'lang',
+                                                  'character_encoding'])
 
     def _write_file_prefix(self) -> None:
         """Write the file prefix."""
@@ -60,7 +65,7 @@ class MultiFormatHtml(MultiFormatTextBased):
         self.file.write('<!DOCTYPE html>\n')
         self.file.write(f'<html lang="{self.lang}">\n')
         self.file.write('<head>\n')
-        self.file.write('<meta charset="utf-8">\n')
+        self.file.write(f'<meta charset="{self.character_encoding}">\n')
         self.file.write(f'<title>{self.title}</title>\n')
         if self.css_file is not None:
             self.file.write('<link rel="stylesheet" ' +
