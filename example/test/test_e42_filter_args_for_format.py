@@ -7,7 +7,6 @@
 
 import sys
 from pathlib import Path
-import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
@@ -23,18 +22,17 @@ sys.path.insert(0, str(_example_test_path))
 from e42_filter_args_for_format import filter_args_for_format_example  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
 
 
-
 EXPECTED_MD_TEXT = [
     '# CSS in HTML gefiltert für andere Formate\n\n'
-     'Dieses Beispiel zeigt, wie Sie eine CSS-Datei für HTML gefiltert ',
-     'haben, so dass\nsie nicht für andere Formate verfügbar ist.\n\n'
-     'Die CSS-Datei liegt unter example/css/ und wird per relativem ',
-     'Pfad eingebunden\n'
-     '(für lokale Anzeige). Die Ausgabe ist auf Deutsch; in HTML ',
-     'wird lang="de" im\n'
-     'erzeugten \\<html>-Tag gesetzt. ',
-     'Für ODT wird sprache auch als "de" gesetzt. Für\n'
-     'andere Formate wird die Sprache ignoriert.\n'
+    'Dieses Beispiel zeigt, wie Sie eine CSS-Datei für HTML gefiltert ',
+    'haben, so dass\nsie nicht für andere Formate verfügbar ist.\n\n'
+    'Die CSS-Datei liegt unter example/css/ und wird per relativem ',
+    'Pfad eingebunden\n'
+    '(für lokale Anzeige). Die Ausgabe ist auf Deutsch; in HTML ',
+    'wird lang="de" im\n'
+    'erzeugten \\<html>-Tag gesetzt. ',
+    'Für ODT wird sprache auch als "de" gesetzt. Für\n'
+    'andere Formate wird die Sprache ignoriert.\n'
 ]
 EXPECTED_HTML_BODY_TEXT = [
     '<h1>',
@@ -66,31 +64,38 @@ THIS_EXPECTED_HTML_PRE = [
     '</head>',
     '<body>',
 ]
-EXPECTED_HTML_TEXT = THIS_EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_HTML_TEXT = THIS_EXPECTED_HTML_PRE + \
+    EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_HTML_BODY_TEXT)
-EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
-
+EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
+    EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
 def test_42_filter_args_for_format_md(capsys):
     """Test the filter_args_for_format_example function with the md format."""
     expected_txt = EXPECTED_MD_TEXT
-    check_markdown_func(filter_args_for_format_example, expected_txt, expected_error=[])
+    check_markdown_func(
+        filter_args_for_format_example,
+        expected_txt,
+        expected_error=[])
     check_capsys_silent(capsys)
 
 
 def test_42_filter_args_for_format_html(capsys):
-    """Test the filter_args_for_format_example function with the html format."""
+    """Test filter_args_for_format_example with the html format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_html_func(filter_args_for_format_example, expected_txt)
     check_capsys_silent(capsys)
 
 
 def test_42_filter_args_for_format_docx(capsys):
-    """Test the filter_args_for_format_example function with the docx format."""
+    """Test filter_args_for_format_example with the docx format."""
     expected_txt = EXPECTED_HTML_BODY_TEXT
     expected_warnings = []
-    check_docx_func(filter_args_for_format_example, expected_txt, expected_warnings)
+    check_docx_func(
+        filter_args_for_format_example,
+        expected_txt,
+        expected_warnings)
     check_capsys_silent(capsys)
 
 

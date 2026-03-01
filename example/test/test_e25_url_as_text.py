@@ -7,8 +7,8 @@
 
 import sys
 from pathlib import Path
-import pytest  # pylint: disable=unused-import
-from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
+from test_e01_paragraph import (
+    EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE)
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
@@ -42,9 +42,9 @@ EXPECTED_MD_TEXT = [
     'The URLs are shown as text instead of clickable links.',
     'This might be useful when',
     'you want to copy the URLs to the clipboard and paste them into another',
-    'application. This is done by passing the url_as_text argument to the create_mf',
-    'factory function.'
-]
+    ('application. This is done by passing the url_as_text argument to the '
+     'create_mf'),
+    'factory function.']
 EXPECTED_HTML_BODY_TEXT = [
     '<h1>',
     'URL in paragraph example',
@@ -76,8 +76,10 @@ EXPECTED_HTML_BODY_TEXT = [
     '</p>'
 ]
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_HTML_BODY_TEXT)
-EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
-EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
+    EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
+    EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
 
 
 def test_e25_url_as_text_md(capsys):

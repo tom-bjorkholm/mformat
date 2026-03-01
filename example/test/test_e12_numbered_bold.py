@@ -7,8 +7,8 @@
 
 import sys
 from pathlib import Path
-import pytest  # pylint: disable=unused-import
-from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
+from test_e01_paragraph import (
+    EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE)
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
@@ -21,7 +21,6 @@ _example_test_path = (
 )
 sys.path.insert(0, str(_example_test_path))
 from e12_numbered_bold import numbered_bold_example  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
-
 
 
 EXPECTED_MD_TEXT = [
@@ -52,14 +51,15 @@ EXPECTED_HTML_BODY_TEXT = [
     '<h1>',
     'Numbered list with bold text example',
     '</h1>', '<ol>', '<li>',
-    'This is the first numbered point item. This is not bold or italic.',
+    ('This is the first numbered point item. This is not bold or '
+     'italic.'),
     '<strong>',
     'However, this bold text is added to it.',
     '</strong>', '<em>',
     'And this italic text is added to it.'
     '</em>', '</li>', '<li>', '<strong>',
     'This is the bold numbered point item.',
-    '</strong>', 
+    '</strong>',
     'This non-bold text is added to it.',
     '</li>', '<li>', '<em>',
     'This is the italic numbered point item.',
@@ -83,8 +83,9 @@ EXPECTED_HTML_BODY_TEXT = [
     'And bold',
     '</strong>', '<em>',
     'and italic text added to it.',
-    '</em>','</li>','</ol>', '<li>',
-    'The final item is back at level 1. This is the final numbered point item.',
+    '</em>', '</li>', '</ol>', '<li>',
+    ('The final item is back at level 1. This is the final numbered '
+     'point item.'),
     '</li>', '</ol>'
 ]
 EXPECTED_DOCX_HTML_BODY_TEXT = [
@@ -92,7 +93,8 @@ EXPECTED_DOCX_HTML_BODY_TEXT = [
     'Numbered list with bold text example',
     '</h1>',
     '<ol>', '<li>',
-    'This is the first numbered point item. This is not bold or italic.',
+    ('This is the first numbered point item. This is not bold or '
+     'italic.'),
     '<strong>',
     'However, this bold text is added to it.',
     '</strong>', '<em>',
@@ -129,21 +131,23 @@ EXPECTED_DOCX_HTML_BODY_TEXT = [
     '</strong>', '<em>',
     'and italic text added to it.',
     '</em>', '</li>', '</ol>', '</li>', '<li>',
-    'The final item is back at level 1. This is the final numbered point item.',
+    ('The final item is back at level 1. This is the final numbered '
+     'point item.'),
     '</li>', '</ol>'
 ]
 EXPECTED_ODT_HTML_BODY_TEXT = [
     '<h1>',
     'Numbered list with bold text example',
     '</h1>', '<ol>', '<li>',
-    'This is the first numbered point item. This is not bold or italic.',
+    ('This is the first numbered point item. This is not bold or '
+     'italic.'),
     '<strong>',
     'However, this bold text is added to it.',
     '</strong>', '<em>',
     'And this italic text is added to it.',
     '</em>', '</li>', '<li>', '<strong>',
     'This is the bold numbered point item.',
-    '</strong>', 
+    '</strong>',
     'This non-bold text is added to it.',
     '</li>', '<li>', '<em>',
     'This is the italic numbered point item.',
@@ -153,7 +157,7 @@ EXPECTED_ODT_HTML_BODY_TEXT = [
     'This is the bold and italic item.',
     '</strong>', '</em>',
     'This non-bold and non-italic text is added to it.',
-#    '</li>',  ODT nested lists start in outer list item.
+    #    '</li>',  ODT nested lists start in outer list item.
     '<ol>', '<li>',
     'This is in item in a nested numbered point list.',
     '<strong>',
@@ -168,14 +172,16 @@ EXPECTED_ODT_HTML_BODY_TEXT = [
     'And bold',
     '</strong>', '<em>',
     'and italic text added to it.',
-    '</em>','</li>','</ol>', '<li>',
-    'The final item is back at level 1. This is the final numbered point item.',
+    '</em>', '</li>', '</ol>', '<li>',
+    ('The final item is back at level 1. This is the final numbered '
+     'point item.'),
     '</li>', '</ol>'
 ]
-EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
+    EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_ODT_HTML_BODY_TEXT)
-EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
-
+EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
+    EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
 def test_e12_numbered_bold_md(capsys):

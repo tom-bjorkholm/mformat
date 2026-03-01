@@ -7,8 +7,8 @@
 
 import sys
 from pathlib import Path
-import pytest  # pylint: disable=unused-import
-from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
+from test_e01_paragraph import (
+    EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE)
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
@@ -21,7 +21,6 @@ _example_test_path = (
 )
 sys.path.insert(0, str(_example_test_path))
 from e15_table_at_once_bold import example_table_at_once_bold  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
-
 
 
 EXPECTED_MD_TEXT = [
@@ -93,11 +92,12 @@ EXPECTED_HTML_BODY_TEXT = [
     '<td>', 'Chicago', '</td>',
     '</tr>',
     '</table>'
-    ]
-EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
+]
+EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
+    EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_HTML_BODY_TEXT)
-EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
-
+EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
+    EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
 def test_e15_table_at_once_bold_md(capsys):
@@ -119,7 +119,10 @@ def test_e15_table_at_once_bold_docx(capsys):
     """Test the example_table_at_once_bold function with the docx format."""
     expected_txt = docx_version_of_html(EXPECTED_HTML_BODY_TEXT)
     expected_warnings = []
-    check_docx_func(example_table_at_once_bold, expected_txt, expected_warnings)
+    check_docx_func(
+        example_table_at_once_bold,
+        expected_txt,
+        expected_warnings)
     check_capsys_silent(capsys)
 
 

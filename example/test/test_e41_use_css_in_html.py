@@ -7,7 +7,6 @@
 
 import sys
 from pathlib import Path
-import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
@@ -21,7 +20,6 @@ _example_test_path = (
 )
 sys.path.insert(0, str(_example_test_path))
 from e41_use_css_in_html import use_css_in_html_example  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
-
 
 
 EXPECTED_MD_TEXT = [
@@ -63,7 +61,8 @@ THIS_EXPECTED_HTML_PRE = [
     '</head>',
     '<body>',
 ]
-EXPECTED_HTML_TEXT = THIS_EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_HTML_TEXT = THIS_EXPECTED_HTML_PRE + \
+    EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_HTML_BODY_TEXT)
 EXPECTED_ODT_BODY_TEXT2 = [
     '<h1',
@@ -81,14 +80,17 @@ EXPECTED_ODT_BODY_TEXT2 = [
     'Deutsch; lang="de" steht im erzeugten &lt;html&gt;-Tag.',
     '</p>'
 ]
-EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
-
+EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
+    EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
 def test_41_use_css_in_html_md(capsys):
     """Test the use_css_in_html_example function with the md format."""
     expected_txt = EXPECTED_MD_TEXT
-    check_markdown_func(use_css_in_html_example, expected_txt, expected_error=[])
+    check_markdown_func(
+        use_css_in_html_example,
+        expected_txt,
+        expected_error=[])
     check_capsys_silent(capsys)
 
 

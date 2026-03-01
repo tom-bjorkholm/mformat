@@ -7,8 +7,8 @@
 
 import sys
 from pathlib import Path
-import pytest  # pylint: disable=unused-import
-from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
+from test_e01_paragraph import (
+    EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE)
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
@@ -23,21 +23,23 @@ sys.path.insert(0, str(_example_test_path))
 from e22_url_in_bullet_list import example_url_in_bullet_list  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
 
 
-
 EXPECTED_MD_TEXT = [
     '# URL in bullet list example\n\n',
     '- This is a bullet list with a URL:\n',
     '  [This URL link to the examples.]'
     '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)\n',
-    '- Another bullet point with a bold URL:\n',    
-    '  **[This bold URL link to the example source code.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)**\n',
+    '- Another bullet point with a bold URL:\n',
+    ('  **[This bold URL link to the example source code.]'
+     '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)**'
+     '\n'),
     '- A bullet point with an italic URL:\n',
-    '  *[This italic URL link to the examples result.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result)*\n',
+    ('  *[This italic URL link to the examples result.]'
+     '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result)*'
+     '\n'),
     '- Last point with an italic and bold URL:\n',
-    '  ***[This italic and bold URL link to the examples.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)***\n',
+    ('  ***[This italic and bold URL link to the examples.]'
+     '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)***'
+     '\n'),
 ]
 EXPECTED_HTML_BODY_TEXT = [
     '<h1>',
@@ -76,9 +78,11 @@ EXPECTED_HTML_BODY_TEXT = [
 ]
 EXPECTED_DOCX_HTML_TEXT = EXPECTED_HTML_BODY_TEXT
 EXPECTED_ODT_HTML_TEXT = EXPECTED_HTML_BODY_TEXT
-EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
+    EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_ODT_HTML_TEXT)
-EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
+    EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
 def test_e22_url_in_bullet_list_md(capsys):
@@ -100,7 +104,10 @@ def test_e22_url_in_bullet_list_docx(capsys):
     """Test the example_url_in_bullet_list function with the docx format."""
     expected_txt = docx_version_of_html(EXPECTED_DOCX_HTML_TEXT)
     expected_warnings = []
-    check_docx_func(example_url_in_bullet_list, expected_txt, expected_warnings)
+    check_docx_func(
+        example_url_in_bullet_list,
+        expected_txt,
+        expected_warnings)
     check_capsys_silent(capsys)
 
 

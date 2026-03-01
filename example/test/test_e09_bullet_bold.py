@@ -7,8 +7,8 @@
 
 import sys
 from pathlib import Path
-import pytest  # pylint: disable=unused-import
-from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
+from test_e01_paragraph import (
+    EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE)
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
@@ -21,7 +21,6 @@ _example_test_path = (
 )
 sys.path.insert(0, str(_example_test_path))
 from e09_bullet_bold import bullet_bold_example  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
-
 
 
 EXPECTED_MD_TEXT = [
@@ -75,13 +74,13 @@ EXPECTED_HTML_BODY_TEXT = [
     'And italic text added to it.',
     '</em>', '</li>', '<li>', '<em>', '<strong>',
     'Second nested bullet point item.',
-    '</strong>','</em>',
-   'This non-bold and non-italic text is added to it.',
+    '</strong>', '</em>',
+    'This non-bold and non-italic text is added to it.',
     '<strong>',
     'And bold',
     '</strong>', '<em>',
     'and italic text added to it.',
-    '</em>','</li>','</ul>','</ul>'
+    '</em>', '</li>', '</ul>', '</ul>'
 ]
 EXPECTED_DOCX_HTML_BODY_TEXT = [
     '<h1>',
@@ -149,7 +148,7 @@ EXPECTED_ODT_HTML_BODY_TEXT = [
     'This is the bold and italic bullet point item.',
     '</strong>', '</em>',
     'This non-bold and non-italic text is added to it.',
-#   '</li>',  # ODT nested lists are in list item.
+    #   '</li>',  # ODT nested lists are in list item.
     '<ul>', '<li>',
     'This is in item in a nested bullet list.',
     '<strong>',
@@ -158,18 +157,19 @@ EXPECTED_ODT_HTML_BODY_TEXT = [
     'And italic text added to it.',
     '</em>', '</li>', '<li>', '<em>', '<strong>',
     'Second nested bullet point item.',
-    '</strong>','</em>',
-   'This non-bold and non-italic text is added to it.',
+    '</strong>', '</em>',
+    'This non-bold and non-italic text is added to it.',
     '<strong>',
     'And bold',
     '</strong>', '<em>',
     'and italic text added to it.',
-    '</em>','</li>','</ul>','</ul>'
+    '</em>', '</li>', '</ul>', '</ul>'
 ]
-EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
+    EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_ODT_HTML_BODY_TEXT)
-EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
-
+EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
+    EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
 def test_e09_bullet_bold_md(capsys):

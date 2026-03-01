@@ -8,7 +8,6 @@
 import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
-import pytest  # pylint: disable=unused-import
 from test_e01_paragraph import EXPECTED_HTML_PRE, \
     EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from example_checkers import (
@@ -26,50 +25,50 @@ sys.path.insert(0, str(_example_test_path))
 from e60_custom_format import custom_format_example  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
 
 
-
 EXPECTED_MD_TEXT = [
     '# Custom Format Example\n\n'
-     'This example demonstrates how to create and use a custom '
-     'format in the mformat',
-     'framework. The same code can be used to write to different '
-     'formats, just by',
-     'changing the format name.\n\n'
-     '## Features\n\n'
-     '- Easy to extend the framework\n\n'
-     '- Supports most standard document elements\n\n'
-     '- Format-agnostic API\n\n'
-     '1. First step: Create a format class\n\n'
-     '2. Second step: Implement required methods\n\n'
-     '3. Third step: Register the format\n\n'
+    'This example demonstrates how to create and use a custom '
+    'format in the mformat',
+    'framework. The same code can be used to write to different '
+    'formats, just by',
+    'changing the format name.\n\n'
+    '## Features\n\n'
+    '- Easy to extend the framework\n\n'
+    '- Supports most standard document elements\n\n'
+    '- Format-agnostic API\n\n'
+    '1. First step: Create a format class\n\n'
+    '2. Second step: Implement required methods\n\n'
+    '3. Third step: Register the format\n\n'
 ]
 EXPECTED_HTML_BODY_TEXT = [
-   '<h1>',
-   'Custom Format Example',
-   '</h1>',
-   '<p>',
-   'This example demonstrates how to create and use a',
-   'custom format in the mformat framework.',
-   'The same code can be used to write to different formats,',
-   'just by changing the format name.',
-   '</p>',
-   '<h2>',
-   'Features',
-   '</h2>',
-   '<ul>',
-   '<li>',
-   'Easy to extend the framework',
-   '</li>',
-   '<li>',
-   'Supports most standard document elements',
-   '</li>',
-   '<li>',
-   'Format-agnostic API'
+    '<h1>',
+    'Custom Format Example',
+    '</h1>',
+    '<p>',
+    'This example demonstrates how to create and use a',
+    'custom format in the mformat framework.',
+    'The same code can be used to write to different formats,',
+    'just by changing the format name.',
+    '</p>',
+    '<h2>',
+    'Features',
+    '</h2>',
+    '<ul>',
+    '<li>',
+    'Easy to extend the framework',
+    '</li>',
+    '<li>',
+    'Supports most standard document elements',
+    '</li>',
+    '<li>',
+    'Format-agnostic API'
 ]
 
-EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
+    EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_HTML_BODY_TEXT)
-EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
-
+EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
+    EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
 def test_60_custom_format_md(capsys):

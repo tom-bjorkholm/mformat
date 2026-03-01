@@ -7,7 +7,6 @@
 
 import sys
 from pathlib import Path
-import pytest  # pylint: disable=unused-import
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_docx_func, check_odt_func, check_txt_func, check_rst_func)
@@ -57,7 +56,8 @@ EXPECTED_HTML_BODY_TEXT = [
     'for the missing heading.)',
     '</p>'
 ]
-EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
+    EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
 EXPECTED_ODT_PRE = [
     '<!DOCTYPE html PUBLIC ',
     '<html xmlns="http://www.w3.org/1999/xhtml">',
@@ -68,8 +68,8 @@ EXPECTED_ODT_PRE = [
     '<body>'
 ]
 EXPECTED_ODT_BODY_TEXT = EXPECTED_HTML_BODY_TEXT
-EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
-
+EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
+    EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
 def test_e01_paragraph_md(capsys):

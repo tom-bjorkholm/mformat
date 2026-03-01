@@ -7,8 +7,8 @@
 
 import sys
 from pathlib import Path
-import pytest  # pylint: disable=unused-import
-from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
+from test_e01_paragraph import (
+    EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE)
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
@@ -23,24 +23,26 @@ sys.path.insert(0, str(_example_test_path))
 from e24_url_in_heading import example_url_in_heading  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
 
 
-
 EXPECTED_MD_TEXT = [
     '# URL in heading example\n\n',
     '# A heading with a URL: '
     '[This URL link to the examples.]'
     '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example)\n\n',
-    '## A heading with a bold URL: '
-    '**[This bold URL link to the example source code.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)**\n\n',
-    '## A heading with an italic URL: '
-    '*[This italic URL link to the examples result.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result)*\n\n',
-    '## And with an italic and bold URL: '
-    '***[This italic and bold URL link to the examples.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)***\n\n',
-    'The add_url function can be used to add a URL to a heading, as well as to',
-    'paragraphs, bullet lists, and numbered point lists.\n'
-]
+    '## A heading with a bold URL: ',
+    ('**[This bold URL link to the example source code.]'
+     '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)**'
+     '\n\n'),
+    '## A heading with an italic URL: ',
+    ('*[This italic URL link to the examples result.]'
+     '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result)*'
+     '\n\n'),
+    '## And with an italic and bold URL: ',
+    ('***[This italic and bold URL link to the examples.]'
+     '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)***'
+     '\n\n'),
+    ('The add_url function can be used to add a URL to a heading, as well '
+     'as to'),
+    'paragraphs, bullet lists, and numbered point lists.\n']
 EXPECTED_HTML_BODY_TEXT = [
     '<h1>',
     'URL in heading example',
@@ -73,7 +75,7 @@ EXPECTED_HTML_BODY_TEXT = [
     '<em>', '<strong>',
     '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
     'example/src">',
-    'This italic and bold URL link to the examples.', 
+    'This italic and bold URL link to the examples.',
     '</a>', '</strong>', '</em>', '</h2>', '<p>',
     'The add_url function can be used to add a URL to a heading,',
     'as well as to',
@@ -109,7 +111,7 @@ EXPECTED_DOCX_HTML_TEXT = [
     'And with an italic and bold URL:',
     '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
     'example/src">',
-    'This italic and bold URL link to the examples.', 
+    'This italic and bold URL link to the examples.',
     '</a>',
     '</h2>', '<p>',
     'The add_url function can be used to add a URL to a heading,',
@@ -117,9 +119,11 @@ EXPECTED_DOCX_HTML_TEXT = [
     '</p>'
 ]
 EXPECTED_ODT_HTML_TEXT = EXPECTED_DOCX_HTML_TEXT
-EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
+    EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_ODT_HTML_TEXT)
-EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
+    EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
 def test_e24_url_in_headings_md(capsys):

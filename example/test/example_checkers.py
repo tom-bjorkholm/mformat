@@ -54,9 +54,9 @@ def check_text_in_order(text: str, expected_txts: list[str]) -> None:
     for num, expected_txt in enumerate(expected_txts):
         pos = text.find(expected_txt, start)
         if pos == -1:
-            print(f'Expected text with index {num-1} ended at '
+            print(f'Expected text with index {num - 1} ended at '
                   f'position {start} in text.', file=sys.stderr)
-            print(f'Expected text index {num-1}: {expected_txts[num-1]}',
+            print(f'Expected text index {num - 1}: {expected_txts[num - 1]}',
                   file=sys.stderr)
             print(f'Expected text with index {num} not found in text '
                   f'starting at position {start}.', file=sys.stderr)
@@ -293,7 +293,7 @@ def _reduce_equiv_seqs(html: list[str]) -> list[str]:
     idx: int = 0
     while idx < len(html):
         for seq_key, seq_value in EQUIV_SEQS:
-            if html[idx:idx+len(seq_key)] == seq_key:
+            if html[idx:idx + len(seq_key)] == seq_key:
                 reduced_html.extend(seq_value)
                 idx += len(seq_key)
                 continue
@@ -311,13 +311,14 @@ def docx_version_of_html(html: list[str]) -> list[str]:
     reduced_html = _reduce_equiv_seqs(html)
     docx_html = []
     for idx, line in enumerate(reduced_html):
-        if line == '<strong>' and idx > 0 and reduced_html[idx-1] == '<em>':
+        prev = reduced_html[idx - 1] if idx > 0 else None
+        if line == '<strong>' and prev == '<em>':
             continue
-        if line == '</strong>' and idx > 0 and reduced_html[idx-1] == '</em>':
+        if line == '</strong>' and prev == '</em>':
             continue
-        if line == '<em>' and idx > 0 and reduced_html[idx-1] == '<strong>':
+        if line == '<em>' and prev == '<strong>':
             continue
-        if line == '</em>' and idx > 0 and reduced_html[idx-1] == '</strong>':
+        if line == '</em>' and prev == '</strong>':
             continue
         if line in DOCX_EXCLUDE_TAGS:
             continue
@@ -353,12 +354,12 @@ def odt_version_of_html(html: list[str]) -> list[str]:
         if line in HTML2ODT_TAGS:
             odt_html[idx] = HTML2ODT_TAGS[line]
         elif line in ('<em>', '<strong>'):
-            if idx > 0 and odt_html[idx-1] == '<span':
+            if idx > 0 and odt_html[idx - 1] == '<span':
                 odt_html[idx] = ''
             else:
                 odt_html[idx] = '<span'
         elif line in ('</em>', '</strong>'):
-            if idx > 0 and odt_html[idx-1] == '</span':
+            if idx > 0 and odt_html[idx - 1] == '</span':
                 odt_html[idx] = ''
             else:
                 odt_html[idx] = '</span'

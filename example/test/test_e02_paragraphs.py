@@ -7,8 +7,8 @@
 
 import sys
 from pathlib import Path
-import pytest  # pylint: disable=unused-import
-from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
+from test_e01_paragraph import (
+    EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE)
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
@@ -21,7 +21,6 @@ _example_test_path = (
 )
 sys.path.insert(0, str(_example_test_path))
 from e02_paragraphs import paragraphs_example  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
-
 
 
 EXPECTED_MD_TEXT = [
@@ -48,7 +47,7 @@ EXPECTED_HTML_BODY_TEXT = [
     'With new_paragraph we can start a second paragraph.',
     'With add_text we can add text to the second paragraph',
     'just as we did with the first paragraph.',
-    '</p>', 
+    '</p>',
     '<p>',
     '(As this example does not have a heading the generated markdown',
     'file will not have a heading. If markdownlint is used on the',
@@ -56,10 +55,11 @@ EXPECTED_HTML_BODY_TEXT = [
     'heading.)',
     '</p>',
 ]
-EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
+    EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
 EXPECTED_ODT_BODY_TEXT = EXPECTED_HTML_BODY_TEXT
-EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
-
+EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
+    EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
 def test_e02_paragraphs_md(capsys):

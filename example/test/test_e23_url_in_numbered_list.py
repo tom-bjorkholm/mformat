@@ -7,8 +7,8 @@
 
 import sys
 from pathlib import Path
-import pytest  # pylint: disable=unused-import
-from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
+from test_e01_paragraph import (
+    EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE)
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
@@ -21,7 +21,6 @@ _example_test_path = (
 )
 sys.path.insert(0, str(_example_test_path))
 from e23_url_in_numbered_list import example_url_in_numbered_list  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
-
 
 
 EXPECTED_MD_TEXT = [
@@ -71,7 +70,7 @@ EXPECTED_HTML_BODY_TEXT = [
     'example/result">',
     'This italic URL link to the examples result.',
     '</a>',
-    '</em>',    
+    '</em>',
     '</li>',
     '<li>',
     'And with an italic and bold URL: ',
@@ -103,7 +102,7 @@ EXPECTED_DOCX_HTML_TEXT = [
     '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
     'example/result">',
     'This italic URL link to the examples result.',
-    '</a>', 
+    '</a>',
     'And with an italic and bold URL: ',
     '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
     'example/src">',
@@ -134,7 +133,7 @@ EXPECTED_ODT_HTML_TEXT = [
     '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
     'example/result">',
     'This italic URL link to the examples result.',
-    '</a>',  
+    '</a>',
     '</li>',
     '<li>',
     'And with an italic and bold URL: ',
@@ -145,9 +144,11 @@ EXPECTED_ODT_HTML_TEXT = [
     '</li>',
     '</ol>'
 ]
-EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
+    EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_ODT_HTML_TEXT)
-EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
+    EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
 def test_e23_url_in_numbered_list_md(capsys):
@@ -169,7 +170,10 @@ def test_e23_url_in_numbered_list_docx(capsys):
     """Test the example_url_in_numbered_list function with the docx format."""
     expected_txt = docx_version_of_html(EXPECTED_DOCX_HTML_TEXT)
     expected_warnings = []
-    check_docx_func(example_url_in_numbered_list, expected_txt, expected_warnings)
+    check_docx_func(
+        example_url_in_numbered_list,
+        expected_txt,
+        expected_warnings)
     check_capsys_silent(capsys)
 
 

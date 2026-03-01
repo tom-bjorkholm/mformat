@@ -7,8 +7,9 @@
 
 import sys
 from pathlib import Path
-import pytest  # pylint: disable=unused-import
-from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE
+import pytest
+from test_e01_paragraph import (
+    EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE)
 from example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
@@ -25,9 +26,9 @@ from e30_code_blocks import code_blocks_example  # pylint: disable=wrong-import-
 
 def replace_in_beginning_of_lines(text: list[str],
                                   from_char: str, to_char: str) -> list[str]:
-    """Replace all from_char with to_char in the beginning of the lines in text.
+    """Replace from_char with to_char at the beginning of lines in text.
 
-    All occurences of from_char in the beginning of the lines in text are
+    All occurences of from_char at the beginning of the lines in text are
     replaced with to_char, until the first non-matching character is found.
     Args:
         text: The list of lines to replace in.
@@ -67,7 +68,8 @@ EXPECTED_MD_TEXT = [
     'show code in a monospace font, and line wrapping is easy to control.',
     'Code blocks are written using the `write_code_block()` method.',
     'The function',
-    'names mentioned in this paragraph are written using the `add_code_in_text()`',
+    ('names mentioned in this paragraph are written using the '
+     '`add_code_in_text()`'),
     'method.',
     '\n````python\n\n',
     'def hello_world(i: int) -> int:\n'
@@ -80,8 +82,7 @@ EXPECTED_MD_TEXT = [
     '        print("i is zero")\n',
     '    print("This is another line of code.")\n'
     '    return 42\n',
-    '````\n'
-]
+    '````\n']
 EXPECTED_HTML_BODY_TEXT1 = [
     '<h1>',
     'Code blocks example',
@@ -143,7 +144,6 @@ EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_HTML_BODY_TEXT1 +
                                              EXPECTED_ODT_HTML_TEXT2)
 EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + \
     EXPECTED_HTML_POST
-
 
 
 def test_e30_code_blocks_md(capsys):
