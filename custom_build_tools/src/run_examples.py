@@ -11,8 +11,8 @@ import sys
 
 
 def _project_root() -> Path:
-    """Return project root path from custom_build_tools folder."""
-    return Path(__file__).resolve().parents[1]
+    """Return project root path from custom_build_tools/src folder."""
+    return Path(__file__).resolve().parents[2]
 
 
 def run_examples() -> None:

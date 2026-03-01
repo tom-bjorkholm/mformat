@@ -79,14 +79,14 @@ class ExampleInfo(NamedTuple):
     result_files: dict[str, Path]  # Extension -> path for existing results
 
 
-def get_script_directory() -> Path:
-    """Return the directory where this script is located."""
-    return Path(__file__).parent.resolve()
+def _project_root() -> Path:
+    """Return project root (parent of custom_build_tools)."""
+    return Path(__file__).resolve().parents[2]
 
 
-def get_example_directories(script_dir: Path) -> tuple[Path, Path]:
+def get_example_directories(project_root: Path) -> tuple[Path, Path]:
     """Return the paths to the example source and result directories."""
-    example_dir = script_dir / '..' / 'example'
+    example_dir = project_root / 'example'
     return example_dir / 'src', example_dir / 'result'
 
 
@@ -170,7 +170,7 @@ def discover_examples(src_dir: Path,
 
 
 def get_category_for_example(example_name: str) -> str:
-    """Determine the category for an example based on its name."""
+    """Determine the category for the example based on its name."""
     # Extract the number part (e.g., '01' from 'e01_paragraph')
     if example_name.startswith('e') and len(example_name) > 2:
         number_part = example_name[1:3]
@@ -251,8 +251,8 @@ def write_readme(examples: list[ExampleInfo], readme_path: Path) -> None:
 
 def main() -> None:
     """Generate example/README.md from example source and result files."""
-    script_dir = get_script_directory()
-    src_dir, result_dir = get_example_directories(script_dir)
+    project_root = _project_root()
+    src_dir, result_dir = get_example_directories(project_root)
     # Verify directories exist
     if not src_dir.exists():
         print(f'Error: Source directory not found: {src_dir}')
@@ -267,7 +267,7 @@ def main() -> None:
         return
     print(f'Found {len(examples)} example files.')
     # Generate and write README
-    readme_path = script_dir / '..' / 'example' / 'README.md'
+    readme_path = project_root / 'example' / 'README.md'
     write_readme(examples, readme_path)
     print(f'Generated: {readme_path}')
 

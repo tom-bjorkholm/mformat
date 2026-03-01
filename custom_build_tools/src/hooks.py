@@ -10,7 +10,7 @@ import subprocess
 import sys
 
 COMMON_BUILD_TOOLS_SRC = (
-    Path(__file__).resolve().parents[1] / 'common_build_tools' / 'src'
+    Path(__file__).resolve().parents[2] / 'common_build_tools' / 'src'
 )
 sys.path.insert(0, str(COMMON_BUILD_TOOLS_SRC))
 # pylint: disable=wrong-import-position
@@ -41,8 +41,8 @@ def run_examples_hook(build_spec: BuildSpec,
     """Run all example programs."""
     _ = build_spec
     project_root = Path(build_information['project_root'])
-    _run_script_with_venv(project_root / 'custom_build_tools' /
-                          'run_examples.py', project_root)
+    custom_src = project_root / 'custom_build_tools' / 'src'
+    _run_script_with_venv(custom_src / 'run_examples.py', project_root)
 
 
 def generate_readmes_hook(build_spec: BuildSpec,
@@ -50,10 +50,10 @@ def generate_readmes_hook(build_spec: BuildSpec,
     """Generate project-specific README files from custom scripts."""
     _ = build_spec
     project_root = Path(build_information['project_root'])
-    custom_folder = project_root / 'custom_build_tools'
-    _run_script_with_venv(custom_folder / 'create_example_readme.py',
+    custom_src = project_root / 'custom_build_tools' / 'src'
+    _run_script_with_venv(custom_src / 'create_example_readme.py',
                           project_root)
-    _run_script_with_venv(custom_folder / 'create_pypi_readme.py',
+    _run_script_with_venv(custom_src / 'create_pypi_readme.py',
                           project_root)
 
 
@@ -62,8 +62,8 @@ def restore_equiv_docx_odt_hook(build_spec: BuildSpec,
     """Restore unchanged docx/odt files that git reports as modified."""
     _ = build_spec
     project_root = Path(build_information['project_root'])
-    custom_folder = project_root / 'custom_build_tools'
+    custom_src = project_root / 'custom_build_tools' / 'src'
     _run_script_with_venv(
-        custom_folder / 'git_restore_equiv_docx_odt.py',
+        custom_src / 'git_restore_equiv_docx_odt.py',
         project_root
     )

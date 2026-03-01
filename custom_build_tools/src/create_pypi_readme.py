@@ -37,9 +37,9 @@ class PathsForBoth(TypedDict):
 
 def get_paths() -> PathsForBoth:
     """Return the paths for both base and extend."""
-    script_dir = Path(__file__).parent.resolve()
-    base_dir = script_dir / '..' / 'base'
-    extend_dir = script_dir / '..' / 'extend'
+    project_root = Path(__file__).resolve().parents[2]
+    base_dir = project_root / 'base'
+    extend_dir = project_root / 'extend'
     base_paths = Paths(readme=base_dir / 'README_pypi.md',
                        setup=base_dir / 'setup.py',
                        pyproject=base_dir / 'pyproject.toml')

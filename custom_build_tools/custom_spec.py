@@ -11,7 +11,9 @@ import sys
 COMMON_BUILD_TOOLS_SRC = (
     Path(__file__).resolve().parents[1] / 'common_build_tools' / 'src'
 )
+CUSTOM_BUILD_TOOLS_SRC = Path(__file__).resolve().parent / 'src'
 sys.path.insert(0, str(COMMON_BUILD_TOOLS_SRC))
+sys.path.insert(0, str(CUSTOM_BUILD_TOOLS_SRC))
 # pylint: disable=wrong-import-position
 from build_spec import BuildSpec  # noqa: E402
 from hooks import (  # noqa: E402
@@ -27,6 +29,7 @@ def custom_spec() -> Optional[BuildSpec]:
         package_folders=None,
         identical_versions=True,
         mypy_on_test=True,
+        mypy_exclude_folders=[Path('custom_build_tools/test')],
         additional_venv_packages=[
             'pypi-simple',
             'requests',

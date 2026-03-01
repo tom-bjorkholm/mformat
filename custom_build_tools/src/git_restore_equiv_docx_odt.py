@@ -145,7 +145,7 @@ def list_unchanged_files() -> list[str]:
         temp_dir = Path(temp_dir_name)
         unchanged_files: list[str] = []
         result_dir = (
-            Path(__file__).parent.parent / 'example' / 'result'
+            Path(__file__).resolve().parents[2] / 'example' / 'result'
         )
         for file in result_dir.glob('*.docx'):
             if is_git_status_modified(file):
