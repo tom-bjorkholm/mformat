@@ -392,5 +392,13 @@ def main() -> None:
     create_pypi_readme(ReadmeType.EXTEND, both_paths['extend'].readme)
 
 
+def create_pypi_readme_hook(build_spec: object,
+                            build_information: object) -> None:
+    """Run PyPI README generation as a common_build_tools custom hook."""
+    _ = build_spec
+    _ = build_information
+    main()
+
+
 if __name__ == "__main__":
     main()
