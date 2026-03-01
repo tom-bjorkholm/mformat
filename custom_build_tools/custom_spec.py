@@ -23,5 +23,17 @@ def custom_spec() -> Optional[BuildSpec]:
         package_folders=None,
         identical_versions=True,
         mypy_on_test=True,
+        additional_venv_packages=[
+            'pypi-simple',
+            'requests',
+            'types-requests',
+            'argcomplete',
+            'pymarkdownlnt',
+            'restructuredtext-lint',
+            'html5lib',
+            'mammoth',
+            'odfpy',
+            'htmlcompare',
+        ],
         custom_after_test=[run_examples_hook, generate_readmes_hook],
     )
