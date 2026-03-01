@@ -55,3 +55,15 @@ def generate_readmes_hook(build_spec: BuildSpec,
                           project_root)
     _run_script_with_venv(custom_folder / 'create_pypi_readme.py',
                           project_root)
+
+
+def restore_equiv_docx_odt_hook(build_spec: BuildSpec,
+                                build_information: BuildInformation) -> None:
+    """Restore unchanged docx/odt files that git reports as modified."""
+    _ = build_spec
+    project_root = Path(build_information['project_root'])
+    custom_folder = project_root / 'custom_build_tools'
+    _run_script_with_venv(
+        custom_folder / 'git_restore_equiv_docx_odt.py',
+        project_root
+    )
