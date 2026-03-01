@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-"""Thin wrapper calling common_build_tools/src/setup_build_environment.py."""
+"""Thin wrapper calling common_build_tools/src/clean_build.py."""
 
 from pathlib import Path
 import subprocess
@@ -12,7 +12,7 @@ def main(args: list[str]) -> int:
         Path(__file__).resolve().parent /
         'common_build_tools' /
         'src' /
-        'setup_build_environment.py'
+        'clean_build.py'
     )
     process = subprocess.run(
         [sys.executable, str(script_path), *args],
