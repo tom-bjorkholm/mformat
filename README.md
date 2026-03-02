@@ -80,6 +80,12 @@ The "testing" includes pytest, pylint, flake8 and mypy.
 
 After running `do_build.py` you can open `reports/index.html` to see all test reports.
 
+### More build system information
+
+The file `./common_build_tools/README.md` (in git submodule - see above) contains more
+information about the build system. This README can also be viewed at
+[https://bitbucket.org/tom-bjorkholm/common_build_tools/src/master/README.md](https://bitbucket.org/tom-bjorkholm/common_build_tools/src/master/README.md)
+
 ### The readme files for PyPI
 
 The script `build_helpers/create_pypi_readme.py` creates the 2 readme files for PyPI:
