@@ -70,15 +70,22 @@ The scripts are all zsh. zsh is available by default on modern macs. zsh can eas
 
 There are 3 main scripts (and 2 extra convinience scripts) for building the application:
 
-- `setup_build_environment.py` Run this script first to get the environment set up for building
-- `do_build.py` Run this script to build an installation package (.whl) and to run the tests on it in a venv (virtual environment).
-- `clean.py` Deletes all files that was produced by the build to start over from a clean state.
-- `clean_build.py` Combines the use of `clean.py`, `setup_build_environment.py` and `do_build.py` into one script. Pylint discover some duplicate code warnings only on a clean build so this is useful.
-- `do_pypi_build.py` Builds for PyPI upload and can do the upload too.
+- `run_setup_build_environment.py` Run this script first to get the
+  environment set up for building.
+- `run_build.py` Run this script to build an installation package (.whl) and
+  to run the tests on it in a venv (virtual environment).
+- `run_clean.py` Deletes all files that was produced by the build to start
+  over from a clean state.
+- `run_clean_build.py` Combines the use of `run_clean.py`,
+  `run_setup_build_environment.py` and `run_build.py` into one script.
+  Pylint discover some duplicate code warnings only on a clean build so this
+  is useful.
+- `run_pypi_build.py` Builds for PyPI upload and can do the upload too.
 
 The "testing" includes pytest, pylint, flake8 and mypy.
 
-After running `do_build.py` you can open `reports/index.html` to see all test reports.
+After running `run_build.py` you can open `reports/index.html` to see all test
+reports.
 
 ### More build system information
 

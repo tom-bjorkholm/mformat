@@ -1,25 +1,21 @@
 #! /usr/bin/env python3
-"""Thin wrapper calling common_build_tools/src/clean_build.py."""
+"""Helper for thin root wrapper scripts."""
 
 from pathlib import Path
 import subprocess
 import sys
 
 
-def main(args: list[str]) -> int:
-    """Run the target script in common_build_tools/src."""
+def run_target_script(target_script_name: str, args: list[str]) -> int:
+    """Run one common_build_tools/src script from repository root."""
     script_path = (
         Path(__file__).resolve().parent /
         'common_build_tools' /
         'src' /
-        'clean_build.py'
+        target_script_name
     )
     process = subprocess.run(
         [sys.executable, str(script_path), *args],
         check=False,
     )
     return process.returncode
-
-
-if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))
