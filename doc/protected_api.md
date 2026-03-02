@@ -317,6 +317,8 @@
   * [OdtStyles](#mformat_ext.mformat_odt.OdtStyles)
   * [MultiFormatOdt](#mformat_ext.mformat_odt.MultiFormatOdt)
     * [\_\_init\_\_](#mformat_ext.mformat_odt.MultiFormatOdt.__init__)
+    * [\_split\_rfc3066\_language](#mformat_ext.mformat_odt.MultiFormatOdt._split_rfc3066_language)
+    * [\_set\_document\_language](#mformat_ext.mformat_odt.MultiFormatOdt._set_document_language)
     * [\_insert\_odt\_styles](#mformat_ext.mformat_odt.MultiFormatOdt._insert_odt_styles)
     * [\_create\_list\_level\_properties](#mformat_ext.mformat_odt.MultiFormatOdt._create_list_level_properties)
     * [\_create\_numbered\_list\_style](#mformat_ext.mformat_odt.MultiFormatOdt._create_numbered_list_style)
@@ -4522,7 +4524,7 @@ Get formats defined in the package to register with the factory.
 
 # mformat\_ext.mformat\_odt
 
-Extension of the MultiFormat class for DOCX files.
+Extension of the MultiFormat class for ODT files.
 
 <a id="mformat_ext.mformat_odt.OdtStyles"></a>
 
@@ -4569,6 +4571,27 @@ Initialize the MultiFormatOdt class.
   backup.)
   (Default is to raise an exception.)
 - `lang` - The language of the document.
+
+<a id="mformat_ext.mformat_odt.MultiFormatOdt._split_rfc3066_language"></a>
+
+#### \_split\_rfc3066\_language
+
+```python
+@staticmethod
+def _split_rfc3066_language(lang: str) -> tuple[str, str]
+```
+
+Validate and split a RFC3066 language code.
+
+<a id="mformat_ext.mformat_odt.MultiFormatOdt._set_document_language"></a>
+
+#### \_set\_document\_language
+
+```python
+def _set_document_language(lang: str) -> None
+```
+
+Set language in default paragraph and graphic text styles.
 
 <a id="mformat_ext.mformat_odt.MultiFormatOdt._insert_odt_styles"></a>
 

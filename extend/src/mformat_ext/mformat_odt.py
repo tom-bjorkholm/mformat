@@ -1,5 +1,5 @@
 #! /usr/local/bin/python3
-"""Extension of the MultiFormat class for DOCX files."""
+"""Extension of the MultiFormat class for ODT files."""
 
 # Copyright (c) 2025 - 2026 Tom Björkholm
 # MIT License
@@ -8,6 +8,7 @@
 from typing import Optional, Callable, NamedTuple
 from odfdo import Document, Paragraph, Header, Table, Row, Cell, \
     Link, List, ListItem, Style, Span, Element
+from odfdo.utils import is_RFC3066
 from mformat.mformat import FormatterDescriptor, MultiFormat, PathLike
 from mformat.mformat_state import MultiFormatState, Formatting
 
@@ -45,7 +46,7 @@ class MultiFormatOdt(MultiFormat):
             lang: The language of the document.
         """
         self.doc: Document = Document('text')
-        self.doc.set_language(lang)
+        self._set_document_language(lang)
         self.current_paragraph: Optional[Paragraph] = None
         self.odt_table: Optional[Table] = None
         self.odt_tablenumber: int = 1
@@ -55,6 +56,29 @@ class MultiFormatOdt(MultiFormat):
         self._insert_odt_styles()
         super().__init__(file_name=file_name, url_as_text=url_as_text,
                          file_exists_callback=file_exists_callback)
+
+    @staticmethod
+    def _split_rfc3066_language(lang: str) -> tuple[str, str]:
+        """Validate and split a RFC3066 language code."""
+        if not is_RFC3066(lang):
+            msg = ('Language must be "xx" lang or "xx-YY" lang-COUNTRY '
+                   'code (RFC3066)')
+            raise TypeError(msg)
+        language_parts = lang.split('-')
+        if len(language_parts) == 2:
+            return language_parts[0], language_parts[1]
+        return language_parts[0], ''
+
+    def _set_document_language(self, lang: str) -> None:
+        """Set language in default paragraph and graphic text styles."""
+        language, country = self._split_rfc3066_language(lang)
+        default_styles = [
+            style for style in self.doc.styles.default_styles
+            if style.family in {'graphic', 'paragraph'}
+        ]
+        for style in default_styles:
+            style.set_properties(area='text', language=language,
+                                 country=country)
 
     def _insert_odt_styles(self) -> None:
         """Insert the ODT styles into the document."""

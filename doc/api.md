@@ -2037,7 +2037,7 @@ Get formats defined in the package to register with the factory.
 
 # mformat\_ext.mformat\_odt
 
-Extension of the MultiFormat class for DOCX files.
+Extension of the MultiFormat class for ODT files.
 
 <a id="mformat_ext.mformat_odt.OdtStyles"></a>
 
