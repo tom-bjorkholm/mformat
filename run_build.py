@@ -1,12 +1,11 @@
 #! /usr/bin/env python3
-"""Thin wrapper calling common_build_tools/src/do_build.py."""
+"""Thin wrapper calling do_build in common_build_tools/src."""
 
 import sys
-from run_wrapper_common import run_target_script
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent / 'common_build_tools' / 'src'))
+from do_build import do_build_cmd  # pylint: disable=wrong-import-position # noqa: E402
 
 
 if __name__ == '__main__':
-    sys.exit(run_target_script(
-        'do_build.py',
-        sys.argv[1:],
-    ))
+    do_build_cmd()
