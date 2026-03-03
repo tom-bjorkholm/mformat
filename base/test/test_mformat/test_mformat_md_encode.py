@@ -112,7 +112,8 @@ class TestEncodeTextAlwaysEscaped:
         ('<', '\\<'),
         ('|', '\\|'),
     ])
-    def test_always_escaped_single(self, capsys, char, escaped) -> None:
+    def test_always_escaped_single(self, capsys: pytest.CaptureFixture[str],
+                                   char: str, escaped: str) -> None:
         """Test that single always-escape characters are escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -130,7 +131,9 @@ class TestEncodeTextAlwaysEscaped:
         ('<html>', '\\<html>'),
         ('col1|col2', 'col1\\|col2'),
     ])
-    def test_always_escaped_in_context(self, capsys, text, expected) -> None:
+    def test_always_escaped_in_context(
+            self, capsys: pytest.CaptureFixture[str], text: str,
+            expected: str) -> None:
         """Test always-escape characters in realistic contexts."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -711,7 +714,8 @@ class TestEncodeTextRegularText:  # pylint: disable=too-few-public-methods
         'path/to/file',
         'email@example.com',
     ])
-    def test_regular_text_unchanged(self, capsys, text) -> None:
+    def test_regular_text_unchanged(self, capsys: pytest.CaptureFixture[str],
+                                    text: str) -> None:
         """Test that regular text passes through unchanged."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')

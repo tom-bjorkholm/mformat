@@ -5,6 +5,7 @@
 # MIT License
 #
 
+from typing import Any
 import pytest
 from mformat.mformat_state import Formatting
 from .check_capsys import check_capsys
@@ -15,7 +16,7 @@ from .test_helpers import (TABLE_DATA_3X2, TABLE_DATA_3X2_SIMPLE,
 
 def test_simple_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a simple table."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_table(first_row=['Col1', 'Col2'])
         mfd.add_table_row(row=['A', 'B'])
@@ -32,7 +33,7 @@ def test_simple_table(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_table_with_bold_header(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a table with bold header."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_table(first_row=['Name', 'Age'], bold=True)
         mfd.add_table_row(row=['Alice', '30'])
@@ -49,7 +50,7 @@ def test_table_with_bold_header(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_table_with_italic_header(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a table with italic header."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_table(first_row=['Name', 'Age'], italic=True)
         mfd.add_table_row(row=['Alice', '30'])
@@ -65,7 +66,7 @@ def test_table_with_italic_header(capsys: pytest.CaptureFixture[str]) -> None:
 def test_table_with_varied_column_widths(
         capsys: pytest.CaptureFixture[str]) -> None:
     """Test a table with varied column widths."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_table(first_row=['Short', 'Longer'])
         mfd.add_table_row(row=['A', 'Very long text'])
@@ -83,7 +84,7 @@ def test_table_with_varied_column_widths(
 
 def test_write_complete_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test write_complete_table method."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.write_complete_table(table=TABLE_DATA_3X2)
 
@@ -99,7 +100,7 @@ def test_write_complete_table(capsys: pytest.CaptureFixture[str]) -> None:
 def test_write_complete_table_with_bold_header(
         capsys: pytest.CaptureFixture[str]) -> None:
     """Test write_complete_table with bold first row."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.write_complete_table(
             table=TABLE_DATA_3X2_SIMPLE, bold_first_row=True)
@@ -115,7 +116,7 @@ def test_write_complete_table_with_bold_header(
 
 def test_paragraph_then_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by table."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_paragraph(text='Here is a table:')
         mfd.new_table(first_row=['A', 'B'])
@@ -132,7 +133,7 @@ def test_paragraph_then_table(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_table_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test table followed by paragraph."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_table(first_row=['X', 'Y'])
         mfd.add_table_row(row=['1', '2'])
@@ -149,7 +150,7 @@ def test_table_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_heading_then_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by table."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_heading(level=2, text='Data Table')
         mfd.new_table(first_row=['Col1', 'Col2'])
@@ -166,7 +167,7 @@ def test_heading_then_table(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_table_with_three_columns(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a table with three columns."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_table(first_row=['Name', 'Age', 'City'])
         mfd.add_table_row(row=['Alice', '30', 'NYC'])
@@ -185,7 +186,7 @@ def test_table_with_three_columns(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_table_different_num_cols(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a table with different number of columns."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_table(first_row=['Name', 'Age', 'City'])
         mfd.add_table_row(row=['Alice', '30'])
@@ -199,7 +200,7 @@ def test_table_different_num_cols(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_table_different_num_cols2(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a table with different number of columns."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_table(first_row=['Name', 'Age', 'City'])
         mfd._write_table_row(row=['Alice', '30'],  # pylint: disable=protected-access # noqa: E501

@@ -7,6 +7,7 @@
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Any
 import pytest
 from mformat.factory import create_mf
 from mformat.mformat_state import Formatting, MultiFormatState
@@ -37,9 +38,10 @@ def test_new_paragraph(capsys: pytest.CaptureFixture[str],
                           ('italic text', False, True, '*italic text*\n'),
                           ('both', True, True, '***both***\n')])
 def test_new_paragraph_formatting(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
-                                  text, bold, italic, expected) -> None:
+                                  text: str, bold: bool, italic: bool,
+                                  expected: str) -> None:
     """Test the new_paragraph method with bold and italic."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         assert mfd.state == MultiFormatState.EMPTY
         mfd.new_paragraph(text=text, bold=bold, italic=italic)
@@ -57,9 +59,10 @@ def test_new_paragraph_formatting(capsys: pytest.CaptureFixture[str],  # pylint:
                           (' ', '\n'),
                           ('   ', '\n')])
 def test_new_paragraph_space(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
-                             text, bold, italic, expected) -> None:
+                             text: str, bold: bool, italic: bool,
+                             expected: str) -> None:
     """Test the new_paragraph method with bold and italic."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         assert mfd.state == MultiFormatState.EMPTY
         mfd.new_paragraph(text=text, bold=bold, italic=italic,
@@ -83,7 +86,8 @@ def test_new_paragraph_space(capsys: pytest.CaptureFixture[str],  # pylint: disa
                           ('http://test.org', 'link', True, True,
                            '***[link](http://test.org)***')])
 def test_write_url(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                   url, text, bold, italic, expected) -> None:
+                   url: str, text: str | None, bold: bool, italic: bool,
+                   expected: str) -> None:
     """Test the _write_url method."""
     txt = run_protected_method('md', '.md', '_write_url',
                                (url, text, MultiFormatState.PARAGRAPH,
@@ -98,9 +102,9 @@ def test_write_url(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-ma
                           ('http://test.org', 'link text',
                            '[link text](http://test.org)\n')])
 def test_add_url(capsys: pytest.CaptureFixture[str],
-                 url: str, text: str, expected: str) -> None:
+                 url: str, text: str | None, expected: str) -> None:
     """Test the add_url method."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_paragraph('')
         mfd.add_url(url=url, text=text)
@@ -116,9 +120,10 @@ def test_add_url(capsys: pytest.CaptureFixture[str],
                           ('http://test.org', 'See here',
                            'See here http://test.org\n')])
 def test_add_url_as_text(capsys: pytest.CaptureFixture[str],
-                         url: str, text: str, expected: str) -> None:
+                         url: str, text: str | None,
+                         expected: str) -> None:
     """Test the add_url method with url_as_text=True."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_paragraph('')
         mfd.add_url(url=url, text=text)
@@ -137,7 +142,7 @@ def test_add_url_as_text(capsys: pytest.CaptureFixture[str],
 def test_add_code_in_text(capsys: pytest.CaptureFixture[str],
                           text: str, code: str, expected: str) -> None:
     """Test the add_code_in_text method."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_paragraph(text=text)
         mfd.add_code_in_text(text=code)

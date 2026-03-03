@@ -20,13 +20,13 @@ class TestWrapTextValidation:
         '\n',
         'abc\ndef\nghi',
     ])
-    def test_newline_raises(self, text) -> None:
+    def test_newline_raises(self, text: str) -> None:
         """Test that newlines in text raise ValueError."""
         with pytest.raises(ValueError, match='newlines'):
             wrap_text(text, 80)
 
     @pytest.mark.parametrize('max_len', [0, -1, -10])
-    def test_max_line_length_too_small_raises(self, max_len) -> None:
+    def test_max_line_length_too_small_raises(self, max_len: int) -> None:
         """Test that max_line_length < 1 raises ValueError."""
         with pytest.raises(ValueError, match='at least 1'):
             wrap_text('hello', max_len)
@@ -47,7 +47,7 @@ class TestWrapTextEmptyInput:
         assert isinstance(result, list)
 
     @pytest.mark.parametrize('text', [' ', '  ', '     '])
-    def test_whitespace_only(self, text) -> None:
+    def test_whitespace_only(self, text: str) -> None:
         """Test that whitespace-only strings return empty list."""
         result = wrap_text(text, 80)
         assert not result
@@ -62,7 +62,7 @@ class TestWrapTextNoWrapping:
         ('hello world', 80),
         ('hello world', 11),
     ])
-    def test_short_text_single_row(self, text, max_len) -> None:
+    def test_short_text_single_row(self, text: str, max_len: int) -> None:
         """Test that text fitting within max_line_length is one row."""
         assert wrap_text(text, max_len) == [text]
 
@@ -169,7 +169,7 @@ class TestUnderlineTextEmptyInput:
         assert isinstance(result, list)
 
     @pytest.mark.parametrize('text', [' ', '   '])
-    def test_whitespace_only_text(self, text) -> None:
+    def test_whitespace_only_text(self, text: str) -> None:
         """Test that whitespace-only text returns empty list."""
         spec = UnderlineSpec(
             pattern='-', empty_lines_between=0, empty_lines_after=1
@@ -232,8 +232,8 @@ class TestUnderlineTextSingleLine:
         ('ABCDEF', '=-=', '=-==-='),
         ('A', '-', '-'),
     ])
-    def test_pattern_repetition(self, text, pattern,
-                                expected_underline) -> None:
+    def test_pattern_repetition(self, text: str, pattern: str,
+                                expected_underline: str) -> None:
         """Test various pattern repetition scenarios."""
         spec = UnderlineSpec(
             pattern=pattern,
@@ -246,7 +246,8 @@ class TestUnderlineTextSingleLine:
         (0, 0), (0, 1), (0, 2),
         (1, 0), (1, 1), (2, 2),
     ])
-    def test_single_line_between_has_no_effect(self, between, after) -> None:
+    def test_single_line_between_has_no_effect(
+            self, between: int, after: int) -> None:
         """Test that empty_lines_between is irrelevant for one line."""
         spec = UnderlineSpec(
             pattern='-',
@@ -369,7 +370,8 @@ class TestUnderlineTextMultiLine:
         (2, 0), (2, 1), (2, 2), (2, 3),
         (3, 0), (3, 1), (3, 2), (3, 3),
     ])
-    def test_two_lines_empty_line_combinations(self, between, after) -> None:
+    def test_two_lines_empty_line_combinations(
+            self, between: int, after: int) -> None:
         """Test all combinations of empty lines between and after."""
         spec = UnderlineSpec(
             pattern='-',
@@ -389,8 +391,8 @@ class TestUnderlineTextMultiLine:
         (0, 0), (0, 1), (1, 0), (1, 1),
         (2, 0), (2, 2), (3, 3),
     ])
-    def test_three_lines_empty_line_combinations(self, between,
-                                                 after) -> None:
+    def test_three_lines_empty_line_combinations(self, between: int,
+                                                 after: int) -> None:
         """Test empty line combinations with three wrapped lines."""
         spec = UnderlineSpec(
             pattern='-',

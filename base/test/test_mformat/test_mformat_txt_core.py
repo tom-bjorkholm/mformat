@@ -7,7 +7,7 @@
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Optional
+from typing import Any, cast
 import pytest
 from mformat.factory import create_mf
 from mformat.mformat import FormatterDescriptor
@@ -64,7 +64,8 @@ def test_constructor_table_max_line_length_none(
 
 @pytest.mark.parametrize('table_max_line_length', [0, 9, -1])
 def test_constructor_table_max_line_length_too_short(
-        capsys, table_max_line_length) -> None:
+        capsys: pytest.CaptureFixture[str],
+        table_max_line_length: int) -> None:
     """Test table_max_line_length validation for short values."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.txt')
@@ -79,13 +80,16 @@ def test_constructor_table_max_line_length_too_short(
 
 @pytest.mark.parametrize('table_max_line_length', ['', '10'])
 def test_constructor_table_max_line_length_must_be_int(
-        capsys, table_max_line_length) -> None:
+        capsys: pytest.CaptureFixture[str],
+        table_max_line_length: str) -> None:
     """Test table_max_line_length assertion for invalid types."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.txt')
         with pytest.raises(AssertionError):
-            _ = MultiFormatTxt(file_name=file_name, line_length=20,
-                               table_max_line_length=table_max_line_length)
+            _ = MultiFormatTxt(
+                file_name=file_name, line_length=20,
+                table_max_line_length=cast(Any, table_max_line_length),
+            )
     check_capsys(capsys)
 
 
@@ -105,13 +109,15 @@ def test_constructor_line_length_too_short(capsys: pytest.CaptureFixture[str],
 @pytest.mark.parametrize('line_length', [0, None, '79'])
 def test_constructor_line_length_must_be_int(
         capsys: pytest.CaptureFixture[str],
-        line_length: Optional[int]) -> None:
+        line_length: int | None | str) -> None:
     """Test constructor line length assertion for invalid types."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.txt')
         with pytest.raises(AssertionError):
-            _ = MultiFormatTxt(file_name=file_name,
-                               line_length=line_length)
+            _ = MultiFormatTxt(
+                file_name=file_name,
+                line_length=cast(Any, line_length),
+            )
     check_capsys(capsys)
 
 
@@ -128,7 +134,7 @@ def test_constructor_line_length_must_be_int(
 def test_heading_levels(capsys: pytest.CaptureFixture[str],
                         level: int, expected: str) -> None:
     """Test heading underline style by heading level."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_heading(level=level, text='Title')
 
@@ -140,7 +146,7 @@ def test_heading_levels(capsys: pytest.CaptureFixture[str],
 def test_heading_add_text_url_and_code(
         capsys: pytest.CaptureFixture[str]) -> None:
     """Test adding text, URL and code in heading state."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_heading(level=2, text='Check')
         mfd.add_text(text=' this')
@@ -157,7 +163,7 @@ def test_heading_add_text_url_and_code(
 def test_heading_wraps_using_line_length(
         capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading wrapping uses configured line length."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_heading(level=1, text='a b c d e f g h i')
 
@@ -189,9 +195,10 @@ def test_heading_wraps_using_line_length(
     ]
 )
 def test_write_code_block(capsys: pytest.CaptureFixture[str],
-                          programming_language: str, expected: str) -> None:
+                          programming_language: str | None,
+                          expected: str) -> None:
     """Test code block start and end markers."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.write_code_block(text='print(1)\n',
                              programming_language=programming_language)
@@ -217,7 +224,8 @@ def test_encode_text_no_changes(capsys: pytest.CaptureFixture[str]) -> None:
                          [('utf-8', b'Caf\xc3\xa9'),
                           ('iso-8859-1', b'Caf\xe9')])
 def test_character_encoding_writes_expected_bytes(
-        capsys, character_encoding, expected_text_bytes) -> None:
+        capsys: pytest.CaptureFixture[str], character_encoding: str,
+        expected_text_bytes: bytes) -> None:
     """Test that TXT output bytes match selected character encoding."""
     raw_content = create_paragraph_file_bytes(
         formatter_class=MultiFormatTxt, file_extension='.txt',

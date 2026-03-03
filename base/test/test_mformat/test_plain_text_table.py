@@ -5,6 +5,7 @@
 # MIT License
 #
 
+from typing import Any
 import pytest
 from mformat.plain_text_table import (BorderSpec, TableAlignment,
                                       align_cell_value, format_border_row,
@@ -166,7 +167,7 @@ class TestSelectColumnWidthsValidation:
     """Test input validation in select_column_widths."""
 
     @pytest.mark.parametrize('data', [[], 'bad', 42])
-    def test_invalid_data_raises(self, data) -> None:
+    def test_invalid_data_raises(self, data: Any) -> None:
         """Test invalid data types raise ValueError."""
         with pytest.raises(ValueError,
                            match='not a list'):
@@ -174,7 +175,7 @@ class TestSelectColumnWidthsValidation:
                 data, _simple_spec(), 80)
 
     @pytest.mark.parametrize('data', [[[]], [['a'], []]])
-    def test_empty_row_raises(self, data) -> None:
+    def test_empty_row_raises(self, data: list[list[str]]) -> None:
         """Test empty rows raise ValueError."""
         with pytest.raises(ValueError,
                            match='not a list'):
@@ -198,7 +199,7 @@ class TestSelectColumnWidthsValidation:
 
     @pytest.mark.parametrize('max_len', [0, 1, 5, 9, -1])
     def test_max_line_length_below_10_raises(
-            self, max_len) -> None:
+            self, max_len: int) -> None:
         """Test max_line_length < 10 raises ValueError."""
         with pytest.raises(ValueError,
                            match='less than 10'):
@@ -342,7 +343,7 @@ class TestAlignCellValue:
         ('A', 4, 'A   '),
         ('test', 4, 'test'),
     ])
-    def test_left(self, value, width, expected) -> None:
+    def test_left(self, value: str, width: int, expected: str) -> None:
         """Test LEFT alignment pads on the right."""
         result = align_cell_value(
             value, TableAlignment.LEFT, width)
@@ -353,7 +354,7 @@ class TestAlignCellValue:
         ('A', 4, '   A'),
         ('test', 4, 'test'),
     ])
-    def test_right(self, value, width, expected) -> None:
+    def test_right(self, value: str, width: int, expected: str) -> None:
         """Test RIGHT alignment pads on the left."""
         result = align_cell_value(
             value, TableAlignment.RIGHT, width)
@@ -364,7 +365,7 @@ class TestAlignCellValue:
         ('A', 4, ' A  '),
         ('test', 4, 'test'),
     ])
-    def test_center(self, value, width, expected) -> None:
+    def test_center(self, value: str, width: int, expected: str) -> None:
         """Test CENTER alignment centers the value."""
         result = align_cell_value(
             value, TableAlignment.CENTER, width)
@@ -376,8 +377,8 @@ class TestAlignCellValue:
         ('12.5', 6, '  12.5'),
         ('1,000', 7, '  1,000'),
     ])
-    def test_left_but_digits_right(self, value, width,
-                                   expected) -> None:
+    def test_left_but_digits_right(self, value: str, width: int,
+                                   expected: str) -> None:
         """Test LEFT_BUT_DIGITS_RIGHT alignment."""
         align = TableAlignment.LEFT_BUT_DIGITS_RIGHT
         result = align_cell_value(value, align, width)
@@ -388,8 +389,8 @@ class TestAlignCellValue:
         ('123', 5, '  123'),
         ('12.5', 6, '  12.5'),
     ])
-    def test_center_but_digits_right(self, value, width,
-                                     expected) -> None:
+    def test_center_but_digits_right(self, value: str, width: int,
+                                     expected: str) -> None:
         """Test CENTER_BUT_DIGITS_RIGHT alignment."""
         align = TableAlignment.CENTER_BUT_DIGITS_RIGHT
         result = align_cell_value(value, align, width)

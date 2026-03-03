@@ -52,7 +52,8 @@ def test_open_close_context_manager(
 
 
 @pytest.mark.parametrize('fname', ['a.test', 'b.test', 'c.test'])
-def test_open_close_manual(capsys: pytest.CaptureFixture[str], fname) -> None:
+def test_open_close_manual(capsys: pytest.CaptureFixture[str],
+                           fname: str) -> None:
     """Test the open and close methods."""
     with TemporaryDirectory() as temp_dir:
         file_name = str(Path(temp_dir) / fname)
@@ -69,7 +70,7 @@ def test_open_close_manual(capsys: pytest.CaptureFixture[str], fname) -> None:
 
 
 @pytest.mark.parametrize('fname', ['a.test', 'b.test', 'c.test'])
-def test_close_only(capsys: pytest.CaptureFixture[str], fname) -> None:
+def test_close_only(capsys: pytest.CaptureFixture[str], fname: str) -> None:
     """Test only the close method when the file is not open."""
     with TemporaryDirectory() as temp_dir:
         file_name = str(Path(temp_dir) / fname)
