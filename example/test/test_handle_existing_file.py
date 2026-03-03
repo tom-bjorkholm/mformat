@@ -21,7 +21,8 @@ from e40_handle_existing_file import existing_file_example  # pylint: disable=wr
 @pytest.mark.parametrize('format_name, extension',
                          [('md', 'md'),
                           ('txt', 'txt')])
-def test_existing_file_example1(capsys, format_name, extension):
+def test_existing_file_example1(capsys: pytest.CaptureFixture[str],
+                                format_name: str, extension: str) -> None:
     """Test the existing file example."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / f'test.{extension}')
@@ -39,8 +40,9 @@ def test_existing_file_example1(capsys, format_name, extension):
                           ('backup', 'Backed up file')])
 @pytest.mark.parametrize('format_name',
                          ['md', 'txt'])
-def test_existing_file_example2(capsys, monkeypatch, env_var, txt_out,
-                                format_name):
+def test_existing_file_example2(capsys: pytest.CaptureFixture[str],
+                                monkeypatch: pytest.MonkeyPatch, env_var: str,
+                                txt_out: str, format_name: str) -> None:
     """Test the existing file example."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / f'test.{format_name}')
@@ -59,7 +61,9 @@ def test_existing_file_example2(capsys, monkeypatch, env_var, txt_out,
 
 @pytest.mark.parametrize('format_name',
                          ['md', 'txt'])
-def test_existing_file_example3(capsys, monkeypatch, format_name):
+def test_existing_file_example3(
+        capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch,
+        format_name: str) -> None:
     """Test the existing file example."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / f'test.{format_name}')

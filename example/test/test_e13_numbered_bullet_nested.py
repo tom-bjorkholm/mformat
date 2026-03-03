@@ -7,6 +7,7 @@
 
 import sys
 from pathlib import Path
+import pytest
 from .test_e01_paragraph import (
     EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE)
 from .example_checkers import (
@@ -124,7 +125,8 @@ EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
     EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
-def test_e13_numbered_bullet_nested_md(capsys):
+def test_e13_numbered_bullet_nested_md(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_nest_numbers_bullets function with the md format."""
     expected_txt = EXPECTED_MD_TEXT
     # pymarkdown incorreclty think that unordered list is intended as
@@ -136,17 +138,19 @@ def test_e13_numbered_bullet_nested_md(capsys):
     check_capsys_silent(capsys)
 
 
-def test_e13_numbered_bullet_nested_html(capsys):
+def test_e13_numbered_bullet_nested_html(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_nest_numbers_bullets function with the html format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_html_func(example_nest_numbers_bullets, expected_txt)
     check_capsys_silent(capsys)
 
 
-def test_e13_numbered_bullet_nested_docx(capsys):
+def test_e13_numbered_bullet_nested_docx(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_nest_numbers_bullets function with the docx format."""
     expected_txt = docx_version_of_html(EXPECTED_DOCX_HTML_BODY_TEXT)
-    expected_warnings = []
+    expected_warnings: list[str] = []
     check_docx_func(
         example_nest_numbers_bullets,
         expected_txt,
@@ -154,7 +158,8 @@ def test_e13_numbered_bullet_nested_docx(capsys):
     check_capsys_silent(capsys)
 
 
-def test_e13_numbered_bullet_nested_odt(capsys):
+def test_e13_numbered_bullet_nested_odt(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_nest_numbers_bullets function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(example_nest_numbers_bullets, expected_txt)
@@ -183,14 +188,16 @@ EXPECTED_TXT_TEXT = [
 ]
 
 
-def test_e13_numbered_bullet_nested_txt(capsys):
+def test_e13_numbered_bullet_nested_txt(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_nest_numbers_bullets function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(example_nest_numbers_bullets, expected_txt)
     check_capsys_silent(capsys)
 
 
-def test_e13_numbered_bullet_nested_rst(capsys):
+def test_e13_numbered_bullet_nested_rst(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test example_nest_numbers_bullets with the reST format."""
     expected_txt = [
         'Nesting points example',

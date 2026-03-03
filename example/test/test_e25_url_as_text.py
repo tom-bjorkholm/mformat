@@ -7,6 +7,7 @@
 
 import sys
 from pathlib import Path
+import pytest
 from .test_e01_paragraph import (
     EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE)
 from .example_checkers import (
@@ -82,7 +83,7 @@ EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
     EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
 
 
-def test_e25_url_as_text_md(capsys):
+def test_e25_url_as_text_md(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_url_as_text function with the md format."""
     expected_txt = EXPECTED_MD_TEXT
     expected_error = ['MD034']  # Bare URL used
@@ -91,22 +92,22 @@ def test_e25_url_as_text_md(capsys):
     check_capsys_silent(capsys)
 
 
-def test_e25_url_as_text_html(capsys):
+def test_e25_url_as_text_html(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_url_as_text function with the html format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_html_func(example_url_as_text, expected_txt)
     check_capsys_silent(capsys)
 
 
-def test_e25_url_as_text_docx(capsys):
+def test_e25_url_as_text_docx(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_url_as_text function with the docx format."""
     expected_txt = docx_version_of_html(EXPECTED_HTML_BODY_TEXT)
-    expected_warnings = []
+    expected_warnings: list[str] = []
     check_docx_func(example_url_as_text, expected_txt, expected_warnings)
     check_capsys_silent(capsys)
 
 
-def test_e25_url_as_text_odt(capsys):
+def test_e25_url_as_text_odt(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_url_as_text function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(example_url_as_text, expected_txt)
@@ -155,14 +156,14 @@ EXPECTED_TXT_TEXT = [
 ]
 
 
-def test_e25_url_as_text_txt(capsys):
+def test_e25_url_as_text_txt(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_url_as_text function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(example_url_as_text, expected_txt)
     check_capsys_silent(capsys)
 
 
-def test_e25_url_as_text_rst(capsys):
+def test_e25_url_as_text_rst(capsys: pytest.CaptureFixture[str]) -> None:
     """Test example_url_as_text with the reST format."""
     expected_txt = [
         'URL in paragraph example',

@@ -7,6 +7,7 @@
 
 import sys
 from pathlib import Path
+import pytest
 from .test_e01_paragraph import EXPECTED_HTML_POST, EXPECTED_ODT_PRE
 from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
@@ -84,7 +85,7 @@ EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
     EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
-def test_41_use_css_in_html_md(capsys):
+def test_41_use_css_in_html_md(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the use_css_in_html_example function with the md format."""
     expected_txt = EXPECTED_MD_TEXT
     check_markdown_func(
@@ -94,29 +95,29 @@ def test_41_use_css_in_html_md(capsys):
     check_capsys_silent(capsys)
 
 
-def test_41_use_css_in_html_html(capsys):
+def test_41_use_css_in_html_html(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the use_css_in_html_example function with the html format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_html_func(use_css_in_html_example, expected_txt)
     check_capsys_silent(capsys)
 
 
-def test_41_use_css_in_html_docx(capsys):
+def test_41_use_css_in_html_docx(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the use_css_in_html_example function with the docx format."""
     expected_txt = EXPECTED_HTML_BODY_TEXT
-    expected_warnings = []
+    expected_warnings: list[str] = []
     check_docx_func(use_css_in_html_example, expected_txt, expected_warnings)
     check_capsys_silent(capsys)
 
 
-def test_41_use_css_in_html_odt(capsys):
+def test_41_use_css_in_html_odt(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the use_css_in_html_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(use_css_in_html_example, expected_txt)
     check_capsys_silent(capsys)
 
 
-def test_odt_body_text():
+def test_odt_body_text() -> None:
     """Test the odt body text."""
     assert EXPECTED_ODT_BODY_TEXT == EXPECTED_ODT_BODY_TEXT2
 
@@ -145,14 +146,14 @@ EXPECTED_TXT_TEXT = [
 ]
 
 
-def test_41_use_css_in_html_txt(capsys):
+def test_41_use_css_in_html_txt(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the use_css_in_html_example function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(use_css_in_html_example, expected_txt)
     check_capsys_silent(capsys)
 
 
-def test_41_use_css_in_html_rst(capsys):
+def test_41_use_css_in_html_rst(capsys: pytest.CaptureFixture[str]) -> None:
     """Test use_css_in_html_example with the reST format."""
     expected_txt = [
         'CSS und Sprache in HTML',

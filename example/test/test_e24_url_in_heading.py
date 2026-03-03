@@ -7,6 +7,7 @@
 
 import sys
 from pathlib import Path
+import pytest
 from .test_e01_paragraph import (
     EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE)
 from .example_checkers import (
@@ -126,7 +127,7 @@ EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
     EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
-def test_e24_url_in_headings_md(capsys):
+def test_e24_url_in_headings_md(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_url_in_heading function with the md format."""
     expected_txt = EXPECTED_MD_TEXT
     # MD025: Multiple top level headings in the same document
@@ -136,22 +137,22 @@ def test_e24_url_in_headings_md(capsys):
     check_capsys_silent(capsys)
 
 
-def test_e24_url_in_headings_html(capsys):
+def test_e24_url_in_headings_html(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_url_in_heading function with the html format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_html_func(example_url_in_heading, expected_txt)
     check_capsys_silent(capsys)
 
 
-def test_e24_url_in_headings_docx(capsys):
+def test_e24_url_in_headings_docx(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_url_in_heading function with the docx format."""
     expected_txt = docx_version_of_html(EXPECTED_DOCX_HTML_TEXT)
-    expected_warnings = []
+    expected_warnings: list[str] = []
     check_docx_func(example_url_in_heading, expected_txt, expected_warnings)
     check_capsys_silent(capsys)
 
 
-def test_e24_url_in_headings_odt(capsys):
+def test_e24_url_in_headings_odt(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_url_in_heading function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(example_url_in_heading, expected_txt)
@@ -220,14 +221,14 @@ EXPECTED_TXT_TEXT = [
 ]
 
 
-def test_e24_url_in_headings_txt(capsys):
+def test_e24_url_in_headings_txt(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_url_in_heading function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(example_url_in_heading, expected_txt)
     check_capsys_silent(capsys)
 
 
-def test_e24_url_in_heading_rst(capsys):
+def test_e24_url_in_heading_rst(capsys: pytest.CaptureFixture[str]) -> None:
     """Test example_url_in_heading with the reST format."""
     expected_txt = [
         'URL in heading example',

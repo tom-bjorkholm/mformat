@@ -7,6 +7,7 @@
 
 import sys
 from pathlib import Path
+import pytest
 from .test_e01_paragraph import (
     EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE)
 from .example_checkers import (
@@ -184,7 +185,7 @@ EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
     EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 
 
-def test_e12_numbered_bold_md(capsys):
+def test_e12_numbered_bold_md(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the numbered_bold_example function with the md format."""
     expected_txt = EXPECTED_MD_TEXT
     # pymarkdown incorreclty think that numbering is wrong MD029.
@@ -194,22 +195,22 @@ def test_e12_numbered_bold_md(capsys):
     check_capsys_silent(capsys)
 
 
-def test_e12_numbered_bold_html(capsys):
+def test_e12_numbered_bold_html(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the numbered_bold_example function with the html format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_html_func(numbered_bold_example, expected_txt)
     check_capsys_silent(capsys)
 
 
-def test_e12_numbered_bold_docx(capsys):
+def test_e12_numbered_bold_docx(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the numbered_bold_example function with the docx format."""
     expected_txt = docx_version_of_html(EXPECTED_DOCX_HTML_BODY_TEXT)
-    expected_warnings = []
+    expected_warnings: list[str] = []
     check_docx_func(numbered_bold_example, expected_txt, expected_warnings)
     check_capsys_silent(capsys)
 
 
-def test_e12_numbered_bold_odt(capsys):
+def test_e12_numbered_bold_odt(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the numbered_bold_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(numbered_bold_example, expected_txt)
@@ -246,14 +247,14 @@ EXPECTED_TXT_TEXT = [
 ]
 
 
-def test_e12_numbered_bold_txt(capsys):
+def test_e12_numbered_bold_txt(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the numbered_bold_example function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(numbered_bold_example, expected_txt)
     check_capsys_silent(capsys)
 
 
-def test_e12_numbered_bold_rst(capsys):
+def test_e12_numbered_bold_rst(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the numbered_bold_example function with the reST format."""
     expected_txt = [
         'Numbered list with bold text example',

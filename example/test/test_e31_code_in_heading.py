@@ -7,6 +7,7 @@
 
 import sys
 from pathlib import Path
+import pytest
 from .test_e01_paragraph import (
     EXPECTED_HTML_PRE, EXPECTED_HTML_POST, EXPECTED_ODT_PRE)
 from .example_checkers import (
@@ -59,7 +60,7 @@ EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + \
     EXPECTED_HTML_POST
 
 
-def test_e31_code_in_heading_md(capsys):
+def test_e31_code_in_heading_md(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the code_in_heading_example function with the md format."""
     expected_txt = EXPECTED_MD_TEXT
     check_markdown_func(code_in_heading_example, expected_txt,
@@ -67,22 +68,22 @@ def test_e31_code_in_heading_md(capsys):
     check_capsys_silent(capsys)
 
 
-def test_e31_code_in_heading_html(capsys):
+def test_e31_code_in_heading_html(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the code_in_heading_example function with the html format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_html_func(code_in_heading_example, expected_txt)
     check_capsys_silent(capsys)
 
 
-def test_e31_code_in_heading_docx(capsys):
+def test_e31_code_in_heading_docx(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the code_in_heading_example function with the docx format."""
     expected_txt = docx_version_of_html(EXPECTED_DOCX_HTML_BODY_TEXT)
-    expected_warnings = []
+    expected_warnings: list[str] = []
     check_docx_func(code_in_heading_example, expected_txt, expected_warnings)
     check_capsys_silent(capsys)
 
 
-def test_e31_code_in_heading_odt(capsys):
+def test_e31_code_in_heading_odt(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the code_in_heading_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(code_in_heading_example, expected_txt)
@@ -102,14 +103,14 @@ EXPECTED_TXT_TEXT = [
 ]
 
 
-def test_e31_code_in_heading_txt(capsys):
+def test_e31_code_in_heading_txt(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the code_in_heading_example function with the txt format."""
     expected_txt = EXPECTED_TXT_TEXT
     check_txt_func(code_in_heading_example, expected_txt)
     check_capsys_silent(capsys)
 
 
-def test_e31_code_in_heading_rst(capsys):
+def test_e31_code_in_heading_rst(capsys: pytest.CaptureFixture[str]) -> None:
     """Test code_in_heading_example with the reST format."""
     expected_txt = [
         'Code in heading example ``add_code_in_text()``',
