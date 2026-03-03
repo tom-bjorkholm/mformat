@@ -28,7 +28,10 @@ from .test_helpers import MultiFormat4, MultiFormat6, MultiFormat7
                             '_start_paragraph': 1, '_write_text': 1},
                            'def')])
 def test_new_paragraph(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                       from_state, to_state, count, text) -> None:
+                       from_state: MultiFormatState,
+                       to_state: MultiFormatState,
+                       count: dict[str, int],
+                       text: str) -> None:
     """Test that the new_paragraph method is correct."""
     mfmt = MultiFormat4(file_name='test', expected_text=text)
     mfmt.state = from_state
@@ -52,7 +55,10 @@ def test_new_paragraph(capsys: pytest.CaptureFixture[str],  # pylint: disable=to
                            RuntimeError,
                            'Cannot add text to state EMPTY')])
 def test_add_text_error(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                        from_state, text, exc, msg) -> None:
+                        from_state: MultiFormatState,
+                        text: str,
+                        exc: type[RuntimeError],
+                        msg: str) -> None:
     """Test that the add_text method raises an error in wrong state."""
     mfmt = MultiFormat4(file_name='test', expected_text=text)
     mfmt.state = from_state
@@ -76,7 +82,10 @@ def test_add_text_error(capsys: pytest.CaptureFixture[str],  # pylint: disable=t
                            {'_encode_text': 1, '_write_text': 1},
                            'ghi')])
 def test_add_text(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                  from_state, to_state, count, text) -> None:
+                  from_state: MultiFormatState,
+                  to_state: MultiFormatState,
+                  count: dict[str, int],
+                  text: str) -> None:
     """Test that the add_text method is correct."""
     mfmt = MultiFormat4(file_name='test', expected_text=text)
     mfmt.state = from_state
@@ -92,7 +101,10 @@ def test_add_text(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-man
                           ('ghi', False, True, 'ghi'),
                           ('jkl', True, True, 'jkl')])
 def test_new_paragraph_bold_italic(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                                   text, bold, italic, expected_text) -> None:
+                                   text: str,
+                                   bold: bool,
+                                   italic: bool,
+                                   expected_text: str) -> None:
     """Test new_paragraph with bold and italic parameters."""
     mfmt = MultiFormat4(file_name='test', expected_text=expected_text,
                         expected_bold=bold, expected_italic=italic)
@@ -109,7 +121,10 @@ def test_new_paragraph_bold_italic(capsys: pytest.CaptureFixture[str],  # pylint
                           ('ghi', False, True, 'ghi'),
                           ('jkl', True, True, 'jkl')])
 def test_add_text_bold_italic(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                              text, bold, italic, expected_text) -> None:
+                              text: str,
+                              bold: bool,
+                              italic: bool,
+                              expected_text: str) -> None:
     """Test add_text with bold and italic parameters."""
     mfmt = MultiFormat4(file_name='test', expected_text=expected_text,
                         expected_bold=bold, expected_italic=italic)
@@ -131,7 +146,9 @@ def test_add_text_bold_italic(capsys: pytest.CaptureFixture[str],  # pylint: dis
                            RuntimeError,
                            'Cannot add URL to state EMPTY')])
 def test_add_url_error(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                       from_state, exc, msg) -> None:
+                       from_state: MultiFormatState,
+                       exc: type[RuntimeError],
+                       msg: str) -> None:
     """Test that the add_url method raises an error in wrong state."""
     mfmt = MultiFormat6(file_name='test',
                         expected_url='http://example.com')
@@ -150,7 +167,10 @@ def test_add_url_error(capsys: pytest.CaptureFixture[str],  # pylint: disable=to
                           ('http://test.org', '  link text  ',
                            'http://test.org', 'link text')])
 def test_add_url(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                 url, text, expected_url, expected_text) -> None:
+                 url: str,
+                 text: str | None,
+                 expected_url: str,
+                 expected_text: str | None) -> None:
     """Test that the add_url method is correct."""
     mfmt = MultiFormat6(file_name='test', expected_url=expected_url,
                         expected_url_text=expected_text)
@@ -175,8 +195,13 @@ def test_add_url(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many
                           ('http://test.org', 'link', True, True,
                            'http://test.org', 'link', True, True)])
 def test_add_url_bold_italic(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                             url, text, bold, italic, expected_url,
-                             expected_text, expected_bold: bool,
+                             url: str,
+                             text: str | None,
+                             bold: bool,
+                             italic: bool,
+                             expected_url: str,
+                             expected_text: str | None,
+                             expected_bold: bool,
                              expected_italic: bool) -> None:
     """Test add_url with bold and italic parameters."""
     mfmt = MultiFormat6(file_name='test', expected_url=expected_url,
@@ -201,7 +226,9 @@ def test_add_url_bold_italic(capsys: pytest.CaptureFixture[str],  # pylint: disa
                           ('http://test.org', '  See here  ',
                            'See here http://test.org')])
 def test_add_url_as_text(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                         url, text, expected_text) -> None:
+                         url: str,
+                         text: str | None,
+                         expected_text: str) -> None:
     """Test add_url with url_as_text=True."""
     mfmt = MultiFormat7(file_name='test', expected_text=expected_text,
                         url_as_text=True)
@@ -248,8 +275,9 @@ def test_add_url_as_text_formatting(capsys: pytest.CaptureFixture[str],  # pylin
                           ('', '', False),
                           ('  ', '  ', False)])
 def test_new_paragraph_smart_ws_false(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                                      text, expected_text,
-                                      expected_ws_needed) -> None:
+                                      text: str,
+                                      expected_text: str,
+                                      expected_ws_needed: bool) -> None:
     """Test new_paragraph with smart_ws=False."""
     mfmt = MultiFormat4(file_name='test', expected_text=expected_text)
     mfmt.new_paragraph(text=text, smart_ws=False)
@@ -344,8 +372,11 @@ def test_smart_ws_false_empty_text(capsys: pytest.CaptureFixture[str]) -> None:
         ('text ', False, 'more', True, 'more'),
     ])
 def test_mixed_smart_ws_modes(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                              first_text, first_smart_ws, second_text,
-                              second_smart_ws, expected_second) -> None:
+                              first_text: str,
+                              first_smart_ws: bool,
+                              second_text: str,
+                              second_smart_ws: bool,
+                              expected_second: str) -> None:
     """Test mixing smart_ws=False and smart_ws=True."""
     # First call
     expected_first = first_text.strip() if first_smart_ws else first_text

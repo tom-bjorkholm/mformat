@@ -9,6 +9,7 @@ import sys
 from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Any
 import pytest
 from mformat_ext.mformat_docx import MultiFormatDocx
 from mformat_ext.mformat_odt import MultiFormatOdt
@@ -88,7 +89,7 @@ def test_factory_obj_reg_nok(capsys: pytest.CaptureFixture[str]) -> None:
                           ({'arg2': 'value2'}, '', 'value2'),
                           ({}, '', ''), (None, '', '')])
 def test_factory_obj_create_ok(capsys: pytest.CaptureFixture[str],
-                               args: dict[str, str], arg1: str,
+                               args: OptArgs, arg1: str,
                                arg2: str) -> None:
     """Test the factory object create method with an OK class."""
     factory = MultiFormatFactory()
@@ -150,8 +151,10 @@ def test_factory_obj_get_usage_nok(capsys: pytest.CaptureFixture[str]) -> None:
 @pytest.mark.parametrize('reg_func',
                          [MultiFormatFactory.register, register_mf])
 def test_factory_reg_ok(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                        capsys, monkeypatch: pytest.MonkeyPatch,
-                        reg_func, create_func, list_func, usage_func) -> None:
+                        capsys: pytest.CaptureFixture[str],
+                        monkeypatch: pytest.MonkeyPatch,
+                        reg_func: Any, create_func: Any,
+                        list_func: Any, usage_func: Any) -> None:
     """Test the factory register method with an OK class."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -312,7 +315,9 @@ def test_create_mf_character_encoding_writes_bytes(
                           ('md', '.md'),
                           ('txt', '.txt')])
 def test_create_mf_invalid_character_encoding(
-        capsys, format_name, file_extension) -> None:
+        capsys: pytest.CaptureFixture[str],
+        format_name: str,
+        file_extension: str) -> None:
     """Test create_mf propagates invalid encoding from Python open."""
     check_invalid_character_encoding_factory(
         format_name=format_name, file_extension=file_extension)
@@ -323,7 +328,10 @@ def test_create_mf_invalid_character_encoding(
 @pytest.mark.parametrize('as_path', [False, True])
 @pytest.mark.parametrize('allow_overwrite', [False, True])
 def test_create_mf_file_exists_callback_matrix(
-        capsys, fmt, as_path, allow_overwrite) -> None:
+        capsys: pytest.CaptureFixture[str],
+        fmt: str,
+        as_path: bool,
+        allow_overwrite: bool) -> None:
     """Test file_exists_callback for str and Path file names."""
     file_exists_cb = FileExistsCB(ask_user=False, overwrite=allow_overwrite)
     args: OptArgs = {'file_exists_callback': file_exists_cb}
@@ -358,7 +366,8 @@ def test_create_mf_file_exists_callback_matrix(
 
 
 @pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt', 'txt'])
-def test_create_file_exists_y(capsys: pytest.CaptureFixture[str], fmt) -> None:
+def test_create_file_exists_y(capsys: pytest.CaptureFixture[str],
+                              fmt: str) -> None:
     """Test the create function with file exists and overwrite OK."""
     file_exists_cb = FileExistsCB(ask_user=False, overwrite=True)
     args: OptArgs = {'file_exists_callback': file_exists_cb}
@@ -384,7 +393,7 @@ def test_create_file_exists_y(capsys: pytest.CaptureFixture[str], fmt) -> None:
 
 @pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt', 'txt'])
 def test_create_file_exists_y2(
-        capsys: pytest.CaptureFixture[str], fmt) -> None:
+        capsys: pytest.CaptureFixture[str], fmt: str) -> None:
     """Test the create function with file exists and overwrite OK."""
     file_exists_cb = FileExistsCB(ask_user=False, overwrite=True)
     args: OptArgs = {'file_exists_callback': file_exists_cb}
@@ -442,7 +451,7 @@ def test_create_file_exists_ay(capsys: pytest.CaptureFixture[str],
 
 @pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt'])
 def test_create_file_exists_n(
-        capsys: pytest.CaptureFixture[str], fmt) -> None:
+        capsys: pytest.CaptureFixture[str], fmt: str) -> None:
     """Test the create function with file exists and no overwrite."""
     file_exists_cb = FileExistsCB(ask_user=False, overwrite=False)
     args: OptArgs = {'file_exists_callback': file_exists_cb}
@@ -622,7 +631,8 @@ def wrap_list_reg_mf(lower: bool, upper: bool) -> list[str]:
                             'txt', 'TXT'])])
 def test_factory_reg_ident5(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                             monkeypatch: pytest.MonkeyPatch,
-                            wrap_func, lower, upper, expected) -> None:
+                            wrap_func: Any, lower: bool,
+                            upper: bool, expected: list[str]) -> None:
     """Test the factory register method with identical names."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -690,7 +700,8 @@ def wrap_usage_mf(format_name: str) -> FormatterDescriptor:
                                    'character_encoding']))])
 def test_get_usage_wrap(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                         monkeypatch: pytest.MonkeyPatch,
-                        wrap_func, format_name, usage) -> None:
+                        wrap_func: Any, format_name: str,
+                        usage: FormatterDescriptor) -> None:
     """Test the get_usage functions with lower and upper case names."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -812,8 +823,8 @@ OPTARG_ALL: OptArgs = {'file_exists_callback': dummy_file_exists_cb,
                           (None, 'odt', None)])
 def test_filter_args_wrap(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                           monkeypatch: pytest.MonkeyPatch,
-                          wrap_func, args, format_name,
-                          expected) -> None:
+                          wrap_func: Any, args: OptArgs,
+                          format_name: str, expected: OptArgs) -> None:
     """Test the filter_args functions with lower and upper case names."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -837,7 +848,7 @@ def test_filter_args_wrap(capsys: pytest.CaptureFixture[str],  # pylint: disable
                           ('odt', OPTARG_EMPTY)])
 def test_filter_args_wrap_character_encoding(
         capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch,
-        wrap_func, format_name, expected) -> None:
+        wrap_func: Any, format_name: str, expected: OptArgs) -> None:
     """Test filter_args keeps character_encoding only for text formats."""
     args: OptArgs = {'character_encoding': 'iso-8859-1'}
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -857,7 +868,8 @@ def test_filter_args_wrap_character_encoding(
                           (None, 'hmtlx')])
 def test_filter_args_wrap_nok(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                               monkeypatch: pytest.MonkeyPatch,
-                              wrap_func, args, format_name) -> None:
+                              wrap_func: Any, args: OptArgs,
+                              format_name: str) -> None:
     """Test the filter_args functions with invalid format name."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -916,8 +928,9 @@ def wrap_create_mf(format_name: str, file_name: str, url_as_text: bool,
                            MultiFormatDocx)])
 def test_create_wrap(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                      monkeypatch: pytest.MonkeyPatch,
-                     wrap_func, url_as_text, file_name,
-                     format_name, args, expected_cls) -> None:
+                     wrap_func: Any, url_as_text: bool,
+                     file_name: str, format_name: str,
+                     args: OptArgs, expected_cls: type[MultiFormat]) -> None:
     """Test the create functions with lower and upper case names."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -936,15 +949,18 @@ def test_create_wrap(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-
                           ('md', MultiFormatMd),
                           ('txt', MultiFormatTxt)])
 def test_create_wrap_character_encoding(
-        capsys, monkeypatch: pytest.MonkeyPatch,
-        wrap_func, format_name, expected_cls) -> None:
+        capsys: pytest.CaptureFixture[str],
+        monkeypatch: pytest.MonkeyPatch,
+        wrap_func: Any, format_name: str,
+        expected_cls: type[MultiFormat]) -> None:
     """Test create wrappers propagate character_encoding argument."""
     args: OptArgs = {'character_encoding': 'iso-8859-1'}
     monkeypatch.setattr('mformat.factory._the_factory', None)
     result = wrap_func(format_name=format_name, file_name='tmp_a',
                        url_as_text=False, args=args)
     assert isinstance(result, expected_cls)
-    assert result.character_encoding == 'iso-8859-1'
+    result_any: Any = result
+    assert result_any.character_encoding == 'iso-8859-1'
     check_capsys(capsys)
 
 
@@ -954,7 +970,7 @@ def test_create_wrap_character_encoding(
                                          'invalid', 'hmtlx'])
 def test_create_wrap_nok(capsys: pytest.CaptureFixture[str],
                          monkeypatch: pytest.MonkeyPatch,
-                         wrap_func, format_name) -> None:
+                         wrap_func: Any, format_name: str) -> None:
     """Test the create functions with invalid format name."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)

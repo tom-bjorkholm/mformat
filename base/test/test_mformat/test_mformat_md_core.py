@@ -7,6 +7,7 @@
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Any
 import pytest
 from mformat.mformat import FormatterDescriptor
 from mformat.mformat_md import MultiFormatMd
@@ -29,7 +30,9 @@ from .test_helpers import (check_formatter_character_encoding,
                           ('text  ', ('', 'text', '  ')),
                           ('  text', ('  ', 'text', '')),
                           ('  text  ', ('  ', 'text', '  '))])
-def test_split_whitespace(text, expected) -> None:
+def test_split_whitespace(
+        text: str,
+        expected: tuple[str, str, str]) -> None:
     """Test the split_whitespace function."""
     assert split_whitespace(text) == expected
 
@@ -83,7 +86,9 @@ def test_get_arg_desciption(capsys: pytest.CaptureFixture[str]) -> None:
                             Formatting(bold=True, italic=True)),
                            '  ***both***  .')])
 def test_methods(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
-                 method, arg, expected) -> None:
+                 method: str,
+                 arg: Any,
+                 expected: str) -> None:
     """Test the trivial methods of the MultiFormatMd class."""
     with TemporaryDirectory() as tmp_dir:
         fname = str(Path(tmp_dir) / 'test.md')
@@ -135,9 +140,11 @@ def test_end_heading(capsys: pytest.CaptureFixture[str]) -> None:
                           (2, 'Subtitle', '## Subtitle\n'),
                           (3, 'Section', '### Section\n')])
 def test_heading_integration(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                             level, text, expected) -> None:
+                             level: int,
+                             text: str,
+                             expected: str) -> None:
     """Test complete heading creation."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_heading(level=level, text=text)
 
@@ -154,9 +161,13 @@ def test_heading_integration(capsys: pytest.CaptureFixture[str],  # pylint: disa
                           (3, 'Both', True, True,
                            '### ***Both***\n')])
 def test_heading_formatting(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                            level, text, bold, italic, expected) -> None:
+                            level: int,
+                            text: str,
+                            bold: bool,
+                            italic: bool,
+                            expected: str) -> None:
     """Test heading with bold and italic formatting."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_heading(level=level, text=text, bold=bold, italic=italic)
 
@@ -167,7 +178,7 @@ def test_heading_formatting(capsys: pytest.CaptureFixture[str],  # pylint: disab
 
 def test_heading_add_text(capsys: pytest.CaptureFixture[str]) -> None:
     """Test adding text to a heading."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_heading(level=1, text='Title')
         mfd.add_text(text=' and more')
@@ -185,7 +196,7 @@ def test_heading_add_text(capsys: pytest.CaptureFixture[str]) -> None:
 def test_ws_add_url(capsys: pytest.CaptureFixture[str],
                     ws: bool, url: str, utxt: str, expected: str) -> None:
     """Test adding URL with whitespace."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.state = MultiFormatState.HEADING
         mfd.heading_level = 1
@@ -213,9 +224,13 @@ def test_ws_add_url(capsys: pytest.CaptureFixture[str],
                            '## Check **[http://example.com]' +
                            '(http://example.com)**\n'),])
 def test_heading_add_url(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                         htxt, url, utxt, bold, expected) -> None:
+                         htxt: str,
+                         url: str,
+                         utxt: str | None,
+                         bold: bool,
+                         expected: str) -> None:
     """Test adding URL to a heading."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_heading(level=2, text=htxt)
         mfd.add_url(url=url, text=utxt, bold=bold)
@@ -228,7 +243,7 @@ def test_heading_add_url(capsys: pytest.CaptureFixture[str],  # pylint: disable=
 
 def test_heading_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by paragraph."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_heading(level=1, text='Title')
         mfd.new_paragraph('Some text')
@@ -240,7 +255,7 @@ def test_heading_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_multiple_headings(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple headings."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_heading(level=1, text='Main')
         mfd.new_heading(level=2, text='Sub')
@@ -255,7 +270,7 @@ def test_multiple_headings(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_heading_paragraph_heading(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading, paragraph, then another heading."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_heading(level=1, text='First Heading')
         mfd.new_paragraph('Some content here.')
@@ -272,7 +287,7 @@ def test_heading_paragraph_heading(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_simple_code_block(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a simple code block."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.write_code_block(text='print("Hello, World!")')
 
@@ -284,7 +299,7 @@ def test_simple_code_block(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_code_block_with_language(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a code block with programming language."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.write_code_block(text='print("Hello")',
                              programming_language='python')
@@ -297,7 +312,7 @@ def test_code_block_with_language(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_code_block_multiline(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a multiline code block."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         code = 'def hello():\n    print("Hello")\n    return True'
         mfd.write_code_block(text=code, programming_language='python')
@@ -312,7 +327,7 @@ def test_code_block_multiline(capsys: pytest.CaptureFixture[str]) -> None:
 def test_code_block_with_special_chars(
         capsys: pytest.CaptureFixture[str]) -> None:
     """Test a code block with special characters."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         code = 'x = "test <>&"\ny = \'another\''
         mfd.write_code_block(text=code)
@@ -325,7 +340,7 @@ def test_code_block_with_special_chars(
 
 def test_paragraph_then_code_block(capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by code block."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_paragraph(text='Here is some code:')
         mfd.write_code_block(text='x = 42', programming_language='python')
@@ -338,7 +353,7 @@ def test_paragraph_then_code_block(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_code_block_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test code block followed by paragraph."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.write_code_block(text='x = 42')
         mfd.new_paragraph(text='That was the code.')
@@ -351,7 +366,7 @@ def test_code_block_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_heading_then_code_block(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by code block."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_heading(level=2, text='Code Example')
         mfd.write_code_block(text='example()', programming_language='python')
@@ -364,7 +379,7 @@ def test_heading_then_code_block(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_multiple_code_blocks(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple code blocks."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.write_code_block(text='x = 1', programming_language='python')
         mfd.write_code_block(text='y = 2', programming_language='python')
@@ -411,7 +426,7 @@ def test_format_text_formatting(capsys: pytest.CaptureFixture[str],
 
 def test_add_code_in_text_heading(capsys: pytest.CaptureFixture[str]) -> None:
     """Test add_code_in_text in heading."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_heading(level=1, text='Code Example')
         mfd.add_code_in_text(text='example()')
@@ -429,7 +444,7 @@ def test_add_code_in_text_heading(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_simple_block_quote(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a simple block quote."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_block_quote(text='This is a quote.')
 
@@ -441,7 +456,7 @@ def test_simple_block_quote(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_block_quote_with_add_text(capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote with additional text."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_block_quote(text='Start of quote')
         mfd.add_text(text='and more text.')
@@ -461,7 +476,7 @@ def test_block_quote_formatting(capsys: pytest.CaptureFixture[str],
                                 bold: bool, italic: bool,
                                 expected: str) -> None:
     """Test block quote with bold and italic formatting."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         text = 'Bold quote' if bold and not italic else \
                'Italic quote' if italic and not bold else \
@@ -475,7 +490,7 @@ def test_block_quote_formatting(capsys: pytest.CaptureFixture[str],
 
 def test_block_quote_with_url(capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote with URL."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_block_quote(text='Check ')
         mfd.add_url(url='http://example.com', text='this link')
@@ -489,7 +504,7 @@ def test_block_quote_with_url(capsys: pytest.CaptureFixture[str]) -> None:
 def test_block_quote_with_code_in_text(
         capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote with inline code."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_block_quote(text='Use the')
         mfd.add_code_in_text(text='print()')
@@ -523,7 +538,7 @@ def test_block_quote_line_wrapping(capsys: pytest.CaptureFixture[str]) -> None:
 def test_block_quote_then_paragraph(
         capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote followed by paragraph."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_block_quote(text='A quoted text.')
         mfd.new_paragraph(text='A normal paragraph.')
@@ -537,7 +552,7 @@ def test_block_quote_then_paragraph(
 def test_paragraph_then_block_quote(
         capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by block quote."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_paragraph(text='A normal paragraph.')
         mfd.new_block_quote(text='A quoted text.')
@@ -550,7 +565,7 @@ def test_paragraph_then_block_quote(
 
 def test_heading_then_block_quote(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by block quote."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_heading(level=2, text='Quote Section')
         mfd.new_block_quote(text='This is quoted.')
@@ -563,7 +578,7 @@ def test_heading_then_block_quote(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_multiple_block_quotes(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple block quotes in sequence."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_block_quote(text='First quote.')
         mfd.new_block_quote(text='Second quote.')
@@ -577,7 +592,7 @@ def test_multiple_block_quotes(capsys: pytest.CaptureFixture[str]) -> None:
 def test_block_quote_then_code_block(
         capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote followed by code block."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_block_quote(text='Here is some code:')
         mfd.write_code_block(text='x = 42', programming_language='python')
@@ -592,7 +607,9 @@ def test_block_quote_then_code_block(
                          [('utf-8', b'Caf\xc3\xa9'),
                           ('iso-8859-1', b'Caf\xe9')])
 def test_character_encoding_writes_expected_bytes(
-        capsys, character_encoding, expected_text_bytes) -> None:
+        capsys: pytest.CaptureFixture[str],
+        character_encoding: str,
+        expected_text_bytes: bytes) -> None:
     """Test that Markdown output bytes match selected character encoding."""
     check_formatter_character_encoding(
         formatter_class=MultiFormatMd, file_extension='.md',

@@ -25,7 +25,10 @@ from .test_helpers import (MultiFormat2, MultiFormat3, MultiFormat4,
                           ('test.txt', 'pdf', 'test.txt.pdf'),
                           ('test.txt', 'csv', 'test.txt.csv'),
                           ('test.txt', 'json', 'test.txt.json')])
-def test_file_name_with_extension(file_name, extension, res) -> None:
+def test_file_name_with_extension(
+        file_name: str,
+        extension: str,
+        res: str) -> None:
     """Test the file_name_with_extension method."""
     assert MultiFormat.file_name_with_extension(file_name, extension) == res
 
@@ -41,7 +44,10 @@ def test_file_name_with_extension(file_name, extension, res) -> None:
                           (Path('test.txt'), 'json', 'test.txt.json'),
                           (Path(__file__).parent / 'test.txt', 'txt',
                            str(Path(__file__).parent / 'test.txt'))])
-def test_file_name_with_extension2(file_name, extension, res) -> None:
+def test_file_name_with_extension2(
+        file_name: Path,
+        extension: str,
+        res: str) -> None:
     """Test the file_name_with_extension method."""
     assert MultiFormat.file_name_with_extension(file_name, extension) == res
 
@@ -316,7 +322,11 @@ def test_enter_exit(capsys: pytest.CaptureFixture[str]) -> None:
                             '_start_heading': 1, '_write_text': 1},
                            3, 'Sub-subheading')])
 def test_new_heading(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                     from_state, to_state, count, level, text) -> None:
+                     from_state: MultiFormatState,
+                     to_state: MultiFormatState,
+                     count: dict[str, int],
+                     level: int,
+                     text: str) -> None:
     """Test that the new_heading method is correct."""
     mfmt = MultiFormat8(file_name='test', expected_text=text,
                         expected_level=level)
@@ -334,7 +344,10 @@ def test_new_heading(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-
                           (3, 'Italic Heading', False, True),
                           (4, 'Both Heading', True, True)])
 def test_new_heading_bold_italic(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                                 level, text, bold, italic) -> None:
+                                 level: int,
+                                 text: str,
+                                 bold: bool,
+                                 italic: bool) -> None:
     """Test new_heading with bold and italic parameters."""
     mfmt = MultiFormat8(file_name='test', expected_text=text,
                         expected_level=level,

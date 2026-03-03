@@ -59,7 +59,7 @@ def _table_info(mfmt: MultiFormat11) -> TableInformation:
     return mfmt.table
 
 
-def test_new_table_basic(capsys: pytest.capturefixture[str]) -> None:
+def test_new_table_basic(capsys: pytest.CaptureFixture[str]) -> None:
     """Test starting a basic table."""
     mfmt = MultiFormat11(file_name='test')
     assert mfmt.state.name == 'EMPTY'
@@ -77,7 +77,7 @@ def test_new_table_basic(capsys: pytest.capturefixture[str]) -> None:
     check_capsys(capsys)
 
 
-def test_new_table_with_rows(capsys: pytest.capturefixture[str]) -> None:
+def test_new_table_with_rows(capsys: pytest.CaptureFixture[str]) -> None:
     """Test table with multiple rows."""
     mfmt = MultiFormat11(file_name='test')
     mfmt.new_table(first_row=['Name', 'Age'])
@@ -97,7 +97,7 @@ def test_new_table_with_rows(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_table_column_width_expansion(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test that column widths expand with longer content."""
     mfmt = MultiFormat11(file_name='test')
     mfmt.new_table(first_row=['A', 'B'])
@@ -113,7 +113,7 @@ def test_table_column_width_expansion(
 
 
 def test_write_complete_table_basic(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test write_complete_table method."""
     mfmt = MultiFormat11(file_name='test')
     mfmt.write_complete_table(table=TABLE_DATA_3X2)
@@ -133,7 +133,7 @@ def test_write_complete_table_basic(
 
 
 def test_write_complete_table_with_varying_widths(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test write_complete_table with varying column widths."""
     mfmt = MultiFormat11(file_name='test')
     mfmt.write_complete_table(table=TABLE_DATA_VARIED_WIDTHS)
@@ -143,7 +143,7 @@ def test_write_complete_table_with_varying_widths(
     check_capsys(capsys)
 
 
-def test_table_then_paragraph(capsys: pytest.capturefixture[str]) -> None:
+def test_table_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test table followed by paragraph."""
     mfmt = MultiFormat11(file_name='test')
     mfmt.new_table(first_row=['X', 'Y'])
@@ -162,7 +162,7 @@ def test_table_then_paragraph(capsys: pytest.capturefixture[str]) -> None:
     check_capsys(capsys)
 
 
-def test_heading_then_table(capsys: pytest.capturefixture[str]) -> None:
+def test_heading_then_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by table."""
     mfmt = MultiFormat11(file_name='test')
     mfmt.new_heading(level=1, text='Data')
@@ -179,7 +179,7 @@ def test_heading_then_table(capsys: pytest.capturefixture[str]) -> None:
     check_capsys(capsys)
 
 
-def test_multiple_tables(capsys: pytest.capturefixture[str]) -> None:
+def test_multiple_tables(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple tables in sequence."""
     mfmt = MultiFormat11(file_name='test')
     mfmt.new_table(first_row=['A', 'B'])
@@ -204,7 +204,7 @@ def test_multiple_tables(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_table_error_wrong_column_count(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test error when row has wrong number of columns."""
     mfmt = MultiFormat11(file_name='test')
     mfmt.new_table(first_row=['A', 'B'])
@@ -214,7 +214,7 @@ def test_table_error_wrong_column_count(
 
 
 def test_write_complete_table_error_empty(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test error when table is empty."""
     mfmt = MultiFormat11(file_name='test')
     with pytest.raises(RuntimeError, match='must have at least one row'):
@@ -223,7 +223,7 @@ def test_write_complete_table_error_empty(
 
 
 def test_write_complete_table_error_empty_first_row(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test error when first row is empty."""
     mfmt = MultiFormat11(file_name='test')
     with pytest.raises(RuntimeError,
@@ -233,7 +233,7 @@ def test_write_complete_table_error_empty_first_row(
 
 
 def test_write_complete_table_error_inconsistent_columns(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test error when rows have inconsistent column counts."""
     mfmt = MultiFormat11(file_name='test')
     with pytest.raises(RuntimeError,
@@ -242,7 +242,7 @@ def test_write_complete_table_error_inconsistent_columns(
     check_capsys(capsys)
 
 
-def test_table_with_single_column(capsys: pytest.capturefixture[str]) -> None:
+def test_table_with_single_column(capsys: pytest.CaptureFixture[str]) -> None:
     """Test table with single column."""
     mfmt = MultiFormat11(file_name='test')
     mfmt.new_table(first_row=['Column'])
@@ -255,7 +255,7 @@ def test_table_with_single_column(capsys: pytest.capturefixture[str]) -> None:
     check_capsys(capsys)
 
 
-def test_table_with_many_columns(capsys: pytest.capturefixture[str]) -> None:
+def test_table_with_many_columns(capsys: pytest.CaptureFixture[str]) -> None:
     """Test table with many columns."""
     mfmt = MultiFormat11(file_name='test')
     first_row = ['C1', 'C2', 'C3', 'C4', 'C5']
@@ -268,7 +268,7 @@ def test_table_with_many_columns(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_write_complete_table_then_new_table(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test write_complete_table followed by new_table."""
     mfmt = MultiFormat11(file_name='test')
     # First table using write_complete_table
@@ -288,7 +288,7 @@ def test_write_complete_table_then_new_table(
     check_capsys(capsys)
 
 
-def test_table_row_in_paragraph(capsys: pytest.capturefixture[str]) -> None:
+def test_table_row_in_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test table row in paragraph."""
     mfmt = MultiFormat11(file_name='test')
     mfmt.new_paragraph(text='A')
