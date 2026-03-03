@@ -17,7 +17,8 @@ from .test_helpers import check_run_with_context_manager, run_protected_method
 @pytest.mark.parametrize('text, expected',
                          [('test', 'test\n'),
                           ('test\ntest', 'test\ntest\n')])
-def test_new_paragraph(capsys, text, expected):
+def test_new_paragraph(capsys: pytest.capturefixture[str],
+                       text: str, expected: str) -> None:
     """Test the new_paragraph method."""
     with TemporaryDirectory() as tmp_dir:
         fname = str(Path(tmp_dir) / 'test.md')
@@ -35,10 +36,10 @@ def test_new_paragraph(capsys, text, expected):
                          [('bold text', True, False, '**bold text**\n'),
                           ('italic text', False, True, '*italic text*\n'),
                           ('both', True, True, '***both***\n')])
-def test_new_paragraph_formatting(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
-                                  text, bold, italic, expected):
+def test_new_paragraph_formatting(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+                                  text, bold, italic, expected) -> None:
     """Test the new_paragraph method with bold and italic."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         assert mfd.state == MultiFormatState.EMPTY
         mfd.new_paragraph(text=text, bold=bold, italic=italic)
@@ -55,10 +56,10 @@ def test_new_paragraph_formatting(capsys,  # pylint: disable=too-many-arguments,
                          [('', '\n'),
                           (' ', '\n'),
                           ('   ', '\n')])
-def test_new_paragraph_space(capsys,  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
-                             text, bold, italic, expected):
+def test_new_paragraph_space(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+                             text, bold, italic, expected) -> None:
     """Test the new_paragraph method with bold and italic."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         assert mfd.state == MultiFormatState.EMPTY
         mfd.new_paragraph(text=text, bold=bold, italic=italic,
@@ -81,8 +82,8 @@ def test_new_paragraph_space(capsys,  # pylint: disable=too-many-arguments, too-
                            '*[link](http://test.org)*'),
                           ('http://test.org', 'link', True, True,
                            '***[link](http://test.org)***')])
-def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                   url, text, bold, italic, expected):
+def test_write_url(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                   url, text, bold, italic, expected) -> None:
     """Test the _write_url method."""
     txt = run_protected_method('md', '.md', '_write_url',
                                (url, text, MultiFormatState.PARAGRAPH,
@@ -96,9 +97,10 @@ def test_write_url(capsys,  # pylint: disable=too-many-arguments,too-many-positi
                            '[http://example.com](http://example.com)\n'),
                           ('http://test.org', 'link text',
                            '[link text](http://test.org)\n')])
-def test_add_url(capsys, url, text, expected):
+def test_add_url(capsys: pytest.capturefixture[str],
+                 url: str, text: str, expected: str) -> None:
     """Test the add_url method."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_paragraph('')
         mfd.add_url(url=url, text=text)
@@ -113,9 +115,10 @@ def test_add_url(capsys, url, text, expected):
                            'http://example.com\n'),
                           ('http://test.org', 'See here',
                            'See here http://test.org\n')])
-def test_add_url_as_text(capsys, url, text, expected):
+def test_add_url_as_text(capsys: pytest.capturefixture[str],
+                         url: str, text: str, expected: str) -> None:
     """Test the add_url method with url_as_text=True."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_paragraph('')
         mfd.add_url(url=url, text=text)
@@ -131,9 +134,10 @@ def test_add_url_as_text(capsys, url, text, expected):
                           ('Here is the code: ',
                            ' print("Hello")',
                            'Here is the code: `print("Hello")`\n')])
-def test_add_code_in_text(capsys, text, code, expected):
+def test_add_code_in_text(capsys: pytest.capturefixture[str],
+                          text: str, code: str, expected: str) -> None:
     """Test the add_code_in_text method."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
         mfd.new_paragraph(text=text)
         mfd.add_code_in_text(text=code)

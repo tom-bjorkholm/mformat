@@ -7,6 +7,7 @@
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Optional
 import pytest
 from mformat.factory import create_mf
 from mformat.mformat import FormatterDescriptor
@@ -19,13 +20,13 @@ from .test_helpers import (check_character_encoding_bytes,
                            create_paragraph_file_bytes)
 
 
-def test_file_name_extension(capsys):
+def test_file_name_extension(capsys: pytest.capturefixture[str]) -> None:
     """Test the file_name_extension method."""
     assert MultiFormatTxt.file_name_extension() == '.txt'
     check_capsys(capsys)
 
 
-def test_get_arg_desciption(capsys):
+def test_get_arg_desciption(capsys: pytest.capturefixture[str]) -> None:
     """Test the get_arg_desciption method."""
     assert MultiFormatTxt.get_arg_desciption() == \
         FormatterDescriptor(
@@ -38,7 +39,7 @@ def test_get_arg_desciption(capsys):
     check_capsys(capsys)
 
 
-def test_constructor_defaults(capsys):
+def test_constructor_defaults(capsys: pytest.capturefixture[str]) -> None:
     """Test constructor defaults for TXT formatter."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test')
@@ -50,7 +51,8 @@ def test_constructor_defaults(capsys):
     check_capsys(capsys)
 
 
-def test_constructor_table_max_line_length_none(capsys):
+def test_constructor_table_max_line_length_none(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test table_max_line_length None fallback to line_length."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test')
@@ -62,7 +64,7 @@ def test_constructor_table_max_line_length_none(capsys):
 
 @pytest.mark.parametrize('table_max_line_length', [0, 9, -1])
 def test_constructor_table_max_line_length_too_short(
-        capsys, table_max_line_length):
+        capsys, table_max_line_length) -> None:
     """Test table_max_line_length validation for short values."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.txt')
@@ -77,7 +79,7 @@ def test_constructor_table_max_line_length_too_short(
 
 @pytest.mark.parametrize('table_max_line_length', ['', '10'])
 def test_constructor_table_max_line_length_must_be_int(
-        capsys, table_max_line_length):
+        capsys, table_max_line_length) -> None:
     """Test table_max_line_length assertion for invalid types."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.txt')
@@ -88,7 +90,8 @@ def test_constructor_table_max_line_length_must_be_int(
 
 
 @pytest.mark.parametrize('line_length', [10, -1])
-def test_constructor_line_length_too_short(capsys, line_length):
+def test_constructor_line_length_too_short(capsys: pytest.capturefixture[str],
+                                           line_length: int) -> None:
     """Test constructor line length validation for short line lengths."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.txt')
@@ -100,7 +103,9 @@ def test_constructor_line_length_too_short(capsys, line_length):
 
 
 @pytest.mark.parametrize('line_length', [0, None, '79'])
-def test_constructor_line_length_must_be_int(capsys, line_length):
+def test_constructor_line_length_must_be_int(
+        capsys: pytest.capturefixture[str],
+        line_length: Optional[int]) -> None:
     """Test constructor line length assertion for invalid types."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.txt')
@@ -120,9 +125,10 @@ def test_constructor_line_length_must_be_int(capsys, line_length):
         (7, 'Title\n\n'),
     ]
 )
-def test_heading_levels(capsys, level, expected):
+def test_heading_levels(capsys: pytest.capturefixture[str],
+                        level: int, expected: str) -> None:
     """Test heading underline style by heading level."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_heading(level=level, text='Title')
 
@@ -131,9 +137,10 @@ def test_heading_levels(capsys, level, expected):
                                    capsys=capsys)
 
 
-def test_heading_add_text_url_and_code(capsys):
+def test_heading_add_text_url_and_code(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test adding text, URL and code in heading state."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_heading(level=2, text='Check')
         mfd.add_text(text=' this')
@@ -147,9 +154,10 @@ def test_heading_add_text_url_and_code(capsys):
                                    capsys=capsys)
 
 
-def test_heading_wraps_using_line_length(capsys):
+def test_heading_wraps_using_line_length(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test heading wrapping uses configured line length."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_heading(level=1, text='a b c d e f g h i')
 
@@ -180,9 +188,10 @@ def test_heading_wraps_using_line_length(capsys):
          '------ End of python code block ------\n'),
     ]
 )
-def test_write_code_block(capsys, programming_language, expected):
+def test_write_code_block(capsys: pytest.capturefixture[str],
+                          programming_language: str, expected: str) -> None:
     """Test code block start and end markers."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.write_code_block(text='print(1)\n',
                              programming_language=programming_language)
@@ -192,7 +201,7 @@ def test_write_code_block(capsys, programming_language, expected):
                                    capsys=capsys)
 
 
-def test_encode_text_no_changes(capsys):
+def test_encode_text_no_changes(capsys: pytest.capturefixture[str]) -> None:
     """Test _encode_text returns plain text unchanged."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.txt')
@@ -208,7 +217,7 @@ def test_encode_text_no_changes(capsys):
                          [('utf-8', b'Caf\xc3\xa9'),
                           ('iso-8859-1', b'Caf\xe9')])
 def test_character_encoding_writes_expected_bytes(
-        capsys, character_encoding, expected_text_bytes):
+        capsys, character_encoding, expected_text_bytes) -> None:
     """Test that TXT output bytes match selected character encoding."""
     raw_content = create_paragraph_file_bytes(
         formatter_class=MultiFormatTxt, file_extension='.txt',
@@ -219,7 +228,8 @@ def test_character_encoding_writes_expected_bytes(
     check_capsys(capsys)
 
 
-def test_invalid_character_encoding_raises_lookup_error(capsys):
+def test_invalid_character_encoding_raises_lookup_error(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test invalid encoding is propagated from Python open."""
     check_invalid_character_encoding_constructor(
         formatter_class=MultiFormatTxt, file_extension='.txt')

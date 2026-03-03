@@ -7,6 +7,7 @@
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Optional
 import pytest
 from mformat.factory import create_mf
 from mformat.mformat import FormatterDescriptor
@@ -21,13 +22,13 @@ from .test_helpers import (check_character_encoding_bytes,
                            create_paragraph_file_bytes)
 
 
-def test_file_name_extension(capsys):
+def test_file_name_extension(capsys: pytest.capturefixture[str]) -> None:
     """Test the file_name_extension method."""
     assert MultiFormatRst.file_name_extension() == '.rst'
     check_capsys(capsys)
 
 
-def test_get_arg_desciption(capsys):
+def test_get_arg_desciption(capsys: pytest.capturefixture[str]) -> None:
     """Test the get_arg_desciption method."""
     assert MultiFormatRst.get_arg_desciption() == FormatterDescriptor(
         name='reST',
@@ -37,7 +38,7 @@ def test_get_arg_desciption(capsys):
     check_capsys(capsys)
 
 
-def test_constructor_defaults(capsys):
+def test_constructor_defaults(capsys: pytest.capturefixture[str]) -> None:
     """Test constructor defaults for reST formatter."""
     check_formatter_constructor_attributes(
         formatter_class=MultiFormatRst,
@@ -52,7 +53,8 @@ def test_constructor_defaults(capsys):
     check_capsys(capsys)
 
 
-def test_constructor_table_max_line_length_none(capsys):
+def test_constructor_table_max_line_length_none(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test table_max_line_length None fallback to line_length."""
     check_formatter_constructor_attributes(
         formatter_class=MultiFormatRst,
@@ -64,7 +66,7 @@ def test_constructor_table_max_line_length_none(capsys):
 
 @pytest.mark.parametrize('table_max_line_length', [0, 9, -1])
 def test_constructor_table_max_line_length_too_short(
-        capsys, table_max_line_length):
+        capsys, table_max_line_length) -> None:
     """Test table_max_line_length validation for short values."""
     check_formatter_constructor_raises(
         formatter_class=MultiFormatRst,
@@ -81,7 +83,7 @@ def test_constructor_table_max_line_length_too_short(
 
 @pytest.mark.parametrize('table_max_line_length', ['', '10'])
 def test_constructor_table_max_line_length_must_be_int(
-        capsys, table_max_line_length):
+        capsys, table_max_line_length) -> None:
     """Test table_max_line_length assertion for invalid types."""
     check_formatter_constructor_raises(
         formatter_class=MultiFormatRst,
@@ -95,7 +97,8 @@ def test_constructor_table_max_line_length_must_be_int(
 
 
 @pytest.mark.parametrize('line_length', [10, -1])
-def test_constructor_line_length_too_short(capsys, line_length):
+def test_constructor_line_length_too_short(
+        capsys: pytest.capturefixture[str], line_length: int) -> None:
     """Test constructor line length validation for short line lengths."""
     check_formatter_constructor_raises(
         formatter_class=MultiFormatRst,
@@ -108,7 +111,9 @@ def test_constructor_line_length_too_short(capsys, line_length):
 
 
 @pytest.mark.parametrize('line_length', [0, None, '79'])
-def test_constructor_line_length_must_be_int(capsys, line_length):
+def test_constructor_line_length_must_be_int(
+        capsys: pytest.capturefixture[str],
+        line_length: Optional[int]) -> None:
     """Test constructor line length assertion for invalid types."""
     check_formatter_constructor_raises(
         formatter_class=MultiFormatRst,
@@ -129,7 +134,8 @@ def test_constructor_line_length_must_be_int(capsys, line_length):
         (9, 'Title\n:::::\n\n'),
     ]
 )
-def test_heading_levels(capsys, level, expected):
+def test_heading_levels(capsys: pytest.capturefixture[str],
+                        level: int, expected: str) -> None:
     """Test heading underline style by heading level."""
     check_rst_output(
         capsys=capsys,
@@ -137,7 +143,8 @@ def test_heading_levels(capsys, level, expected):
         expected_text=expected)
 
 
-def test_heading_add_text_url_and_code(capsys):
+def test_heading_add_text_url_and_code(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test adding text, URL and code in heading state."""
     check_rst_output(
         capsys=capsys,
@@ -153,7 +160,8 @@ def test_heading_add_text_url_and_code(capsys):
                       '------\n\n')
 
 
-def test_heading_not_wrapped_by_line_length(capsys):
+def test_heading_not_wrapped_by_line_length(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test heading is not wrapped even with short configured line length."""
     check_rst_output(
         capsys=capsys,
@@ -178,7 +186,9 @@ def test_heading_not_wrapped_by_line_length(capsys):
          '\n'),
     ]
 )
-def test_write_code_block(capsys, programming_language, expected):
+def test_write_code_block(capsys: pytest.capturefixture[str],
+                          programming_language: str,
+                          expected: str) -> None:
     """Test code block start and end markers."""
     check_rst_output(
         capsys=capsys,
@@ -191,7 +201,8 @@ def test_write_code_block(capsys, programming_language, expected):
         expected_text=expected)
 
 
-def test_encode_text_restructuredtext_escapes(capsys):
+def test_encode_text_restructuredtext_escapes(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test _encode_text escapes reST-sensitive characters."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.rst')
@@ -208,7 +219,7 @@ def test_encode_text_restructuredtext_escapes(capsys):
     [('utf-8', b'Caf\xc3\xa9'), ('iso-8859-1', b'Caf\xe9')]
 )
 def test_character_encoding_writes_expected_bytes(
-        capsys, character_encoding, expected_text_bytes):
+        capsys, character_encoding, expected_text_bytes) -> None:
     """Test that reST output bytes match selected character encoding."""
     raw_content = create_paragraph_file_bytes(
         formatter_class=MultiFormatRst,
@@ -221,7 +232,8 @@ def test_character_encoding_writes_expected_bytes(
     check_capsys(capsys)
 
 
-def test_invalid_character_encoding_raises_lookup_error(capsys):
+def test_invalid_character_encoding_raises_lookup_error(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test invalid encoding is propagated from Python open."""
     check_invalid_character_encoding_constructor(
         formatter_class=MultiFormatRst,

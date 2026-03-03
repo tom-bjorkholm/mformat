@@ -17,9 +17,10 @@ from .test_helpers import check_run_with_context_manager
         ('a b c d e f g h i', 'a b c d e f\ng h i\n'),
     ]
 )
-def test_new_paragraph(capsys, text, expected):
+def test_new_paragraph(capsys: pytest.capturefixture[str],
+                       text: str, expected: str) -> None:
     """Test creating a new paragraph in TXT output."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_paragraph(text=text)
 
@@ -30,9 +31,10 @@ def test_new_paragraph(capsys, text, expected):
                                    capsys=capsys)
 
 
-def test_paragraph_add_text_smart_ws(capsys):
+def test_paragraph_add_text_smart_ws(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test smart whitespace handling when adding paragraph text."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_paragraph(text='  start  ', smart_ws=True)
         mfd.add_text(text='  next  ')
@@ -43,9 +45,10 @@ def test_paragraph_add_text_smart_ws(capsys):
                                    capsys=capsys)
 
 
-def test_paragraph_add_text_no_smart_ws(capsys):
+def test_paragraph_add_text_no_smart_ws(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test paragraph text with smart_ws disabled."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_paragraph(text='start', smart_ws=False)
         mfd.add_text(text='  next', smart_ws=False)
@@ -64,9 +67,10 @@ def test_paragraph_add_text_no_smart_ws(capsys):
          'See http://example.com\n'),
     ]
 )
-def test_add_url(capsys, url, text, expected):
+def test_add_url(capsys: pytest.capturefixture[str],
+                 url: str, text: str, expected: str) -> None:
     """Test adding URLs in paragraph text."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_paragraph(text='See')
         mfd.add_url(url=url, text=text)
@@ -76,9 +80,9 @@ def test_add_url(capsys, url, text, expected):
                                    capsys=capsys)
 
 
-def test_add_url_url_as_text(capsys):
+def test_add_url_url_as_text(capsys: pytest.capturefixture[str]) -> None:
     """Test adding URL with url_as_text enabled."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_paragraph(text='See')
         mfd.add_url(url='http://example.com', text='this link')
@@ -90,9 +94,10 @@ def test_add_url_url_as_text(capsys):
                                    capsys=capsys)
 
 
-def test_add_code_in_text_wraps_atomically(capsys):
+def test_add_code_in_text_wraps_atomically(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test code-in-text wrapping keeps code token atomic."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_paragraph(text='Use')
         mfd.add_code_in_text(text='averylongtoken')
@@ -103,9 +108,9 @@ def test_add_code_in_text_wraps_atomically(capsys):
                                    capsys=capsys)
 
 
-def test_block_quote_text_wrapping(capsys):
+def test_block_quote_text_wrapping(capsys: pytest.capturefixture[str]) -> None:
     """Test block quote formatting in TXT output."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_block_quote(text='a b c d e f g h i')
 

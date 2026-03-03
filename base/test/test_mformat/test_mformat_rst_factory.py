@@ -16,7 +16,8 @@ from .test_helpers import FileExistsCallbackCounter
 
 
 @pytest.mark.parametrize('format_name', ['reST', 'REST'])
-def test_create_mf_rst_returns_rst_formatter(capsys, format_name):
+def test_create_mf_rst_returns_rst_formatter(
+        capsys: pytest.capturefixture[str], format_name: str) -> None:
     """Test create_mf creates MultiFormatRst (case-insensitive)."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.rst')
@@ -26,7 +27,8 @@ def test_create_mf_rst_returns_rst_formatter(capsys, format_name):
     check_capsys(capsys)
 
 
-def test_create_mf_rst_optional_args(capsys):
+def test_create_mf_rst_optional_args(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test create_mf passes optional reST args to constructor."""
     expected: OptArgs = {
         'line_length': 42,
@@ -46,7 +48,8 @@ def test_create_mf_rst_optional_args(capsys):
     check_capsys(capsys)
 
 
-def test_create_mf_rst_invalid_line_length(capsys):
+def test_create_mf_rst_invalid_line_length(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test constructor validation is propagated through create_mf."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.rst')
@@ -57,7 +60,7 @@ def test_create_mf_rst_invalid_line_length(capsys):
     check_capsys(capsys)
 
 
-def test_filter_args_mf_for_rst(capsys):
+def test_filter_args_mf_for_rst(capsys: pytest.capturefixture[str]) -> None:
     """Test filter_args_mf keeps reST args and ignores others."""
     args: OptArgs = {
         'line_length': 42,
@@ -73,7 +76,8 @@ def test_filter_args_mf_for_rst(capsys):
     check_capsys(capsys)
 
 
-def test_create_mf_rst_file_exists_callback(capsys):
+def test_create_mf_rst_file_exists_callback(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test file_exists_callback is passed through create_mf for reST."""
     callback = FileExistsCallbackCounter()
     with TemporaryDirectory() as tmp_dir:

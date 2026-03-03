@@ -7,13 +7,10 @@
 
 from pathlib import Path
 from typing import Optional
-
 import pytest
-
 from mformat.mformat import MultiFormat
 from mformat.mformat_lists_impl import PointStackItem
 from mformat.mformat_state import Formatting, MultiFormatState
-
 from .check_capsys import check_capsys
 from .test_helpers import (MultiFormat2, MultiFormat3, MultiFormat4,
                            MultiFormat5, MultiFormat8, MultiFormat9)
@@ -28,7 +25,7 @@ from .test_helpers import (MultiFormat2, MultiFormat3, MultiFormat4,
                           ('test.txt', 'pdf', 'test.txt.pdf'),
                           ('test.txt', 'csv', 'test.txt.csv'),
                           ('test.txt', 'json', 'test.txt.json')])
-def test_file_name_with_extension(file_name, extension, res):
+def test_file_name_with_extension(file_name, extension, res) -> None:
     """Test the file_name_with_extension method."""
     assert MultiFormat.file_name_with_extension(file_name, extension) == res
 
@@ -44,12 +41,12 @@ def test_file_name_with_extension(file_name, extension, res):
                           (Path('test.txt'), 'json', 'test.txt.json'),
                           (Path(__file__).parent / 'test.txt', 'txt',
                            str(Path(__file__).parent / 'test.txt'))])
-def test_file_name_with_extension2(file_name, extension, res):
+def test_file_name_with_extension2(file_name, extension, res) -> None:
     """Test the file_name_with_extension method."""
     assert MultiFormat.file_name_with_extension(file_name, extension) == res
 
 
-def test_must_be_overridden1(capsys):
+def test_must_be_overridden1(capsys: pytest.capturefixture[str]) -> None:
     """Test message from must_be_overridden methodr."""
     # pylint: disable=protected-access
     msg = MultiFormat._must_be_overridden('test')
@@ -57,7 +54,7 @@ def test_must_be_overridden1(capsys):
     check_capsys(capsys)
 
 
-def test_must_be_overridden2(capsys):
+def test_must_be_overridden2(capsys: pytest.capturefixture[str]) -> None:
     """Test that the must_be_overridden method raises an error."""
     # pylint: disable=protected-access
     msg = MultiFormat2._must_be_overridden('test')
@@ -65,7 +62,7 @@ def test_must_be_overridden2(capsys):
     check_capsys(capsys)
 
 
-def test_file_name_extension(capsys):
+def test_file_name_extension(capsys: pytest.capturefixture[str]) -> None:
     """Test that the file_name_extension method is not overridden."""
     with pytest.raises(NotImplementedError) as exc:
         _ = MultiFormat.file_name_extension()
@@ -74,7 +71,7 @@ def test_file_name_extension(capsys):
     check_capsys(capsys)
 
 
-def test_get_arg_desciption(capsys):
+def test_get_arg_desciption(capsys: pytest.capturefixture[str]) -> None:
     """Test that the get_arg_desciption method is not overridden."""
     with pytest.raises(NotImplementedError) as exc:
         _ = MultiFormat.get_arg_desciption()
@@ -83,13 +80,13 @@ def test_get_arg_desciption(capsys):
     check_capsys(capsys)
 
 
-def test_file_name_extension2(capsys):
+def test_file_name_extension2(capsys: pytest.capturefixture[str]) -> None:
     """Test that the file_name_extension method is overridden."""
     assert MultiFormat2.file_name_extension() == '.test'
     check_capsys(capsys)
 
 
-def test_mft_init(capsys):
+def test_mft_init(capsys: pytest.capturefixture[str]) -> None:
     """Test that the MultiFormat class is initialized correctly."""
     mfmt = MultiFormat2(file_name='test')
     assert mfmt.file_name == 'test.test'
@@ -104,7 +101,8 @@ def test_mft_init(capsys):
                           '_start_paragraph', '_end_paragraph', '_write_text',
                           '_write_url',
                           '_start_block_quote', '_end_block_quote'])
-def test_cls_method_not_overridden(capsys, method_name):
+def test_cls_method_not_overridden(capsys: pytest.capturefixture[str],
+                                   method_name: str) -> None:
     """Test that the instance method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
@@ -129,7 +127,8 @@ def test_cls_method_not_overridden(capsys, method_name):
                           '_start_numbered_list', '_end_numbered_list',
                           '_start_bullet_item', '_end_bullet_item',
                           '_start_table'])
-def test_cls_method_not_overridden2(capsys, method_name):
+def test_cls_method_not_overridden2(capsys: pytest.capturefixture[str],
+                                    method_name: str) -> None:
     """Test that the class method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
@@ -141,7 +140,8 @@ def test_cls_method_not_overridden2(capsys, method_name):
 
 @pytest.mark.parametrize('method_name',
                          ['_end_table', '_end_numbered_item'])
-def test_cls_method_not_overridden3(capsys, method_name):
+def test_cls_method_not_overridden3(capsys: pytest.capturefixture[str],
+                                    method_name: str) -> None:
     """Test that the class method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
@@ -151,7 +151,7 @@ def test_cls_method_not_overridden3(capsys, method_name):
     check_capsys(capsys)
 
 
-def test_encode_not_overridden(capsys):
+def test_encode_not_overridden(capsys: pytest.capturefixture[str]) -> None:
     """Test error that the _encode_text method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
@@ -161,7 +161,7 @@ def test_encode_not_overridden(capsys):
     check_capsys(capsys)
 
 
-def test_start_num_item_not_impl(capsys):
+def test_start_num_item_not_impl(capsys: pytest.capturefixture[str]) -> None:
     """Test that the _start_numbered_item method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
@@ -172,7 +172,7 @@ def test_start_num_item_not_impl(capsys):
     check_capsys(capsys)
 
 
-def test_write_table_row_not_impl(capsys):
+def test_write_table_row_not_impl(capsys: pytest.capturefixture[str]) -> None:
     """Test that the write_table_row method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
@@ -185,7 +185,7 @@ def test_write_table_row_not_impl(capsys):
     check_capsys(capsys)
 
 
-def test_write_table_frow_not_impl(capsys):
+def test_write_table_frow_not_impl(capsys: pytest.capturefixture[str]) -> None:
     """Test that the write_table_first_row method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
@@ -200,7 +200,8 @@ def test_write_table_frow_not_impl(capsys):
 
 @pytest.mark.parametrize('method_name',
                          ['_start_code_block', '_end_code_block'])
-def test_cls_method_not_overridden5(capsys, method_name):
+def test_cls_method_not_overridden5(capsys: pytest.capturefixture[str],
+                                    method_name: str) -> None:
     """Test that the class method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
@@ -210,7 +211,7 @@ def test_cls_method_not_overridden5(capsys, method_name):
     check_capsys(capsys)
 
 
-def test_write_code_block_not_impl(capsys):
+def test_write_code_block_not_impl(capsys: pytest.capturefixture[str]) -> None:
     """Test that the write_code_block method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
@@ -221,7 +222,7 @@ def test_write_code_block_not_impl(capsys):
     check_capsys(capsys)
 
 
-def test_write_code_int_not_impl(capsys):
+def test_write_code_int_not_impl(capsys: pytest.capturefixture[str]) -> None:
     """Test that the write_code_in_text method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
@@ -232,7 +233,7 @@ def test_write_code_int_not_impl(capsys):
     check_capsys(capsys)
 
 
-def test_write_text(capsys):
+def test_write_text(capsys: pytest.capturefixture[str]) -> None:
     """Test that the _write_text method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
@@ -244,7 +245,7 @@ def test_write_text(capsys):
     check_capsys(capsys)
 
 
-def test_write_url(capsys):
+def test_write_url(capsys: pytest.capturefixture[str]) -> None:
     """Test that the _write_url method is not overridden."""
     mfmt = MultiFormat2(file_name='test')
     with pytest.raises(NotImplementedError) as exc:
@@ -257,7 +258,7 @@ def test_write_url(capsys):
     check_capsys(capsys)
 
 
-def test_to_write_optional_none(capsys):
+def test_to_write_optional_none(capsys: pytest.capturefixture[str]) -> None:
     """Test that the to_write_optional method handles None."""
     mfmt = MultiFormat2(file_name='test')
     assert mfmt._to_write_optional(None,  # pylint: disable=protected-access
@@ -275,7 +276,10 @@ def test_to_write_optional_none(capsys):
                           (MultiFormatState.PARAGRAPH_END,
                            MultiFormatState.PARAGRAPH_END,
                            {})])
-def test_end_state(capsys, from_state, to_state, count):
+def test_end_state(capsys: pytest.capturefixture[str],
+                   from_state: MultiFormatState,
+                   to_state: MultiFormatState,
+                   count: dict[str, int]) -> None:
     """Test that the end_state method is correct."""
     mfmt = MultiFormat3(file_name='test')
     mfmt.state = from_state
@@ -285,7 +289,7 @@ def test_end_state(capsys, from_state, to_state, count):
     check_capsys(capsys)
 
 
-def test_enter_exit(capsys):
+def test_enter_exit(capsys: pytest.capturefixture[str]) -> None:
     """Test that the enter and exit methods are correct."""
     with MultiFormat5(file_name='test', expected_text='abc') as mfmt:
         assert isinstance(mfmt, MultiFormat5)
@@ -311,8 +315,8 @@ def test_enter_exit(capsys):
                            {'_encode_text': 1, '_end_paragraph': 1,
                             '_start_heading': 1, '_write_text': 1},
                            3, 'Sub-subheading')])
-def test_new_heading(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                     from_state, to_state, count, level, text):
+def test_new_heading(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                     from_state, to_state, count, level, text) -> None:
     """Test that the new_heading method is correct."""
     mfmt = MultiFormat8(file_name='test', expected_text=text,
                         expected_level=level)
@@ -329,8 +333,8 @@ def test_new_heading(capsys,  # pylint: disable=too-many-arguments,too-many-posi
                           (2, 'Bold Heading', True, False),
                           (3, 'Italic Heading', False, True),
                           (4, 'Both Heading', True, True)])
-def test_new_heading_bold_italic(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                                 level, text, bold, italic):
+def test_new_heading_bold_italic(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                                 level, text, bold, italic) -> None:
     """Test new_heading with bold and italic parameters."""
     mfmt = MultiFormat8(file_name='test', expected_text=text,
                         expected_level=level,
@@ -343,7 +347,7 @@ def test_new_heading_bold_italic(capsys,  # pylint: disable=too-many-arguments,t
     check_capsys(capsys)
 
 
-def test_heading_add_text(capsys):
+def test_heading_add_text(capsys: pytest.capturefixture[str]) -> None:
     """Test adding text to a heading."""
     mfmt = MultiFormat8(file_name='test', expected_text='More text',
                         expected_level=1)
@@ -355,7 +359,7 @@ def test_heading_add_text(capsys):
     check_capsys(capsys)
 
 
-def test_heading_add_url(capsys):
+def test_heading_add_url(capsys: pytest.capturefixture[str]) -> None:
     """Test adding URL to a heading."""
     mfmt = MultiFormat9(file_name='test',
                         expected_url='http://example.com',
@@ -368,7 +372,7 @@ def test_heading_add_url(capsys):
     check_capsys(capsys)
 
 
-def test_end_state_heading(capsys):
+def test_end_state_heading(capsys: pytest.capturefixture[str]) -> None:
     """Test ending a heading state."""
     mfmt = MultiFormat8(file_name='test', expected_text='Test',
                         expected_level=2)
@@ -381,7 +385,7 @@ def test_end_state_heading(capsys):
     check_capsys(capsys)
 
 
-def test_heading_then_paragraph(capsys):
+def test_heading_then_paragraph(capsys: pytest.capturefixture[str]) -> None:
     """Test heading followed by paragraph."""
     mfmt = MultiFormat8(file_name='test', expected_text='Title',
                         expected_level=1)
@@ -399,7 +403,7 @@ def test_heading_then_paragraph(capsys):
     check_capsys(capsys)
 
 
-def test_multiple_headings(capsys):
+def test_multiple_headings(capsys: pytest.capturefixture[str]) -> None:
     """Test multiple headings in sequence."""
     mfmt = MultiFormat8(file_name='test', expected_text='First',
                         expected_level=1)
@@ -416,7 +420,7 @@ def test_multiple_headings(capsys):
     check_capsys(capsys)
 
 
-def test_heading_with_smart_ws(capsys):
+def test_heading_with_smart_ws(capsys: pytest.capturefixture[str]) -> None:
     """Test heading with smart_ws parameter."""
     mfmt = MultiFormat8(file_name='test', expected_text='Heading',
                         expected_level=1)
@@ -489,7 +493,7 @@ class MultiFormat12(MultiFormat4):
         self.inc_count('_end_block_quote')
 
 
-def test_write_code_block_basic(capsys):
+def test_write_code_block_basic(capsys: pytest.capturefixture[str]) -> None:
     """Test basic code block writing."""
     txt = 'print("Hello")'
     mfmt = MultiFormat12(file_name='test', expected_code=txt)
@@ -505,7 +509,8 @@ def test_write_code_block_basic(capsys):
     check_capsys(capsys)
 
 
-def test_write_code_block_with_language(capsys):
+def test_write_code_block_with_language(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test code block with programming language."""
     txt = 'x = 42'
     mfmt = MultiFormat12(file_name='test', expected_code=txt)
@@ -520,7 +525,7 @@ def test_write_code_block_with_language(capsys):
     check_capsys(capsys)
 
 
-def test_paragraph_then_code_block(capsys):
+def test_paragraph_then_code_block(capsys: pytest.capturefixture[str]) -> None:
     """Test paragraph followed by code block."""
     code = 'code here'
     text = 'Here is code:'
@@ -541,7 +546,7 @@ def test_paragraph_then_code_block(capsys):
     check_capsys(capsys)
 
 
-def test_code_block_then_paragraph(capsys):
+def test_code_block_then_paragraph(capsys: pytest.capturefixture[str]) -> None:
     """Test code block followed by paragraph."""
     code = 'code'
     text = 'After code'
@@ -561,7 +566,7 @@ def test_code_block_then_paragraph(capsys):
     check_capsys(capsys)
 
 
-def test_multiple_code_blocks(capsys):
+def test_multiple_code_blocks(capsys: pytest.capturefixture[str]) -> None:
     """Test multiple code blocks in sequence."""
     mfmt = MultiFormat12(file_name='test',
                          expected_code='first, second', code_in=True)
@@ -577,9 +582,9 @@ def test_multiple_code_blocks(capsys):
     check_capsys(capsys)
 
 
-def test_code_block_multiline(capsys):
+def test_code_block_multiline(capsys: pytest.capturefixture[str]) -> None:
     """Test code block with multiline text."""
-    code = 'def hello():\n    print("Hello")\n    return True'
+    code = 'def hello() -> None:\n    print("Hello")\n    return True'
     mfmt = MultiFormat12(file_name='test', expected_code=code)
     mfmt.write_code_block(text=code, programming_language='python')
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
@@ -592,7 +597,7 @@ def test_code_block_multiline(capsys):
     check_capsys(capsys)
 
 
-def test_code_block_empty(capsys):
+def test_code_block_empty(capsys: pytest.capturefixture[str]) -> None:
     """Test code block with empty text."""
     mfmt = MultiFormat12(file_name='test', expected_code='')
     mfmt.write_code_block(text='')
@@ -606,7 +611,7 @@ def test_code_block_empty(capsys):
     check_capsys(capsys)
 
 
-def test_invalid_state_plist(capsys):
+def test_invalid_state_plist(capsys: pytest.capturefixture[str]) -> None:
     """Test the handling of invalid state for point lists."""
     mfmt = MultiFormat12(file_name='test', expected_code='')
     mfmt.state = MultiFormatState.BULLET_LIST_ITEM
@@ -620,7 +625,7 @@ def test_invalid_state_plist(capsys):
     check_capsys(capsys)
 
 
-def test_code_in_text(capsys):
+def test_code_in_text(capsys: pytest.capturefixture[str]) -> None:
     """Test code in text."""
     code = ' print("Hello")'
     text = 'Here is code:'
@@ -638,7 +643,7 @@ def test_code_in_text(capsys):
     check_capsys(capsys)
 
 
-def test_code_in_text_nok1(capsys):
+def test_code_in_text_nok1(capsys: pytest.capturefixture[str]) -> None:
     """Test error that the code in text is not allowed with line breaks."""
     code = 'print("Hello")\nprint("World")'
     text = 'Here is code:'
@@ -653,7 +658,7 @@ def test_code_in_text_nok1(capsys):
     check_capsys(capsys)
 
 
-def test_code_in_text_nok2(capsys):
+def test_code_in_text_nok2(capsys: pytest.capturefixture[str]) -> None:
     """Test error that code in text is done in an invalid state."""
     code = 'print("Hello")'
     text = 'Here is code:'
@@ -672,7 +677,8 @@ def test_code_in_text_nok2(capsys):
                           ('Something else', True, False),
                           ('Third string', False, True),
                           ('Fourth text', True, True)])
-def test_block_quote_1(capsys, text, bold, italic):
+def test_block_quote_1(capsys: pytest.capturefixture[str],
+                       text: str, bold: bool, italic: bool) -> None:
     """Test block quote."""
     mfmt = MultiFormat12(file_name='test', expected_text=text,
                          expected_bold=bold, expected_italic=italic,
@@ -684,7 +690,7 @@ def test_block_quote_1(capsys, text, bold, italic):
     check_capsys(capsys)
 
 
-def test_block_quote_2(capsys):
+def test_block_quote_2(capsys: pytest.capturefixture[str]) -> None:
     """Test block quote."""
     mfmt = MultiFormat12(file_name='test', expected_text='Block quote',
                          expected_bold=False, expected_italic=False,
@@ -699,7 +705,7 @@ def test_block_quote_2(capsys):
     check_capsys(capsys)
 
 
-def test_block_quote_3(capsys):
+def test_block_quote_3(capsys: pytest.capturefixture[str]) -> None:
     """Test block quote."""
     mfmt = MultiFormat12(file_name='test', expected_text='Block quote',
                          expected_bold=False, expected_italic=False,
@@ -714,7 +720,7 @@ def test_block_quote_3(capsys):
     check_capsys(capsys)
 
 
-def test_block_quote_4(capsys):
+def test_block_quote_4(capsys: pytest.capturefixture[str]) -> None:
     """Test block quote."""
     mfmt = MultiFormat12(file_name='test', expected_text='Block quote 1',
                          expected_bold=False, expected_italic=False,

@@ -19,7 +19,8 @@ from .rst_test_helpers import check_rst_output
          {'line_length': 11}),
     ]
 )
-def test_new_paragraph(capsys, method_calls, expected, args):
+def test_new_paragraph(capsys: pytest.capturefixture[str],
+                       method_calls, expected, args) -> None:
     """Test creating a new paragraph in reST output."""
     check_rst_output(
         capsys=capsys,
@@ -36,8 +37,8 @@ def test_new_paragraph(capsys, method_calls, expected, args):
         ('both', True, True, '***both***\n'),
     ]
 )
-def test_new_paragraph_formatting(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                                  text, bold, italic, expected):
+def test_new_paragraph_formatting(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                                  text, bold, italic, expected) -> None:
     """Test creating paragraph with bold and italic formatting."""
     check_rst_output(
         capsys=capsys,
@@ -46,7 +47,8 @@ def test_new_paragraph_formatting(capsys,  # pylint: disable=too-many-arguments,
         expected_text=expected)
 
 
-def test_paragraph_add_text_smart_ws(capsys):
+def test_paragraph_add_text_smart_ws(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test smart whitespace handling when adding paragraph text."""
     check_rst_output(
         capsys=capsys,
@@ -58,7 +60,8 @@ def test_paragraph_add_text_smart_ws(capsys):
         expected_text='start next end\n')
 
 
-def test_paragraph_add_text_no_smart_ws(capsys):
+def test_paragraph_add_text_no_smart_ws(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test paragraph text with smart_ws disabled."""
     check_rst_output(
         capsys=capsys,
@@ -78,7 +81,8 @@ def test_paragraph_add_text_no_smart_ws(capsys):
          'See `http://example.com <http://example.com>`_\n'),
     ]
 )
-def test_add_url(capsys, url, text, expected):
+def test_add_url(capsys: pytest.capturefixture[str],
+                 url: str, text: str, expected: str) -> None:
     """Test adding URLs in paragraph text."""
     check_rst_output(
         capsys=capsys,
@@ -89,7 +93,7 @@ def test_add_url(capsys, url, text, expected):
         expected_text=expected)
 
 
-def test_add_url_url_as_text(capsys):
+def test_add_url_url_as_text(capsys: pytest.capturefixture[str]) -> None:
     """Test adding URL with url_as_text enabled."""
     check_rst_output(
         capsys=capsys,
@@ -109,7 +113,9 @@ def test_add_url_url_as_text(capsys):
         (True, True, 'Check ***`x <http://a>`_***\n'),
     ]
 )
-def test_add_url_formatting(capsys, bold, italic, expected):
+def test_add_url_formatting(capsys: pytest.capturefixture[str],
+                            bold: bool, italic: bool,
+                            expected: str) -> None:
     """Test adding URL with bold and italic formatting."""
     check_rst_output(
         capsys=capsys,
@@ -122,7 +128,8 @@ def test_add_url_formatting(capsys, bold, italic, expected):
         expected_text=expected)
 
 
-def test_add_code_in_text_wraps_atomically(capsys):
+def test_add_code_in_text_wraps_atomically(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test code-in-text wrapping keeps code token atomic."""
     check_rst_output(
         capsys=capsys,
@@ -134,7 +141,7 @@ def test_add_code_in_text_wraps_atomically(capsys):
         args={'line_length': 11})
 
 
-def test_block_quote_text_wrapping(capsys):
+def test_block_quote_text_wrapping(capsys: pytest.capturefixture[str]) -> None:
     """Test block quote formatting in reST output."""
     check_rst_output(
         capsys=capsys,

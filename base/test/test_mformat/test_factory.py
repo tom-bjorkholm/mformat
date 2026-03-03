@@ -29,7 +29,7 @@ class MultiFormat2T(MultiFormat):
     """Test class for the factory module."""
 
     def __init__(self, file_name: str, url_as_text: bool = False,
-                 arg1: str = '', arg2: str = ''):
+                 arg1: str = '', arg2: str = '') -> None:
         """Initialize the MultiFormat2 class."""
         super().__init__(file_name=file_name, url_as_text=url_as_text)
         self.arg1: str = arg1
@@ -47,7 +47,7 @@ class MultiFormat2T(MultiFormat):
                                    optional_args=['arg1', 'arg2'])
 
 
-def test_factory_obj_reg_ok(capsys):
+def test_factory_obj_reg_ok(capsys: pytest.capturefixture[str]) -> None:
     """Test the factory object registration with an OK class."""
     factory = MultiFormatFactory()
     for i in ['md', 'html', 'docx']:
@@ -72,7 +72,7 @@ def test_factory_obj_reg_ok(capsys):
     check_capsys(capsys)
 
 
-def test_factory_obj_reg_nok(capsys):
+def test_factory_obj_reg_nok(capsys: pytest.capturefixture[str]) -> None:
     """Test the factory object registration with a not OK class."""
     factory = MultiFormatFactory()
     with pytest.raises(ValueError) as exc:
@@ -87,7 +87,9 @@ def test_factory_obj_reg_nok(capsys):
                           ({'arg1': 'value1'}, 'value1', ''),
                           ({'arg2': 'value2'}, '', 'value2'),
                           ({}, '', ''), (None, '', '')])
-def test_factory_obj_create_ok(capsys, args, arg1, arg2):
+def test_factory_obj_create_ok(capsys: pytest.capturefixture[str],
+                               args: dict[str, str], arg1: str,
+                               arg2: str) -> None:
     """Test the factory object create method with an OK class."""
     factory = MultiFormatFactory()
     factory.i_register(MultiFormat2T)
@@ -98,7 +100,7 @@ def test_factory_obj_create_ok(capsys, args, arg1, arg2):
     check_capsys(capsys)
 
 
-def test_factory_obj_create_nok(capsys):
+def test_factory_obj_create_nok(capsys: pytest.capturefixture[str]) -> None:
     """Test the factory object create method with a not OK class."""
     factory = MultiFormatFactory()
     with pytest.raises(KeyError) as exc:
@@ -110,7 +112,7 @@ def test_factory_obj_create_nok(capsys):
     check_capsys(capsys)
 
 
-def test_factory_obj_get_regs(capsys):
+def test_factory_obj_get_regs(capsys: pytest.capturefixture[str]) -> None:
     """Test the factory object get_registered_formats method."""
     factory = MultiFormatFactory()
     assert sorted(factory.i_get_registered_formats()) == \
@@ -118,7 +120,7 @@ def test_factory_obj_get_regs(capsys):
     check_capsys(capsys)
 
 
-def test_factory_obj_get_usage(capsys):
+def test_factory_obj_get_usage(capsys: pytest.capturefixture[str]) -> None:
     """Test the factory object get_usage method."""
     factory = MultiFormatFactory()
     assert factory.i_get_usage('md') == \
@@ -127,7 +129,7 @@ def test_factory_obj_get_usage(capsys):
     check_capsys(capsys)
 
 
-def test_factory_obj_get_usage_nok(capsys):
+def test_factory_obj_get_usage_nok(capsys: pytest.capturefixture[str]) -> None:
     """Test the factory object get_usage method with a not OK class."""
     factory = MultiFormatFactory()
     with pytest.raises(KeyError) as exc:
@@ -148,8 +150,8 @@ def test_factory_obj_get_usage_nok(capsys):
 @pytest.mark.parametrize('reg_func',
                          [MultiFormatFactory.register, register_mf])
 def test_factory_reg_ok(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                        capsys, monkeypatch,
-                        reg_func, create_func, list_func, usage_func):
+                        capsys, monkeypatch: pytest.monkeypatch,
+                        reg_func, create_func, list_func, usage_func) -> None:
     """Test the factory register method with an OK class."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -195,13 +197,14 @@ def test_factory_reg_ok(  # pylint: disable=too-many-arguments,too-many-position
 
 @pytest.mark.parametrize('format_name',
                          ['html', 'md', 'docx', 'odt'])
-def test_list_registered_mf(capsys, format_name):
+def test_list_registered_mf(capsys: pytest.capturefixture[str],
+                            format_name: str) -> None:
     """Test the list_registered_mf function."""
     assert format_name in list_registered_mf()
     check_capsys(capsys)
 
 
-def test_create_ok(capsys):
+def test_create_ok(capsys: pytest.capturefixture[str]) -> None:
     """Test the shortcut create function with an OK class."""
     mfh = create_mf('html', 'test.html', url_as_text=True,
                     args={'title': 'Test title', 'css_file': 'test.css'})
@@ -212,7 +215,7 @@ def test_create_ok(capsys):
     check_capsys(capsys)
 
 
-def test_create_nok(capsys):
+def test_create_nok(capsys: pytest.capturefixture[str]) -> None:
     """Test the shortcut create function with a not OK class."""
     with pytest.raises(KeyError) as exc:
         create_mf('something', 'test.html', url_as_text=True,
@@ -224,7 +227,7 @@ def test_create_nok(capsys):
 class FileExistsCB:  # pylint: disable=too-few-public-methods
     """Callback function to ask user what to do if the file exists."""
 
-    def __init__(self, ask_user: bool = True, overwrite: bool = False):
+    def __init__(self, ask_user: bool = True, overwrite: bool = False) -> None:
         """Initialize the FileExistsCB class."""
         self.file_name: str = ''
         self.num_calls: int = 0
@@ -268,7 +271,9 @@ def _build_file_name(tmp_dir: str, fmt: str,
                           ('odt', MultiFormatOdt),
                           ('txt', MultiFormatTxt)])
 @pytest.mark.parametrize('as_path', [False, True])
-def test_create_mf_file_name_type_matrix(capsys, fmt, expected_cls, as_path):
+def test_create_mf_file_name_type_matrix(
+        capsys: pytest.capturefixture[str], fmt: str, expected_cls: type,
+        as_path: bool) -> None:
     """Test create_mf supports str and Path file names."""
     with TemporaryDirectory() as tmp_dir:
         file_name = _build_file_name(tmp_dir, fmt, as_path)
@@ -288,8 +293,9 @@ def test_create_mf_file_name_type_matrix(capsys, fmt, expected_cls, as_path):
                          [('utf-8', b'Caf\xc3\xa9'),
                           ('iso-8859-1', b'Caf\xe9')])
 def test_create_mf_character_encoding_writes_bytes(
-        capsys, format_name, file_extension, character_encoding,
-        expected_text_bytes):
+        capsys: pytest.capturefixture[str], format_name: str,
+        file_extension: str, character_encoding: str,
+        expected_text_bytes: bytes) -> None:
     """Test create_mf writes bytes in the selected character encoding."""
     raw_content = create_paragraph_file_bytes_factory(
         format_name=format_name, file_extension=file_extension,
@@ -306,7 +312,7 @@ def test_create_mf_character_encoding_writes_bytes(
                           ('md', '.md'),
                           ('txt', '.txt')])
 def test_create_mf_invalid_character_encoding(
-        capsys, format_name, file_extension):
+        capsys, format_name, file_extension) -> None:
     """Test create_mf propagates invalid encoding from Python open."""
     check_invalid_character_encoding_factory(
         format_name=format_name, file_extension=file_extension)
@@ -317,7 +323,7 @@ def test_create_mf_invalid_character_encoding(
 @pytest.mark.parametrize('as_path', [False, True])
 @pytest.mark.parametrize('allow_overwrite', [False, True])
 def test_create_mf_file_exists_callback_matrix(
-        capsys, fmt, as_path, allow_overwrite):
+        capsys, fmt, as_path, allow_overwrite) -> None:
     """Test file_exists_callback for str and Path file names."""
     file_exists_cb = FileExistsCB(ask_user=False, overwrite=allow_overwrite)
     args: OptArgs = {'file_exists_callback': file_exists_cb}
@@ -352,7 +358,7 @@ def test_create_mf_file_exists_callback_matrix(
 
 
 @pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt', 'txt'])
-def test_create_file_exists_y(capsys, fmt):
+def test_create_file_exists_y(capsys: pytest.capturefixture[str], fmt) -> None:
     """Test the create function with file exists and overwrite OK."""
     file_exists_cb = FileExistsCB(ask_user=False, overwrite=True)
     args: OptArgs = {'file_exists_callback': file_exists_cb}
@@ -377,7 +383,8 @@ def test_create_file_exists_y(capsys, fmt):
 
 
 @pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt', 'txt'])
-def test_create_file_exists_y2(capsys, fmt):
+def test_create_file_exists_y2(
+        capsys: pytest.capturefixture[str], fmt) -> None:
     """Test the create function with file exists and overwrite OK."""
     file_exists_cb = FileExistsCB(ask_user=False, overwrite=True)
     args: OptArgs = {'file_exists_callback': file_exists_cb}
@@ -403,7 +410,9 @@ def test_create_file_exists_y2(capsys, fmt):
 
 
 @pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt'])
-def test_create_file_exists_ay(capsys, monkeypatch, fmt):
+def test_create_file_exists_ay(capsys: pytest.capturefixture[str],
+                               monkeypatch: pytest.monkeypatch,
+                               fmt: str) -> None:
     """Test the create function with file exists and overwrite OK."""
     file_exists_cb = FileExistsCB(ask_user=True, overwrite=False)
     mock_input = StringIO('y\ny\n')
@@ -432,7 +441,8 @@ def test_create_file_exists_ay(capsys, monkeypatch, fmt):
 
 
 @pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt'])
-def test_create_file_exists_n(capsys, fmt):
+def test_create_file_exists_n(
+        capsys: pytest.capturefixture[str], fmt) -> None:
     """Test the create function with file exists and no overwrite."""
     file_exists_cb = FileExistsCB(ask_user=False, overwrite=False)
     args: OptArgs = {'file_exists_callback': file_exists_cb}
@@ -453,7 +463,9 @@ def test_create_file_exists_n(capsys, fmt):
 
 
 @pytest.mark.parametrize('fmt', ['html', 'md', 'docx', 'odt'])
-def test_create_file_exists_an(capsys, monkeypatch, fmt):
+def test_create_file_exists_an(capsys: pytest.capturefixture[str],
+                               monkeypatch: pytest.monkeypatch,
+                               fmt: str) -> None:
     """Test the create function with file exists and no overwrite."""
     file_exists_cb = FileExistsCB(ask_user=True, overwrite=False)
     mock_input = StringIO('n\n')
@@ -481,7 +493,7 @@ class MultiFormatCase1(MultiFormat):
     """Test class for the factory module."""
 
     def __init__(self, file_name: str, lang: str,
-                 url_as_text: bool = False):
+                 url_as_text: bool = False) -> None:
         """Initialize the MultiFormatCase1 class."""
         super().__init__(file_name=file_name, url_as_text=url_as_text)
         self.lang: str = lang
@@ -501,7 +513,7 @@ class MultiFormatCase1(MultiFormat):
 class MultiFormatCase1Upper(MultiFormat):
     """Test class for the factory module."""
 
-    def __init__(self, file_name: str, url_as_text: bool = False):
+    def __init__(self, file_name: str, url_as_text: bool = False) -> None:
         """Initialize the MultiFormatCase1Upper class."""
         super().__init__(file_name=file_name, url_as_text=url_as_text)
 
@@ -517,7 +529,7 @@ class MultiFormatCase1Upper(MultiFormat):
                                    optional_args=[])
 
 
-def test_factory_reg_ident1(capsys):
+def test_factory_reg_ident1(capsys: pytest.capturefixture[str]) -> None:
     """Test the factory register method with identical names."""
     factory = MultiFormatFactory()
     factory.i_register(MultiFormatCase1)
@@ -527,7 +539,7 @@ def test_factory_reg_ident1(capsys):
     check_capsys(capsys)
 
 
-def test_factory_reg_ident2(capsys):
+def test_factory_reg_ident2(capsys: pytest.capturefixture[str]) -> None:
     """Test the factory register method with case different names."""
     factory = MultiFormatFactory()
     factory.i_register(MultiFormatCase1)
@@ -538,7 +550,8 @@ def test_factory_reg_ident2(capsys):
     check_capsys(capsys)
 
 
-def test_factory_reg_ident3(capsys, monkeypatch):
+def test_factory_reg_ident3(capsys: pytest.capturefixture[str],
+                            monkeypatch: pytest.monkeypatch) -> None:
     """Test the register function with identical names."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -549,7 +562,8 @@ def test_factory_reg_ident3(capsys, monkeypatch):
     check_capsys(capsys)
 
 
-def test_factory_reg_ident4(capsys, monkeypatch):
+def test_factory_reg_ident4(capsys: pytest.capturefixture[str],
+                            monkeypatch: pytest.monkeypatch) -> None:
     """Test the register function with case different names."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -606,8 +620,9 @@ def wrap_list_reg_mf(lower: bool, upper: bool) -> list[str]:
                             'md', 'MD', 'odt', 'ODT',
                             'reST', 'rest', 'REST',
                             'txt', 'TXT'])])
-def test_factory_reg_ident5(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                            monkeypatch, wrap_func, lower, upper, expected):
+def test_factory_reg_ident5(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                            monkeypatch: pytest.monkeypatch,
+                            wrap_func, lower, upper, expected) -> None:
     """Test the factory register method with identical names."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -673,8 +688,9 @@ def wrap_usage_mf(format_name: str) -> FormatterDescriptor:
                                    'title', 'css_file',
                                    'lang',
                                    'character_encoding']))])
-def test_get_usage_wrap(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                        monkeypatch, wrap_func, format_name, usage):
+def test_get_usage_wrap(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                        monkeypatch: pytest.monkeypatch,
+                        wrap_func, format_name, usage) -> None:
     """Test the get_usage functions with lower and upper case names."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -794,9 +810,10 @@ OPTARG_ALL: OptArgs = {'file_exists_callback': dummy_file_exists_cb,
                           (None, 'md', None),
                           (None, 'case1', None),
                           (None, 'odt', None)])
-def test_filter_args_wrap(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                          monkeypatch, wrap_func, args, format_name,
-                          expected):
+def test_filter_args_wrap(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                          monkeypatch: pytest.monkeypatch,
+                          wrap_func, args, format_name,
+                          expected) -> None:
     """Test the filter_args functions with lower and upper case names."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -819,7 +836,8 @@ def test_filter_args_wrap(capsys,  # pylint: disable=too-many-arguments,too-many
                           ('docx', OPTARG_EMPTY),
                           ('odt', OPTARG_EMPTY)])
 def test_filter_args_wrap_character_encoding(
-        capsys, monkeypatch, wrap_func, format_name, expected):
+        capsys: pytest.capturefixture[str], monkeypatch: pytest.monkeypatch,
+        wrap_func, format_name, expected) -> None:
     """Test filter_args keeps character_encoding only for text formats."""
     args: OptArgs = {'character_encoding': 'iso-8859-1'}
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -837,8 +855,9 @@ def test_filter_args_wrap_character_encoding(
                           (OPTARG_EMPTY, 'oodt'),
                           (OPTARG_EMPTY, 'invalid'),
                           (None, 'hmtlx')])
-def test_filter_args_wrap_nok(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                              monkeypatch, wrap_func, args, format_name):
+def test_filter_args_wrap_nok(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                              monkeypatch: pytest.monkeypatch,
+                              wrap_func, args, format_name) -> None:
     """Test the filter_args functions with invalid format name."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -895,9 +914,10 @@ def wrap_create_mf(format_name: str, file_name: str, url_as_text: bool,
                            MultiFormatDocx),
                           ('DOCX', OPTARG_FILE_EXISTS_CALLBACK,
                            MultiFormatDocx)])
-def test_create_wrap(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                     monkeypatch, wrap_func, url_as_text, file_name,
-                     format_name, args, expected_cls):
+def test_create_wrap(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                     monkeypatch: pytest.monkeypatch,
+                     wrap_func, url_as_text, file_name,
+                     format_name, args, expected_cls) -> None:
     """Test the create functions with lower and upper case names."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -916,7 +936,8 @@ def test_create_wrap(capsys,  # pylint: disable=too-many-arguments,too-many-posi
                           ('md', MultiFormatMd),
                           ('txt', MultiFormatTxt)])
 def test_create_wrap_character_encoding(
-        capsys, monkeypatch, wrap_func, format_name, expected_cls):
+        capsys, monkeypatch: pytest.monkeypatch,
+        wrap_func, format_name, expected_cls) -> None:
     """Test create wrappers propagate character_encoding argument."""
     args: OptArgs = {'character_encoding': 'iso-8859-1'}
     monkeypatch.setattr('mformat.factory._the_factory', None)
@@ -931,7 +952,9 @@ def test_create_wrap_character_encoding(
                          [wrap_i_create, wrap_create, wrap_create_mf])
 @pytest.mark.parametrize('format_name', ['invalid', 'INVALID', 'Invalid',
                                          'invalid', 'hmtlx'])
-def test_create_wrap_nok(capsys, monkeypatch, wrap_func, format_name):
+def test_create_wrap_nok(capsys: pytest.capturefixture[str],
+                         monkeypatch: pytest.monkeypatch,
+                         wrap_func, format_name) -> None:
     """Test the create functions with invalid format name."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)

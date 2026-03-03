@@ -5,12 +5,13 @@
 # MIT License
 #
 
+import pytest
 from .test_helpers import check_run_with_context_manager
 
 
-def test_single_bullet_item(capsys):
+def test_single_bullet_item(capsys: pytest.capturefixture[str]) -> None:
     """Test a single bullet list item."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_bullet_item(text='First item')
 
@@ -19,9 +20,9 @@ def test_single_bullet_item(capsys):
                                    capsys=capsys)
 
 
-def test_multiple_bullet_items(capsys):
+def test_multiple_bullet_items(capsys: pytest.capturefixture[str]) -> None:
     """Test multiple bullet list items."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_bullet_item(text='First')
         mfd.new_bullet_item(text='Second')
@@ -34,9 +35,9 @@ def test_multiple_bullet_items(capsys):
                                    capsys=capsys)
 
 
-def test_nested_bullet_items(capsys):
+def test_nested_bullet_items(capsys: pytest.capturefixture[str]) -> None:
     """Test nested bullet list items."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_bullet_item(text='Level 1', level=1)
         mfd.new_bullet_item(text='Level 2', level=2)
@@ -48,9 +49,10 @@ def test_nested_bullet_items(capsys):
                                    capsys=capsys)
 
 
-def test_bullet_item_with_url_and_code(capsys):
+def test_bullet_item_with_url_and_code(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test adding URL and code inside bullet item."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_bullet_item(text='Check')
         mfd.add_url(url='http://example.com', text='this link')
@@ -64,9 +66,9 @@ def test_bullet_item_with_url_and_code(capsys):
                                    capsys=capsys)
 
 
-def test_single_numbered_item(capsys):
+def test_single_numbered_item(capsys: pytest.capturefixture[str]) -> None:
     """Test a single numbered list item."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_numbered_point_item(text='First item')
 
@@ -75,9 +77,9 @@ def test_single_numbered_item(capsys):
                                    capsys=capsys)
 
 
-def test_multiple_numbered_items(capsys):
+def test_multiple_numbered_items(capsys: pytest.capturefixture[str]) -> None:
     """Test multiple numbered list items."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_numbered_point_item(text='First')
         mfd.new_numbered_point_item(text='Second')
@@ -89,9 +91,9 @@ def test_multiple_numbered_items(capsys):
                                    capsys=capsys)
 
 
-def test_nested_numbered_items(capsys):
+def test_nested_numbered_items(capsys: pytest.capturefixture[str]) -> None:
     """Test nested numbered list items."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_numbered_point_item(text='Level 1', level=1)
         mfd.new_numbered_point_item(text='Level 2', level=2)
@@ -105,9 +107,9 @@ def test_nested_numbered_items(capsys):
                                    capsys=capsys)
 
 
-def test_heading_then_list(capsys):
+def test_heading_then_list(capsys: pytest.capturefixture[str]) -> None:
     """Test heading followed by a list item."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_heading(level=1, text='Title')
         mfd.new_bullet_item(text='Item')
@@ -118,9 +120,10 @@ def test_heading_then_list(capsys):
                                    capsys=capsys)
 
 
-def test_paragraph_then_numbered_list(capsys):
+def test_paragraph_then_numbered_list(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test paragraph followed by numbered list item."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_paragraph(text='Intro')
         mfd.new_numbered_point_item(text='Item')

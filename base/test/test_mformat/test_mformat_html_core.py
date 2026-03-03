@@ -18,13 +18,13 @@ from .test_helpers import (check_character_encoding_bytes,
                            create_paragraph_file_bytes, run_protected_method)
 
 
-def test_file_name_extension(capsys):
+def test_file_name_extension(capsys: pytest.capturefixture[str]) -> None:
     """Test the file_name_extension method."""
     assert MultiFormatHtml.file_name_extension() == '.html'
     check_capsys(capsys)
 
 
-def test_get_arg_desciption(capsys):
+def test_get_arg_desciption(capsys: pytest.capturefixture[str]) -> None:
     """Test the get_arg_desciption method."""
     assert MultiFormatHtml.get_arg_desciption() == \
         FormatterDescriptor(name='html', mandatory_args=[],
@@ -61,7 +61,9 @@ def args_for_file_prefix(lang: str, title: Optional[str],
 @pytest.mark.parametrize('lang, title, css_file, expected',
                          [('en', None, None, PF_EN_NT_NC),
                           ('sv', 'Something', 'style1.css', PF_SV_TS_C1)])
-def test_write_file_prefix(capsys, lang, title, css_file, expected):
+def test_write_file_prefix(capsys: pytest.capturefixture[str],
+                           lang: str, title: Optional[str],
+                           css_file: Optional[str], expected: str) -> None:
     """Test the write_file_prefix method."""
     args = args_for_file_prefix(lang, title, css_file)
     txt = run_protected_method('html', '.html', '_write_file_prefix',
@@ -70,7 +72,7 @@ def test_write_file_prefix(capsys, lang, title, css_file, expected):
     check_capsys(capsys)
 
 
-def test_write_file_suffix(capsys):
+def test_write_file_suffix(capsys: pytest.capturefixture[str]) -> None:
     """Test the write_file_suffix method."""
     txt = run_protected_method('html', '.html', '_write_file_suffix')
     assert txt == SFTOT
@@ -87,8 +89,8 @@ def test_write_file_suffix(capsys):
                            '<em>Italic text</em>'),
                           ('Both', True, True,
                            '<em><strong>Both</strong></em>')])
-def test_write_text(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                    text, bold, italic, expected):
+def test_write_text(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                    text, bold, italic, expected) -> None:
     """Test the _write_text method."""
     txt = run_protected_method('html', '.html', '_write_text',
                                (text, MultiFormatState.PARAGRAPH,
@@ -113,7 +115,8 @@ EN_NT_NC_BOTH = PF_EN_NT_NC + \
                           (4, '<h4>\n'),
                           (5, '<h5>\n'),
                           (6, '<h6>\n')])
-def test_start_heading(capsys, level, expected):
+def test_start_heading(capsys: pytest.capturefixture[str],
+                       level: int, expected: str) -> None:
     """Test the _start_heading method."""
     txt = run_protected_method('html', '.html', '_start_heading', (level,))
     assert txt == expected
@@ -127,7 +130,8 @@ def test_start_heading(capsys, level, expected):
                           (4, '</h4>\n'),
                           (5, '</h5>\n'),
                           (6, '</h6>\n')])
-def test_end_heading(capsys, level, expected):
+def test_end_heading(capsys: pytest.capturefixture[str],
+                     level: int, expected: str) -> None:
     """Test the _end_heading method."""
     txt = run_protected_method('html', '.html', '_end_heading', (level,))
     assert txt == expected
@@ -141,10 +145,10 @@ def test_end_heading(capsys, level, expected):
                            PF_EN_NT_NC + '<h2>\nSubtitle</h2>\n' + SFTOT),
                           (3, 'Section',
                            PF_EN_NT_NC + '<h3>\nSection</h3>\n' + SFTOT)])
-def test_heading_integration(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                             level, text, expected):
+def test_heading_integration(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                             level, text, expected) -> None:
     """Test complete heading creation."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_heading(level=level, text=text)
 
@@ -159,10 +163,10 @@ def test_heading_integration(capsys,  # pylint: disable=too-many-arguments,too-m
                            '<h2>\n<em>Italic Title</em></h2>\n'),
                           (3, 'Both', True, True,
                            '<h3>\n<em><strong>Both</strong></em></h3>\n')])
-def test_heading_formatting(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                            level, text, bold, italic, expected):
+def test_heading_formatting(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                            level, text, bold, italic, expected) -> None:
     """Test heading with bold and italic formatting."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_heading(level=level, text=text, bold=bold, italic=italic)
 
@@ -171,9 +175,9 @@ def test_heading_formatting(capsys,  # pylint: disable=too-many-arguments,too-ma
                                    expected_text=exp, capsys=capsys)
 
 
-def test_heading_add_text(capsys):
+def test_heading_add_text(capsys: pytest.capturefixture[str]) -> None:
     """Test adding text to a heading."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_heading(level=1, text='Title')
         mfd.add_text(text=' and more')
@@ -183,9 +187,9 @@ def test_heading_add_text(capsys):
                                    expected_text=exp, capsys=capsys)
 
 
-def test_heading_add_url(capsys):
+def test_heading_add_url(capsys: pytest.capturefixture[str]) -> None:
     """Test adding URL to a heading."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_heading(level=2, text='Check ')
         mfd.add_url(url='http://example.com', text='this link')
@@ -196,9 +200,9 @@ def test_heading_add_url(capsys):
                                    expected_text=exp, capsys=capsys)
 
 
-def test_heading_then_paragraph(capsys):
+def test_heading_then_paragraph(capsys: pytest.capturefixture[str]) -> None:
     """Test heading followed by paragraph."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_heading(level=1, text='Title')
         mfd.new_paragraph('Some text')
@@ -209,9 +213,9 @@ def test_heading_then_paragraph(capsys):
                                    expected_text=exp, capsys=capsys)
 
 
-def test_multiple_headings(capsys):
+def test_multiple_headings(capsys: pytest.capturefixture[str]) -> None:
     """Test multiple headings."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_heading(level=1, text='Main')
         mfd.new_heading(level=2, text='Sub')
@@ -223,9 +227,9 @@ def test_multiple_headings(capsys):
                                    expected_text=exp, capsys=capsys)
 
 
-def test_heading_paragraph_heading(capsys):
+def test_heading_paragraph_heading(capsys: pytest.capturefixture[str]) -> None:
     """Test heading, paragraph, then another heading."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_heading(level=1, text='First Heading')
         mfd.new_paragraph('Some content here.')
@@ -240,9 +244,9 @@ def test_heading_paragraph_heading(capsys):
 # Tests for code blocks
 
 
-def test_simple_code_block(capsys):
+def test_simple_code_block(capsys: pytest.capturefixture[str]) -> None:
     """Test a simple code block."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.write_code_block(text='print("Hello, World!")')
 
@@ -253,9 +257,9 @@ def test_simple_code_block(capsys):
                                    expected_text=exp, capsys=capsys)
 
 
-def test_code_block_with_language(capsys):
+def test_code_block_with_language(capsys: pytest.capturefixture[str]) -> None:
     """Test a code block with programming language."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.write_code_block(text='print("Hello")',
                              programming_language='python')
@@ -267,9 +271,9 @@ def test_code_block_with_language(capsys):
                                    expected_text=exp, capsys=capsys)
 
 
-def test_code_block_multiline(capsys):
+def test_code_block_multiline(capsys: pytest.capturefixture[str]) -> None:
     """Test a multiline code block."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         code = 'def hello():\n    print("Hello")\n    return True'
         mfd.write_code_block(text=code, programming_language='python')
@@ -284,9 +288,10 @@ def test_code_block_multiline(capsys):
                                    expected_text=exp, capsys=capsys)
 
 
-def test_code_block_with_special_chars(capsys):
+def test_code_block_with_special_chars(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test a code block with special characters."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         code = 'x = "test <>&"\ny = \'another\''
         mfd.write_code_block(text=code)
@@ -298,9 +303,9 @@ def test_code_block_with_special_chars(capsys):
                                    expected_text=exp, capsys=capsys)
 
 
-def test_paragraph_then_code_block(capsys):
+def test_paragraph_then_code_block(capsys: pytest.capturefixture[str]) -> None:
     """Test paragraph followed by code block."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_paragraph(text='Here is some code:')
         mfd.write_code_block(text='x = 42', programming_language='python')
@@ -312,9 +317,9 @@ def test_paragraph_then_code_block(capsys):
                                    expected_text=exp, capsys=capsys)
 
 
-def test_code_block_then_paragraph(capsys):
+def test_code_block_then_paragraph(capsys: pytest.capturefixture[str]) -> None:
     """Test code block followed by paragraph."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.write_code_block(text='x = 42')
         mfd.new_paragraph(text='That was the code.')
@@ -325,9 +330,9 @@ def test_code_block_then_paragraph(capsys):
                                    expected_text=exp, capsys=capsys)
 
 
-def test_heading_then_code_block(capsys):
+def test_heading_then_code_block(capsys: pytest.capturefixture[str]) -> None:
     """Test heading followed by code block."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_heading(level=2, text='Code Example')
         mfd.write_code_block(text='example()', programming_language='python')
@@ -339,9 +344,9 @@ def test_heading_then_code_block(capsys):
                                    expected_text=exp, capsys=capsys)
 
 
-def test_multiple_code_blocks(capsys):
+def test_multiple_code_blocks(capsys: pytest.capturefixture[str]) -> None:
     """Test multiple code blocks."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.write_code_block(text='x = 1', programming_language='python')
         mfd.write_code_block(text='y = 2', programming_language='python')
@@ -357,9 +362,9 @@ def test_multiple_code_blocks(capsys):
 # Tests for block quotes
 
 
-def test_block_quote_1(capsys):
+def test_block_quote_1(capsys: pytest.capturefixture[str]) -> None:
     """Test block quote."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_block_quote(text='Here is text')
     exp = (PF_EN_NT_NC + '<blockquote>\nHere is text</blockquote>\n' +
@@ -368,9 +373,9 @@ def test_block_quote_1(capsys):
                                    expected_text=exp, capsys=capsys)
 
 
-def test_block_quote_2(capsys):
+def test_block_quote_2(capsys: pytest.capturefixture[str]) -> None:
     """Test block quote."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_block_quote(text='Block quote')
         mfd.add_text(text='More text')
@@ -381,9 +386,9 @@ def test_block_quote_2(capsys):
                                    expected_text=exp, capsys=capsys)
 
 
-def test_block_quote_3(capsys):
+def test_block_quote_3(capsys: pytest.capturefixture[str]) -> None:
     """Test block quote."""
-    def test_action(mfd):
+    def test_action(mfd) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_block_quote(text='Block quote')
         mfd.new_paragraph(text='Paragraph text')
@@ -397,7 +402,7 @@ def test_block_quote_3(capsys):
                          [('utf-8', b'Caf\xc3\xa9'),
                           ('iso-8859-1', b'Caf\xe9')])
 def test_character_encoding_writes_expected_bytes(
-        capsys, character_encoding, expected_text_bytes):
+        capsys, character_encoding, expected_text_bytes) -> None:
     """Test that HTML output bytes match the selected character encoding."""
     raw_content = create_paragraph_file_bytes(
         formatter_class=MultiFormatHtml, file_extension='.html',
@@ -408,7 +413,8 @@ def test_character_encoding_writes_expected_bytes(
     check_capsys(capsys)
 
 
-def test_invalid_character_encoding_raises_lookup_error(capsys):
+def test_invalid_character_encoding_raises_lookup_error(
+        capsys: pytest.capturefixture[str]) -> None:
     """Test invalid encoding is propagated from Python open."""
     check_invalid_character_encoding_constructor(
         formatter_class=MultiFormatHtml, file_extension='.html')
