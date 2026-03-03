@@ -28,9 +28,7 @@ def custom_spec() -> Optional[BuildSpec]:
     return BuildSpec(
         package_folders=None,
         identical_versions=True,
-        mypy_on_test=False,
-        mypy_additional_folders=[Path('common_build_tools/test'),
-                                 Path('base/test')],
+        mypy_on_test=True,
         mypy_exclude_folders=[Path('custom_build_tools/test')],
         additional_venv_packages=[
             'pypi-simple',
@@ -43,6 +41,7 @@ def custom_spec() -> Optional[BuildSpec]:
             'mammoth',
             'odfpy',
             'htmlcompare',
+            'types-html5lib'
         ],
         custom_after_test=[run_examples_hook, generate_readmes_hook],
         custom_final=[restore_equiv_docx_odt_hook],
