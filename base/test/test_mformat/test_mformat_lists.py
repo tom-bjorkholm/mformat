@@ -12,7 +12,7 @@ from .test_helpers import MultiFormat10
 
 
 def test_start_bullet_item_from_empty(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test starting a bullet item from empty state."""
     mfmt = MultiFormat10(file_name='test')
     assert mfmt.state.name == 'EMPTY'
@@ -29,7 +29,7 @@ def test_start_bullet_item_from_empty(
 
 
 def test_start_multiple_bullet_items(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test starting multiple bullet items at same level."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_bullet_item(text='First item')
@@ -46,7 +46,7 @@ def test_start_multiple_bullet_items(
     check_capsys(capsys)
 
 
-def test_start_bullet_item_nested(capsys: pytest.capturefixture[str]) -> None:
+def test_start_bullet_item_nested(capsys: pytest.CaptureFixture[str]) -> None:
     """Test starting nested bullet items."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_bullet_item(text='Level 1 item', level=1)
@@ -64,7 +64,7 @@ def test_start_bullet_item_nested(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_start_bullet_item_nested_then_back_to_level1(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested bullet items then returning to level 1."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_bullet_item(text='Level 1 item', level=1)
@@ -83,7 +83,7 @@ def test_start_bullet_item_nested_then_back_to_level1(
     check_capsys(capsys)
 
 
-def test_bullet_item_with_add_text(capsys: pytest.capturefixture[str]) -> None:
+def test_bullet_item_with_add_text(capsys: pytest.CaptureFixture[str]) -> None:
     """Test adding text to a bullet item."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_bullet_item(text='First item')
@@ -98,7 +98,7 @@ def test_bullet_item_with_add_text(capsys: pytest.capturefixture[str]) -> None:
     check_capsys(capsys)
 
 
-def test_bullet_item_with_add_url(capsys: pytest.capturefixture[str]) -> None:
+def test_bullet_item_with_add_url(capsys: pytest.CaptureFixture[str]) -> None:
     """Test adding URL to a bullet item."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_bullet_item(text='First item')
@@ -115,7 +115,7 @@ def test_bullet_item_with_add_url(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_bullet_list_error_skip_level(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test error when skipping a level in bullet list."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_bullet_item(text='Level 1 item', level=1)
@@ -126,7 +126,7 @@ def test_bullet_list_error_skip_level(
     check_capsys(capsys)
 
 
-def test_bullet_list_three_levels(capsys: pytest.capturefixture[str]) -> None:
+def test_bullet_list_three_levels(capsys: pytest.CaptureFixture[str]) -> None:
     """Test bullet list with three levels."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_bullet_item(text='Level 1', level=1)
@@ -144,7 +144,7 @@ def test_bullet_list_three_levels(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_bullet_list_three_levels_back_to_one(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test bullet list with three levels then back to level 1."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_bullet_item(text='Level 1', level=1)
@@ -163,7 +163,7 @@ def test_bullet_list_three_levels_back_to_one(
     check_capsys(capsys)
 
 
-def test_bullet_list_smart_ws(capsys: pytest.capturefixture[str]) -> None:
+def test_bullet_list_smart_ws(capsys: pytest.CaptureFixture[str]) -> None:
     """Test bullet list with smart_ws parameter."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_bullet_item(text='  First  ', smart_ws=True)
@@ -178,7 +178,7 @@ def test_bullet_list_smart_ws(capsys: pytest.capturefixture[str]) -> None:
     check_capsys(capsys)
 
 
-def test_bullet_list_bold_italic(capsys: pytest.capturefixture[str]) -> None:
+def test_bullet_list_bold_italic(capsys: pytest.CaptureFixture[str]) -> None:
     """Test bullet list with bold and italic text."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_bullet_item(text='Bold', bold=True)
@@ -195,7 +195,7 @@ def test_bullet_list_bold_italic(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_paragraph_then_bullet_list(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by bullet list."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_paragraph(text='Paragraph')
@@ -213,7 +213,7 @@ def test_paragraph_then_bullet_list(
 
 
 def test_bullet_list_then_paragraph(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test bullet list followed by paragraph."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_bullet_item(text='Bullet item')
@@ -231,7 +231,7 @@ def test_bullet_list_then_paragraph(
     check_capsys(capsys)
 
 
-def test_heading_then_bullet_list(capsys: pytest.capturefixture[str]) -> None:
+def test_heading_then_bullet_list(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by bullet list."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_heading(level=1, text='Heading')
@@ -252,7 +252,7 @@ def test_heading_then_bullet_list(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_start_numbered_item_from_empty(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test starting a numbered point item from empty state."""
     mfmt = MultiFormat10(file_name='test')
     assert mfmt.state.name == 'EMPTY'
@@ -269,7 +269,7 @@ def test_start_numbered_item_from_empty(
 
 
 def test_start_multiple_numbered_items(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test starting multiple numbered point items at same level."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_numbered_point_item(text='First item')
@@ -287,7 +287,7 @@ def test_start_multiple_numbered_items(
 
 
 def test_start_numbered_item_nested(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test starting nested numbered point items."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_numbered_point_item(text='Level 1 item', level=1)
@@ -305,7 +305,7 @@ def test_start_numbered_item_nested(
 
 
 def test_numbered_list_back_to_level1(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test numbered point list returning to level 1."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_numbered_point_item(text='Level 1 first', level=1)
@@ -324,7 +324,7 @@ def test_numbered_list_back_to_level1(
     check_capsys(capsys)
 
 
-def test_numbered_then_paragraph(capsys: pytest.capturefixture[str]) -> None:
+def test_numbered_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test numbered point list followed by paragraph."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_numbered_point_item(text='Numbered item')
@@ -343,7 +343,7 @@ def test_numbered_then_paragraph(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_mixed_bullet_and_numbered_same_level(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test switching between bullet and numbered at same level."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_bullet_item(text='Bullet 1', level=1)
@@ -367,7 +367,7 @@ def test_mixed_bullet_and_numbered_same_level(
 
 
 def test_nested_mixed_bullet_then_numbered(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested list with bullet at level 1 and numbered at level 2."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_bullet_item(text='Bullet 1', level=1)
@@ -391,7 +391,7 @@ def test_nested_mixed_bullet_then_numbered(
 
 
 def test_nested_mixed_numbered_then_bullet(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested list with numbered at level 1 and bullet at level 2."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_numbered_point_item(text='Numbered 1', level=1)
@@ -415,7 +415,7 @@ def test_nested_mixed_numbered_then_bullet(
 
 
 def test_three_level_nested_numbered(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test three-level nested numbered point lists."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_numbered_point_item(text='Level 1', level=1)
@@ -434,7 +434,7 @@ def test_three_level_nested_numbered(
 
 
 def test_numbered_list_error_skip_level(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test error when skipping a level in numbered point list."""
     mfmt = MultiFormat10(file_name='test')
     mfmt.new_numbered_point_item(text='Level 1', level=1)

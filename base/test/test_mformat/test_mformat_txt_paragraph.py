@@ -17,7 +17,7 @@ from .test_helpers import check_run_with_context_manager
         ('a b c d e f g h i', 'a b c d e f\ng h i\n'),
     ]
 )
-def test_new_paragraph(capsys: pytest.capturefixture[str],
+def test_new_paragraph(capsys: pytest.CaptureFixture[str],
                        text: str, expected: str) -> None:
     """Test creating a new paragraph in TXT output."""
     def test_action(mfd) -> None:
@@ -32,7 +32,7 @@ def test_new_paragraph(capsys: pytest.capturefixture[str],
 
 
 def test_paragraph_add_text_smart_ws(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test smart whitespace handling when adding paragraph text."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
@@ -46,7 +46,7 @@ def test_paragraph_add_text_smart_ws(
 
 
 def test_paragraph_add_text_no_smart_ws(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph text with smart_ws disabled."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
@@ -67,7 +67,7 @@ def test_paragraph_add_text_no_smart_ws(
          'See http://example.com\n'),
     ]
 )
-def test_add_url(capsys: pytest.capturefixture[str],
+def test_add_url(capsys: pytest.CaptureFixture[str],
                  url: str, text: str, expected: str) -> None:
     """Test adding URLs in paragraph text."""
     def test_action(mfd) -> None:
@@ -80,7 +80,7 @@ def test_add_url(capsys: pytest.capturefixture[str],
                                    capsys=capsys)
 
 
-def test_add_url_url_as_text(capsys: pytest.capturefixture[str]) -> None:
+def test_add_url_url_as_text(capsys: pytest.CaptureFixture[str]) -> None:
     """Test adding URL with url_as_text enabled."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
@@ -95,7 +95,7 @@ def test_add_url_url_as_text(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_add_code_in_text_wraps_atomically(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test code-in-text wrapping keeps code token atomic."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
@@ -108,7 +108,7 @@ def test_add_code_in_text_wraps_atomically(
                                    capsys=capsys)
 
 
-def test_block_quote_text_wrapping(capsys: pytest.capturefixture[str]) -> None:
+def test_block_quote_text_wrapping(capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote formatting in TXT output."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'

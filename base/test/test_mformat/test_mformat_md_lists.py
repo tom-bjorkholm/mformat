@@ -10,7 +10,7 @@ from .test_helpers import (action_complex_nested_bullet_structure,
                            check_run_with_context_manager)
 
 
-def test_single_bullet_item(capsys: pytest.capturefixture[str]) -> None:
+def test_single_bullet_item(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a single bullet item."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -21,7 +21,7 @@ def test_single_bullet_item(capsys: pytest.capturefixture[str]) -> None:
                                    capsys=capsys)
 
 
-def test_multiple_bullet_items(capsys: pytest.capturefixture[str]) -> None:
+def test_multiple_bullet_items(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple bullet items."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -35,7 +35,7 @@ def test_multiple_bullet_items(capsys: pytest.capturefixture[str]) -> None:
                                    capsys=capsys)
 
 
-def test_bullet_item_with_url(capsys: pytest.capturefixture[str]) -> None:
+def test_bullet_item_with_url(capsys: pytest.CaptureFixture[str]) -> None:
     """Test bullet item with URL."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -49,7 +49,7 @@ def test_bullet_item_with_url(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_nested_bullet_items_level2(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested bullet items at level 2."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -63,7 +63,7 @@ def test_nested_bullet_items_level2(
 
 
 def test_nested_bullet_items_level3(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested bullet items at level 3."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -78,7 +78,7 @@ def test_nested_bullet_items_level3(
 
 
 def test_bullet_list_back_to_level1(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test bullet list returning to level 1."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -93,7 +93,7 @@ def test_bullet_list_back_to_level1(
                                    capsys=capsys)
 
 
-def test_bullet_list_formatting(capsys: pytest.capturefixture[str]) -> None:
+def test_bullet_list_formatting(capsys: pytest.CaptureFixture[str]) -> None:
     """Test bullet list with bold and italic."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -109,7 +109,7 @@ def test_bullet_list_formatting(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_paragraph_then_bullet_list(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by bullet list."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -124,7 +124,7 @@ def test_paragraph_then_bullet_list(
 
 
 def test_bullet_list_then_paragraph(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test bullet list followed by paragraph."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -138,7 +138,7 @@ def test_bullet_list_then_paragraph(
                                    capsys=capsys)
 
 
-def test_heading_then_bullet_list(capsys: pytest.capturefixture[str]) -> None:
+def test_heading_then_bullet_list(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by bullet list."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -153,7 +153,7 @@ def test_heading_then_bullet_list(capsys: pytest.capturefixture[str]) -> None:
                                    capsys=capsys)
 
 
-def test_complex_nested_structure(capsys: pytest.capturefixture[str]) -> None:
+def test_complex_nested_structure(capsys: pytest.CaptureFixture[str]) -> None:
     """Test complex nested bullet structure."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -169,7 +169,7 @@ def test_complex_nested_structure(capsys: pytest.capturefixture[str]) -> None:
 # Tests for numbered point lists
 
 
-def test_single_numbered_item(capsys: pytest.capturefixture[str]) -> None:
+def test_single_numbered_item(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a single numbered point item."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -181,7 +181,7 @@ def test_single_numbered_item(capsys: pytest.capturefixture[str]) -> None:
                                    capsys=capsys)
 
 
-def test_multiple_numbered_items(capsys: pytest.capturefixture[str]) -> None:
+def test_multiple_numbered_items(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple numbered point items."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -196,7 +196,7 @@ def test_multiple_numbered_items(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_numbered_item_with_add_text(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test numbered point item with additional text."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -209,7 +209,7 @@ def test_numbered_item_with_add_text(
                                    capsys=capsys)
 
 
-def test_numbered_item_with_url(capsys: pytest.capturefixture[str]) -> None:
+def test_numbered_item_with_url(capsys: pytest.CaptureFixture[str]) -> None:
     """Test numbered point item with URL."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -223,7 +223,7 @@ def test_numbered_item_with_url(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_nested_numbered_items_level2(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested numbered point items at level 2."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -237,7 +237,7 @@ def test_nested_numbered_items_level2(
 
 
 def test_nested_numbered_items_level3(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested numbered point items at level 3."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -252,7 +252,7 @@ def test_nested_numbered_items_level3(
 
 
 def test_numbered_list_back_to_level1(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test numbered point list returning to level 1."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -267,7 +267,7 @@ def test_numbered_list_back_to_level1(
                                    capsys=capsys)
 
 
-def test_numbered_list_formatting(capsys: pytest.capturefixture[str]) -> None:
+def test_numbered_list_formatting(capsys: pytest.CaptureFixture[str]) -> None:
     """Test numbered point list with bold and italic."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -283,7 +283,7 @@ def test_numbered_list_formatting(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_paragraph_then_numbered_list(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by numbered point list."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -298,7 +298,7 @@ def test_paragraph_then_numbered_list(
 
 
 def test_numbered_list_then_paragraph(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test numbered point list followed by paragraph."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -313,7 +313,7 @@ def test_numbered_list_then_paragraph(
 
 
 def test_heading_then_numbered_list(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by numbered point list."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -329,7 +329,7 @@ def test_heading_then_numbered_list(
 
 
 def test_mixed_bullet_and_numbered_lists(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test switching between bullet and numbered point lists."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -345,7 +345,7 @@ def test_mixed_bullet_and_numbered_lists(
                                    capsys=capsys)
 
 
-def test_nested_mixed_lists(capsys: pytest.capturefixture[str]) -> None:
+def test_nested_mixed_lists(capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested mixed bullet and numbered point lists."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'

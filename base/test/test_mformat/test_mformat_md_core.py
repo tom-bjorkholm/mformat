@@ -34,13 +34,13 @@ def test_split_whitespace(text, expected) -> None:
     assert split_whitespace(text) == expected
 
 
-def test_file_name_extension(capsys: pytest.capturefixture[str]) -> None:
+def test_file_name_extension(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the file_name_extension method."""
     assert MultiFormatMd.file_name_extension() == '.md'
     check_capsys(capsys)
 
 
-def test_get_arg_desciption(capsys: pytest.capturefixture[str]) -> None:
+def test_get_arg_desciption(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the get_arg_desciption method."""
     assert MultiFormatMd.get_arg_desciption() == \
         FormatterDescriptor(name='md', mandatory_args=[],
@@ -82,7 +82,7 @@ def test_get_arg_desciption(capsys: pytest.capturefixture[str]) -> None:
                            ('  both  ', MultiFormatState.PARAGRAPH,
                             Formatting(bold=True, italic=True)),
                            '  ***both***  .')])
-def test_methods(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+def test_methods(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
                  method, arg, expected) -> None:
     """Test the trivial methods of the MultiFormatMd class."""
     with TemporaryDirectory() as tmp_dir:
@@ -115,7 +115,7 @@ def test_methods(capsys: pytest.capturefixture[str],  # pylint: disable=too-many
                           (4, '#### '),
                           (5, '##### '),
                           (6, '###### ')])
-def test_start_heading(capsys: pytest.capturefixture[str],
+def test_start_heading(capsys: pytest.CaptureFixture[str],
                        level: int, expected_prefix: str) -> None:
     """Test the _start_heading method."""
     txt = run_protected_method('md', '.md', '_start_heading', (level,))
@@ -123,7 +123,7 @@ def test_start_heading(capsys: pytest.capturefixture[str],
     check_capsys(capsys)
 
 
-def test_end_heading(capsys: pytest.capturefixture[str]) -> None:
+def test_end_heading(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the _end_heading method."""
     txt = run_protected_method('md', '.md', '_end_heading', (1,))
     assert txt == '\n'
@@ -134,7 +134,7 @@ def test_end_heading(capsys: pytest.capturefixture[str]) -> None:
                          [(1, 'Main Title', '# Main Title\n'),
                           (2, 'Subtitle', '## Subtitle\n'),
                           (3, 'Section', '### Section\n')])
-def test_heading_integration(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+def test_heading_integration(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                              level, text, expected) -> None:
     """Test complete heading creation."""
     def test_action(mfd) -> None:
@@ -153,7 +153,7 @@ def test_heading_integration(capsys: pytest.capturefixture[str],  # pylint: disa
                            '## *Italic Title*\n'),
                           (3, 'Both', True, True,
                            '### ***Both***\n')])
-def test_heading_formatting(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+def test_heading_formatting(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                             level, text, bold, italic, expected) -> None:
     """Test heading with bold and italic formatting."""
     def test_action(mfd) -> None:
@@ -165,7 +165,7 @@ def test_heading_formatting(capsys: pytest.capturefixture[str],  # pylint: disab
                                    capsys=capsys)
 
 
-def test_heading_add_text(capsys: pytest.capturefixture[str]) -> None:
+def test_heading_add_text(capsys: pytest.CaptureFixture[str]) -> None:
     """Test adding text to a heading."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -182,7 +182,7 @@ def test_heading_add_text(capsys: pytest.capturefixture[str]) -> None:
                            '[this link](http://example.com)\n'),
                           (True, 'http://example.com', 'this link',
                            ' [this link](http://example.com)\n')])
-def test_ws_add_url(capsys: pytest.capturefixture[str],
+def test_ws_add_url(capsys: pytest.CaptureFixture[str],
                     ws: bool, url: str, utxt: str, expected: str) -> None:
     """Test adding URL with whitespace."""
     def test_action(mfd) -> None:
@@ -212,7 +212,7 @@ def test_ws_add_url(capsys: pytest.capturefixture[str],
                           ('Check ', 'http://example.com', None, True,
                            '## Check **[http://example.com]' +
                            '(http://example.com)**\n'),])
-def test_heading_add_url(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+def test_heading_add_url(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                          htxt, url, utxt, bold, expected) -> None:
     """Test adding URL to a heading."""
     def test_action(mfd) -> None:
@@ -226,7 +226,7 @@ def test_heading_add_url(capsys: pytest.capturefixture[str],  # pylint: disable=
                                    capsys=capsys)
 
 
-def test_heading_then_paragraph(capsys: pytest.capturefixture[str]) -> None:
+def test_heading_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by paragraph."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -238,7 +238,7 @@ def test_heading_then_paragraph(capsys: pytest.capturefixture[str]) -> None:
                                    capsys=capsys)
 
 
-def test_multiple_headings(capsys: pytest.capturefixture[str]) -> None:
+def test_multiple_headings(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple headings."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -253,7 +253,7 @@ def test_multiple_headings(capsys: pytest.capturefixture[str]) -> None:
                                    capsys=capsys)
 
 
-def test_heading_paragraph_heading(capsys: pytest.capturefixture[str]) -> None:
+def test_heading_paragraph_heading(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading, paragraph, then another heading."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -270,7 +270,7 @@ def test_heading_paragraph_heading(capsys: pytest.capturefixture[str]) -> None:
 # Tests for code blocks
 
 
-def test_simple_code_block(capsys: pytest.capturefixture[str]) -> None:
+def test_simple_code_block(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a simple code block."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -282,7 +282,7 @@ def test_simple_code_block(capsys: pytest.capturefixture[str]) -> None:
                                    capsys=capsys)
 
 
-def test_code_block_with_language(capsys: pytest.capturefixture[str]) -> None:
+def test_code_block_with_language(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a code block with programming language."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -295,7 +295,7 @@ def test_code_block_with_language(capsys: pytest.capturefixture[str]) -> None:
                                    capsys=capsys)
 
 
-def test_code_block_multiline(capsys: pytest.capturefixture[str]) -> None:
+def test_code_block_multiline(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a multiline code block."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -310,7 +310,7 @@ def test_code_block_multiline(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_code_block_with_special_chars(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test a code block with special characters."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -323,7 +323,7 @@ def test_code_block_with_special_chars(
                                    capsys=capsys)
 
 
-def test_paragraph_then_code_block(capsys: pytest.capturefixture[str]) -> None:
+def test_paragraph_then_code_block(capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by code block."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -336,7 +336,7 @@ def test_paragraph_then_code_block(capsys: pytest.capturefixture[str]) -> None:
                                    capsys=capsys)
 
 
-def test_code_block_then_paragraph(capsys: pytest.capturefixture[str]) -> None:
+def test_code_block_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test code block followed by paragraph."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -349,7 +349,7 @@ def test_code_block_then_paragraph(capsys: pytest.capturefixture[str]) -> None:
                                    capsys=capsys)
 
 
-def test_heading_then_code_block(capsys: pytest.capturefixture[str]) -> None:
+def test_heading_then_code_block(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by code block."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -362,7 +362,7 @@ def test_heading_then_code_block(capsys: pytest.capturefixture[str]) -> None:
                                    capsys=capsys)
 
 
-def test_multiple_code_blocks(capsys: pytest.capturefixture[str]) -> None:
+def test_multiple_code_blocks(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple code blocks."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -382,7 +382,7 @@ def test_multiple_code_blocks(capsys: pytest.capturefixture[str]) -> None:
                          [('', ''),
                           (' ', ' '),
                           ('   ', '   ')])
-def test_format_text_space(capsys: pytest.capturefixture[str],
+def test_format_text_space(capsys: pytest.CaptureFixture[str],
                            bold: bool, italic: bool,
                            text: str, expected: str) -> None:
     """Test the format_text method with space."""
@@ -399,7 +399,7 @@ def test_format_text_space(capsys: pytest.capturefixture[str],
                           ('  bold text', True, False, '  **bold text**'),
                           ('italic text  ', False, True, '*italic text*  '),
                           (' both ', True, True, ' ***both*** ')])
-def test_format_text_formatting(capsys: pytest.capturefixture[str],
+def test_format_text_formatting(capsys: pytest.CaptureFixture[str],
                                 text: str, bold: bool, italic: bool,
                                 expected: str) -> None:
     """Test the format_text method with formatting."""
@@ -409,7 +409,7 @@ def test_format_text_formatting(capsys: pytest.capturefixture[str],
     check_capsys(capsys)
 
 
-def test_add_code_in_text_heading(capsys: pytest.capturefixture[str]) -> None:
+def test_add_code_in_text_heading(capsys: pytest.CaptureFixture[str]) -> None:
     """Test add_code_in_text in heading."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -427,7 +427,7 @@ def test_add_code_in_text_heading(capsys: pytest.capturefixture[str]) -> None:
 # Tests for block quotes
 
 
-def test_simple_block_quote(capsys: pytest.capturefixture[str]) -> None:
+def test_simple_block_quote(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a simple block quote."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -439,7 +439,7 @@ def test_simple_block_quote(capsys: pytest.capturefixture[str]) -> None:
                                    capsys=capsys)
 
 
-def test_block_quote_with_add_text(capsys: pytest.capturefixture[str]) -> None:
+def test_block_quote_with_add_text(capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote with additional text."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -457,7 +457,7 @@ def test_block_quote_with_add_text(capsys: pytest.capturefixture[str]) -> None:
     (False, True, '> *Italic quote*\n'),
     (True, True, '> ***Bold and italic***\n'),
 ])
-def test_block_quote_formatting(capsys: pytest.capturefixture[str],
+def test_block_quote_formatting(capsys: pytest.CaptureFixture[str],
                                 bold: bool, italic: bool,
                                 expected: str) -> None:
     """Test block quote with bold and italic formatting."""
@@ -473,7 +473,7 @@ def test_block_quote_formatting(capsys: pytest.capturefixture[str],
                                    capsys=capsys)
 
 
-def test_block_quote_with_url(capsys: pytest.capturefixture[str]) -> None:
+def test_block_quote_with_url(capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote with URL."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -487,7 +487,7 @@ def test_block_quote_with_url(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_block_quote_with_code_in_text(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote with inline code."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -501,7 +501,7 @@ def test_block_quote_with_code_in_text(
                                    capsys=capsys)
 
 
-def test_block_quote_line_wrapping(capsys: pytest.capturefixture[str]) -> None:
+def test_block_quote_line_wrapping(capsys: pytest.CaptureFixture[str]) -> None:
     """Test that block quote wraps lines with > prefix."""
     with TemporaryDirectory() as tmp_dir:
         fname = str(Path(tmp_dir) / 'test.md')
@@ -521,7 +521,7 @@ def test_block_quote_line_wrapping(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_block_quote_then_paragraph(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote followed by paragraph."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -535,7 +535,7 @@ def test_block_quote_then_paragraph(
 
 
 def test_paragraph_then_block_quote(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by block quote."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -548,7 +548,7 @@ def test_paragraph_then_block_quote(
                                    capsys=capsys)
 
 
-def test_heading_then_block_quote(capsys: pytest.capturefixture[str]) -> None:
+def test_heading_then_block_quote(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by block quote."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -561,7 +561,7 @@ def test_heading_then_block_quote(capsys: pytest.capturefixture[str]) -> None:
                                    capsys=capsys)
 
 
-def test_multiple_block_quotes(capsys: pytest.capturefixture[str]) -> None:
+def test_multiple_block_quotes(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple block quotes in sequence."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -575,7 +575,7 @@ def test_multiple_block_quotes(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_block_quote_then_code_block(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote followed by code block."""
     def test_action(mfd) -> None:
         assert type(mfd).__name__ == 'MultiFormatMd'
@@ -602,7 +602,7 @@ def test_character_encoding_writes_expected_bytes(
 
 
 def test_invalid_character_encoding_raises_lookup_error(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test invalid encoding is propagated from Python open."""
     check_invalid_character_encoding_constructor(
         formatter_class=MultiFormatMd, file_extension='.md')

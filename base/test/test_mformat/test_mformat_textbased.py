@@ -36,7 +36,7 @@ class MultiFormatTextBased2(MultiFormatTextBased):
 
 @pytest.mark.parametrize('fname', ['a.test', 'b.test', 'c.test'])
 def test_open_close_context_manager(
-        capsys: pytest.capturefixture[str], fname: str) -> None:
+        capsys: pytest.CaptureFixture[str], fname: str) -> None:
     """Test the open and close methods."""
     with TemporaryDirectory() as temp_dir:
         file_name = str(Path(temp_dir) / fname)
@@ -52,7 +52,7 @@ def test_open_close_context_manager(
 
 
 @pytest.mark.parametrize('fname', ['a.test', 'b.test', 'c.test'])
-def test_open_close_manual(capsys: pytest.capturefixture[str], fname) -> None:
+def test_open_close_manual(capsys: pytest.CaptureFixture[str], fname) -> None:
     """Test the open and close methods."""
     with TemporaryDirectory() as temp_dir:
         file_name = str(Path(temp_dir) / fname)
@@ -69,7 +69,7 @@ def test_open_close_manual(capsys: pytest.capturefixture[str], fname) -> None:
 
 
 @pytest.mark.parametrize('fname', ['a.test', 'b.test', 'c.test'])
-def test_close_only(capsys: pytest.capturefixture[str], fname) -> None:
+def test_close_only(capsys: pytest.CaptureFixture[str], fname) -> None:
     """Test only the close method when the file is not open."""
     with TemporaryDirectory() as temp_dir:
         file_name = str(Path(temp_dir) / fname)
@@ -87,7 +87,7 @@ def test_close_only(capsys: pytest.capturefixture[str], fname) -> None:
                          [('Hello ', 'world!', 'lo ', 3),
                           ('Hi', ' Earth!', 'Hi', 5),
                           ('What a', ' beautiful day!', 'at a', 4)])
-def test_get_last_chars_written(capsys: pytest.capturefixture[str],
+def test_get_last_chars_written(capsys: pytest.CaptureFixture[str],
                                 wr1: str, wr2: str, wr1end: str,
                                 num: int) -> None:
     """Test the get_last_chars_written method."""
@@ -111,7 +111,7 @@ def test_get_last_chars_written(capsys: pytest.capturefixture[str],
                           'øæÆØ😀👍\n😀👍\n'])
 @pytest.mark.parametrize('last_times', [1, 2, 4])
 @pytest.mark.parametrize('bytes_before', [0, 20, 100])
-def test_get_last_chars_written2(capsys: pytest.capturefixture[str],
+def test_get_last_chars_written2(capsys: pytest.CaptureFixture[str],
                                  num: int, laststr: str, last_times: int,
                                  bytes_before: int) -> None:
     """Test the get_last_chars_written method."""
@@ -131,7 +131,7 @@ def test_get_last_chars_written2(capsys: pytest.capturefixture[str],
                          [('utf-8', b'Caf\xc3\xa9'),
                           ('iso-8859-1', b'Caf\xe9')])
 def test_open_writes_selected_character_encoding(
-        capsys: pytest.capturefixture[str], character_encoding: str,
+        capsys: pytest.CaptureFixture[str], character_encoding: str,
         expected_bytes: bytes) -> None:
     """Test that open uses the selected character encoding."""
     with TemporaryDirectory() as temp_dir:
@@ -149,7 +149,7 @@ def test_open_writes_selected_character_encoding(
 
 
 def test_open_with_invalid_character_encoding(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test invalid encoding is propagated from Python open."""
     check_invalid_character_encoding_constructor(
         formatter_class=MultiFormatTextBased2, file_extension='.test')

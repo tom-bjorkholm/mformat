@@ -5,6 +5,7 @@
 # MIT License
 #
 
+from typing import Any
 import pytest
 from mformat.mformat_html import MultiFormatHtml
 from mformat.mformat_state import Formatting, MultiFormatState
@@ -14,14 +15,14 @@ from .test_mformat_html_core import (EN_NT_NC_T1, PF_EN_NT_NC, SFTOT,
                                      SV_TS_C1_T2, args_for_file_prefix)
 
 
-def test_start_paragraph(capsys: pytest.capturefixture[str]) -> None:
+def test_start_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the _start_paragraph method."""
     txt = run_protected_method('html', '.html', '_start_paragraph')
     assert txt == '<p>\n'
     check_capsys(capsys)
 
 
-def test_end_paragraph(capsys: pytest.capturefixture[str]) -> None:
+def test_end_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the end_paragraph method."""
     txt = run_protected_method('html', '.html', '_end_paragraph')
     assert txt == '</p>\n'
@@ -33,12 +34,14 @@ def test_end_paragraph(capsys: pytest.capturefixture[str]) -> None:
                            ['Hello, world!', 'Bye!'], EN_NT_NC_T1),
                           ('sv', 'Something', 'style1.css',
                            ['Something else', 'Yeah!'], SV_TS_C1_T2)])
-def test_new_paragraph2(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
-                        lang, title, css_file, texts, expected) -> None:
+def test_new_paragraph2(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+                        lang: str, title: str | None,
+                        css_file: str | None, texts: list[str],
+                        expected: str) -> None:
     """Test the new_paragraph method."""
     args = args_for_file_prefix(lang, title, css_file)
 
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         for text in texts:
             mfd.new_paragraph(text)
@@ -54,10 +57,11 @@ def test_new_paragraph2(capsys: pytest.capturefixture[str],  # pylint: disable=t
                            '<em>Italic text</em>'),
                           ('Both styles', True, True,
                            '<em><strong>Both styles</strong></em>')])
-def test_new_paragraph_formatting(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
-                                  text, bold, italic, expected) -> None:
+def test_new_paragraph_formatting(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+                                  text: str, bold: bool, italic: bool,
+                                  expected: str) -> None:
     """Test the new_paragraph method with bold and italic."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_paragraph(text, bold=bold, italic=italic)
 
@@ -82,10 +86,11 @@ def test_new_paragraph_formatting(capsys: pytest.capturefixture[str],  # pylint:
                           ('http://test.org', 'link', True, True,
                            '<em><strong><a href="http://test.org">'
                            'link</a></strong></em>')])
-def test_write_url(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                   url, text, bold, italic, expected) -> None:
+def test_write_url(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                   url: str, text: str | None, bold: bool, italic: bool,
+                   expected: str) -> None:
     """Test the _write_url method."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd._write_url(url=url,  # pylint: disable=protected-access
                        text=text,
@@ -105,10 +110,10 @@ def test_write_url(capsys: pytest.capturefixture[str],  # pylint: disable=too-ma
                            PF_EN_NT_NC +
                            '<p>\n<a href="http://test.org">'
                            'link text</a></p>\n' + SFTOT)])
-def test_add_url(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                 url, text, expected) -> None:
+def test_add_url(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                 url: str, text: str | None, expected: str) -> None:
     """Test the add_url method."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_paragraph('')
         mfd.add_url(url=url, text=text)
@@ -125,10 +130,10 @@ def test_add_url(capsys: pytest.capturefixture[str],  # pylint: disable=too-many
                            PF_EN_NT_NC +
                            '<p>\nSee here http://test.org</p>\n' +
                            SFTOT)])
-def test_add_url_as_text(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                         url, text, expected) -> None:
+def test_add_url_as_text(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                         url: str, text: str | None, expected: str) -> None:
     """Test the add_url method with url_as_text=True."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_paragraph('')
         mfd.add_url(url=url, text=text)
@@ -148,10 +153,10 @@ def test_add_url_as_text(capsys: pytest.capturefixture[str],  # pylint: disable=
                            'Here is the code: ' +
                            '<code>print(&quot;Hello&quot;)</code></p>\n' +
                            SFTOT)])
-def test_add_code_in_text(capsys: pytest.capturefixture[str],
+def test_add_code_in_text(capsys: pytest.CaptureFixture[str],
                           text: str, code: str, expected: str) -> None:
     """Test the add_code_in_text method."""
-    def test_action(mfd) -> None:
+    def test_action(mfd: Any) -> None:
         assert isinstance(mfd, MultiFormatHtml)
         mfd.new_paragraph(text=text)
         mfd.add_code_in_text(text=code)

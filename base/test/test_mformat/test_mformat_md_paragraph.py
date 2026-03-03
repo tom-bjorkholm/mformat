@@ -17,7 +17,7 @@ from .test_helpers import check_run_with_context_manager, run_protected_method
 @pytest.mark.parametrize('text, expected',
                          [('test', 'test\n'),
                           ('test\ntest', 'test\ntest\n')])
-def test_new_paragraph(capsys: pytest.capturefixture[str],
+def test_new_paragraph(capsys: pytest.CaptureFixture[str],
                        text: str, expected: str) -> None:
     """Test the new_paragraph method."""
     with TemporaryDirectory() as tmp_dir:
@@ -36,7 +36,7 @@ def test_new_paragraph(capsys: pytest.capturefixture[str],
                          [('bold text', True, False, '**bold text**\n'),
                           ('italic text', False, True, '*italic text*\n'),
                           ('both', True, True, '***both***\n')])
-def test_new_paragraph_formatting(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+def test_new_paragraph_formatting(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
                                   text, bold, italic, expected) -> None:
     """Test the new_paragraph method with bold and italic."""
     def test_action(mfd) -> None:
@@ -56,7 +56,7 @@ def test_new_paragraph_formatting(capsys: pytest.capturefixture[str],  # pylint:
                          [('', '\n'),
                           (' ', '\n'),
                           ('   ', '\n')])
-def test_new_paragraph_space(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
+def test_new_paragraph_space(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments, too-many-positional-arguments # noqa: E501
                              text, bold, italic, expected) -> None:
     """Test the new_paragraph method with bold and italic."""
     def test_action(mfd) -> None:
@@ -82,7 +82,7 @@ def test_new_paragraph_space(capsys: pytest.capturefixture[str],  # pylint: disa
                            '*[link](http://test.org)*'),
                           ('http://test.org', 'link', True, True,
                            '***[link](http://test.org)***')])
-def test_write_url(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+def test_write_url(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                    url, text, bold, italic, expected) -> None:
     """Test the _write_url method."""
     txt = run_protected_method('md', '.md', '_write_url',
@@ -97,7 +97,7 @@ def test_write_url(capsys: pytest.capturefixture[str],  # pylint: disable=too-ma
                            '[http://example.com](http://example.com)\n'),
                           ('http://test.org', 'link text',
                            '[link text](http://test.org)\n')])
-def test_add_url(capsys: pytest.capturefixture[str],
+def test_add_url(capsys: pytest.CaptureFixture[str],
                  url: str, text: str, expected: str) -> None:
     """Test the add_url method."""
     def test_action(mfd) -> None:
@@ -115,7 +115,7 @@ def test_add_url(capsys: pytest.capturefixture[str],
                            'http://example.com\n'),
                           ('http://test.org', 'See here',
                            'See here http://test.org\n')])
-def test_add_url_as_text(capsys: pytest.capturefixture[str],
+def test_add_url_as_text(capsys: pytest.CaptureFixture[str],
                          url: str, text: str, expected: str) -> None:
     """Test the add_url method with url_as_text=True."""
     def test_action(mfd) -> None:
@@ -134,7 +134,7 @@ def test_add_url_as_text(capsys: pytest.capturefixture[str],
                           ('Here is the code: ',
                            ' print("Hello")',
                            'Here is the code: `print("Hello")`\n')])
-def test_add_code_in_text(capsys: pytest.capturefixture[str],
+def test_add_code_in_text(capsys: pytest.CaptureFixture[str],
                           text: str, code: str, expected: str) -> None:
     """Test the add_code_in_text method."""
     def test_action(mfd) -> None:

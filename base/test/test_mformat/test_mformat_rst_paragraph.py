@@ -5,7 +5,9 @@
 # MIT License
 #
 
+from typing import Any
 import pytest
+from mformat.factory import OptArgsDict
 from .rst_test_helpers import check_rst_output
 
 
@@ -19,8 +21,10 @@ from .rst_test_helpers import check_rst_output
          {'line_length': 11}),
     ]
 )
-def test_new_paragraph(capsys: pytest.capturefixture[str],
-                       method_calls, expected, args) -> None:
+def test_new_paragraph(capsys: pytest.CaptureFixture[str],
+                       method_calls: list[tuple[str, dict[str, Any]]],
+                       expected: str,
+                       args: OptArgsDict | None) -> None:
     """Test creating a new paragraph in reST output."""
     check_rst_output(
         capsys=capsys,
@@ -37,8 +41,9 @@ def test_new_paragraph(capsys: pytest.capturefixture[str],
         ('both', True, True, '***both***\n'),
     ]
 )
-def test_new_paragraph_formatting(capsys: pytest.capturefixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                                  text, bold, italic, expected) -> None:
+def test_new_paragraph_formatting(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                                  text: str, bold: bool, italic: bool,
+                                  expected: str) -> None:
     """Test creating paragraph with bold and italic formatting."""
     check_rst_output(
         capsys=capsys,
@@ -48,7 +53,7 @@ def test_new_paragraph_formatting(capsys: pytest.capturefixture[str],  # pylint:
 
 
 def test_paragraph_add_text_smart_ws(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test smart whitespace handling when adding paragraph text."""
     check_rst_output(
         capsys=capsys,
@@ -61,7 +66,7 @@ def test_paragraph_add_text_smart_ws(
 
 
 def test_paragraph_add_text_no_smart_ws(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph text with smart_ws disabled."""
     check_rst_output(
         capsys=capsys,
@@ -81,8 +86,8 @@ def test_paragraph_add_text_no_smart_ws(
          'See `http://example.com <http://example.com>`_\n'),
     ]
 )
-def test_add_url(capsys: pytest.capturefixture[str],
-                 url: str, text: str, expected: str) -> None:
+def test_add_url(capsys: pytest.CaptureFixture[str],
+                 url: str, text: str | None, expected: str) -> None:
     """Test adding URLs in paragraph text."""
     check_rst_output(
         capsys=capsys,
@@ -93,7 +98,7 @@ def test_add_url(capsys: pytest.capturefixture[str],
         expected_text=expected)
 
 
-def test_add_url_url_as_text(capsys: pytest.capturefixture[str]) -> None:
+def test_add_url_url_as_text(capsys: pytest.CaptureFixture[str]) -> None:
     """Test adding URL with url_as_text enabled."""
     check_rst_output(
         capsys=capsys,
@@ -113,7 +118,7 @@ def test_add_url_url_as_text(capsys: pytest.capturefixture[str]) -> None:
         (True, True, 'Check ***`x <http://a>`_***\n'),
     ]
 )
-def test_add_url_formatting(capsys: pytest.capturefixture[str],
+def test_add_url_formatting(capsys: pytest.CaptureFixture[str],
                             bold: bool, italic: bool,
                             expected: str) -> None:
     """Test adding URL with bold and italic formatting."""
@@ -129,7 +134,7 @@ def test_add_url_formatting(capsys: pytest.capturefixture[str],
 
 
 def test_add_code_in_text_wraps_atomically(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test code-in-text wrapping keeps code token atomic."""
     check_rst_output(
         capsys=capsys,
@@ -141,7 +146,7 @@ def test_add_code_in_text_wraps_atomically(
         args={'line_length': 11})
 
 
-def test_block_quote_text_wrapping(capsys: pytest.capturefixture[str]) -> None:
+def test_block_quote_text_wrapping(capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote formatting in reST output."""
     check_rst_output(
         capsys=capsys,

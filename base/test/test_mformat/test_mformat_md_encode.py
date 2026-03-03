@@ -17,7 +17,7 @@ from .check_capsys import check_capsys
 class TestEncodeTextEmpty:
     """Tests for empty text handling."""
 
-    def test_empty_string(self, capsys: pytest.capturefixture[str]) -> None:
+    def test_empty_string(self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that empty string returns empty string."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -25,7 +25,7 @@ class TestEncodeTextEmpty:
                 assert mfd._encode_text('') == ''
         check_capsys(capsys)
 
-    def test_none_like_empty(self, capsys: pytest.capturefixture[str]) -> None:
+    def test_none_like_empty(self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that falsy empty string returns as-is."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -39,7 +39,7 @@ class TestEncodeTextCodeBlock:
     """Tests for code block state escaping."""
 
     def test_code_block_triple_backticks(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that triple backticks are escaped in code blocks."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -51,7 +51,7 @@ class TestEncodeTextCodeBlock:
         check_capsys(capsys)
 
     def test_code_block_quadruple_backticks(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that quadruple backticks are escaped in code blocks."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -63,7 +63,7 @@ class TestEncodeTextCodeBlock:
         check_capsys(capsys)
 
     def test_code_block_other_chars_not_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that other special chars are NOT escaped in code blocks."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -75,7 +75,7 @@ class TestEncodeTextCodeBlock:
         check_capsys(capsys)
 
     def test_code_block_multiple_triple_backticks(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test multiple occurrences of triple backticks."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -87,7 +87,7 @@ class TestEncodeTextCodeBlock:
         check_capsys(capsys)
 
     def test_code_block_multiple_quadruple_backticks(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test multiple occurrences of quadruple backticks."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -141,7 +141,7 @@ class TestEncodeTextAlwaysEscaped:
         check_capsys(capsys)
 
     def test_multiple_always_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test text with multiple always-escaped characters."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -156,7 +156,7 @@ class TestEncodeTextParenthesis:
     """Tests for parenthesis escaping (context: after ])."""
 
     def test_paren_after_bracket_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that ( after ] is escaped (link syntax)."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -167,7 +167,7 @@ class TestEncodeTextParenthesis:
         check_capsys(capsys)
 
     def test_paren_not_after_bracket_not_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that ( not after ] is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -177,7 +177,7 @@ class TestEncodeTextParenthesis:
                 assert result == 'function(arg)'
         check_capsys(capsys)
 
-    def test_paren_at_start(self, capsys: pytest.capturefixture[str]) -> None:
+    def test_paren_at_start(self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that ( at start is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -188,7 +188,7 @@ class TestEncodeTextParenthesis:
         check_capsys(capsys)
 
     def test_closing_paren_not_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that ) is never escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -203,7 +203,7 @@ class TestEncodeTextExclamation:
     """Tests for exclamation mark escaping (context: before [)."""
 
     def test_exclamation_before_bracket_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that ! before [ is escaped (image syntax)."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -214,7 +214,7 @@ class TestEncodeTextExclamation:
         check_capsys(capsys)
 
     def test_exclamation_not_before_bracket_not_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that ! not before [ is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -225,7 +225,7 @@ class TestEncodeTextExclamation:
         check_capsys(capsys)
 
     def test_exclamation_at_end(self,
-                                capsys: pytest.capturefixture[str]) -> None:
+                                capsys: pytest.CaptureFixture[str]) -> None:
         """Test that ! at end is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -236,7 +236,7 @@ class TestEncodeTextExclamation:
         check_capsys(capsys)
 
     def test_exclamation_before_other_char(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that ! before non-[ is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -251,7 +251,7 @@ class TestEncodeTextTilde:
     """Tests for tilde escaping (context: adjacent to ~)."""
 
     def test_double_tilde_escaped(self,
-                                  capsys: pytest.capturefixture[str]) -> None:
+                                  capsys: pytest.CaptureFixture[str]) -> None:
         """Test that ~~ (strikethrough) is escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -262,7 +262,7 @@ class TestEncodeTextTilde:
         check_capsys(capsys)
 
     def test_single_tilde_not_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that single ~ is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -273,7 +273,7 @@ class TestEncodeTextTilde:
         check_capsys(capsys)
 
     def test_tilde_separated_not_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that separated tildes are NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -283,7 +283,7 @@ class TestEncodeTextTilde:
                 assert '\\~\\~' not in result
         check_capsys(capsys)
 
-    def test_triple_tilde(self, capsys: pytest.capturefixture[str]) -> None:
+    def test_triple_tilde(self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that ~~~ is escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -298,7 +298,7 @@ class TestEncodeTextGreaterThan:
     """Tests for > escaping (context: line start or after <)."""
 
     def test_greater_than_at_line_start_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that > at line start is escaped (blockquote)."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -309,7 +309,7 @@ class TestEncodeTextGreaterThan:
         check_capsys(capsys)
 
     def test_greater_than_after_newline_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that > after newline is escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -320,7 +320,7 @@ class TestEncodeTextGreaterThan:
         check_capsys(capsys)
 
     def test_greater_than_mid_line_not_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that > mid-line is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -331,7 +331,7 @@ class TestEncodeTextGreaterThan:
         check_capsys(capsys)
 
     def test_greater_than_after_less_than_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that > after < is escaped (HTML tag)."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -344,7 +344,7 @@ class TestEncodeTextGreaterThan:
         check_capsys(capsys)
 
     def test_greater_than_directly_after_less_than(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that > directly after < is escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -356,7 +356,7 @@ class TestEncodeTextGreaterThan:
         check_capsys(capsys)
 
     def test_comparison_operators(self,
-                                  capsys: pytest.capturefixture[str]) -> None:
+                                  capsys: pytest.CaptureFixture[str]) -> None:
         """Test comparison operators in code-like text."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -371,7 +371,7 @@ class TestEncodeTextHash:
     """Tests for # escaping (context: line start)."""
 
     def test_hash_at_line_start_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that # at line start is escaped (heading)."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -382,7 +382,7 @@ class TestEncodeTextHash:
         check_capsys(capsys)
 
     def test_hash_after_newline_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that # after newline is escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -393,7 +393,7 @@ class TestEncodeTextHash:
         check_capsys(capsys)
 
     def test_hash_mid_line_not_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test that # mid-line is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -404,7 +404,7 @@ class TestEncodeTextHash:
         check_capsys(capsys)
 
     def test_hashtag_mid_line(self,
-                              capsys: pytest.capturefixture[str]) -> None:
+                              capsys: pytest.CaptureFixture[str]) -> None:
         """Test hashtag mid-line is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -415,7 +415,7 @@ class TestEncodeTextHash:
         check_capsys(capsys)
 
     def test_multiple_hashes_at_start(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test multiple # at line start."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -436,7 +436,7 @@ class TestEncodeTextListMarkers:
         ('+\t item', '\\+\t item'),
     ])
     def test_list_marker_at_start_with_space(
-            self, capsys: pytest.capturefixture[str],
+            self, capsys: pytest.CaptureFixture[str],
             text: str, expected: str) -> None:
         """Test list markers at line start with space/tab."""
         with TemporaryDirectory() as tmp_dir:
@@ -448,7 +448,7 @@ class TestEncodeTextListMarkers:
         check_capsys(capsys)
 
     def test_dash_at_start_alone(self,
-                                 capsys: pytest.capturefixture[str]) -> None:
+                                 capsys: pytest.CaptureFixture[str]) -> None:
         """Test single dash at start (end of text) is escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -459,7 +459,7 @@ class TestEncodeTextListMarkers:
         check_capsys(capsys)
 
     def test_horizontal_rule_dashes(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test --- at line start - only first dash is escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -471,7 +471,7 @@ class TestEncodeTextListMarkers:
         check_capsys(capsys)
 
     def test_dash_mid_line_not_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test dash mid-line is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -482,7 +482,7 @@ class TestEncodeTextListMarkers:
         check_capsys(capsys)
 
     def test_dash_mid_line_with_spaces(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test dash mid-line with spaces NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -493,7 +493,7 @@ class TestEncodeTextListMarkers:
         check_capsys(capsys)
 
     def test_plus_mid_line_not_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test plus mid-line is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -504,7 +504,7 @@ class TestEncodeTextListMarkers:
         check_capsys(capsys)
 
     def test_list_after_newline(self,
-                                capsys: pytest.capturefixture[str]) -> None:
+                                capsys: pytest.CaptureFixture[str]) -> None:
         """Test list marker after newline is escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -515,7 +515,7 @@ class TestEncodeTextListMarkers:
         check_capsys(capsys)
 
     def test_dash_at_start_no_space(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test dash at start without space is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -536,7 +536,7 @@ class TestEncodeTextEmphasis:
         ('__emphasis__', '\\_\\_emphasis\\_\\_'),
     ])
     def test_emphasis_markers_at_boundaries(
-            self, capsys: pytest.capturefixture[str], text: str,
+            self, capsys: pytest.CaptureFixture[str], text: str,
             expected: str) -> None:
         """Test emphasis markers at word boundaries."""
         with TemporaryDirectory() as tmp_dir:
@@ -548,7 +548,7 @@ class TestEncodeTextEmphasis:
         check_capsys(capsys)
 
     def test_asterisk_between_alphanumerics_not_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test * between alphanumerics is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -559,7 +559,7 @@ class TestEncodeTextEmphasis:
         check_capsys(capsys)
 
     def test_underscore_between_alphanumerics_not_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test _ between alphanumerics is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -570,7 +570,7 @@ class TestEncodeTextEmphasis:
         check_capsys(capsys)
 
     def test_asterisk_at_line_start_with_space(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test * at line start with space is escaped (list)."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -581,7 +581,7 @@ class TestEncodeTextEmphasis:
         check_capsys(capsys)
 
     def test_asterisk_horizontal_rule(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test *** at line start is escaped (horizontal rule)."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -592,7 +592,7 @@ class TestEncodeTextEmphasis:
         check_capsys(capsys)
 
     def test_underscore_horizontal_rule(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test ___ at line start is escaped (all underscores at boundary)."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -604,7 +604,7 @@ class TestEncodeTextEmphasis:
         check_capsys(capsys)
 
     def test_asterisk_after_punctuation(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test * after punctuation is escaped (word boundary)."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -615,7 +615,7 @@ class TestEncodeTextEmphasis:
         check_capsys(capsys)
 
     def test_asterisk_before_punctuation(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test * before punctuation is escaped (word boundary)."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -630,7 +630,7 @@ class TestEncodeTextEquals:
     """Tests for = escaping (setext heading underline)."""
 
     def test_equals_at_line_start_followed_by_equals(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test = at line start followed by = is escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -641,7 +641,7 @@ class TestEncodeTextEquals:
         check_capsys(capsys)
 
     def test_equals_at_line_start_alone(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test single = at line start (end of text) is escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -652,7 +652,7 @@ class TestEncodeTextEquals:
         check_capsys(capsys)
 
     def test_equals_mid_line_not_escaped(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test = mid-line is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -663,7 +663,7 @@ class TestEncodeTextEquals:
         check_capsys(capsys)
 
     def test_equals_in_equation(self,
-                                capsys: pytest.capturefixture[str]) -> None:
+                                capsys: pytest.CaptureFixture[str]) -> None:
         """Test = in equation is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -674,7 +674,7 @@ class TestEncodeTextEquals:
         check_capsys(capsys)
 
     def test_equals_after_newline(self,
-                                  capsys: pytest.capturefixture[str]) -> None:
+                                  capsys: pytest.CaptureFixture[str]) -> None:
         """Test = after newline followed by = is escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -685,7 +685,7 @@ class TestEncodeTextEquals:
         check_capsys(capsys)
 
     def test_equals_at_start_not_followed_by_equals(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test = at start not followed by = is NOT escaped."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -726,7 +726,7 @@ class TestEncodeTextComplexCases:
     """Tests for complex real-world scenarios."""
 
     def test_markdown_link_syntax(self,
-                                  capsys: pytest.capturefixture[str]) -> None:
+                                  capsys: pytest.CaptureFixture[str]) -> None:
         """Test escaping of markdown link syntax."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -739,7 +739,7 @@ class TestEncodeTextComplexCases:
         check_capsys(capsys)
 
     def test_markdown_image_syntax(self,
-                                   capsys: pytest.capturefixture[str]) -> None:
+                                   capsys: pytest.CaptureFixture[str]) -> None:
         """Test escaping of markdown image syntax."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -750,7 +750,7 @@ class TestEncodeTextComplexCases:
                 assert '\\[' in result
         check_capsys(capsys)
 
-    def test_html_tag(self, capsys: pytest.capturefixture[str]) -> None:
+    def test_html_tag(self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test escaping of HTML-like tags."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -765,7 +765,7 @@ class TestEncodeTextComplexCases:
         check_capsys(capsys)
 
     def test_inline_code_backticks(self,
-                                   capsys: pytest.capturefixture[str]) -> None:
+                                   capsys: pytest.CaptureFixture[str]) -> None:
         """Test escaping of inline code backticks."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -776,7 +776,7 @@ class TestEncodeTextComplexCases:
         check_capsys(capsys)
 
     def test_table_pipe_syntax(self,
-                               capsys: pytest.capturefixture[str]) -> None:
+                               capsys: pytest.CaptureFixture[str]) -> None:
         """Test escaping of table pipe syntax."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -787,7 +787,7 @@ class TestEncodeTextComplexCases:
         check_capsys(capsys)
 
     def test_multiple_lines_with_special_chars(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test multiline text with various special characters."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -802,7 +802,7 @@ class TestEncodeTextComplexCases:
         check_capsys(capsys)
 
     def test_programming_example(self,
-                                 capsys: pytest.capturefixture[str]) -> None:
+                                 capsys: pytest.CaptureFixture[str]) -> None:
         """Test text that looks like programming code."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -814,7 +814,7 @@ class TestEncodeTextComplexCases:
         check_capsys(capsys)
 
     def test_variable_names_with_underscores(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test variable names with underscores."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -825,7 +825,7 @@ class TestEncodeTextComplexCases:
         check_capsys(capsys)
 
     def test_math_expressions(self,
-                              capsys: pytest.capturefixture[str]) -> None:
+                              capsys: pytest.CaptureFixture[str]) -> None:
         """Test mathematical expressions."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -836,7 +836,7 @@ class TestEncodeTextComplexCases:
         check_capsys(capsys)
 
     def test_file_path_with_special_chars(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test file path that might contain special chars."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')
@@ -847,7 +847,7 @@ class TestEncodeTextComplexCases:
         check_capsys(capsys)
 
     def test_url_with_special_chars(
-            self, capsys: pytest.capturefixture[str]) -> None:
+            self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test URL-like text."""
         with TemporaryDirectory() as tmp_dir:
             fname = str(Path(tmp_dir) / 'test.md')

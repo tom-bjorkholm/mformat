@@ -16,7 +16,7 @@ from .test_helpers import FileExistsCallbackCounter
 
 
 def test_create_mf_txt_returns_txt_formatter(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test create_mf creates MultiFormatTxt."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.txt')
@@ -27,7 +27,7 @@ def test_create_mf_txt_returns_txt_formatter(
 
 
 def test_create_mf_txt_is_case_insensitive(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test create_mf accepts TXT format in upper case."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.txt')
@@ -37,7 +37,7 @@ def test_create_mf_txt_is_case_insensitive(
 
 
 def test_create_mf_txt_optional_args(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test create_mf passes optional TXT args to constructor."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test')
@@ -56,7 +56,7 @@ def test_create_mf_txt_optional_args(
 
 
 def test_create_mf_txt_invalid_line_length(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test constructor validation is propagated through create_mf."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.txt')
@@ -67,7 +67,7 @@ def test_create_mf_txt_invalid_line_length(
     check_capsys(capsys)
 
 
-def test_filter_args_mf_for_txt(capsys: pytest.capturefixture[str]) -> None:
+def test_filter_args_mf_for_txt(capsys: pytest.CaptureFixture[str]) -> None:
     """Test filter_args_mf keeps TXT args and ignores others."""
     args: OptArgs = {
         'line_length': 42,
@@ -84,7 +84,7 @@ def test_filter_args_mf_for_txt(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_create_mf_txt_file_exists_callback(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test file_exists_callback is passed through create_mf for TXT."""
     callback = FileExistsCallbackCounter()
     with TemporaryDirectory() as tmp_dir:

@@ -7,12 +7,12 @@
 
 import pytest
 from mformat.mformat_state import Formatting
-from mformat.plain_text_table import TableAlignment
+from mformat.plain_text_table import TableAlignment, TableAlignmentSpec
 from .check_capsys import check_capsys
 from .rst_test_helpers import check_rst_output, run_rst_output
 
 
-def test_simple_table(capsys: pytest.capturefixture[str]) -> None:
+def test_simple_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a simple reST table."""
     check_rst_output(
         capsys=capsys,
@@ -30,7 +30,7 @@ def test_simple_table(capsys: pytest.capturefixture[str]) -> None:
                       '+------+------+\n')
 
 
-def test_write_complete_table(capsys: pytest.capturefixture[str]) -> None:
+def test_write_complete_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test write_complete_table in reST output."""
     check_rst_output(
         capsys=capsys,
@@ -48,7 +48,7 @@ def test_write_complete_table(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_table_row_mismatch_runtime_error(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test add_table_row with wrong number of cells."""
     with pytest.raises(RuntimeError) as exc:
         run_rst_output(
@@ -61,7 +61,7 @@ def test_table_row_mismatch_runtime_error(
 
 
 def test_table_row_mismatch_value_error(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test _write_table_row reports row number in error message."""
     with pytest.raises(ValueError) as exc:
         run_rst_output(
@@ -77,7 +77,7 @@ def test_table_row_mismatch_value_error(
     check_capsys(capsys)
 
 
-def test_paragraph_then_table(capsys: pytest.capturefixture[str]) -> None:
+def test_paragraph_then_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by table."""
     expected_lines = [
         'Intro',
@@ -98,7 +98,7 @@ def test_paragraph_then_table(capsys: pytest.capturefixture[str]) -> None:
         expected_text='\n'.join(expected_lines) + '\n')
 
 
-def test_table_then_paragraph(capsys: pytest.capturefixture[str]) -> None:
+def test_table_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test table followed by paragraph."""
     expected = [
         '+---+---+',
@@ -120,7 +120,7 @@ def test_table_then_paragraph(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_table_max_line_length_affects_wrapping(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test table_max_line_length is used for table output."""
     check_rst_output(
         capsys=capsys,
@@ -138,7 +138,7 @@ def test_table_max_line_length_affects_wrapping(
 
 
 def test_table_alignment_invalid_type_raises_value_error(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test invalid table_alignment type raises ValueError."""
     with pytest.raises(ValueError) as exc:
         run_rst_output(
@@ -177,8 +177,9 @@ def test_table_alignment_invalid_type_raises_value_error(
          '+-------------+-------------+\n'),
     ]
 )
-def test_table_alignment_argument(capsys: pytest.capturefixture[str],
-                                  alignment, expected: str) -> None:
+def test_table_alignment_argument(capsys: pytest.CaptureFixture[str],
+                                  alignment: TableAlignmentSpec,
+                                  expected: str) -> None:
     """Test table_alignment controls reST table alignment."""
     check_rst_output(
         capsys=capsys,

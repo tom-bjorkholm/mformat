@@ -9,7 +9,7 @@ import pytest
 from .rst_test_helpers import check_rst_output
 
 
-def test_single_bullet_item(capsys: pytest.capturefixture[str]) -> None:
+def test_single_bullet_item(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a single bullet list item."""
     check_rst_output(
         capsys=capsys,
@@ -17,7 +17,7 @@ def test_single_bullet_item(capsys: pytest.capturefixture[str]) -> None:
         expected_text='* First item\n')
 
 
-def test_multiple_bullet_items(capsys: pytest.capturefixture[str]) -> None:
+def test_multiple_bullet_items(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple bullet list items."""
     check_rst_output(
         capsys=capsys,
@@ -29,7 +29,7 @@ def test_multiple_bullet_items(capsys: pytest.capturefixture[str]) -> None:
         expected_text='* First\n* Second\n* Third\n')
 
 
-def test_nested_bullet_items(capsys: pytest.capturefixture[str]) -> None:
+def test_nested_bullet_items(capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested bullet list items."""
     check_rst_output(
         capsys=capsys,
@@ -42,7 +42,7 @@ def test_nested_bullet_items(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_bullet_list_back_to_level1(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested bullet list returning to level 1."""
     check_rst_output(
         capsys=capsys,
@@ -55,7 +55,7 @@ def test_bullet_list_back_to_level1(
 
 
 def test_bullet_item_with_url_and_code(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test adding URL and code inside bullet item."""
     check_rst_output(
         capsys=capsys,
@@ -69,7 +69,7 @@ def test_bullet_item_with_url_and_code(
                       '* Use ``cmd()``\n')
 
 
-def test_single_numbered_item(capsys: pytest.capturefixture[str]) -> None:
+def test_single_numbered_item(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a single numbered list item."""
     check_rst_output(
         capsys=capsys,
@@ -77,7 +77,7 @@ def test_single_numbered_item(capsys: pytest.capturefixture[str]) -> None:
         expected_text='1. First item\n')
 
 
-def test_multiple_numbered_items(capsys: pytest.capturefixture[str]) -> None:
+def test_multiple_numbered_items(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple numbered list items."""
     check_rst_output(
         capsys=capsys,
@@ -89,7 +89,7 @@ def test_multiple_numbered_items(capsys: pytest.capturefixture[str]) -> None:
         expected_text='1. First\n2. Second\n3. Third\n')
 
 
-def test_nested_numbered_items(capsys: pytest.capturefixture[str]) -> None:
+def test_nested_numbered_items(capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested numbered list items."""
     check_rst_output(
         capsys=capsys,
@@ -102,7 +102,7 @@ def test_nested_numbered_items(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_numbered_list_back_to_level1(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested numbered list returning to level 1."""
     check_rst_output(
         capsys=capsys,
@@ -116,7 +116,7 @@ def test_numbered_list_back_to_level1(
                       'second\n')
 
 
-def test_heading_then_list(capsys: pytest.capturefixture[str]) -> None:
+def test_heading_then_list(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by a list item."""
     check_rst_output(
         capsys=capsys,
@@ -128,7 +128,7 @@ def test_heading_then_list(capsys: pytest.capturefixture[str]) -> None:
 
 
 def test_paragraph_then_numbered_list(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by numbered list item."""
     check_rst_output(
         capsys=capsys,
@@ -140,7 +140,7 @@ def test_paragraph_then_numbered_list(
 
 
 def test_mixed_bullet_and_numbered_lists(
-        capsys: pytest.capturefixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test mixing bullet and numbered lists."""
     check_rst_output(
         capsys=capsys,
