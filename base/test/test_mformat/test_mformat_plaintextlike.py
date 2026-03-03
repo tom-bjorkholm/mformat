@@ -7,6 +7,7 @@
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Callable, TypeAlias, cast
 import pytest
 from mformat.mformat_plaintextlike import MultiFormatPlainTextLike
 from mformat.mformat_state import MultiFormatState
@@ -30,7 +31,10 @@ class PlainTextLikeTestImpl(  # pylint: disable=too-few-public-methods
         """Write the file suffix (no-op for testing)."""
 
 
-def _write_and_read(callback) -> str:
+FormatterCallback: TypeAlias = Callable[[PlainTextLikeTestImpl], None]
+
+
+def _write_and_read(callback: FormatterCallback) -> str:
     """Create a temp file, run callback with formatter, return content.
 
     The callback receives the opened MultiFormatPlainTextLike
@@ -40,14 +44,16 @@ def _write_and_read(callback) -> str:
     with TemporaryDirectory() as temp_dir:
         file_name = str(Path(temp_dir) / 'test.test')
         with PlainTextLikeTestImpl(file_name=file_name) as mf:
-            callback(mf)
+            callback(cast(PlainTextLikeTestImpl, mf))
             mf.state = MultiFormatState.PARAGRAPH_END
         with open(file=file_name, mode='rt',
                   encoding='utf-8') as f:
             return f.read()
 
 
-def _write_and_read_bytes(callback, character_encoding: str) -> bytes:
+def _write_and_read_bytes(
+        callback: FormatterCallback,
+        character_encoding: str) -> bytes:
     """Create a temp file, run callback, and return file bytes.
 
     The callback receives the opened MultiFormatPlainTextLike
@@ -59,7 +65,7 @@ def _write_and_read_bytes(callback, character_encoding: str) -> bytes:
         with PlainTextLikeTestImpl(
                 file_name=file_name,
                 character_encoding=character_encoding) as mf:
-            callback(mf)
+            callback(cast(PlainTextLikeTestImpl, mf))
             mf.state = MultiFormatState.PARAGRAPH_END
         with open(file=file_name, mode='rb') as f:
             return f.read()
@@ -69,7 +75,8 @@ def _write_and_read_bytes(callback, character_encoding: str) -> bytes:
 # Init state
 # =================================================================
 
-def test_init_line_wrapping_state(capsys):
+def test_init_line_wrapping_state(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test that line wrapping state is initialized."""
     with TemporaryDirectory() as temp_dir:
         file_name = str(Path(temp_dir) / 'test.test')
@@ -84,10 +91,13 @@ def test_init_line_wrapping_state(capsys):
 @pytest.mark.parametrize('character_encoding, expected_bytes',
                          [('utf-8', b'Caf\xc3\xa9'),
                           ('iso-8859-1', b'Caf\xe9')])
-def test_init_character_encoding(capsys, character_encoding, expected_bytes):
+def test_init_character_encoding(
+        capsys: pytest.CaptureFixture[str],
+        character_encoding: str,
+        expected_bytes: bytes) -> None:
     """Test that selected character encoding is used for written bytes."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf.file.write('Café')
 
@@ -96,7 +106,8 @@ def test_init_character_encoding(capsys, character_encoding, expected_bytes):
     check_capsys(capsys)
 
 
-def test_init_invalid_character_encoding(capsys):
+def test_init_invalid_character_encoding(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test invalid encoding is propagated from Python open."""
     check_invalid_character_encoding_constructor(
         formatter_class=PlainTextLikeTestImpl, file_extension='.test')
@@ -108,7 +119,9 @@ def test_init_invalid_character_encoding(capsys):
 # =================================================================
 
 @pytest.mark.parametrize('indent', ['', '  ', '> ', '    '])
-def test_reset_line_state(capsys, indent):
+def test_reset_line_state(
+        capsys: pytest.CaptureFixture[str],
+        indent: str) -> None:
     """Test _reset_line_state resets all tracking fields."""
     with TemporaryDirectory() as temp_dir:
         file_name = str(Path(temp_dir) / 'test.test')
@@ -128,10 +141,10 @@ def test_reset_line_state(capsys, indent):
 # _write_line_break
 # =================================================================
 
-def test_write_line_break(capsys):
+def test_write_line_break(capsys: pytest.CaptureFixture[str]) -> None:
     """Test _write_line_break writes newline and resets state."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf.file.write('Hello')
         mf._pending_whitespace = '  '
@@ -152,10 +165,14 @@ def test_write_line_break(capsys):
                           ('', 'Hi', 'Hi'),
                           ('Hallo\n', 'Welt', 'Hallo\n\nWelt'),
                           ('Hello', 'World', 'Hello\n\nWorld')])
-def test_empty_line_before(capsys, before, now, expected):
+def test_empty_line_before(
+        capsys: pytest.CaptureFixture[str],
+        before: str,
+        now: str,
+        expected: str) -> None:
     """Test _empty_line_before ensures an empty line."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf.file.write(before)
         mf._empty_line_before()
@@ -173,7 +190,10 @@ def test_empty_line_before(capsys, before, now, expected):
                           (2, '  '),
                           (3, '    '),
                           (4, '      ')])
-def test_indent2(capsys, level, expected):
+def test_indent2(
+        capsys: pytest.CaptureFixture[str],
+        level: int,
+        expected: str) -> None:
     """Test _indent2 returns indentation and warns as deprecated."""
     with TemporaryDirectory() as temp_dir:
         file_name = str(Path(temp_dir) / 'test.test')
@@ -202,11 +222,15 @@ def test_indent2(capsys, level, expected):
         ('word', 80, '', 0, 'word'),
     ])
 def test_wrap_and_write(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-        capsys, text, max_len, cont_indent,
-        init_col, expected):
+        capsys: pytest.CaptureFixture[str],
+        text: str,
+        max_len: int,
+        cont_indent: str,
+        init_col: int,
+        expected: str) -> None:
     """Test _wrap_and_write wraps text at word boundaries."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         mf._reset_line_state(
             continuation_indent=cont_indent)
         mf._current_column = init_col
@@ -215,10 +239,11 @@ def test_wrap_and_write(  # pylint: disable=too-many-arguments,too-many-position
     check_capsys(capsys)
 
 
-def test_wrap_and_write_continues_line(capsys):
+def test_wrap_and_write_continues_line(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test wrapping when text is added to an existing line."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf.file.write('Start ')
         mf._current_column = 6
@@ -231,10 +256,11 @@ def test_wrap_and_write_continues_line(capsys):
 # _wrap_and_write_atomic
 # =================================================================
 
-def test_wrap_and_write_atomic_fits(capsys):
+def test_wrap_and_write_atomic_fits(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test atomic write when text fits on current line."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf.file.write('Hi')
         mf._current_column = 2
@@ -244,10 +270,11 @@ def test_wrap_and_write_atomic_fits(capsys):
     check_capsys(capsys)
 
 
-def test_wrap_and_write_atomic_wraps(capsys):
+def test_wrap_and_write_atomic_wraps(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test atomic write wraps to new line when needed."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf.file.write('Hello')
         mf._current_column = 5
@@ -257,10 +284,11 @@ def test_wrap_and_write_atomic_wraps(capsys):
     check_capsys(capsys)
 
 
-def test_wrap_and_write_atomic_at_start(capsys):
+def test_wrap_and_write_atomic_at_start(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test atomic write at start of line with long text."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         mf._current_column = 0
         mf._pending_whitespace = ''
         mf._wrap_and_write_atomic(
@@ -273,10 +301,10 @@ def test_wrap_and_write_atomic_at_start(capsys):
 # _start_paragraph / _end_paragraph
 # =================================================================
 
-def test_start_paragraph(capsys):
+def test_start_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test _start_paragraph adds empty line and resets state."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf.file.write('Previous text')
         mf._start_paragraph()
@@ -286,10 +314,11 @@ def test_start_paragraph(capsys):
     check_capsys(capsys)
 
 
-def test_start_paragraph_at_file_start(capsys):
+def test_start_paragraph_at_file_start(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test _start_paragraph at the beginning of file."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf._start_paragraph()
         mf.file.write('First paragraph')
@@ -298,10 +327,10 @@ def test_start_paragraph_at_file_start(capsys):
     check_capsys(capsys)
 
 
-def test_end_paragraph(capsys):
+def test_end_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test _end_paragraph writes line break."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf.file.write('Paragraph text')
         mf._end_paragraph()
@@ -313,10 +342,10 @@ def test_end_paragraph(capsys):
 # _start_block_quote / _end_block_quote
 # =================================================================
 
-def test_start_block_quote(capsys):
+def test_start_block_quote(capsys: pytest.CaptureFixture[str]) -> None:
     """Test _start_block_quote writes prefix and sets state."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf.file.write('Before')
         mf._start_block_quote()
@@ -328,10 +357,10 @@ def test_start_block_quote(capsys):
     check_capsys(capsys)
 
 
-def test_end_block_quote(capsys):
+def test_end_block_quote(capsys: pytest.CaptureFixture[str]) -> None:
     """Test _end_block_quote writes line break and resets."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf._continuation_indent = '> '
         mf.file.write('> Quote')
@@ -345,10 +374,10 @@ def test_end_block_quote(capsys):
 # _start_bullet_list / _end_bullet_list (no-ops)
 # =================================================================
 
-def test_bullet_list_noop(capsys):
+def test_bullet_list_noop(capsys: pytest.CaptureFixture[str]) -> None:
     """Test _start/_end_bullet_list do not write anything."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf.file.write('Before')
         mf._start_bullet_list(level=1)
@@ -362,10 +391,10 @@ def test_bullet_list_noop(capsys):
 # _start_numbered_list / _end_numbered_list (no-ops)
 # =================================================================
 
-def test_numbered_list_noop(capsys):
+def test_numbered_list_noop(capsys: pytest.CaptureFixture[str]) -> None:
     """Test _start/_end_numbered_list do not write anything."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf.file.write('Before')
         mf._start_numbered_list(level=1)
@@ -389,11 +418,15 @@ def test_numbered_list_noop(capsys):
          'Before\n\n    - '),
     ])
 def test_start_bullet_item_common(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-        capsys, level, empty_before, marker,
-        pre, expected):
+        capsys: pytest.CaptureFixture[str],
+        level: int,
+        empty_before: bool,
+        marker: str,
+        pre: str,
+        expected: str) -> None:
     """Test _start_bullet_item_common writes indent and marker."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf.file.write(pre)
         mf._start_bullet_item_common(
@@ -403,10 +436,10 @@ def test_start_bullet_item_common(  # pylint: disable=too-many-arguments,too-man
     check_capsys(capsys)
 
 
-def test_end_bullet_item(capsys):
+def test_end_bullet_item(capsys: pytest.CaptureFixture[str]) -> None:
     """Test _end_bullet_item writes line break."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf.file.write('- Item text')
         mf._end_bullet_item(level=1)
@@ -426,11 +459,16 @@ def test_end_bullet_item(capsys):
         (1, 3, '3.', False, 'Before\n', 'Before\n3. '),
     ])
 def test_start_numbered_item_common(  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-        capsys, level, num, full_num,
-        empty_before, pre, expected):
+        capsys: pytest.CaptureFixture[str],
+        level: int,
+        num: int,
+        full_num: str,
+        empty_before: bool,
+        pre: str,
+        expected: str) -> None:
     """Test _start_numbered_item_common writes marker."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf.file.write(pre)
         mf._start_numbered_item_common(
@@ -441,10 +479,10 @@ def test_start_numbered_item_common(  # pylint: disable=too-many-arguments,too-m
     check_capsys(capsys)
 
 
-def test_end_numbered_item(capsys):
+def test_end_numbered_item(capsys: pytest.CaptureFixture[str]) -> None:
     """Test _end_numbered_item writes line break."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf.file.write('1. Item text')
         mf._end_numbered_item(level=1, num=1)
@@ -457,10 +495,11 @@ def test_end_numbered_item(capsys):
 # Continuation indent for bullet and numbered items
 # =================================================================
 
-def test_bullet_item_continuation_indent(capsys):
+def test_bullet_item_continuation_indent(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test continuation indent is set correctly for bullets."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf._start_bullet_item_common(
             level=1, empty_line_before=False,
@@ -471,10 +510,11 @@ def test_bullet_item_continuation_indent(capsys):
     check_capsys(capsys)
 
 
-def test_numbered_item_continuation_indent(capsys):
+def test_numbered_item_continuation_indent(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test continuation indent for numbered items."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf._start_numbered_item_common(
             level=1, num=1, full_number='1.',
@@ -485,10 +525,11 @@ def test_numbered_item_continuation_indent(capsys):
     check_capsys(capsys)
 
 
-def test_nested_bullet_continuation_indent(capsys):
+def test_nested_bullet_continuation_indent(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test continuation indent for nested bullet items."""
     # pylint: disable=protected-access
-    def callback(mf):
+    def callback(mf: PlainTextLikeTestImpl) -> None:
         assert mf.file is not None
         mf._start_bullet_item_common(
             level=2, empty_line_before=False,

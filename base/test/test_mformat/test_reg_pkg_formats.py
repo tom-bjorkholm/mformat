@@ -7,6 +7,7 @@
 
 import builtins
 import sys
+from typing import Any
 import pytest  # pylint: disable=unused-import # noqa: F401
 from mformat.mformat_html import MultiFormatHtml
 from mformat.mformat_md import MultiFormatMd
@@ -16,11 +17,13 @@ from mformat.reg_pkg_formats import register_formats_in_pkg
 from .check_capsys import check_capsys
 
 
-def test_register_pkg_formats1(capsys, monkeypatch):
+def test_register_pkg_formats1(
+        capsys: pytest.CaptureFixture[str],
+        monkeypatch: pytest.MonkeyPatch) -> None:
     """Test the register_formats_in_pkg function."""
     real_import = builtins.__import__
 
-    def fake_import(name, *args, **kwargs):
+    def fake_import(name: str, *args: Any, **kwargs: Any) -> Any:
         # Fail only for the specific module (or package)
         if name.startswith('mformat_ext'):
             raise ImportError('mformat_ext is not installed')
@@ -31,17 +34,17 @@ def test_register_pkg_formats1(capsys, monkeypatch):
                         'mformat_ext.reg_extpkg_formats.' +
                         'register_formats_in_ext_pkg',
                         raising=False)
-    monkeypatch.delitem(sys.modules, "mformat_ext.reg_extpkg_formats",
+    monkeypatch.delitem(sys.modules, 'mformat_ext.reg_extpkg_formats',
                         raising=False)
-    monkeypatch.delitem(sys.modules, "mformat_ext", raising=False)
+    monkeypatch.delitem(sys.modules, 'mformat_ext', raising=False)
     # Intercept imports
-    monkeypatch.setattr(builtins, "__import__", fake_import)
+    monkeypatch.setattr(builtins, '__import__', fake_import)
     assert register_formats_in_pkg() == \
         [MultiFormatHtml, MultiFormatMd, MultiFormatRst, MultiFormatTxt]
     check_capsys(capsys)
 
 
-def test_register_pkg_formats2(capsys):
+def test_register_pkg_formats2(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the register_formats_in_pkg function."""
     # pylint: disable=import-outside-toplevel,wrong-import-order
     from mformat_ext.mformat_docx import MultiFormatDocx

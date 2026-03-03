@@ -5,16 +5,19 @@
 # MIT License
 #
 
+from typing import Any
 import pytest
 from mformat.plain_text_table import TableAlignment
 from .check_capsys import check_capsys
 from .test_helpers import (check_run_with_context_manager,
                            run_with_context_manager)
 
+TableAlignmentArg = TableAlignment | list[TableAlignment]
 
-def test_simple_table(capsys):
+
+def test_simple_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a simple TXT table."""
-    def test_action(mfd):
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_table(first_row=['Col1', 'Col2'])
         mfd.add_table_row(row=['A', '1'])
@@ -32,9 +35,9 @@ def test_simple_table(capsys):
                                    capsys=capsys)
 
 
-def test_write_complete_table(capsys):
+def test_write_complete_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test write_complete_table in TXT output."""
-    def test_action(mfd):
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.write_complete_table(
             table=[['Name', 'Value'], ['Alpha', '1'], ['Beta', '22']])
@@ -51,9 +54,10 @@ def test_write_complete_table(capsys):
                                    capsys=capsys)
 
 
-def test_table_row_mismatch_runtime_error(capsys):
+def test_table_row_mismatch_runtime_error(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test add_table_row with wrong number of cells."""
-    def test_action(mfd):
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_table(first_row=['A', 'B', 'C'])
         mfd.add_table_row(row=['1', '2'])
@@ -64,9 +68,9 @@ def test_table_row_mismatch_runtime_error(capsys):
     check_capsys(capsys)
 
 
-def test_paragraph_then_table(capsys):
+def test_paragraph_then_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by table."""
-    def test_action(mfd):
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_paragraph(text='Intro')
         mfd.new_table(first_row=['A', 'B'])
@@ -84,9 +88,9 @@ def test_paragraph_then_table(capsys):
                                    capsys=capsys)
 
 
-def test_table_then_paragraph(capsys):
+def test_table_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test table followed by paragraph."""
-    def test_action(mfd):
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_table(first_row=['A', 'B'])
         mfd.add_table_row(row=['1', '2'])
@@ -104,9 +108,10 @@ def test_table_then_paragraph(capsys):
                                    capsys=capsys)
 
 
-def test_table_max_line_length_affects_wrapping(capsys):
+def test_table_max_line_length_affects_wrapping(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test table_max_line_length is used for table output."""
-    def test_action(mfd):
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_table(first_row=['First', 'Second'])
         mfd.add_table_row(row=['AA BB CC DD', '11 22 33 44'])
@@ -124,9 +129,10 @@ def test_table_max_line_length_affects_wrapping(capsys):
                                    capsys=capsys)
 
 
-def test_table_alignment_invalid_type_raises_value_error(capsys):
+def test_table_alignment_invalid_type_raises_value_error(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test invalid table_alignment type raises ValueError."""
-    def test_action(mfd):
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_table(first_row=['First', 'Second'])
         mfd.add_table_row(row=['AA BB CC DD', '11 22 33 44'])
@@ -165,9 +171,12 @@ def test_table_alignment_invalid_type_raises_value_error(capsys):
          '+-------------+-------------+\n'),
     ]
 )
-def test_table_alignment_argument(capsys, alignment, expected):
+def test_table_alignment_argument(
+        capsys: pytest.CaptureFixture[str],
+        alignment: TableAlignmentArg,
+        expected: str) -> None:
     """Test table_alignment controls TXT table alignment."""
-    def test_action(mfd):
+    def test_action(mfd: Any) -> None:
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_table(first_row=['First', 'Second'])
         mfd.add_table_row(row=['AA BB CC DD', '11 22 33 44'])

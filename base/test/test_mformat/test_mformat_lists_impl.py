@@ -23,7 +23,8 @@ from .check_capsys import check_capsys
                           (MultiFormatState.TABLE, False),
                           (MultiFormatState.CODE_BLOCK, False),
                           (MultiFormatState.CLOSED, False)])
-def test_is_in_item_state(capsys, state: MultiFormatState,
+def test_is_in_item_state(capsys: pytest.CaptureFixture[str],
+                          state: MultiFormatState,
                           in_item: bool) -> None:
     """Test the is_in_list_item_state method."""
     list_handler = ListHandlerMixin()
@@ -43,7 +44,8 @@ def test_is_in_item_state(capsys, state: MultiFormatState,
                           (MultiFormatState.TABLE, False),
                           (MultiFormatState.CODE_BLOCK, False),
                           (MultiFormatState.CLOSED, False)])
-def test_is_in_list_state(capsys, state: MultiFormatState,
+def test_is_in_list_state(capsys: pytest.CaptureFixture[str],
+                          state: MultiFormatState,
                           in_list: bool) -> None:
     """Test the is_in_list_state method."""
     list_handler = ListHandlerMixin()
@@ -60,7 +62,8 @@ def test_is_in_list_state(capsys, state: MultiFormatState,
                           (PointListType.NUMBERED,
                            MultiFormatState.NUMBERED_LIST,
                            MultiFormatState.NUMBERED_LIST_ITEM)])
-def test_get_states_of_pltype_ok(capsys, pltype: PointListType,
+def test_get_states_of_pltype_ok(capsys: pytest.CaptureFixture[str],
+                                 pltype: PointListType,
                                  list_state: MultiFormatState,
                                  item_state: MultiFormatState) -> None:
     """Test the get_states_of_pltype method."""
@@ -71,12 +74,13 @@ def test_get_states_of_pltype_ok(capsys, pltype: PointListType,
 
 
 @pytest.mark.parametrize('pltype', [5, 7])
-def test_get_states_of_pltype_nok(capsys, pltype) -> None:
+def test_get_states_of_pltype_nok(capsys: pytest.CaptureFixture[str],
+                                  pltype: int) -> None:
     """Test the get_states_of_pltype method."""
     list_handler = ListHandlerMixin()
     with pytest.raises(KeyError) as exc:
         # pylint: disable=protected-access
-        list_handler._get_states_of_pltype(pltype)
+        list_handler._get_states_of_pltype(pltype)  # type: ignore[arg-type]
     assert isinstance(exc.value, KeyError)
     check_capsys(capsys)
 
@@ -84,7 +88,8 @@ def test_get_states_of_pltype_nok(capsys, pltype) -> None:
 @pytest.mark.parametrize('pltype, name',
                          [(PointListType.BULLET, 'bullet'),
                           (PointListType.NUMBERED, 'numbered')])
-def test_get_point_list_tname_ok(capsys, pltype: PointListType,
+def test_get_point_list_tname_ok(capsys: pytest.CaptureFixture[str],
+                                 pltype: PointListType,
                                  name: str) -> None:
     """Test the get_point_list_type_name method."""
     # pylint: disable=protected-access
@@ -93,11 +98,13 @@ def test_get_point_list_tname_ok(capsys, pltype: PointListType,
 
 
 @pytest.mark.parametrize('pltype', [5, 7])
-def test_get_point_list_tname_nok(capsys, pltype) -> None:
+def test_get_point_list_tname_nok(capsys: pytest.CaptureFixture[str],
+                                  pltype: int) -> None:
     """Test the get_point_list_type_name method."""
     with pytest.raises(KeyError) as exc:
         # pylint: disable=protected-access
-        ListHandlerMixin._get_point_list_type_name(pltype)
+        ListHandlerMixin._get_point_list_type_name(
+            pltype)  # type: ignore[arg-type]
     assert isinstance(exc.value, KeyError)
     check_capsys(capsys)
 
@@ -116,7 +123,10 @@ def test_get_point_list_tname_nok(capsys, pltype) -> None:
                           ('_start_numbered_item', [1, 1, '1.']),
                           ('_end_bullet_item', [1]),
                           ('_end_numbered_item', [1, 1])])
-def test_abstract_methods(capsys, method: str, args: tuple[int, ...]) -> None:
+def test_abstract_methods(
+        capsys: pytest.CaptureFixture[str],
+        method: str,
+        args: tuple[Any, ...] | list[Any]) -> None:
     """Test the abstract methods."""
     list_handler = ListHandlerMixin()
     with pytest.raises(NotImplementedError) as exc:
@@ -205,7 +215,9 @@ class ListHandler2(ListHandlerMixin):  # pylint: disable=too-few-public-methods
                            ['_start_numbered_list'],
                            ['_start_numbered_list(5)']),
                           ])
-def test_disp_start_list(capsys, lev: int, pltype: PointListType,
+def test_disp_start_list(capsys: pytest.CaptureFixture[str],
+                         lev: int,
+                         pltype: PointListType,
                          call_list: list[str],
                          call_arg_list: list[str]) -> None:
     """Test the _dispatch_start_list method."""
@@ -224,7 +236,9 @@ def test_disp_start_list(capsys, lev: int, pltype: PointListType,
                            ['_end_numbered_list'],
                            ['_end_numbered_list(4)']),
                           ])
-def test_disp_end_list(capsys, lev: int, pltype: PointListType,
+def test_disp_end_list(capsys: pytest.CaptureFixture[str],
+                       lev: int,
+                       pltype: PointListType,
                        call_list: list[str],
                        call_arg_list: list[str]) -> None:
     """Test the _dispatch_end_list method."""
@@ -246,7 +260,9 @@ def test_disp_end_list(capsys, lev: int, pltype: PointListType,
                            ['_start_numbered_item'],
                            ['_start_numbered_item(3, 1, 1.1.1.)']),
                           ])
-def test_disp_start_item(capsys, lev: int, pltype: PointListType,
+def test_disp_start_item(capsys: pytest.CaptureFixture[str],
+                         lev: int,
+                         pltype: PointListType,
                          call_list: list[str],
                          call_arg_list: list[str]) -> None:
     """Test the _dispatch_start_item method."""
@@ -271,7 +287,9 @@ def test_disp_start_item(capsys, lev: int, pltype: PointListType,
                            ['_end_numbered_item'],
                            ['_end_numbered_item(3, 1)']),
                           ])
-def test_disp_end_item(capsys, lev: int, pltype: PointListType,
+def test_disp_end_item(capsys: pytest.CaptureFixture[str],
+                       lev: int,
+                       pltype: PointListType,
                        call_list: list[str],
                        call_arg_list: list[str]) -> None:
     """Test the _dispatch_end_item method."""
@@ -294,7 +312,8 @@ def test_disp_end_item(capsys, lev: int, pltype: PointListType,
                           (1, [PointListType.BULLET,
                                PointListType.NUMBERED,
                                PointListType.BULLET])])
-def test_val_list_level_ok(capsys, lev: int,
+def test_val_list_level_ok(capsys: pytest.CaptureFixture[str],
+                           lev: int,
                            on_stack: list[PointListType],
                            pltype: PointListType) -> None:
     """Test the validate_list_level method for OK cases."""
@@ -312,7 +331,8 @@ def test_val_list_level_ok(capsys, lev: int,
 @pytest.mark.parametrize('lev, on_stack',
                          [(4, [PointListType.BULLET]),
                           (2, [])])
-def test_val_list_level_nok(capsys, lev: int,
+def test_val_list_level_nok(capsys: pytest.CaptureFixture[str],
+                            lev: int,
                             on_stack: list[PointListType],
                             pltype: PointListType) -> None:
     """Test the validate_list_level method for NOK cases."""
@@ -333,7 +353,9 @@ def test_val_list_level_nok(capsys, lev: int,
                          [([2, 4, 5], '2.4.5.'),
                           ([1, 2, 3], '1.2.3.'),
                           ([1], '1.')])
-def test_ful_nu_of_list_item_ok(capsys, pltype, num_at_lev: list[int],
+def test_ful_nu_of_list_item_ok(capsys: pytest.CaptureFixture[str],
+                                pltype: PointListType,
+                                num_at_lev: list[int],
                                 full_num: str) -> None:
     """Test the full_number_of_list_item method."""
     list_handler = ListHandler2(MultiFormatState.EMPTY)
@@ -349,7 +371,8 @@ def test_ful_nu_of_list_item_ok(capsys, pltype, num_at_lev: list[int],
 
 @pytest.mark.parametrize('pltype', [PointListType.BULLET,
                                     PointListType.NUMBERED])
-def test_ful_nu_of_list_item_nok(capsys, pltype: PointListType) -> None:
+def test_ful_nu_of_list_item_nok(capsys: pytest.CaptureFixture[str],
+                                 pltype: PointListType) -> None:
     """Test the full_number_of_list_item method."""
     list_handler = ListHandler2(MultiFormatState.EMPTY)
     list_handler.point_list_stack.append(PointStackItem(point_list_type=pltype,
@@ -369,7 +392,9 @@ def test_ful_nu_of_list_item_nok(capsys, pltype: PointListType) -> None:
                            MultiFormatState.PARAGRAPH_END),
                           (PointListType.NUMBERED, 0,
                            MultiFormatState.PARAGRAPH_END)])
-def test_state_from_pl_stack(capsys, pltype: PointListType, depth: int,
+def test_state_from_pl_stack(capsys: pytest.CaptureFixture[str],
+                             pltype: PointListType,
+                             depth: int,
                              expected: MultiFormatState) -> None:
     """Test the _state_from_point_list method."""
     list_handler = ListHandler2(MultiFormatState.EMPTY)
@@ -391,7 +416,8 @@ def test_state_from_pl_stack(capsys, pltype: PointListType, depth: int,
                           (3, MultiFormatState.PARAGRAPH_END),
                           (2, MultiFormatState.PARAGRAPH),
                           (1, MultiFormatState.HEADING)])
-def test_end_list_state_nok(capsys, depth: int,
+def test_end_list_state_nok(capsys: pytest.CaptureFixture[str],
+                            depth: int,
                             state: MultiFormatState) -> None:
     """Test the _end_list_state method for NOK cases."""
     list_handler = ListHandler2(state)
@@ -435,7 +461,7 @@ def test_end_list_state_nok(capsys, depth: int,
                            MultiFormatState.NUMBERED_LIST,
                            MultiFormatState.BULLET_LIST,
                            ['_end_numbered_list'])])
-def test_end_list_state_ok(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+def test_end_list_state_ok(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                            stack: list[PointListType],
                            state: MultiFormatState,
                            exp_state: MultiFormatState,

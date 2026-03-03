@@ -27,8 +27,12 @@ from .test_mformat_lists_impl import ListHandler2
                            [PointListType.BULLET, PointListType.NUMBERED],
                            MultiFormatState.NUMBERED_LIST,
                            ['_end_numbered_item'])])
-def test_end_item_before_nesting(capsys, state, stack,
-                                 exp_state, exp_calls) -> None:
+def test_end_item_before_nesting(
+        capsys: pytest.CaptureFixture[str],
+        state: MultiFormatState,
+        stack: list[PointListType],
+        exp_state: MultiFormatState,
+        exp_calls: list[str]) -> None:
     """Test the end_item_before_nesting method."""
     list_handler = ListHandler2()
     for item in stack:
@@ -93,8 +97,12 @@ def check_expected_result(list_handler: ListHandler2,
                                        PointListType.BULLET,
                                        PointListType.NUMBERED],
                                 number_at_top_level=0))])
-def test_increase_list_depth(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                             state, stack, lev, pltype, exp) -> None:
+def test_increase_list_depth(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                             state: MultiFormatState,
+                             stack: list[PointListType],
+                             lev: int,
+                             pltype: PointListType,
+                             exp: ExpectedResult) -> None:
     """Test the _increase_list_depth method."""
     list_handler = ListHandler2(state=state)
     for item in stack:
@@ -107,7 +115,8 @@ def test_increase_list_depth(capsys,  # pylint: disable=too-many-arguments,too-m
     check_capsys(capsys)
 
 
-def test_increase_list_depth_nok(capsys) -> None:
+def test_increase_list_depth_nok(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test the _increase_list_depth method with a not ok state."""
     list_handler = ListHandler2(state=MultiFormatState.BULLET_LIST)
     with pytest.raises(AssertionError):
@@ -178,8 +187,12 @@ def test_increase_list_depth_nok(capsys) -> None:
                                stack=[PointListType.BULLET,
                                       PointListType.BULLET],
                                number_at_top_level=1))])
-def test_end_wrong_list_type(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                             state, stack, lev, pltype, exp) -> None:
+def test_end_wrong_list_type(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                             state: MultiFormatState,
+                             stack: list[PointListType],
+                             lev: int,
+                             pltype: PointListType,
+                             exp: ExpectedResult) -> None:
     """Test the _end_wrong_list_type_at_lev method."""
     list_handler = ListHandler2(state=state)
     for item in stack:
@@ -224,7 +237,12 @@ def test_end_wrong_list_type(capsys,  # pylint: disable=too-many-arguments,too-m
                                                  '_end_numbered_list'],
                                           stack=[PointListType.BULLET],
                                           number_at_top_level=1))])
-def test_decrease_list_depth(capsys, state, stack, lev, exp) -> None:
+def test_decrease_list_depth(
+        capsys: pytest.CaptureFixture[str],
+        state: MultiFormatState,
+        stack: list[PointListType],
+        lev: int,
+        exp: ExpectedResult) -> None:
     """Test the _decrease_list_depth method."""
     list_handler = ListHandler2(state=state)
     for item in stack:
@@ -267,7 +285,11 @@ def test_decrease_list_depth(capsys, state, stack, lev, exp) -> None:
                                       '_start_numbered_item'],
                                stack=[PointListType.NUMBERED],
                                number_at_top_level=2))])
-def test_start_item_in_list(capsys, state, stack, exp) -> None:
+def test_start_item_in_list(
+        capsys: pytest.CaptureFixture[str],
+        state: MultiFormatState,
+        stack: list[PointListType],
+        exp: ExpectedResult) -> None:
     """Test the _start_item_in_list method."""
     list_handler = ListHandler2(state=state)
     for item in stack:
@@ -303,7 +325,12 @@ def test_start_item_in_list(capsys, state, stack, exp) -> None:
                                           stack=[PointListType.BULLET,
                                                  PointListType.NUMBERED],
                                           number_at_top_level=0)),])
-def test_push_and_start_list(capsys, state, stack, pltype, exp) -> None:
+def test_push_and_start_list(
+        capsys: pytest.CaptureFixture[str],
+        state: MultiFormatState,
+        stack: list[PointListType],
+        pltype: PointListType,
+        exp: ExpectedResult) -> None:
     """Test the _push_and_start_list method."""
     list_handler = ListHandler2(state=state)
     for item in stack:
@@ -345,8 +372,12 @@ def test_push_and_start_list(capsys, state, stack, pltype, exp) -> None:
                                                  '_start_numbered_list'],
                                           stack=[PointListType.NUMBERED],
                                           number_at_top_level=0))])
-def test_adjust_to_list_level(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                              state, stack, lev, pltype, exp) -> None:
+def test_adjust_to_list_level(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                              state: MultiFormatState,
+                              stack: list[PointListType],
+                              lev: int,
+                              pltype: PointListType,
+                              exp: ExpectedResult) -> None:
     """Test the _adjust_to_list_level method."""
     list_handler = ListHandler2(state=state)
     for item in stack:
@@ -413,9 +444,13 @@ def test_adjust_to_list_level(capsys,  # pylint: disable=too-many-arguments,too-
                                       '_write_text'],
                                stack=[PointListType.NUMBERED],
                                number_at_top_level=1))])
-def test_start_list_item_impl(capsys,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                              state, stack, txt, lev, pltype,
-                              exp) -> None:
+def test_start_list_item_impl(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
+                              state: MultiFormatState,
+                              stack: list[PointListType],
+                              txt: str,
+                              lev: int,
+                              pltype: PointListType,
+                              exp: ExpectedResult) -> None:
     """Test the _start_list_item_impl method."""
     list_handler = ListHandler2(state=state)
     for item in stack:
