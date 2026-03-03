@@ -78,22 +78,24 @@ def print_md_errors(scanfailures: list[PyMarkdownScanFailure],
           file=sys.stderr)
     print(f'{len(pragma_errors)} pragma errors found',
           file=sys.stderr)
-    for error in scanfailures:
+    for scan_failure in scanfailures:
         print('\nMarkdown scan failure:', file=sys.stderr)
-        print('  file:', error.scan_file, file=sys.stderr)
-        print('  line:', error.line_number, file=sys.stderr)
-        print('  column:', error.column_number, file=sys.stderr)
-        print('  rule id:', error.rule_id, file=sys.stderr)
-        print('  rule name:', error.rule_name, file=sys.stderr)
-        print('  rule description:', error.rule_description, file=sys.stderr)
-        if error.extra_error_information:
-            print('  extra error information:', error.extra_error_information,
+        print('  file:', scan_failure.scan_file, file=sys.stderr)
+        print('  line:', scan_failure.line_number, file=sys.stderr)
+        print('  column:', scan_failure.column_number, file=sys.stderr)
+        print('  rule id:', scan_failure.rule_id, file=sys.stderr)
+        print('  rule name:', scan_failure.rule_name, file=sys.stderr)
+        print('  rule description:', scan_failure.rule_description,
+              file=sys.stderr)
+        if scan_failure.extra_error_information:
+            print('  extra error information:',
+                  scan_failure.extra_error_information,
                   file=sys.stderr)
-    for error in pragma_errors:
+    for pragma_error in pragma_errors:
         print('\nMarkdown pragma error:', file=sys.stderr)
-        print('  file:', error.file_path, file=sys.stderr)
-        print('  line:', error.line_number, file=sys.stderr)
-        print('  pragma error:', error.pragma_error, file=sys.stderr)
+        print('  file:', pragma_error.file_path, file=sys.stderr)
+        print('  line:', pragma_error.line_number, file=sys.stderr)
+        print('  pragma error:', pragma_error.pragma_error, file=sys.stderr)
     print('\n', file=sys.stderr)
 
 
@@ -113,7 +115,7 @@ def check_txt_func(func: Callable[[str, str], None],
     """
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.txt')
-        func(format_name='txt', file_name=file_name)
+        func('txt', file_name)
         with open(file_name, 'r', encoding='utf-8') as file:
             text = file.read()
             check_text_in_order(text, expected_txt)
@@ -132,7 +134,7 @@ def check_markdown_func(func: Callable[[str, str], None],
     """
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.md')
-        func(format_name='md', file_name=file_name)
+        func('md', file_name)
         try:
             config_path = _get_pymarkdown_config_path()
             scan_result: PyMarkdownScanPathResult = \
@@ -181,7 +183,7 @@ def check_rst_func(func: Callable[[str, str], None],
     """
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.rst')
-        func(format_name='reST', file_name=file_name)
+        func('reST', file_name)
         errors = restructuredtext_lint.lint_file(filepath=file_name)
         unexpected_errors = [error for error in errors
                              if error.message not in expected_error]
@@ -204,7 +206,7 @@ def check_html_func(func: Callable[[str, str], None],
     """
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.html')
-        func(format_name='html', file_name=file_name)
+        func('html', file_name)
         with open(file_name, 'r', encoding='utf-8') as file:
             html = file.read()
         try:
@@ -235,7 +237,7 @@ def check_docx_func(func: Callable[[str, str], None],
     all_expected_warnings = COMMON_EXPECTED_DOCX_WARNINGS + expected_warnings
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.docx')
-        func(format_name='docx', file_name=file_name)
+        func('docx', file_name)
         with open(file_name, 'rb') as f:
             content = mammoth.convert_to_html(f)
             for msg in content.messages:
@@ -259,7 +261,7 @@ def check_odt_func(func: Callable[[str, str], None],
     """
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test.odt')
-        func(format_name='odt', file_name=file_name)
+        func('odt', file_name)
         with open(file_name, 'rb') as file:
             _ = odf_load(file)  # test if loads without raising exception
             converter = ODF2XHTML()
