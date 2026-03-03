@@ -6,12 +6,10 @@
 #
 
 import pytest
-from check_capsys import check_capsys
-from test_helpers import (
-    check_run_with_context_manager,
-    run_with_context_manager,
-)
 from mformat.plain_text_table import TableAlignment
+from .check_capsys import check_capsys
+from .test_helpers import (check_run_with_context_manager,
+                           run_with_context_manager)
 
 
 def test_simple_table(capsys):
@@ -134,9 +132,10 @@ def test_table_alignment_invalid_type_raises_value_error(capsys):
         mfd.add_table_row(row=['AA BB CC DD', '11 22 33 44'])
 
     with pytest.raises(ValueError) as exc:
-        _ = run_with_context_manager('txt', '.txt', test_action,
-                                     args={'line_length': 42,
-                                           'table_alignment': 1})
+        _ = run_with_context_manager(
+            'txt', '.txt', test_action,
+            args={'line_length': 42,
+                  'table_alignment': 1})  # type: ignore[arg-type]
     assert exc.value.args[0] == \
         'Alignment specification must be TableAlignment or list of '\
         'TableAlignment'

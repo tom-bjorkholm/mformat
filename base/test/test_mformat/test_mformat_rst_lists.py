@@ -5,7 +5,7 @@
 # MIT License
 #
 
-from rst_test_helpers import check_rst_output
+from .rst_test_helpers import check_rst_output
 
 
 def test_single_bullet_item(capsys):

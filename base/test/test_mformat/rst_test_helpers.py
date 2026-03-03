@@ -6,8 +6,9 @@
 #
 
 from typing import Any
-from test_helpers import MethodCall, check_method_calls_output
-from test_helpers import run_method_calls_output
+from mformat.factory import OptArgs
+from .test_helpers import (MethodCall, check_method_calls_output,
+                           run_method_calls_output)
 
 RST_FORMAT_NAME = 'reST'
 RST_FILE_EXTENSION = '.rst'
@@ -18,7 +19,7 @@ def check_rst_output(
         capsys: Any,
         method_calls: list[MethodCall],
         expected_text: str,
-        args: dict[str, Any] | None = None,
+        args: OptArgs = None,
         url_as_text: bool = False) -> None:
     """Run reST method calls and compare output."""
     check_method_calls_output(
@@ -34,7 +35,7 @@ def check_rst_output(
 
 def run_rst_output(
         method_calls: list[MethodCall],
-        args: dict[str, Any] | None = None,
+        args: OptArgs = None,
         url_as_text: bool = False) -> str:
     """Run reST method calls and return output text."""
     return run_method_calls_output(

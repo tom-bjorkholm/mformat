@@ -5,7 +5,7 @@
 # MIT License
 #
 
-from test_helpers import check_run_with_context_manager
+from .test_helpers import check_run_with_context_manager
 
 
 def test_single_bullet_item(capsys):

@@ -5,19 +5,18 @@
 # MIT License
 #
 
-from tempfile import TemporaryDirectory
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import pytest
-from check_capsys import check_capsys
-from test_helpers import (
-    run_protected_method,
-    check_run_with_context_manager,
-    check_formatter_character_encoding,
-    check_invalid_character_encoding_constructor,
-)
-from mformat.mformat_md import MultiFormatMd, split_whitespace
-from mformat.mformat_state import MultiFormatState, Formatting
 from mformat.mformat import FormatterDescriptor
+from mformat.mformat_md import MultiFormatMd
+from mformat.mformat_state import Formatting, MultiFormatState
+from mformat.mformat_textbased import split_whitespace
+from .check_capsys import check_capsys
+from .test_helpers import (check_formatter_character_encoding,
+                           check_invalid_character_encoding_constructor,
+                           check_run_with_context_manager,
+                           run_protected_method)
 
 
 @pytest.mark.parametrize('text, expected',
@@ -494,17 +493,13 @@ def test_block_quote_with_code_in_text(capsys):
 
 def test_block_quote_line_wrapping(capsys):
     """Test that block quote wraps lines with > prefix."""
-    def test_action(mfd):
-        assert type(mfd).__name__ == 'MultiFormatMd'
-        long_text = ('This is a very long quote that should wrap to '
-                     'multiple lines in the output because it exceeds '
-                     'the maximum line length.')
-        mfd.new_block_quote(text=long_text)
-
     with TemporaryDirectory() as tmp_dir:
         fname = str(Path(tmp_dir) / 'test.md')
         with MultiFormatMd(file_name=fname) as mfd:
-            test_action(mfd)
+            long_text = ('This is a very long quote that should wrap to '
+                         'multiple lines in the output because it exceeds '
+                         'the maximum line length.')
+            mfd.new_block_quote(text=long_text)
         with open(fname, 'rt', encoding='utf-8') as f:
             content = f.read()
         # Check that all lines start with >

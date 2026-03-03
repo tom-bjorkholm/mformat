@@ -8,12 +8,12 @@
 import builtins
 import sys
 import pytest  # pylint: disable=unused-import # noqa: F401
-from check_capsys import check_capsys
-from mformat.reg_pkg_formats import register_formats_in_pkg
 from mformat.mformat_html import MultiFormatHtml
 from mformat.mformat_md import MultiFormatMd
 from mformat.mformat_rst import MultiFormatRst
 from mformat.mformat_txt import MultiFormatTxt
+from mformat.reg_pkg_formats import register_formats_in_pkg
+from .check_capsys import check_capsys
 
 
 def test_register_pkg_formats1(capsys, monkeypatch):

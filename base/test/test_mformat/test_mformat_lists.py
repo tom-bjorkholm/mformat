@@ -6,15 +6,15 @@
 #
 
 import pytest
-from check_capsys import check_capsys
-from test_helpers import MultiFormat10
 from mformat.mformat_state import MultiFormatState
+from .check_capsys import check_capsys
+from .test_helpers import MultiFormat10
 
 
 def test_start_bullet_item_from_empty(capsys):
     """Test starting a bullet item from empty state."""
     mfmt = MultiFormat10(file_name='test')
-    assert mfmt.state == MultiFormatState.EMPTY
+    assert mfmt.state.name == 'EMPTY'
     mfmt.new_bullet_item(text='First item')
     assert mfmt.state == MultiFormatState.BULLET_LIST_ITEM
     assert len(mfmt.point_list_stack) == 1
@@ -247,7 +247,7 @@ def test_heading_then_bullet_list(capsys):
 def test_start_numbered_item_from_empty(capsys):
     """Test starting a numbered point item from empty state."""
     mfmt = MultiFormat10(file_name='test')
-    assert mfmt.state == MultiFormatState.EMPTY
+    assert mfmt.state.name == 'EMPTY'
     mfmt.new_numbered_point_item(text='First item')
     assert mfmt.state == MultiFormatState.NUMBERED_LIST_ITEM
     assert len(mfmt.point_list_stack) == 1

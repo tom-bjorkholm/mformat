@@ -6,10 +6,8 @@
 #
 
 import pytest
-from mformat.underline_text import (
-    UnderlineSpec, wrap_text, underline_text
-)
 
+from mformat.underline_text import UnderlineSpec, underline_text, wrap_text
 
 # --- Tests for wrap_text ---
 

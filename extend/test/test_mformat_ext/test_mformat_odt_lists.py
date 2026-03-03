@@ -17,11 +17,12 @@ from test_mformat_odt_core import (
 # Add base test helpers to path for shared test utilities
 _base_test_path = (
     Path(__file__).parent.parent.parent.parent /
-    'base' / 'test' / 'test_mformat'
+    'base' / 'test'
 )
 sys.path.insert(0, str(_base_test_path))
 # pylint: disable=wrong-import-order,wrong-import-position,import-error
-from test_helpers import action_complex_nested_bullet_structure  # noqa: E402
+from test_mformat.test_helpers import \
+    action_complex_nested_bullet_structure  # noqa: E402
 
 
 def get_list_items_text(doc) -> list[str]:

@@ -5,13 +5,13 @@
 # MIT License
 #
 
-from tempfile import TemporaryDirectory
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import pytest
-from check_capsys import check_capsys
-from test_helpers import check_invalid_character_encoding_constructor
 from mformat.mformat_plaintextlike import MultiFormatPlainTextLike
 from mformat.mformat_state import MultiFormatState
+from .check_capsys import check_capsys
+from .test_helpers import check_invalid_character_encoding_constructor
 
 
 class PlainTextLikeTestImpl(  # pylint: disable=too-few-public-methods

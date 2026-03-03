@@ -5,17 +5,18 @@
 # MIT License
 #
 
-from typing import Optional
 from pathlib import Path
+from typing import Optional
+
 import pytest
-from check_capsys import check_capsys
-from test_helpers import (
-    MultiFormat2, MultiFormat3, MultiFormat4, MultiFormat5,
-    MultiFormat8, MultiFormat9
-)
-from mformat.mformat_state import MultiFormatState, Formatting
+
 from mformat.mformat import MultiFormat
 from mformat.mformat_lists_impl import PointStackItem
+from mformat.mformat_state import Formatting, MultiFormatState
+
+from .check_capsys import check_capsys
+from .test_helpers import (MultiFormat2, MultiFormat3, MultiFormat4,
+                           MultiFormat5, MultiFormat8, MultiFormat9)
 
 
 @pytest.mark.parametrize('file_name, extension, res',
@@ -289,6 +290,7 @@ def test_enter_exit(capsys):
     with MultiFormat5(file_name='test', expected_text='abc') as mfmt:
         assert isinstance(mfmt, MultiFormat5)
         assert mfmt.count == {'open': 1}
+    assert isinstance(mfmt, MultiFormat5)
     assert mfmt.count == {'open': 1, '_close': 1}
     check_capsys(capsys)
 
@@ -384,7 +386,7 @@ def test_heading_then_paragraph(capsys):
     mfmt = MultiFormat8(file_name='test', expected_text='Title',
                         expected_level=1)
     mfmt.new_heading(level=1, text='Title')
-    assert mfmt.state == MultiFormatState.HEADING
+    assert mfmt.state.name == 'HEADING'
     # Now start a paragraph - should end the heading
     # Note: We don't check expected_level for the paragraph
     mfmt.expected_text = 'Paragraph text'
@@ -491,7 +493,7 @@ def test_write_code_block_basic(capsys):
     """Test basic code block writing."""
     txt = 'print("Hello")'
     mfmt = MultiFormat12(file_name='test', expected_code=txt)
-    assert mfmt.state == MultiFormatState.EMPTY
+    assert mfmt.state.name == 'EMPTY'
     mfmt.write_code_block(text=txt)
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
     assert mfmt.count == {
@@ -609,8 +611,10 @@ def test_invalid_state_plist(capsys):
     mfmt = MultiFormat12(file_name='test', expected_code='')
     mfmt.state = MultiFormatState.BULLET_LIST_ITEM
     with pytest.raises(KeyError):
-        psi = PointStackItem(point_list_type=17,
-                             number_at_level=1)
+        psi = PointStackItem(
+            point_list_type=17,  # type: ignore[typeddict-item]
+            number_at_level=1
+        )
         mfmt.point_list_stack.append(psi)
         mfmt._state_from_point_list()  # pylint: disable=protected-access # noqa: E501
     check_capsys(capsys)

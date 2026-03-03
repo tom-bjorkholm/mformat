@@ -6,7 +6,7 @@
 #
 
 import pytest
-from rst_test_helpers import check_rst_output
+from .rst_test_helpers import check_rst_output
 
 
 @pytest.mark.parametrize(

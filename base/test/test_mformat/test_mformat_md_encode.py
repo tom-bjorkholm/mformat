@@ -6,12 +6,12 @@
 # MIT License
 #
 
-from tempfile import TemporaryDirectory
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import pytest
-from check_capsys import check_capsys
 from mformat.mformat_md import MultiFormatMd
 from mformat.mformat_state import MultiFormatState
+from .check_capsys import check_capsys
 
 
 class TestEncodeTextEmpty:

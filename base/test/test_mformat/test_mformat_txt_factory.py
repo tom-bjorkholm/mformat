@@ -5,14 +5,14 @@
 # MIT License
 #
 
-from tempfile import TemporaryDirectory
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import pytest
-from check_capsys import check_capsys
-from test_helpers import FileExistsCallbackCounter
-from mformat.factory import create_mf, filter_args_mf
+from mformat.factory import OptArgs, create_mf, filter_args_mf
 from mformat.mformat_txt import MultiFormatTxt
 from mformat.plain_text_table import TableAlignment
+from .check_capsys import check_capsys
+from .test_helpers import FileExistsCallbackCounter
 
 
 def test_create_mf_txt_returns_txt_formatter(capsys):
@@ -38,7 +38,7 @@ def test_create_mf_txt_optional_args(capsys):
     """Test create_mf passes optional TXT args to constructor."""
     with TemporaryDirectory() as tmp_dir:
         file_name = str(Path(tmp_dir) / 'test')
-        args = {
+        args: OptArgs = {
             'line_length': 42,
             'table_max_line_length': 26,
             'table_alignment': TableAlignment.LEFT,
@@ -65,7 +65,7 @@ def test_create_mf_txt_invalid_line_length(capsys):
 
 def test_filter_args_mf_for_txt(capsys):
     """Test filter_args_mf keeps TXT args and ignores others."""
-    args = {
+    args: OptArgs = {
         'line_length': 42,
         'table_max_line_length': 26,
         'table_alignment': TableAlignment.RIGHT,

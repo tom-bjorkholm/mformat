@@ -5,12 +5,10 @@
 # MIT License
 #
 
-from test_helpers import (
-    check_run_with_context_manager,
-    action_complex_nested_bullet_structure,
-)
-from test_mformat_html_core import PF_EN_NT_NC, SFTOT
 from mformat.mformat_html import MultiFormatHtml
+from .test_helpers import (action_complex_nested_bullet_structure,
+                           check_run_with_context_manager)
+from .test_mformat_html_core import PF_EN_NT_NC, SFTOT
 
 
 def test_single_bullet_item(capsys):

@@ -7,12 +7,11 @@
 
 from typing import NamedTuple
 import pytest
-from test_mformat_lists_impl import ListHandler2
-from check_capsys import check_capsys
-from mformat.mformat_state import (
-    MultiFormatState, FormattingWithWS, Formatting)
-from mformat.mformat_lists_impl import (
-    PointStackItem, PointListType)
+from mformat.mformat_lists_impl import PointListType, PointStackItem
+from mformat.mformat_state import (Formatting, FormattingWithWS,
+                                   MultiFormatState)
+from .check_capsys import check_capsys
+from .test_mformat_lists_impl import ListHandler2
 
 
 @pytest.mark.parametrize('state,stack,exp_state,exp_calls',

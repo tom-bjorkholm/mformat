@@ -7,17 +7,15 @@
 
 from typing import Optional
 import pytest
-from check_capsys import check_capsys
-from test_helpers import (
-    check_run_with_context_manager,
-    run_protected_method,
-    create_paragraph_file_bytes,
-    check_character_encoding_bytes,
-    check_invalid_character_encoding_constructor,
-)
-from mformat.mformat_html import MultiFormatHtml
-from mformat.mformat_state import MultiFormatState, Formatting
+from mformat.factory import OptArgsDict
 from mformat.mformat import FormatterDescriptor
+from mformat.mformat_html import MultiFormatHtml
+from mformat.mformat_state import Formatting, MultiFormatState
+from .check_capsys import check_capsys
+from .test_helpers import (check_character_encoding_bytes,
+                           check_invalid_character_encoding_constructor,
+                           check_run_with_context_manager,
+                           create_paragraph_file_bytes, run_protected_method)
 
 
 def test_file_name_extension(capsys):
@@ -50,9 +48,9 @@ PF_SV_TS_C1 = PFDT + 'sv' + PTAL + 'Something' + PFAT + PFCSS + \
 
 
 def args_for_file_prefix(lang: str, title: Optional[str],
-                         css_file: Optional[str]) -> dict[str, str]:
+                         css_file: Optional[str]) -> OptArgsDict:
     """Get the arguments for the file prefix."""
-    args = {'lang': lang}
+    args: OptArgsDict = {'lang': lang}
     if title is not None:
         args['title'] = title
     if css_file is not None:

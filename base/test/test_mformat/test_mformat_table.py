@@ -6,14 +6,11 @@
 #
 
 import pytest
-from check_capsys import check_capsys
-from test_helpers import (
-    MultiFormat3,
-    TABLE_DATA_3X2,
-    TABLE_DATA_VARIED_WIDTHS,
-    TABLE_DATA_WRONG_COLUMNS
-)
-from mformat.mformat_state import MultiFormatState, Formatting
+from mformat.mformat import TableInformation
+from mformat.mformat_state import Formatting, MultiFormatState
+from .check_capsys import check_capsys
+from .test_helpers import (TABLE_DATA_3X2, TABLE_DATA_VARIED_WIDTHS,
+                           TABLE_DATA_WRONG_COLUMNS, MultiFormat3)
 
 
 class MultiFormat11(MultiFormat3):
@@ -56,16 +53,22 @@ class MultiFormat11(MultiFormat3):
         self.inc_count('_end_heading')
 
 
+def _table_info(mfmt: MultiFormat11) -> TableInformation:
+    """Return table info with a non-None guarantee."""
+    assert mfmt.table is not None
+    return mfmt.table
+
+
 def test_new_table_basic(capsys):
     """Test starting a basic table."""
     mfmt = MultiFormat11(file_name='test')
-    assert mfmt.state == MultiFormatState.EMPTY
+    assert mfmt.state.name == 'EMPTY'
     mfmt.new_table(first_row=['Col1', 'Col2'])
     assert mfmt.state == MultiFormatState.TABLE
-    assert mfmt.table is not None
-    assert mfmt.table.number_of_columns == 2
-    assert mfmt.table.number_of_rows == 1
-    assert mfmt.table.column_widths == [4, 4]
+    table = _table_info(mfmt)
+    assert table.number_of_columns == 2
+    assert table.number_of_rows == 1
+    assert table.column_widths == [4, 4]
     assert mfmt.count == {
         '_encode_text': 2,
         '_write_file_prefix': 1,
@@ -81,8 +84,9 @@ def test_new_table_with_rows(capsys):
     mfmt.add_table_row(row=['Alice', '30'])
     mfmt.add_table_row(row=['Bob', '25'])
     assert mfmt.state == MultiFormatState.TABLE
-    assert mfmt.table.number_of_rows == 3
-    assert mfmt.table.column_widths == [5, 3]
+    table = _table_info(mfmt)
+    assert table.number_of_rows == 3
+    assert table.column_widths == [5, 3]
     assert mfmt.count == {
         '_encode_text': 6,
         '_write_file_prefix': 1,
@@ -96,11 +100,14 @@ def test_table_column_width_expansion(capsys):
     """Test that column widths expand with longer content."""
     mfmt = MultiFormat11(file_name='test')
     mfmt.new_table(first_row=['A', 'B'])
-    assert mfmt.table.column_widths == [1, 1]
+    table = _table_info(mfmt)
+    assert table.column_widths == [1, 1]
     mfmt.add_table_row(row=['Short', 'Text'])
-    assert mfmt.table.column_widths == [5, 4]
+    table = _table_info(mfmt)
+    assert table.column_widths == [5, 4]
     mfmt.add_table_row(row=['Very long text', 'X'])
-    assert mfmt.table.column_widths == [14, 4]
+    table = _table_info(mfmt)
+    assert table.column_widths == [14, 4]
     check_capsys(capsys)
 
 
@@ -109,10 +116,11 @@ def test_write_complete_table_basic(capsys):
     mfmt = MultiFormat11(file_name='test')
     mfmt.write_complete_table(table=TABLE_DATA_3X2)
     assert mfmt.state == MultiFormatState.TABLE
-    assert mfmt.table.number_of_columns == 2
-    assert mfmt.table.number_of_rows == 3
+    table = _table_info(mfmt)
+    assert table.number_of_columns == 2
+    assert table.number_of_rows == 3
     # Column widths calculated from all rows
-    assert mfmt.table.column_widths == [8, 8]
+    assert table.column_widths == [8, 8]
     assert mfmt.count == {
         '_encode_text': 6,
         '_write_file_prefix': 1,
@@ -127,7 +135,8 @@ def test_write_complete_table_with_varying_widths(capsys):
     mfmt = MultiFormat11(file_name='test')
     mfmt.write_complete_table(table=TABLE_DATA_VARIED_WIDTHS)
     # Column widths should be max from all rows
-    assert mfmt.table.column_widths == [6, 14]
+    table = _table_info(mfmt)
+    assert table.column_widths == [6, 14]
     check_capsys(capsys)
 
 
@@ -176,7 +185,8 @@ def test_multiple_tables(capsys):
     mfmt.new_table(first_row=['X', 'Y', 'Z'])
     mfmt.add_table_row(row=['3', '4', '5'])
     assert mfmt.state == MultiFormatState.TABLE
-    assert mfmt.table.number_of_columns == 3
+    table = _table_info(mfmt)
+    assert table.number_of_columns == 3
     assert mfmt.count == {
         '_encode_text': 11,
         '_write_file_prefix': 1,
@@ -231,9 +241,10 @@ def test_table_with_single_column(capsys):
     mfmt.new_table(first_row=['Column'])
     mfmt.add_table_row(row=['Value1'])
     mfmt.add_table_row(row=['Value2'])
-    assert mfmt.table.number_of_columns == 1
-    assert mfmt.table.number_of_rows == 3
-    assert mfmt.table.column_widths == [6]
+    table = _table_info(mfmt)
+    assert table.number_of_columns == 1
+    assert table.number_of_rows == 3
+    assert table.column_widths == [6]
     check_capsys(capsys)
 
 
@@ -243,8 +254,9 @@ def test_table_with_many_columns(capsys):
     first_row = ['C1', 'C2', 'C3', 'C4', 'C5']
     mfmt.new_table(first_row=first_row)
     mfmt.add_table_row(row=['1', '2', '3', '4', '5'])
-    assert mfmt.table.number_of_columns == 5
-    assert mfmt.table.column_widths == [2, 2, 2, 2, 2]
+    table = _table_info(mfmt)
+    assert table.number_of_columns == 5
+    assert table.column_widths == [2, 2, 2, 2, 2]
     check_capsys(capsys)
 
 
@@ -253,15 +265,18 @@ def test_write_complete_table_then_new_table(capsys):
     mfmt = MultiFormat11(file_name='test')
     # First table using write_complete_table
     mfmt.write_complete_table(table=[['A', 'B'], ['1', '2']])
-    assert mfmt.table.column_widths == [1, 1]
+    table = _table_info(mfmt)
+    assert table.column_widths == [1, 1]
     # Start a new table
     mfmt.new_paragraph(text='Between')
     mfmt.new_table(first_row=['Long', 'Short'])
-    assert mfmt.table.column_widths == [4, 5]
+    table = _table_info(mfmt)
+    assert table.column_widths == [4, 5]
     mfmt.add_table_row(row=['A', 'B'])
     # New table should have its own column widths
-    assert mfmt.table.column_widths == [4, 5]
-    assert mfmt.table.number_of_columns == 2
+    table = _table_info(mfmt)
+    assert table.column_widths == [4, 5]
+    assert table.number_of_columns == 2
     check_capsys(capsys)
 
 

@@ -6,7 +6,8 @@
 #
 
 import pytest
-from test_helpers import check_run_with_context_manager
+from mformat.factory import OptArgs
+from .test_helpers import check_run_with_context_manager
 
 
 @pytest.mark.parametrize(
@@ -22,7 +23,7 @@ def test_new_paragraph(capsys, text, expected):
         assert type(mfd).__name__ == 'MultiFormatTxt'
         mfd.new_paragraph(text=text)
 
-    args = {'line_length': 11} if text.startswith('a b c') else None
+    args: OptArgs = {'line_length': 11} if text.startswith('a b c') else None
     check_run_with_context_manager('txt', '.txt', test_action,
                                    expected_text=expected,
                                    args=args,

@@ -5,17 +5,22 @@
 # MIT License
 #
 
-from tempfile import TemporaryDirectory
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import pytest
-from check_capsys import check_capsys
-from test_helpers import check_invalid_character_encoding_constructor
-from mformat.mformat_textbased import MultiFormatTextBased
 from mformat.mformat_state import MultiFormatState
+from mformat.mformat_textbased import MultiFormatTextBased
+from .check_capsys import check_capsys
+from .test_helpers import check_invalid_character_encoding_constructor
 
 
 class MultiFormatTextBased2(MultiFormatTextBased):
     """Test class for the mformat_textbased module."""
+
+    def __enter__(self) -> 'MultiFormatTextBased2':
+        """Enter the context manager."""
+        super().__enter__()
+        return self
 
     @classmethod
     def file_name_extension(cls) -> str:

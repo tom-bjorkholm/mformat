@@ -11,7 +11,7 @@ import pytest
 
 def check_capsys(capsys: pytest.CaptureFixture[str],
                  err_msgs: Optional[list[str]] = None,
-                 out_msgs: Optional[list[str]] = None):
+                 out_msgs: Optional[list[str]] = None) -> None:
     """Check the values of the captured stdout and stderr."""
     out, err = capsys.readouterr()
     if err_msgs is None:

@@ -7,10 +7,10 @@
 
 from typing import Any
 import pytest
-from check_capsys import check_capsys
-from mformat.mformat_state import MultiFormatState, Formatting
-from mformat.mformat_lists_impl import ListHandlerMixin, PointListType, \
-    PointStackItem
+from mformat.mformat_lists_impl import (ListHandlerMixin, PointListType,
+                                        PointStackItem)
+from mformat.mformat_state import Formatting, MultiFormatState
+from .check_capsys import check_capsys
 
 
 @pytest.mark.parametrize('state, in_item',

@@ -5,26 +5,24 @@
 # MIT License
 #
 
-from tempfile import TemporaryDirectory
+import sys
 from io import StringIO
 from pathlib import Path
-import sys
+from tempfile import TemporaryDirectory
 import pytest
-from check_capsys import check_capsys
-from test_helpers import (
-    create_paragraph_file_bytes_factory,
-    check_character_encoding_bytes,
-    check_invalid_character_encoding_factory,
-)
 from mformat_ext.mformat_docx import MultiFormatDocx
 from mformat_ext.mformat_odt import MultiFormatOdt
-from mformat.factory import MultiFormatFactory
-from mformat.factory import create_mf, register_mf, \
-    list_registered_mf, usage_mf, OptArgs, filter_args_mf
-from mformat.mformat import MultiFormat, FormatterDescriptor
+from mformat.factory import (MultiFormatFactory, OptArgs, create_mf,
+                             filter_args_mf, list_registered_mf, register_mf,
+                             usage_mf)
+from mformat.mformat import FormatterDescriptor, MultiFormat
 from mformat.mformat_html import MultiFormatHtml
 from mformat.mformat_md import MultiFormatMd
 from mformat.mformat_txt import MultiFormatTxt
+from .check_capsys import check_capsys
+from .test_helpers import (check_character_encoding_bytes,
+                           check_invalid_character_encoding_factory,
+                           create_paragraph_file_bytes_factory)
 
 
 class MultiFormat2T(MultiFormat):
@@ -78,7 +76,7 @@ def test_factory_obj_reg_nok(capsys):
     """Test the factory object registration with a not OK class."""
     factory = MultiFormatFactory()
     with pytest.raises(ValueError) as exc:
-        factory.i_register(int)
+        factory.i_register(int)  # type: ignore[arg-type]
     assert exc.value.args[0] == 'int must be a subclass of MultiFormat'
     check_capsys(capsys)
 
@@ -94,6 +92,7 @@ def test_factory_obj_create_ok(capsys, args, arg1, arg2):
     factory = MultiFormatFactory()
     factory.i_register(MultiFormat2T)
     mf = factory.i_create('mf2t', 'test.test', url_as_text=True, args=args)
+    assert isinstance(mf, MultiFormat2T)
     assert mf.arg1 == arg1
     assert mf.arg2 == arg2
     check_capsys(capsys)
@@ -104,7 +103,7 @@ def test_factory_obj_create_nok(capsys):
     factory = MultiFormatFactory()
     with pytest.raises(KeyError) as exc:
         factory.i_create('something', 'test.test', url_as_text=True,
-                         args={'arg1': 'value1'})
+                         args=None)
     assert exc.value.args[0] == \
         'Format "something" is not registered. Available formats: ' + \
         'docx, html, md, odt, reST, txt'
@@ -206,6 +205,7 @@ def test_create_ok(capsys):
     """Test the shortcut create function with an OK class."""
     mfh = create_mf('html', 'test.html', url_as_text=True,
                     args={'title': 'Test title', 'css_file': 'test.css'})
+    assert isinstance(mfh, MultiFormatHtml)
     assert mfh.title == 'Test title'
     assert mfh.css_file == 'test.css'
     assert type(mfh).__name__ == 'MultiFormatHtml'
@@ -333,13 +333,13 @@ def test_create_mf_file_exists_callback_matrix(
             assert str(file_exists_cb.file_name) == str(file_name)
             if fmt in ['html', 'md', 'txt']:
                 with open(file_name, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                assert 'Original content' not in content
-                assert 'Test heading' in content
+                    text_content = f.read()
+                assert 'Original content' not in text_content
+                assert 'Test heading' in text_content
             else:
                 with open(file_name, 'rb') as f:
-                    content = f.read()
-                assert b'Original content' not in content
+                    raw_content = f.read()
+                assert b'Original content' not in raw_content
         else:
             with pytest.raises(FileExistsError) as exc:
                 with create_mf(format_name=fmt, file_name=file_name,
@@ -365,13 +365,13 @@ def test_create_file_exists_y(capsys, fmt):
             mf.new_heading(1, 'Test heading')
         if fmt in ['html', 'md', 'txt']:
             with open(file_name, 'r', encoding='utf-8') as f:
-                content = f.read()
-                assert 'Original content' not in content
-                assert 'Test heading' in content
+                text_content = f.read()
+                assert 'Original content' not in text_content
+                assert 'Test heading' in text_content
         else:
             with open(file_name, 'rb') as f:
-                content = f.read()
-                assert b'Original content' not in content
+                raw_content = f.read()
+                assert b'Original content' not in raw_content
     assert file_exists_cb.num_calls == 1
     check_capsys(capsys)
 
@@ -391,13 +391,13 @@ def test_create_file_exists_y2(capsys, fmt):
             mf.new_heading(1, 'Test heading')
         if fmt in ['html', 'md', 'txt']:
             with open(file_name, 'r', encoding='utf-8') as f:
-                content = f.read()
-                assert 'Original content' not in content
-                assert 'Test heading' in content
+                text_content = f.read()
+                assert 'Original content' not in text_content
+                assert 'Test heading' in text_content
         else:
             with open(file_name, 'rb') as f:
-                content = f.read()
-                assert b'Original content' not in content
+                raw_content = f.read()
+                assert b'Original content' not in raw_content
     assert file_exists_cb.num_calls == 1
     check_capsys(capsys)
 
@@ -418,13 +418,13 @@ def test_create_file_exists_ay(capsys, monkeypatch, fmt):
             mf.new_heading(1, 'Test heading')
         if fmt in ['html', 'md']:
             with open(file_name, 'r', encoding='utf-8') as f:
-                content = f.read()
-                assert 'Original content' not in content
-                assert 'Test heading' in content
+                text_content = f.read()
+                assert 'Original content' not in text_content
+                assert 'Test heading' in text_content
         else:
             with open(file_name, 'rb') as f:
-                content = f.read()
-                assert b'Original content' not in content
+                raw_content = f.read()
+                assert b'Original content' not in raw_content
     assert file_exists_cb.num_calls == 1
     assert file_exists_cb.file_name == file_name
     outmsg = [f'File {file_name} already exists. Overwrite? (y/n)']
@@ -705,22 +705,23 @@ def dummy_file_exists_cb(file_name: str) -> None:
     """Handle existing file in dummy way."""
 
 
-OPTARG_EMPTY = {}
-OPTARG_FILE_EXISTS_CALLBACK = {
+OPTARG_EMPTY: OptArgs = {}
+OPTARG_FILE_EXISTS_CALLBACK: OptArgs = {
     'file_exists_callback': dummy_file_exists_cb}
-OPTARG_TITLE = {'title': 'Test Title'}
-OPTARG_CSS_FILE = {'css_file': 'test.css'}
-OPTARG_LANG = {'lang': 'en'}
-OPTARG_LANG_EXISTS = {'file_exists_callback': dummy_file_exists_cb,
-                      'lang': 'en'}
-OPTARG_TITLE_CSS_FILE_LANG = {'title': 'Test Title',
-                              'css_file': 'test.css',
-                              'lang': 'en'}
-OPTARG_ODT = {'lang': 'en', 'file_exists_callback': dummy_file_exists_cb}
-OPTARG_ALL = {'file_exists_callback': dummy_file_exists_cb,
-              'title': 'Test Title',
-              'css_file': 'test.css',
-              'lang': 'en'}
+OPTARG_TITLE: OptArgs = {'title': 'Test Title'}
+OPTARG_CSS_FILE: OptArgs = {'css_file': 'test.css'}
+OPTARG_LANG: OptArgs = {'lang': 'en'}
+OPTARG_LANG_EXISTS: OptArgs = {'file_exists_callback': dummy_file_exists_cb,
+                               'lang': 'en'}
+OPTARG_TITLE_CSS_FILE_LANG: OptArgs = {'title': 'Test Title',
+                                       'css_file': 'test.css',
+                                       'lang': 'en'}
+OPTARG_ODT: OptArgs = {'lang': 'en',
+                       'file_exists_callback': dummy_file_exists_cb}
+OPTARG_ALL: OptArgs = {'file_exists_callback': dummy_file_exists_cb,
+                       'title': 'Test Title',
+                       'css_file': 'test.css',
+                       'lang': 'en'}
 
 
 @pytest.mark.parametrize('wrap_func',

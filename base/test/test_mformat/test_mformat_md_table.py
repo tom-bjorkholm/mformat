@@ -6,14 +6,11 @@
 #
 
 import pytest
-from test_helpers import (
-    check_run_with_context_manager,
-    run_with_context_manager,
-    TABLE_DATA_3X2,
-    TABLE_DATA_3X2_SIMPLE
-)
-from check_capsys import check_capsys
 from mformat.mformat_state import Formatting
+from .check_capsys import check_capsys
+from .test_helpers import (TABLE_DATA_3X2, TABLE_DATA_3X2_SIMPLE,
+                           check_run_with_context_manager,
+                           run_with_context_manager)
 
 
 def test_simple_table(capsys):

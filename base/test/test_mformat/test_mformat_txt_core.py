@@ -5,20 +5,18 @@
 # MIT License
 #
 
-from tempfile import TemporaryDirectory
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import pytest
-from check_capsys import check_capsys
-from test_helpers import (
-    check_run_with_context_manager,
-    create_paragraph_file_bytes,
-    check_character_encoding_bytes,
-    check_invalid_character_encoding_constructor,
-)
 from mformat.factory import create_mf
 from mformat.mformat import FormatterDescriptor
 from mformat.mformat_txt import MultiFormatTxt
 from mformat.plain_text_table import TableAlignment
+from .check_capsys import check_capsys
+from .test_helpers import (check_character_encoding_bytes,
+                           check_invalid_character_encoding_constructor,
+                           check_run_with_context_manager,
+                           create_paragraph_file_bytes)
 
 
 def test_file_name_extension(capsys):

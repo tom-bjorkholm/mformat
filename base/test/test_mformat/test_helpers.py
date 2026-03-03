@@ -7,13 +7,12 @@
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Optional, Any, Callable, TypeAlias
+from typing import Any, Callable, Optional, TypeAlias
 import pytest
-from check_capsys import check_capsys
+from mformat.factory import OptArgs, create_mf
 from mformat.mformat import MultiFormat
-from mformat.mformat_state import MultiFormatState, Formatting
-from mformat.factory import create_mf
-
+from mformat.mformat_state import Formatting, MultiFormatState
+from .check_capsys import check_capsys
 
 MethodCall: TypeAlias = tuple[str, dict[str, Any]]
 
@@ -36,7 +35,7 @@ def run_with_context_manager(
         format_name: str,
         file_extension: str,
         test_action: Callable[[Any], None],
-        args: Optional[dict[str, Any]] = None,
+        args: OptArgs = None,
         url_as_text: bool = False) -> str:
     """Run test with context manager and return file contents.
 
@@ -52,12 +51,8 @@ def run_with_context_manager(
     """
     with TemporaryDirectory() as tmp_dir:
         fname = str(Path(tmp_dir) / f'test{file_extension}')
-        kwargs = {'file_name': fname}
-        if args is not None:
-            kwargs['args'] = args
-        if url_as_text:
-            kwargs['url_as_text'] = url_as_text
-        with create_mf(format_name, **kwargs) as mfd:
+        with create_mf(format_name=format_name, file_name=fname,
+                       url_as_text=url_as_text, args=args) as mfd:
             test_action(mfd)
         with open(fname, 'rt', encoding='utf-8') as file:
             return file.read()
@@ -68,7 +63,7 @@ def check_run_with_context_manager(    # pylint: disable=too-many-arguments,too-
         file_extension: str,
         test_action: Callable[[Any], None],
         expected_text: str,
-        args: Optional[dict[str, Any]] = None,
+        args: OptArgs = None,
         url_as_text: bool = False,
         capsys: Optional[pytest.CaptureFixture[str]] = None,
         err_msgs: Optional[list[str]] = None,
@@ -112,7 +107,7 @@ def check_method_calls_output(  # pylint: disable=too-many-arguments,too-many-po
         expected_type_name: str,
         method_calls: list[MethodCall],
         expected_text: str,
-        args: Optional[dict[str, Any]] = None,
+        args: OptArgs = None,
         url_as_text: bool = False,
         capsys: Optional[pytest.CaptureFixture[str]] = None) -> None:
     """Run formatter method calls and verify emitted text."""
@@ -134,7 +129,7 @@ def run_method_calls_output(
         file_extension: str,
         expected_type_name: str,
         method_calls: list[MethodCall],
-        args: Optional[dict[str, Any]] = None,
+        args: OptArgs = None,
         url_as_text: bool = False) -> str:
     """Run formatter method calls and return output text."""
     test_action = create_method_call_action(expected_type_name,
@@ -189,7 +184,7 @@ def run_protected_method(
         file_extension: str,
         method_name: str,
         method_args: Optional[tuple[Any, ...]] = None,
-        args: Optional[dict[str, Any]] = None) -> str:
+        args: OptArgs = None) -> str:
     """Run a protected method and return file contents.
 
     Args:
@@ -204,10 +199,7 @@ def run_protected_method(
     """
     with TemporaryDirectory() as tmp_dir:
         fname = str(Path(tmp_dir) / f'test{file_extension}')
-        kwargs = {'file_name': fname}
-        if args is not None:
-            kwargs['args'] = args
-        mfd = create_mf(format_name, **kwargs)
+        mfd = create_mf(format_name=format_name, file_name=fname, args=args)
         mfd.open()
         method = getattr(mfd, method_name)
         if method_args is not None:
@@ -256,7 +248,7 @@ def create_paragraph_file_bytes_factory(
     Returns:
         Raw file bytes.
     """
-    args = {'character_encoding': character_encoding}
+    args: OptArgs = {'character_encoding': character_encoding}
     with TemporaryDirectory() as tmp_dir:
         fname = str(Path(tmp_dir) / f'test{file_extension}')
         with create_mf(format_name=format_name, file_name=fname,
@@ -316,7 +308,7 @@ def check_invalid_character_encoding_factory(
         file_extension: Output file extension for temporary file.
         invalid_encoding: Invalid encoding name to test.
     """
-    args = {'character_encoding': invalid_encoding}
+    args: OptArgs = {'character_encoding': invalid_encoding}
     with TemporaryDirectory() as tmp_dir:
         fname = str(Path(tmp_dir) / f'test{file_extension}')
         with pytest.raises(LookupError) as exc:

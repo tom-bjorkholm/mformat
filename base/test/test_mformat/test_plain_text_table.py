@@ -6,15 +6,13 @@
 #
 
 import pytest
-from mformat.plain_text_table import (
-    BorderSpec, get_rst_like_spec,
-    line_wraps_per_column_width,
-    select_column_widths,
-    TableAlignment, align_cell_value,
-    format_one_table_row, format_border_row,
-    format_top_border, format_bottom_border,
-    get_plain_text_table,
-)
+from mformat.plain_text_table import (BorderSpec, TableAlignment,
+                                      align_cell_value, format_border_row,
+                                      format_bottom_border,
+                                      format_one_table_row, format_top_border,
+                                      get_plain_text_table, get_rst_like_spec,
+                                      line_wraps_per_column_width,
+                                      select_column_widths)
 
 
 def _simple_spec() -> BorderSpec:
@@ -196,7 +194,7 @@ class TestSelectColumnWidthsValidation:
         with pytest.raises(ValueError,
                            match='not a list'):
             select_column_widths(
-                [[1, 2]], _simple_spec(), 80)
+                [[1, 2]], _simple_spec(), 80)  # type: ignore[list-item]
 
     @pytest.mark.parametrize('max_len', [0, 1, 5, 9, -1])
     def test_max_line_length_below_10_raises(
@@ -523,7 +521,7 @@ class TestGetPlainTextTableValidation:
                            match='must be TableAlignment'):
             get_plain_text_table(
                 [['AB']], _simple_spec(), 80,
-                1)
+                1)  # type: ignore[arg-type]
 
     def test_invalid_alignment_element_raises(self):
         """Test invalid item in alignment list raises ValueError."""
@@ -531,7 +529,7 @@ class TestGetPlainTextTableValidation:
                            match='contains invalid'):
             get_plain_text_table(
                 [['AB']], _simple_spec(), 80,
-                [TableAlignment.LEFT, 'bad'])
+                [TableAlignment.LEFT, 'bad'])  # type: ignore[list-item]
 
     def test_wrong_alignment_count_raises(self):
         """Test wrong number of alignment elements."""

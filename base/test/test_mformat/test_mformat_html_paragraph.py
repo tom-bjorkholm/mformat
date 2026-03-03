@@ -6,15 +6,13 @@
 #
 
 import pytest
-from check_capsys import check_capsys
-from test_helpers import check_run_with_context_manager, run_protected_method
-from test_mformat_html_core import (
-    PF_EN_NT_NC, SFTOT,
-    EN_NT_NC_T1, SV_TS_C1_T2,
-    args_for_file_prefix,
-)
+
 from mformat.mformat_html import MultiFormatHtml
-from mformat.mformat_state import MultiFormatState, Formatting
+from mformat.mformat_state import Formatting, MultiFormatState
+from .check_capsys import check_capsys
+from .test_helpers import check_run_with_context_manager, run_protected_method
+from .test_mformat_html_core import (EN_NT_NC_T1, PF_EN_NT_NC, SFTOT,
+                                     SV_TS_C1_T2, args_for_file_prefix)
 
 
 def test_start_paragraph(capsys):

@@ -5,16 +5,13 @@
 # MIT License
 #
 
-from tempfile import TemporaryDirectory
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import pytest
-from check_capsys import check_capsys
-from test_helpers import (
-    run_protected_method,
-    check_run_with_context_manager,
-)
-from mformat.mformat_state import MultiFormatState, Formatting
 from mformat.factory import create_mf
+from mformat.mformat_state import Formatting, MultiFormatState
+from .check_capsys import check_capsys
+from .test_helpers import check_run_with_context_manager, run_protected_method
 
 
 @pytest.mark.parametrize('text, expected',
@@ -26,7 +23,7 @@ def test_new_paragraph(capsys, text, expected):
         fname = str(Path(tmp_dir) / 'test.md')
         with create_mf('md', file_name=fname) as mfd:
             assert type(mfd).__name__ == 'MultiFormatMd'
-            assert mfd.state == MultiFormatState.EMPTY
+            assert mfd.state.name == 'EMPTY'
             mfd.new_paragraph(text=text)
             assert mfd.state == MultiFormatState.PARAGRAPH
         with open(fname, 'rt', encoding='utf-8') as file:

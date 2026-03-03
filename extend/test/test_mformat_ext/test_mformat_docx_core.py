@@ -18,11 +18,11 @@ from mformat.factory import create_mf
 # Add base test helpers to path for shared test utilities
 _base_test_path = (
     Path(__file__).parent.parent.parent.parent /
-    'base' / 'test' / 'test_mformat'
+    'base' / 'test'
 )
 sys.path.insert(0, str(_base_test_path))
 # pylint: disable=wrong-import-order,wrong-import-position,import-error
-from check_capsys import check_capsys  # noqa: E402
+from test_mformat.check_capsys import check_capsys  # noqa: E402
 
 
 def test_file_name_extension(capsys):

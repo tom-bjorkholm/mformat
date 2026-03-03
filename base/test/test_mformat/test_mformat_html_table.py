@@ -6,13 +6,10 @@
 #
 
 
-from test_helpers import (
-    check_run_with_context_manager,
-    TABLE_DATA_3X2,
-    TABLE_DATA_3X2_SIMPLE
-)
-from test_mformat_html_core import PF_EN_NT_NC, SFTOT
 from mformat.mformat_html import MultiFormatHtml
+from .test_helpers import (TABLE_DATA_3X2, TABLE_DATA_3X2_SIMPLE,
+                           check_run_with_context_manager)
+from .test_mformat_html_core import PF_EN_NT_NC, SFTOT
 
 
 def test_simple_table(capsys):
