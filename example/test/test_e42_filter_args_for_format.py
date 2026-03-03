@@ -7,8 +7,8 @@
 
 import sys
 from pathlib import Path
-from test_e01_paragraph import EXPECTED_HTML_POST, EXPECTED_ODT_PRE
-from example_checkers import (
+from .test_e01_paragraph import EXPECTED_HTML_POST, EXPECTED_ODT_PRE
+from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
     check_rst_func,
@@ -19,7 +19,7 @@ _example_test_path = (
     Path(__file__).parent.parent / 'src'
 )
 sys.path.insert(0, str(_example_test_path))
-from e42_filter_args_for_format import filter_args_for_format_example  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
+from e42_filter_args_for_format import filter_args_for_format_example  # pylint: disable=wrong-import-position,wrong-import-order # noqa: E402,E501
 
 
 EXPECTED_MD_TEXT = [

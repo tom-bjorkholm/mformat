@@ -8,9 +8,9 @@
 import sys
 from pathlib import Path
 import pytest  # pylint: disable=unused-import # noqa: F401
-from test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, \
+from .test_e01_paragraph import EXPECTED_HTML_PRE, EXPECTED_HTML_POST, \
     EXPECTED_ODT_PRE
-from example_checkers import (
+from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
     check_rst_func,
@@ -21,7 +21,7 @@ _example_test_path = (
     Path(__file__).parent.parent / 'src'
 )
 sys.path.insert(0, str(_example_test_path))
-from e32_block_quote import block_quote_example  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
+from e32_block_quote import block_quote_example  # pylint: disable=wrong-import-position,wrong-import-order # noqa: E402,E501
 
 
 EXPECTED_MD_TEXT = [

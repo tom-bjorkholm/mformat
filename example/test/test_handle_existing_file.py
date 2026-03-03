@@ -15,7 +15,7 @@ _example_test_path = (
     Path(__file__).parent.parent / 'src'
 )
 sys.path.insert(0, str(_example_test_path))
-from e40_handle_existing_file import existing_file_example  # pylint: disable=wrong-import-position,import-error # noqa: E402,E501
+from e40_handle_existing_file import existing_file_example  # pylint: disable=wrong-import-position,wrong-import-order # noqa: E402,E501
 
 
 @pytest.mark.parametrize('format_name, extension',
