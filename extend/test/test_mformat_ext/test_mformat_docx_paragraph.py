@@ -6,8 +6,8 @@
 #
 
 import pytest
-from test_mformat_docx_core import silent_docx_create
 from mformat_ext.mformat_docx import MultiFormatDocx
+from .test_mformat_docx_core import silent_docx_create
 
 
 def test_add_url(capsys):

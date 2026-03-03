@@ -10,7 +10,7 @@ from typing import Callable
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import pytest
-import mammoth
+import mammoth  # type: ignore[import-untyped]
 from mformat_ext.mformat_docx import MultiFormatDocx
 from mformat.mformat import FormatterDescriptor
 from mformat.factory import create_mf

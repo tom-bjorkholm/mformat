@@ -7,8 +7,8 @@
 
 import sys
 from pathlib import Path
-from test_mformat_docx_core import silent_docx_create
 from mformat_ext.mformat_docx import MultiFormatDocx
+from .test_mformat_docx_core import silent_docx_create
 
 # Add base test helpers to path for shared test utilities
 _base_test_path = (

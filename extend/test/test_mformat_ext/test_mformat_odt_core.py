@@ -10,10 +10,10 @@ from typing import Callable, Any
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import pytest
-from odf.opendocument import load as odf_load
-from odf.text import P, H, Span, A
-from odf.element import Element as OdfElement
-from odf.teletype import extractText
+from odf.opendocument import load as odf_load  # type: ignore[import-untyped]
+from odf.text import P, H, Span, A  # type: ignore[import-untyped]
+from odf.element import Element as OdfElement  # type: ignore[import-untyped]
+from odf.teletype import extractText  # type: ignore[import-untyped]
 from mformat_ext.mformat_odt import MultiFormatOdt
 from mformat.mformat import FormatterDescriptor
 from mformat.factory import create_mf

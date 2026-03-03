@@ -7,9 +7,9 @@
 
 import sys
 from pathlib import Path
-from odf.text import P, List, ListItem, A
+from odf.text import P, List, ListItem, A  # type: ignore[import-untyped]
 from mformat_ext.mformat_odt import MultiFormatOdt
-from test_mformat_odt_core import (
+from .test_mformat_odt_core import (
     silent_odt_create, get_elements_by_type, get_element_text,
     get_heading_texts, get_all_text_content, has_span_with_style
 )

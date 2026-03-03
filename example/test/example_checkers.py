@@ -12,12 +12,12 @@ from tempfile import TemporaryDirectory
 import pytest
 from pymarkdown.api import PyMarkdownApi, PyMarkdownApiException, \
     PyMarkdownScanPathResult, PyMarkdownScanFailure, PyMarkdownPragmaError
-import restructuredtext_lint
+import restructuredtext_lint  # type: ignore[import-untyped]
 from html5lib import HTMLParser
 from html5lib.html5parser import ParseError
-import mammoth
-from odf.opendocument import load as odf_load
-from odf.odf2xhtml import ODF2XHTML
+import mammoth  # type: ignore[import-untyped]
+from odf.opendocument import load as odf_load  # type: ignore[import-untyped]
+from odf.odf2xhtml import ODF2XHTML  # type: ignore[import-untyped]
 
 
 def check_capsys_silent(capsys: pytest.CaptureFixture[str]) -> None:
