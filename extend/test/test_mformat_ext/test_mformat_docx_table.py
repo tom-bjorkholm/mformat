@@ -7,20 +7,20 @@
 
 import sys
 from pathlib import Path
+import pytest
 from mformat_ext.mformat_docx import MultiFormatDocx
 from .test_mformat_docx_core import silent_docx_create
 
 # Add base test helpers to path for shared test utilities
-_base_test_path = (
-    Path(__file__).parent.parent.parent.parent /
-    'base' / 'test' / 'test_mformat'
-)
+_base_test_path = (Path(__file__).parent.parent.parent.parent / 'base' /
+                   'test' / 'test_mformat')
 sys.path.insert(0, str(_base_test_path))
 # pylint: disable=wrong-import-order,wrong-import-position,import-error
 
 
-def test_simple_table(capsys):
+def test_simple_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a simple table."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_table(first_row=['Col1', 'Col2'])
         mfd.add_table_row(row=['A', 'B'])
@@ -38,8 +38,9 @@ def test_simple_table(capsys):
     assert 'D' in html
 
 
-def test_table_with_bold_header(capsys):
+def test_table_with_bold_header(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a table with bold header."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_table(first_row=['Name', 'Age'], bold=True)
         mfd.add_table_row(row=['Alice', '30'])
@@ -55,8 +56,9 @@ def test_table_with_bold_header(capsys):
     assert '25' in html
 
 
-def test_table_with_italic_header(capsys):
+def test_table_with_italic_header(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a table with italic header."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_table(first_row=['Name', 'Age'], italic=True)
         mfd.add_table_row(row=['Alice', '30'])
@@ -69,14 +71,12 @@ def test_table_with_italic_header(capsys):
     assert '30' in html
 
 
-def test_write_complete_table(capsys):
+def test_write_complete_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test write_complete_table method."""
+
     def func(mfd: MultiFormatDocx) -> None:
-        table_data = [
-            ['Header1', 'Header2'],
-            ['Row1Col1', 'Row1Col2'],
-            ['Row2Col1', 'Row2Col2']
-        ]
+        table_data = [['Header1', 'Header2'], ['Row1Col1', 'Row1Col2'],
+                      ['Row2Col1', 'Row2Col2']]
         mfd.write_complete_table(table=table_data)
 
     html = silent_docx_create(capsys, func=func)
@@ -89,14 +89,12 @@ def test_write_complete_table(capsys):
     assert 'Row2Col2' in html
 
 
-def test_write_complete_table_with_bold_header(capsys):
+def test_write_complete_table_with_bold_header(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test write_complete_table with bold first row."""
+
     def func(mfd: MultiFormatDocx) -> None:
-        table_data = [
-            ['Name', 'Value'],
-            ['Alpha', '1'],
-            ['Beta', '2']
-        ]
+        table_data = [['Name', 'Value'], ['Alpha', '1'], ['Beta', '2']]
         mfd.write_complete_table(table=table_data, bold_first_row=True)
 
     html = silent_docx_create(capsys, func=func)
@@ -109,8 +107,9 @@ def test_write_complete_table_with_bold_header(capsys):
     assert '2' in html
 
 
-def test_paragraph_then_table(capsys):
+def test_paragraph_then_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by table."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_paragraph(text='Here is a table:')
         mfd.new_table(first_row=['A', 'B'])
@@ -125,8 +124,9 @@ def test_paragraph_then_table(capsys):
     assert '2' in html
 
 
-def test_table_then_paragraph(capsys):
+def test_table_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test table followed by paragraph."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_table(first_row=['X', 'Y'])
         mfd.add_table_row(row=['1', '2'])
@@ -141,8 +141,9 @@ def test_table_then_paragraph(capsys):
     assert '<p>That was the table.</p>' in html
 
 
-def test_heading_then_table(capsys):
+def test_heading_then_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by table."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_heading(level=2, text='Data Table')
         mfd.new_table(first_row=['Col1', 'Col2'])
@@ -157,8 +158,9 @@ def test_heading_then_table(capsys):
     assert 'B' in html
 
 
-def test_table_with_three_columns(capsys):
+def test_table_with_three_columns(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a table with three columns."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_table(first_row=['Name', 'Age', 'City'])
         mfd.add_table_row(row=['Alice', '30', 'NYC'])

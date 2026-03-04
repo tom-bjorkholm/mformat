@@ -6,7 +6,7 @@
 #
 
 import sys
-from typing import Callable, Any
+from typing import Any, Callable, cast
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import pytest
@@ -16,17 +16,14 @@ from odf.element import Element as OdfElement  # type: ignore[import-untyped]
 from odf.teletype import extractText  # type: ignore[import-untyped]
 from mformat_ext.mformat_odt import MultiFormatOdt
 from mformat.mformat import FormatterDescriptor
-from mformat.factory import create_mf
+from mformat.factory import OptArgsDict, create_mf
 
 # Add base test helpers to path for shared test utilities
-_base_test_path = (
-    Path(__file__).parent.parent.parent.parent /
-    'base' / 'test'
-)
+_base_test_path = (Path(__file__).parent.parent.parent.parent / 'base' /
+                   'test')
 sys.path.insert(0, str(_base_test_path))
 # pylint: disable=wrong-import-order,wrong-import-position,import-error
 from test_mformat.check_capsys import check_capsys  # noqa: E402
-
 
 # --- Helper functions for ODT tests ---
 
@@ -42,7 +39,7 @@ def get_element_text(element: OdfElement) -> str:
     Returns:
         The concatenated text content of the element and all children.
     """
-    return extractText(element)
+    return cast(str, extractText(element))
 
 
 def get_elements_by_type(doc: Any, element_type: type) -> list[Any]:
@@ -55,14 +52,13 @@ def get_elements_by_type(doc: Any, element_type: type) -> list[Any]:
     Returns:
         A list of elements of the specified type.
     """
-    return doc.getElementsByType(element_type)
+    return cast(list[Any], doc.getElementsByType(element_type))
 
 
-def silent_odt_create(
-        capsys: pytest.CaptureFixture[str],
-        func: Callable[[MultiFormatOdt], None],
-        fname: str = 'test.odt',
-        lang: str = 'en-UK') -> Any:
+def silent_odt_create(capsys: pytest.CaptureFixture[str],
+                      func: Callable[[MultiFormatOdt], None],
+                      fname: str = 'test.odt',
+                      lang: str = 'en-UK') -> Any:
     """Create an ODT file silently and return the loaded document.
 
     func is expected to write to the file silently.
@@ -81,12 +77,14 @@ def silent_odt_create(
     """
     with TemporaryDirectory() as tmp_dir:
         fpath = str(Path(tmp_dir) / fname)
-        args = {'lang': lang} if lang != 'en-UK' else None
-        if args:
+        args: OptArgsDict | None = {'lang': lang} if lang != 'en-UK' else None
+        if args is not None:
             with create_mf('odt', file_name=fpath, args=args) as mfo:
+                assert isinstance(mfo, MultiFormatOdt)
                 func(mfo)
         else:
             with create_mf('odt', file_name=fpath) as mfo:
+                assert isinstance(mfo, MultiFormatOdt)
                 func(mfo)
         assert Path(fpath).exists()
         assert Path(fpath).stat().st_size > 0
@@ -181,7 +179,7 @@ def has_link_with_url(element: OdfElement, url: str) -> bool:
 # --- Tests for file extension and argument description ---
 
 
-def test_file_name_extension(capsys):
+def test_file_name_extension(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the file_name_extension method."""
     assert MultiFormatOdt.file_name_extension() == '.odt'
     out, err = capsys.readouterr()
@@ -189,7 +187,7 @@ def test_file_name_extension(capsys):
     assert out == ''
 
 
-def test_get_arg_desciption(capsys):
+def test_get_arg_desciption(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the get_arg_desciption method."""
     assert MultiFormatOdt.get_arg_desciption() == \
         FormatterDescriptor(name='odt', mandatory_args=[],
@@ -203,8 +201,9 @@ def test_get_arg_desciption(capsys):
 
 
 @pytest.mark.parametrize('fname', ['test.odt', 'other.odt'])
-def test_create_ok(capsys, fname):
+def test_create_ok(capsys: pytest.CaptureFixture[str], fname: str) -> None:
     """Test the shortcut create function with an OK class."""
+
     def func(mfo: MultiFormatOdt) -> None:
         assert type(mfo).__name__ == 'MultiFormatOdt'
         mfo.new_paragraph(text='Test content')
@@ -213,11 +212,11 @@ def test_create_ok(capsys, fname):
     assert doc is not None
 
 
-def test_create_nok(capsys):
+def test_create_nok(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the shortcut create function with a not OK class."""
     with pytest.raises(TypeError) as exc:
-        args = {'output': 'test.odt'}
-        with create_mf('odt', file_name='test.odt', args=args) as _:
+        invalid_args = cast(Any, {'output': 'test.odt'})
+        with create_mf('odt', file_name='test.odt', args=invalid_args) as _:
             pass
     assert "MultiFormatOdt.__init__() got an unexpected " + \
         "keyword argument 'output'" in exc.value.args[0]
@@ -230,8 +229,10 @@ def test_create_nok(capsys):
 
 
 @pytest.mark.parametrize('lang', ['en-UK', 'en-US', 'sv-SE', 'de-DE', 'fr-FR'])
-def test_language_parameter(capsys, lang):
+def test_language_parameter(capsys: pytest.CaptureFixture[str],
+                            lang: str) -> None:
     """Test creating ODT with different language parameters."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='Test content')
 
@@ -246,8 +247,10 @@ def test_language_parameter(capsys, lang):
 
 
 @pytest.mark.parametrize('level', [1, 2, 3, 4, 5, 6])
-def test_heading_creation(capsys, level):
+def test_heading_creation(capsys: pytest.CaptureFixture[str],
+                          level: int) -> None:
     """Test creating headings at different levels."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_heading(level=level, text=f'Heading Level {level}')
 
@@ -257,8 +260,9 @@ def test_heading_creation(capsys, level):
     assert headings[0] == (level, f'Heading Level {level}')
 
 
-def test_heading_with_text(capsys):
+def test_heading_with_text(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading with additional text."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_heading(level=1, text='Main Title')
         mfo.add_text(text=' - Extended')
@@ -269,8 +273,9 @@ def test_heading_with_text(capsys):
     assert headings[0] == (1, 'Main Title - Extended')
 
 
-def test_heading_with_url(capsys):
+def test_heading_with_url(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading with URL."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_heading(level=2, text='Check ')
         mfo.add_url(url='http://example.com', text='this link')
@@ -285,8 +290,9 @@ def test_heading_with_url(capsys):
         assert has_link_with_url(heading, 'http://example.com')
 
 
-def test_heading_then_paragraph(capsys):
+def test_heading_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by paragraph."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_heading(level=1, text='Title')
         mfo.new_paragraph('Some text')
@@ -299,8 +305,9 @@ def test_heading_then_paragraph(capsys):
     assert 'Some text' in all_text
 
 
-def test_multiple_headings(capsys):
+def test_multiple_headings(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple headings."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_heading(level=1, text='Main')
         mfo.new_heading(level=2, text='Sub')
@@ -314,8 +321,9 @@ def test_multiple_headings(capsys):
     assert headings[2] == (3, 'Subsub')
 
 
-def test_heading_paragraph_heading(capsys):
+def test_heading_paragraph_heading(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading, paragraph, then another heading."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_heading(level=1, text='First Heading')
         mfo.new_paragraph('Some content here.')
@@ -335,11 +343,15 @@ def test_heading_paragraph_heading(capsys):
     (False, True, 'italic'),
     (True, True, 'bold-italic'),
 ])
-def test_heading_formatting(capsys, bold, italic, expected_style):
+def test_heading_formatting(capsys: pytest.CaptureFixture[str], bold: bool,
+                            italic: bool, expected_style: str) -> None:
     """Test heading with bold and italic formatting."""
+
     def func(mfo: MultiFormatOdt) -> None:
-        mfo.new_heading(level=1, text='Formatted Title',
-                        bold=bold, italic=italic)
+        mfo.new_heading(level=1,
+                        text='Formatted Title',
+                        bold=bold,
+                        italic=italic)
 
     doc = silent_odt_create(capsys, func=func)
     headings = get_heading_texts(doc)
@@ -353,8 +365,9 @@ def test_heading_formatting(capsys, bold, italic, expected_style):
 # --- Tests for code blocks ---
 
 
-def test_simple_code_block(capsys):
+def test_simple_code_block(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a simple code block."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.write_code_block(text='print("Hello, World!")')
 
@@ -363,8 +376,9 @@ def test_simple_code_block(capsys):
     assert 'print("Hello, World!")' in all_text
 
 
-def test_code_block_with_language(capsys):
+def test_code_block_with_language(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a code block with programming language."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.write_code_block(text='print("Hello")',
                              programming_language='python')
@@ -374,8 +388,9 @@ def test_code_block_with_language(capsys):
     assert 'print("Hello")' in all_text
 
 
-def test_code_block_multiline(capsys):
+def test_code_block_multiline(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a multiline code block."""
+
     def func(mfo: MultiFormatOdt) -> None:
         code = 'def hello():\n    print("Hello")\n    return True'
         mfo.write_code_block(text=code, programming_language='python')
@@ -387,8 +402,10 @@ def test_code_block_multiline(capsys):
     assert 'return True' in all_text
 
 
-def test_code_block_with_special_chars(capsys):
+def test_code_block_with_special_chars(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test a code block with special characters."""
+
     def func(mfo: MultiFormatOdt) -> None:
         code = 'x = "test <>&"\ny = \'another\''
         mfo.write_code_block(text=code)
@@ -399,8 +416,9 @@ def test_code_block_with_special_chars(capsys):
     assert "y = 'another'" in all_text
 
 
-def test_code_block_style(capsys):
+def test_code_block_style(capsys: pytest.CaptureFixture[str]) -> None:
     """Test that code block paragraphs have the code style."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.write_code_block(text='x = 42')
 
@@ -415,8 +433,9 @@ def test_code_block_style(capsys):
     assert 'x = 42' in get_element_text(code_paragraphs[0])
 
 
-def test_paragraph_then_code_block(capsys):
+def test_paragraph_then_code_block(capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by code block."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='Here is some code:')
         mfo.write_code_block(text='x = 42', programming_language='python')
@@ -427,8 +446,9 @@ def test_paragraph_then_code_block(capsys):
     assert 'x = 42' in all_text
 
 
-def test_code_block_then_paragraph(capsys):
+def test_code_block_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test code block followed by paragraph."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.write_code_block(text='x = 42')
         mfo.new_paragraph(text='That was the code.')
@@ -439,8 +459,9 @@ def test_code_block_then_paragraph(capsys):
     assert 'That was the code.' in all_text
 
 
-def test_heading_then_code_block(capsys):
+def test_heading_then_code_block(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by code block."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_heading(level=2, text='Code Example')
         mfo.write_code_block(text='example()', programming_language='python')
@@ -453,8 +474,9 @@ def test_heading_then_code_block(capsys):
     assert 'example()' in all_text
 
 
-def test_multiple_code_blocks(capsys):
+def test_multiple_code_blocks(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple code blocks."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.write_code_block(text='x = 1', programming_language='python')
         mfo.write_code_block(text='y = 2', programming_language='python')
@@ -468,8 +490,9 @@ def test_multiple_code_blocks(capsys):
 # --- Tests for empty content ---
 
 
-def test_empty_document(capsys):
+def test_empty_document(capsys: pytest.CaptureFixture[str]) -> None:
     """Test that an empty document does not create a file."""
+
     def func(mfo: MultiFormatOdt) -> None:
         # Do nothing - empty document
         assert mfo is not None  # Silence unused argument warning
@@ -477,6 +500,7 @@ def test_empty_document(capsys):
     with TemporaryDirectory() as tmp_dir:
         fpath = str(Path(tmp_dir) / 'empty.odt')
         with create_mf('odt', file_name=fpath) as mfo:
+            assert isinstance(mfo, MultiFormatOdt)
             func(mfo)
         # Empty documents should not create a file (state is EMPTY)
         # or create a minimal file - check what happens
@@ -486,8 +510,10 @@ def test_empty_document(capsys):
 # --- Tests for special characters ---
 
 
-def test_special_characters_in_heading(capsys):
+def test_special_characters_in_heading(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test special characters in heading text."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_heading(level=1, text='Test <>&"\'')
 
@@ -500,8 +526,10 @@ def test_special_characters_in_heading(capsys):
 
 # --- Tests for add_code_in_text ---
 
-def test_add_code_in_text_heading(capsys):
+
+def test_add_code_in_text_heading(capsys: pytest.CaptureFixture[str]) -> None:
     """Test add_code_in_text in heading."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_heading(level=1, text='Code Example')
         mfo.add_code_in_text(text='example()')
@@ -512,8 +540,9 @@ def test_add_code_in_text_heading(capsys):
     assert headings[0] == (1, 'Code Example example()')
 
 
-def test_add_code_in_bullet_item(capsys):
+def test_add_code_in_bullet_item(capsys: pytest.CaptureFixture[str]) -> None:
     """Test add_code_in_text in bullet item."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_bullet_item(text='Code Example')
         mfo.add_code_in_text(text='example()')
@@ -523,8 +552,9 @@ def test_add_code_in_bullet_item(capsys):
     assert 'Code Example example()' in texts
 
 
-def test_add_code_in_numbered_item(capsys):
+def test_add_code_in_numbered_item(capsys: pytest.CaptureFixture[str]) -> None:
     """Test add_code_in_text in numbered item."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_numbered_point_item(text='Code Example')
         mfo.add_code_in_text(text='example()')
@@ -537,8 +567,9 @@ def test_add_code_in_numbered_item(capsys):
 # --- Tests for block quotes ---
 
 
-def test_simple_block_quote(capsys):
+def test_simple_block_quote(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a simple block quote."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_block_quote(text='This is a quote.')
 
@@ -547,8 +578,9 @@ def test_simple_block_quote(capsys):
     assert 'This is a quote.' in all_text
 
 
-def test_block_quote_with_add_text(capsys):
+def test_block_quote_with_add_text(capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote with additional text."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_block_quote(text='Start of quote')
         mfo.add_text(text=' and more text.')
@@ -563,8 +595,10 @@ def test_block_quote_with_add_text(capsys):
     (False, True, 'italic'),
     (True, True, 'bold-italic'),
 ])
-def test_block_quote_formatting(capsys, bold, italic, expected_style):
+def test_block_quote_formatting(capsys: pytest.CaptureFixture[str], bold: bool,
+                                italic: bool, expected_style: str) -> None:
     """Test block quote with bold and italic formatting."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_block_quote(text='Formatted quote', bold=bold, italic=italic)
 
@@ -577,8 +611,10 @@ def test_block_quote_formatting(capsys, bold, italic, expected_style):
             assert has_span_with_style(para, expected_style)
 
 
-def test_block_quote_with_url(capsys):  # pylint: disable=duplicate-code
+def test_block_quote_with_url(capsys: pytest.CaptureFixture[str]
+                              ) -> None:  # pylint: disable=duplicate-code
     """Test block quote with URL."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_block_quote(text='See ')
         mfo.add_url(url='http://any.com', text='any link')
@@ -593,8 +629,10 @@ def test_block_quote_with_url(capsys):  # pylint: disable=duplicate-code
             assert has_link_with_url(para, 'http://any.com')
 
 
-def test_block_quote_with_code_in_text(capsys):
+def test_block_quote_with_code_in_text(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote with inline code."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_block_quote(text='Use the')
         mfo.add_code_in_text(text='print()')
@@ -607,8 +645,9 @@ def test_block_quote_with_code_in_text(capsys):
     assert 'function.' in all_text
 
 
-def test_block_quote_style(capsys):
+def test_block_quote_style(capsys: pytest.CaptureFixture[str]) -> None:
     """Test that block quote paragraphs have the block-quote style."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_block_quote(text='Styled quote')
 
@@ -623,8 +662,10 @@ def test_block_quote_style(capsys):
     assert 'Styled quote' in get_element_text(block_quote_paragraphs[0])
 
 
-def test_block_quote_then_paragraph(capsys):
+def test_block_quote_then_paragraph(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote followed by paragraph."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_block_quote(text='A quoted text.')
         mfo.new_paragraph(text='A normal paragraph.')
@@ -635,8 +676,10 @@ def test_block_quote_then_paragraph(capsys):
     assert 'A normal paragraph.' in all_text
 
 
-def test_paragraph_then_block_quote(capsys):
+def test_paragraph_then_block_quote(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by block quote."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='A normal paragraph.')
         mfo.new_block_quote(text='A quoted text.')
@@ -647,8 +690,9 @@ def test_paragraph_then_block_quote(capsys):
     assert 'A quoted text.' in all_text
 
 
-def test_heading_then_block_quote(capsys):
+def test_heading_then_block_quote(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by block quote."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_heading(level=2, text='Quote Section')
         mfo.new_block_quote(text='This is quoted.')
@@ -661,8 +705,9 @@ def test_heading_then_block_quote(capsys):
     assert 'This is quoted.' in all_text
 
 
-def test_multiple_block_quotes(capsys):
+def test_multiple_block_quotes(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple block quotes in sequence."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_block_quote(text='First quote.')
         mfo.new_block_quote(text='Second quote.')
@@ -673,8 +718,10 @@ def test_multiple_block_quotes(capsys):
     assert 'Second quote.' in all_text
 
 
-def test_block_quote_then_code_block(capsys):
+def test_block_quote_then_code_block(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote followed by code block."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_block_quote(text='Here is some code:')
         mfo.write_code_block(text='x = 42', programming_language='python')

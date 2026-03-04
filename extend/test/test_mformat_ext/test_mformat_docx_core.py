@@ -6,7 +6,7 @@
 #
 
 import sys
-from typing import Callable
+from typing import Any, Callable, cast
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import pytest
@@ -16,16 +16,14 @@ from mformat.mformat import FormatterDescriptor
 from mformat.factory import create_mf
 
 # Add base test helpers to path for shared test utilities
-_base_test_path = (
-    Path(__file__).parent.parent.parent.parent /
-    'base' / 'test'
-)
+_base_test_path = (Path(__file__).parent.parent.parent.parent / 'base' /
+                   'test')
 sys.path.insert(0, str(_base_test_path))
 # pylint: disable=wrong-import-order,wrong-import-position,import-error
 from test_mformat.check_capsys import check_capsys  # noqa: E402
 
 
-def test_file_name_extension(capsys):
+def test_file_name_extension(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the file_name_extension method."""
     assert MultiFormatDocx.file_name_extension() == '.docx'
     out, err = capsys.readouterr()
@@ -33,7 +31,7 @@ def test_file_name_extension(capsys):
     assert out == ''
 
 
-def test_get_arg_desciption(capsys):
+def test_get_arg_desciption(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the get_arg_desciption method."""
     assert MultiFormatDocx.get_arg_desciption() == \
         FormatterDescriptor(name='docx', mandatory_args=[],
@@ -43,7 +41,7 @@ def test_get_arg_desciption(capsys):
     assert out == ''
 
 
-def silent_docx_create(capsys,
+def silent_docx_create(capsys: pytest.CaptureFixture[str],
                        func: Callable[[MultiFormatDocx], None],
                        fname: str = 'test.docx') -> str:
     """Check that func can write to a docx file silently.
@@ -58,6 +56,7 @@ def silent_docx_create(capsys,
     with TemporaryDirectory() as tmp_dir:
         fpath = str(Path(tmp_dir) / fname)
         with create_mf('docx', file_name=fpath) as mfd:
+            assert isinstance(mfd, MultiFormatDocx)
             func(mfd)
         assert Path(fpath).exists()
         assert Path(fpath).stat().st_size > 0
@@ -66,23 +65,24 @@ def silent_docx_create(capsys,
             content = mammoth.convert_to_html(f)
             for msg in content.messages:
                 assert msg.type == 'warning'
-            return content.value
+            return cast(str, content.value)
 
 
 @pytest.mark.parametrize('fname', ['test.docx', 'other.docx'])
-def test_create_ok(capsys, fname):
+def test_create_ok(capsys: pytest.CaptureFixture[str], fname: str) -> None:
     """Test the shortcut create function with an OK class."""
+
     def func(mfd: MultiFormatDocx) -> None:
         assert type(mfd).__name__ == 'MultiFormatDocx'
 
     silent_docx_create(capsys, func=func, fname=fname)
 
 
-def test_create_nok(capsys):
+def test_create_nok(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the shortcut create function with a not OK class."""
     with pytest.raises(TypeError) as exc:
-        args = {'output': 'test.docx'}
-        with create_mf('docx', file_name='test.docx', args=args) as _:
+        invalid_args = cast(Any, {'output': 'test.docx'})
+        with create_mf('docx', file_name='test.docx', args=invalid_args) as _:
             pass
     assert "MultiFormatDocx.__init__() got an unexpected " + \
         "keyword argument 'output'" in exc.value.args[0]
@@ -92,8 +92,10 @@ def test_create_nok(capsys):
 
 
 @pytest.mark.parametrize('level', [1, 2, 3, 4, 5, 6])
-def test_heading_creation(capsys, level):
+def test_heading_creation(capsys: pytest.CaptureFixture[str],
+                          level: int) -> None:
     """Test creating headings at different levels."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_heading(level=level, text=f'Heading Level {level}')
 
@@ -101,8 +103,9 @@ def test_heading_creation(capsys, level):
     assert f'<h{level}>Heading Level {level}</h{level}>' in html
 
 
-def test_heading_with_text(capsys):
+def test_heading_with_text(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading with additional text."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_heading(level=1, text='Main Title')
         mfd.add_text(text=' - Extended')
@@ -111,8 +114,9 @@ def test_heading_with_text(capsys):
     assert '<h1>Main Title - Extended</h1>' in html
 
 
-def test_heading_with_url(capsys):
+def test_heading_with_url(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading with URL."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_heading(level=2, text='Check ')
         mfd.add_url(url='http://example.com', text='this link')
@@ -123,8 +127,9 @@ def test_heading_with_url(capsys):
     assert '<a href="http://example.com">this link</a>' in html
 
 
-def test_heading_then_paragraph(capsys):
+def test_heading_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by paragraph."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_heading(level=1, text='Title')
         mfd.new_paragraph('Some text')
@@ -134,8 +139,9 @@ def test_heading_then_paragraph(capsys):
     assert '<p>Some text</p>' in html
 
 
-def test_multiple_headings(capsys):
+def test_multiple_headings(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple headings."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_heading(level=1, text='Main')
         mfd.new_heading(level=2, text='Sub')
@@ -147,8 +153,9 @@ def test_multiple_headings(capsys):
     assert '<h3>Subsub</h3>' in html
 
 
-def test_heading_paragraph_heading(capsys):
+def test_heading_paragraph_heading(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading, paragraph, then another heading."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_heading(level=1, text='First Heading')
         mfd.new_paragraph('Some content here.')
@@ -160,15 +167,17 @@ def test_heading_paragraph_heading(capsys):
     assert '<h2>Second Heading</h2>' in html
 
 
-@pytest.mark.parametrize('bold, italic',
-                         [(True, False),
-                          (False, True),
-                          (True, True)])
-def test_heading_formatting(capsys, bold, italic):
+@pytest.mark.parametrize('bold, italic', [(True, False), (False, True),
+                                          (True, True)])
+def test_heading_formatting(capsys: pytest.CaptureFixture[str], bold: bool,
+                            italic: bool) -> None:
     """Test heading with bold and italic formatting."""
+
     def func(mfd: MultiFormatDocx) -> None:
-        mfd.new_heading(level=1, text='Formatted Title',
-                        bold=bold, italic=italic)
+        mfd.new_heading(level=1,
+                        text='Formatted Title',
+                        bold=bold,
+                        italic=italic)
 
     html = silent_docx_create(capsys, func=func)
     assert '<h1>' in html
@@ -182,8 +191,9 @@ def test_heading_formatting(capsys, bold, italic):
 # Tests for code blocks
 
 
-def test_simple_code_block(capsys):
+def test_simple_code_block(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a simple code block."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.write_code_block(text='print("Hello, World!")')
 
@@ -193,8 +203,9 @@ def test_simple_code_block(capsys):
     assert 'Hello, World!' in html
 
 
-def test_code_block_with_language(capsys):
+def test_code_block_with_language(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a code block with programming language."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.write_code_block(text='print("Hello")',
                              programming_language='python')
@@ -205,8 +216,9 @@ def test_code_block_with_language(capsys):
     assert 'Hello' in html
 
 
-def test_code_block_multiline(capsys):
+def test_code_block_multiline(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a multiline code block."""
+
     def func(mfd: MultiFormatDocx) -> None:
         code = 'def hello():\n    print("Hello")\n    return True'
         mfd.write_code_block(text=code, programming_language='python')
@@ -218,8 +230,10 @@ def test_code_block_multiline(capsys):
     assert 'return True' in html
 
 
-def test_code_block_with_special_chars(capsys):
+def test_code_block_with_special_chars(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test a code block with special characters."""
+
     def func(mfd: MultiFormatDocx) -> None:
         code = 'x = "test <>&"\ny = \'another\''
         mfd.write_code_block(text=code)
@@ -232,8 +246,9 @@ def test_code_block_with_special_chars(capsys):
     assert "y = 'another'" in html
 
 
-def test_paragraph_then_code_block(capsys):
+def test_paragraph_then_code_block(capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by code block."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_paragraph(text='Here is some code:')
         mfd.write_code_block(text='x = 42', programming_language='python')
@@ -243,8 +258,9 @@ def test_paragraph_then_code_block(capsys):
     assert 'x = 42' in html
 
 
-def test_code_block_then_paragraph(capsys):
+def test_code_block_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test code block followed by paragraph."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.write_code_block(text='x = 42')
         mfd.new_paragraph(text='That was the code.')
@@ -254,8 +270,9 @@ def test_code_block_then_paragraph(capsys):
     assert '<p>That was the code.</p>' in html
 
 
-def test_heading_then_code_block(capsys):
+def test_heading_then_code_block(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by code block."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_heading(level=2, text='Code Example')
         mfd.write_code_block(text='example()', programming_language='python')
@@ -265,8 +282,9 @@ def test_heading_then_code_block(capsys):
     assert 'example()' in html
 
 
-def test_multiple_code_blocks(capsys):
+def test_multiple_code_blocks(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple code blocks."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.write_code_block(text='x = 1', programming_language='python')
         mfd.write_code_block(text='y = 2', programming_language='python')
@@ -279,8 +297,9 @@ def test_multiple_code_blocks(capsys):
 # Tests for block quotes
 
 
-def test_simple_block_quote(capsys):
+def test_simple_block_quote(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a simple block quote."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_block_quote(text='This is a quote.')
 
@@ -288,8 +307,9 @@ def test_simple_block_quote(capsys):
     assert 'This is a quote.' in html
 
 
-def test_block_quote_with_add_text(capsys):
+def test_block_quote_with_add_text(capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote with additional text."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_block_quote(text='Start of quote')
         mfd.add_text(text=' and more text.')
@@ -304,8 +324,10 @@ def test_block_quote_with_add_text(capsys):
     (False, True),
     (True, True),
 ])
-def test_block_quote_formatting(capsys, bold, italic):
+def test_block_quote_formatting(capsys: pytest.CaptureFixture[str], bold: bool,
+                                italic: bool) -> None:
     """Test block quote with bold and italic formatting."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_block_quote(text='Formatted quote', bold=bold, italic=italic)
 
@@ -317,8 +339,9 @@ def test_block_quote_formatting(capsys, bold, italic):
         assert '<em>' in html
 
 
-def test_block_quote_with_url(capsys):
+def test_block_quote_with_url(capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote with URL."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_block_quote(text='Check ')
         mfd.add_url(url='http://example.com', text='this link')
@@ -328,8 +351,10 @@ def test_block_quote_with_url(capsys):
     assert '<a href="http://example.com">this link</a>' in html
 
 
-def test_block_quote_with_code_in_text(capsys):
+def test_block_quote_with_code_in_text(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote with inline code."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_block_quote(text='Use the')
         mfd.add_code_in_text(text='print()')
@@ -341,8 +366,10 @@ def test_block_quote_with_code_in_text(capsys):
     assert 'function.' in html
 
 
-def test_block_quote_then_paragraph(capsys):
+def test_block_quote_then_paragraph(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote followed by paragraph."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_block_quote(text='A quoted text.')
         mfd.new_paragraph(text='A normal paragraph.')
@@ -352,8 +379,10 @@ def test_block_quote_then_paragraph(capsys):
     assert '<p>A normal paragraph.</p>' in html
 
 
-def test_paragraph_then_block_quote(capsys):
+def test_paragraph_then_block_quote(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by block quote."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_paragraph(text='A normal paragraph.')
         mfd.new_block_quote(text='A quoted text.')
@@ -363,8 +392,9 @@ def test_paragraph_then_block_quote(capsys):
     assert 'A quoted text.' in html
 
 
-def test_heading_then_block_quote(capsys):
+def test_heading_then_block_quote(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by block quote."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_heading(level=2, text='Quote Section')
         mfd.new_block_quote(text='This is quoted.')
@@ -374,8 +404,9 @@ def test_heading_then_block_quote(capsys):
     assert 'This is quoted.' in html
 
 
-def test_multiple_block_quotes(capsys):
+def test_multiple_block_quotes(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple block quotes in sequence."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_block_quote(text='First quote.')
         mfd.new_block_quote(text='Second quote.')
@@ -385,8 +416,10 @@ def test_multiple_block_quotes(capsys):
     assert 'Second quote.' in html
 
 
-def test_block_quote_then_code_block(capsys):
+def test_block_quote_then_code_block(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test block quote followed by code block."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_block_quote(text='Here is some code:')
         mfd.write_code_block(text='x = 42', programming_language='python')

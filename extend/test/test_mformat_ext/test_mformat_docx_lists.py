@@ -12,19 +12,19 @@ from mformat_ext.mformat_docx import MultiFormatDocx
 from .test_mformat_docx_core import silent_docx_create
 
 # Add base test helpers to path for shared test utilities
-_base_test_path = (
-    Path(__file__).parent.parent.parent.parent /
-    'base' / 'test'
-)
+_base_test_path = (Path(__file__).parent.parent.parent.parent / 'base' /
+                   'test')
 sys.path.insert(0, str(_base_test_path))
 # pylint: disable=wrong-import-order,wrong-import-position,import-error
 from test_mformat.check_capsys import check_capsys  # noqa: E402
-from test_mformat.test_helpers import \
-    action_complex_nested_bullet_structure  # noqa: E402
+from test_mformat.test_helpers import (  # noqa: E402
+    action_complex_nested_bullet_structure,
+)
 
 
-def test_single_bullet_item(capsys):
+def test_single_bullet_item(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a single bullet item."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_bullet_item(text='First item')
 
@@ -34,8 +34,9 @@ def test_single_bullet_item(capsys):
     assert '</ul>' in html
 
 
-def test_multiple_bullet_items(capsys):
+def test_multiple_bullet_items(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple bullet items."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_bullet_item(text='First item')
         mfd.new_bullet_item(text='Second item')
@@ -48,8 +49,9 @@ def test_multiple_bullet_items(capsys):
     assert '<li>Third item</li>' in html
 
 
-def test_bullet_item_with_add_text(capsys):
+def test_bullet_item_with_add_text(capsys: pytest.CaptureFixture[str]) -> None:
     """Test bullet item with additional text."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_bullet_item(text='First item')
         mfd.add_text(text=' with more text')
@@ -59,8 +61,9 @@ def test_bullet_item_with_add_text(capsys):
     assert '<li>First item with more text</li>' in html
 
 
-def test_bullet_item_with_url(capsys):
+def test_bullet_item_with_url(capsys: pytest.CaptureFixture[str]) -> None:
     """Test bullet item with URL."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_bullet_item(text='Check ')
         mfd.add_url(url='http://example.com', text='this link')
@@ -71,8 +74,10 @@ def test_bullet_item_with_url(capsys):
     assert '<a href="http://example.com">this link</a>' in html
 
 
-def test_nested_bullet_items_level2(capsys):
+def test_nested_bullet_items_level2(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested bullet items at level 2."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_bullet_item(text='Level 1', level=1)
         mfd.new_bullet_item(text='Level 2', level=2)
@@ -83,8 +88,10 @@ def test_nested_bullet_items_level2(capsys):
     assert 'Level 2' in html
 
 
-def test_nested_bullet_items_level3(capsys):
+def test_nested_bullet_items_level3(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested bullet items at level 3."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_bullet_item(text='Level 1', level=1)
         mfd.new_bullet_item(text='Level 2', level=2)
@@ -97,8 +104,10 @@ def test_nested_bullet_items_level3(capsys):
     assert 'Level 3' in html
 
 
-def test_bullet_list_back_to_level1(capsys):
+def test_bullet_list_back_to_level1(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test bullet list returning to level 1."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_bullet_item(text='Level 1 first', level=1)
         mfd.new_bullet_item(text='Level 2', level=2)
@@ -111,8 +120,9 @@ def test_bullet_list_back_to_level1(capsys):
     assert 'Level 1 second' in html
 
 
-def test_bullet_list_formatting(capsys):
+def test_bullet_list_formatting(capsys: pytest.CaptureFixture[str]) -> None:
     """Test bullet list with bold and italic."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_bullet_item(text='Bold item', bold=True)
         mfd.new_bullet_item(text='Italic item', italic=True)
@@ -125,8 +135,10 @@ def test_bullet_list_formatting(capsys):
     assert 'Both' in html
 
 
-def test_paragraph_then_bullet_list(capsys):
+def test_paragraph_then_bullet_list(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by bullet list."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_paragraph(text='Intro paragraph')
         mfd.new_bullet_item(text='First item')
@@ -139,8 +151,10 @@ def test_paragraph_then_bullet_list(capsys):
     assert '<li>Second item</li>' in html
 
 
-def test_bullet_list_then_paragraph(capsys):
+def test_bullet_list_then_paragraph(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test bullet list followed by paragraph."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_bullet_item(text='First item')
         mfd.new_bullet_item(text='Second item')
@@ -153,8 +167,9 @@ def test_bullet_list_then_paragraph(capsys):
     assert '<p>Concluding paragraph</p>' in html
 
 
-def test_heading_then_bullet_list(capsys):
+def test_heading_then_bullet_list(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by bullet list."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_heading(level=1, text='Main Title')
         mfd.new_bullet_item(text='First item')
@@ -167,8 +182,9 @@ def test_heading_then_bullet_list(capsys):
     assert '<li>Second item</li>' in html
 
 
-def test_complex_nested_structure(capsys):
+def test_complex_nested_structure(capsys: pytest.CaptureFixture[str]) -> None:
     """Test complex nested bullet structure."""
+
     def func(mfd: MultiFormatDocx) -> None:
         action_complex_nested_bullet_structure(mfd)
 
@@ -183,8 +199,9 @@ def test_complex_nested_structure(capsys):
 # Tests for numbered point lists
 
 
-def test_single_numbered_item(capsys):
+def test_single_numbered_item(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a single numbered point item."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_numbered_point_item(text='First item')
 
@@ -194,8 +211,9 @@ def test_single_numbered_item(capsys):
     assert '</ol>' in html
 
 
-def test_multiple_numbered_items(capsys):
+def test_multiple_numbered_items(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple numbered point items."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_numbered_point_item(text='First item')
         mfd.new_numbered_point_item(text='Second item')
@@ -209,8 +227,10 @@ def test_multiple_numbered_items(capsys):
     assert '</ol>' in html
 
 
-def test_numbered_item_with_add_text(capsys):
+def test_numbered_item_with_add_text(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test numbered point item with additional text."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_numbered_point_item(text='First item')
         mfd.add_text(text=' with more text')
@@ -220,8 +240,9 @@ def test_numbered_item_with_add_text(capsys):
     assert '<li>First item with more text</li>' in html
 
 
-def test_numbered_item_with_url(capsys):
+def test_numbered_item_with_url(capsys: pytest.CaptureFixture[str]) -> None:
     """Test numbered point item with URL."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_numbered_point_item(text='Check ')
         mfd.add_url(url='http://example.com', text='this link')
@@ -233,8 +254,10 @@ def test_numbered_item_with_url(capsys):
     assert '</ol>' in html
 
 
-def test_nested_numbered_items_level2(capsys):
+def test_nested_numbered_items_level2(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested numbered point items at level 2."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_numbered_point_item(text='Level 1', level=1)
         mfd.new_numbered_point_item(text='Level 2', level=2)
@@ -247,8 +270,10 @@ def test_nested_numbered_items_level2(capsys):
     assert html.count('</ol>') == 2
 
 
-def test_nested_numbered_items_level3(capsys):
+def test_nested_numbered_items_level3(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested numbered point items at level 3."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_numbered_point_item(text='Level 1', level=1)
         mfd.new_numbered_point_item(text='Level 2', level=2)
@@ -263,8 +288,10 @@ def test_nested_numbered_items_level3(capsys):
     assert html.count('</ol>') == 3
 
 
-def test_numbered_list_back_to_level1(capsys):
+def test_numbered_list_back_to_level1(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test numbered point list returning to level 1."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_numbered_point_item(text='Level 1 first', level=1)
         mfd.new_numbered_point_item(text='Level 2', level=2)
@@ -277,8 +304,9 @@ def test_numbered_list_back_to_level1(capsys):
     assert 'Level 1 second' in html
 
 
-def test_numbered_list_formatting(capsys):
+def test_numbered_list_formatting(capsys: pytest.CaptureFixture[str]) -> None:
     """Test numbered point list with bold and italic."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_numbered_point_item(text='Bold item', bold=True)
         mfd.new_numbered_point_item(text='Italic item', italic=True)
@@ -292,8 +320,10 @@ def test_numbered_list_formatting(capsys):
     assert '</ol>' in html
 
 
-def test_paragraph_then_numbered_list(capsys):
+def test_paragraph_then_numbered_list(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by numbered point list."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_paragraph(text='Intro paragraph')
         mfd.new_numbered_point_item(text='First item')
@@ -307,8 +337,10 @@ def test_paragraph_then_numbered_list(capsys):
     assert '</ol>' in html
 
 
-def test_numbered_list_then_paragraph(capsys):
+def test_numbered_list_then_paragraph(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test numbered point list followed by paragraph."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_numbered_point_item(text='First item')
         mfd.new_numbered_point_item(text='Second item')
@@ -322,8 +354,10 @@ def test_numbered_list_then_paragraph(capsys):
     assert '<p>Concluding paragraph</p>' in html
 
 
-def test_heading_then_numbered_list(capsys):
+def test_heading_then_numbered_list(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by numbered point list."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_heading(level=1, text='Main Title')
         mfd.new_numbered_point_item(text='First item')
@@ -337,8 +371,10 @@ def test_heading_then_numbered_list(capsys):
     assert '</ol>' in html
 
 
-def test_mixed_bullet_and_numbered_lists(capsys):
+def test_mixed_bullet_and_numbered_lists(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test switching between bullet and numbered point lists."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_bullet_item(text='Bullet 1', level=1)
         mfd.new_bullet_item(text='Bullet 2', level=1)
@@ -356,8 +392,9 @@ def test_mixed_bullet_and_numbered_lists(capsys):
     assert '</ol>' in html
 
 
-def test_nested_mixed_lists(capsys):
+def test_nested_mixed_lists(capsys: pytest.CaptureFixture[str]) -> None:
     """Test nested mixed bullet and numbered point lists."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_bullet_item(text='Bullet 1', level=1)
         mfd.new_numbered_point_item(text='Numbered 1.1', level=2)
@@ -375,8 +412,9 @@ def test_nested_mixed_lists(capsys):
     assert '</ul>' in html
 
 
-def test_numbered_list_depth_limit(capsys):
+def test_numbered_list_depth_limit(capsys: pytest.CaptureFixture[str]) -> None:
     """Test that level > 5 raises RuntimeError."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_numbered_point_item(text='L1', level=1)
         mfd.new_numbered_point_item(text='L2', level=2)
@@ -390,8 +428,9 @@ def test_numbered_list_depth_limit(capsys):
     check_capsys(capsys)
 
 
-def test_bullet_list_depth_limit(capsys):
+def test_bullet_list_depth_limit(capsys: pytest.CaptureFixture[str]) -> None:
     """Test that bullet level > 5 raises RuntimeError."""
+
     def func(mfd: MultiFormatDocx) -> None:
         mfd.new_bullet_item(text='L1', level=1)
         mfd.new_bullet_item(text='L2', level=2)

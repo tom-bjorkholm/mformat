@@ -6,18 +6,17 @@
 #
 
 from typing import Any
+import pytest
 from odf.table import (  # type: ignore[import-untyped]
-    Table, TableRow, TableCell
-)
+    Table, TableRow, TableCell)
 from odf.text import P  # type: ignore[import-untyped]
 from mformat_ext.mformat_odt import MultiFormatOdt
-from .test_mformat_odt_core import (
-    silent_odt_create, get_elements_by_type, get_element_text,
-    get_heading_texts, get_all_text_content, has_span_with_style
-)
+from .test_mformat_odt_core import (silent_odt_create, get_elements_by_type,
+                                    get_element_text, get_heading_texts,
+                                    get_all_text_content, has_span_with_style)
 
 
-def get_table_data(doc: Any) -> list[list[str]]:
+def get_table_data(doc: Any) -> list[list[list[str]]]:
     """Extract all table data from an ODT document.
 
     Args:
@@ -87,8 +86,9 @@ def has_italic_in_cell(cell: TableCell) -> bool:
 # --- Tests for basic tables ---
 
 
-def test_simple_table(capsys):
+def test_simple_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a simple table."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_table(first_row=['Col1', 'Col2'])
         mfo.add_table_row(row=['A', 'B'])
@@ -104,8 +104,9 @@ def test_simple_table(capsys):
     assert table[2] == ['C', 'D']
 
 
-def test_table_with_bold_header(capsys):
+def test_table_with_bold_header(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a table with bold header."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_table(first_row=['Name', 'Age'], bold=True)
         mfo.add_table_row(row=['Alice', '30'])
@@ -124,8 +125,9 @@ def test_table_with_bold_header(capsys):
         assert has_bold_in_cell(cell)
 
 
-def test_table_with_italic_header(capsys):
+def test_table_with_italic_header(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a table with italic header."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_table(first_row=['Name', 'Age'], italic=True)
         mfo.add_table_row(row=['Alice', '30'])
@@ -141,14 +143,12 @@ def test_table_with_italic_header(capsys):
         assert has_italic_in_cell(cell)
 
 
-def test_write_complete_table(capsys):
+def test_write_complete_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test write_complete_table method."""
+
     def func(mfo: MultiFormatOdt) -> None:
-        table_data = [
-            ['Header1', 'Header2'],
-            ['Row1Col1', 'Row1Col2'],
-            ['Row2Col1', 'Row2Col2']
-        ]
+        table_data = [['Header1', 'Header2'], ['Row1Col1', 'Row1Col2'],
+                      ['Row2Col1', 'Row2Col2']]
         mfo.write_complete_table(table=table_data)
 
     doc = silent_odt_create(capsys, func=func)
@@ -159,14 +159,12 @@ def test_write_complete_table(capsys):
     assert tables[0][2] == ['Row2Col1', 'Row2Col2']
 
 
-def test_write_complete_table_with_bold_header(capsys):
+def test_write_complete_table_with_bold_header(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test write_complete_table with bold first row."""
+
     def func(mfo: MultiFormatOdt) -> None:
-        table_data = [
-            ['Name', 'Value'],
-            ['Alpha', '1'],
-            ['Beta', '2']
-        ]
+        table_data = [['Name', 'Value'], ['Alpha', '1'], ['Beta', '2']]
         mfo.write_complete_table(table=table_data, bold_first_row=True)
 
     doc = silent_odt_create(capsys, func=func)
@@ -183,8 +181,9 @@ def test_write_complete_table_with_bold_header(capsys):
 # --- Tests for table transitions ---
 
 
-def test_paragraph_then_table(capsys):
+def test_paragraph_then_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph followed by table."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='Here is a table:')
         mfo.new_table(first_row=['A', 'B'])
@@ -197,8 +196,9 @@ def test_paragraph_then_table(capsys):
     assert len(tables) == 1
 
 
-def test_table_then_paragraph(capsys):
+def test_table_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test table followed by paragraph."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_table(first_row=['X', 'Y'])
         mfo.add_table_row(row=['1', '2'])
@@ -211,8 +211,9 @@ def test_table_then_paragraph(capsys):
     assert 'That was the table.' in all_text
 
 
-def test_heading_then_table(capsys):
+def test_heading_then_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading followed by table."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_heading(level=2, text='Data Table')
         mfo.new_table(first_row=['Col1', 'Col2'])
@@ -229,8 +230,9 @@ def test_heading_then_table(capsys):
 # --- Tests for tables with different column counts ---
 
 
-def test_table_with_three_columns(capsys):
+def test_table_with_three_columns(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a table with three columns."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_table(first_row=['Name', 'Age', 'City'])
         mfo.add_table_row(row=['Alice', '30', 'NYC'])
@@ -244,8 +246,9 @@ def test_table_with_three_columns(capsys):
     assert tables[0][2] == ['Bob', '25', 'LA']
 
 
-def test_table_with_single_column(capsys):
+def test_table_with_single_column(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a table with a single column."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_table(first_row=['Items'])
         mfo.add_table_row(row=['Apple'])
@@ -261,8 +264,9 @@ def test_table_with_single_column(capsys):
     assert tables[0][3] == ['Cherry']
 
 
-def test_table_with_many_columns(capsys):
+def test_table_with_many_columns(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a table with many columns."""
+
     def func(mfo: MultiFormatOdt) -> None:
         headers = ['A', 'B', 'C', 'D', 'E', 'F']
         row1 = ['1', '2', '3', '4', '5', '6']
@@ -279,8 +283,9 @@ def test_table_with_many_columns(capsys):
 # --- Tests for multiple tables ---
 
 
-def test_multiple_tables(capsys):
+def test_multiple_tables(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple tables in one document."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_table(first_row=['Table1Col1', 'Table1Col2'])
         mfo.add_table_row(row=['A', 'B'])
@@ -294,8 +299,10 @@ def test_multiple_tables(capsys):
     assert tables[1][0] == ['Table2Col1', 'Table2Col2']
 
 
-def test_tables_separated_by_paragraph(capsys):
+def test_tables_separated_by_paragraph(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test tables separated by a paragraph."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_table(first_row=['First', 'Table'])
         mfo.add_table_row(row=['1', '2'])
@@ -313,8 +320,10 @@ def test_tables_separated_by_paragraph(capsys):
 # --- Tests for special characters in tables ---
 
 
-def test_special_characters_in_table(capsys):
+def test_special_characters_in_table(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test special characters in table cells."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_table(first_row=['Special', 'Chars'])
         mfo.add_table_row(row=['<>&', '"\''])
@@ -325,8 +334,9 @@ def test_special_characters_in_table(capsys):
     assert tables[0][1] == ['<>&', '"\'']
 
 
-def test_unicode_in_table(capsys):
+def test_unicode_in_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test unicode characters in table cells."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_table(first_row=['Language', 'Text'])
         mfo.add_table_row(row=['Swedish', 'åäö'])
@@ -342,8 +352,9 @@ def test_unicode_in_table(capsys):
 # --- Tests for empty cells ---
 
 
-def test_table_with_empty_cells(capsys):
+def test_table_with_empty_cells(capsys: pytest.CaptureFixture[str]) -> None:
     """Test table with empty cells."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_table(first_row=['Col1', 'Col2'])
         mfo.add_table_row(row=['', 'B'])
@@ -359,8 +370,9 @@ def test_table_with_empty_cells(capsys):
 # --- Tests for header-only table ---
 
 
-def test_header_only_table(capsys):
+def test_header_only_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test table with only header row."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_table(first_row=['Header1', 'Header2'])
 
@@ -373,8 +385,9 @@ def test_header_only_table(capsys):
 # --- Tests for table then list ---
 
 
-def test_table_then_bullet_list(capsys):
+def test_table_then_bullet_list(capsys: pytest.CaptureFixture[str]) -> None:
     """Test table followed by bullet list."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_table(first_row=['Col1', 'Col2'])
         mfo.add_table_row(row=['A', 'B'])
@@ -389,8 +402,9 @@ def test_table_then_bullet_list(capsys):
     assert 'List item 2' in all_text
 
 
-def test_bullet_list_then_table(capsys):
+def test_bullet_list_then_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test bullet list followed by table."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_bullet_item(text='List item 1')
         mfo.new_bullet_item(text='List item 2')

@@ -11,7 +11,7 @@ from mformat_ext.mformat_docx import MultiFormatDocx
 from mformat_ext.mformat_odt import MultiFormatOdt
 
 
-def test_reg_formats_in_ext_pkg(capsys):
+def test_reg_formats_in_ext_pkg(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the register_formats_in_ext_pkg function."""
     assert register_formats_in_ext_pkg() == [MultiFormatDocx, MultiFormatOdt]
     out, err = capsys.readouterr()

@@ -9,6 +9,7 @@ from tempfile import TemporaryDirectory
 from pathlib import Path
 import pytest
 from mformat_ext.mformat_docx import MultiFormatDocx
+from mformat.mformat import MultiFormat
 from mformat.mformat_md import MultiFormatMd
 from mformat.mformat_html import MultiFormatHtml
 
@@ -17,7 +18,9 @@ from mformat.mformat_html import MultiFormatHtml
                          [(MultiFormatDocx, 'test.docx', True),
                           (MultiFormatMd, 'test.md', True),
                           (MultiFormatHtml, 'test.html', True)])
-def test_exit_with_exception(capsys, cls, fname, file_created):
+def test_exit_with_exception(capsys: pytest.CaptureFixture[str],
+                             cls: type[MultiFormat], fname: str,
+                             file_created: bool) -> None:
     """Test that exception propagates from __exit__."""
     with TemporaryDirectory() as temp_dir:
         file_name = str(Path(temp_dir) / fname)

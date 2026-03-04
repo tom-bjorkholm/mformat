@@ -8,18 +8,17 @@
 import pytest
 from odf.text import P, A  # type: ignore[import-untyped]
 from mformat_ext.mformat_odt import MultiFormatOdt
-from .test_mformat_odt_core import (
-    silent_odt_create, get_elements_by_type, get_element_text,
-    get_paragraph_texts, get_all_text_content, has_span_with_style,
-    has_link_with_url
-)
-
+from .test_mformat_odt_core import (silent_odt_create, get_elements_by_type,
+                                    get_element_text, get_paragraph_texts,
+                                    get_all_text_content, has_span_with_style,
+                                    has_link_with_url)
 
 # --- Tests for basic paragraphs ---
 
 
-def test_simple_paragraph(capsys):
+def test_simple_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test a simple paragraph."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='Hello, World!')
 
@@ -28,8 +27,9 @@ def test_simple_paragraph(capsys):
     assert 'Hello, World!' in paragraphs
 
 
-def test_multiple_paragraphs(capsys):
+def test_multiple_paragraphs(capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple paragraphs."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='First paragraph')
         mfo.new_paragraph(text='Second paragraph')
@@ -42,8 +42,9 @@ def test_multiple_paragraphs(capsys):
     assert 'Third paragraph' in all_text
 
 
-def test_paragraph_with_add_text(capsys):
+def test_paragraph_with_add_text(capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph with additional text added."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='Start')
         mfo.add_text(text=' middle')
@@ -54,8 +55,10 @@ def test_paragraph_with_add_text(capsys):
     assert 'Start middle end' in all_text
 
 
-def test_paragraph_with_empty_start_text(capsys):
+def test_paragraph_with_empty_start_text(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test starting paragraph with empty string then adding text."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='')
         mfo.add_text(text='Added later')
@@ -68,8 +71,9 @@ def test_paragraph_with_empty_start_text(capsys):
 # --- Tests for paragraph formatting ---
 
 
-def test_paragraph_bold(capsys):
+def test_paragraph_bold(capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph with bold text."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='Bold text', bold=True)
 
@@ -82,8 +86,9 @@ def test_paragraph_bold(capsys):
             assert has_span_with_style(para, 'bold')
 
 
-def test_paragraph_italic(capsys):
+def test_paragraph_italic(capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph with italic text."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='Italic text', italic=True)
 
@@ -96,8 +101,9 @@ def test_paragraph_italic(capsys):
             assert has_span_with_style(para, 'italic')
 
 
-def test_paragraph_bold_italic(capsys):
+def test_paragraph_bold_italic(capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph with bold and italic text."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='Bold italic', bold=True, italic=True)
 
@@ -110,8 +116,10 @@ def test_paragraph_bold_italic(capsys):
             assert has_span_with_style(para, 'bold-italic')
 
 
-def test_mixed_formatting_in_paragraph(capsys):
+def test_mixed_formatting_in_paragraph(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph with mixed formatting."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='Normal ')
         mfo.add_text(text='bold', bold=True)
@@ -128,8 +136,9 @@ def test_mixed_formatting_in_paragraph(capsys):
 # --- Tests for URLs in paragraphs ---
 
 
-def test_paragraph_with_url(capsys):
+def test_paragraph_with_url(capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph with URL."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='Check this link: ')
         mfo.add_url(url='http://example.com', text='Example')
@@ -144,8 +153,9 @@ def test_paragraph_with_url(capsys):
             assert has_link_with_url(para, 'http://example.com')
 
 
-def test_url_without_text(capsys):
+def test_url_without_text(capsys: pytest.CaptureFixture[str]) -> None:
     """Test URL without display text (URL becomes the text)."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='Link: ')
         mfo.add_url(url='http://example.com')
@@ -156,8 +166,9 @@ def test_url_without_text(capsys):
     assert 'http://example.com' in all_text
 
 
-def test_url_with_bold(capsys):
+def test_url_with_bold(capsys: pytest.CaptureFixture[str]) -> None:
     """Test URL with bold formatting."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='See ')
         mfo.add_url(url='http://example.com', text='link', bold=True)
@@ -172,8 +183,9 @@ def test_url_with_bold(capsys):
             assert has_link_with_url(para, 'http://example.com')
 
 
-def test_url_with_italic(capsys):
+def test_url_with_italic(capsys: pytest.CaptureFixture[str]) -> None:
     """Test URL with italic formatting."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='See ')
         mfo.add_url(url='http://example.com', text='link', italic=True)
@@ -184,8 +196,10 @@ def test_url_with_italic(capsys):
     assert 'link' in all_text
 
 
-def test_multiple_urls_in_paragraph(capsys):
+def test_multiple_urls_in_paragraph(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test multiple URLs in one paragraph."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='Visit ')
         mfo.add_url(url='http://example1.com', text='site1')
@@ -214,8 +228,10 @@ def test_multiple_urls_in_paragraph(capsys):
 # --- Tests for special characters in paragraphs ---
 
 
-def test_special_characters_in_paragraph(capsys):
+def test_special_characters_in_paragraph(
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test special characters in paragraph text."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='Special chars: <>&"\'')
 
@@ -224,8 +240,9 @@ def test_special_characters_in_paragraph(capsys):
     assert '<>&"\'' in all_text
 
 
-def test_unicode_in_paragraph(capsys):
+def test_unicode_in_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test unicode characters in paragraph text."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='Unicode: åäö éèê 日本語')
 
@@ -239,8 +256,9 @@ def test_unicode_in_paragraph(capsys):
 # --- Tests for paragraph transitions ---
 
 
-def test_paragraph_after_paragraph(capsys):
+def test_paragraph_after_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     """Test paragraph immediately after paragraph."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='First')
         mfo.new_paragraph(text='Second')
@@ -252,12 +270,26 @@ def test_paragraph_after_paragraph(capsys):
 
 
 @pytest.mark.parametrize('first_format, second_format', [
-    ({'bold': True}, {'italic': True}),
-    ({'italic': True}, {'bold': True}),
-    ({}, {'bold': True, 'italic': True}),
+    ({
+        'bold': True
+    }, {
+        'italic': True
+    }),
+    ({
+        'italic': True
+    }, {
+        'bold': True
+    }),
+    ({}, {
+        'bold': True,
+        'italic': True
+    }),
 ])
-def test_paragraph_format_transitions(capsys, first_format, second_format):
+def test_paragraph_format_transitions(capsys: pytest.CaptureFixture[str],
+                                      first_format: dict[str, bool],
+                                      second_format: dict[str, bool]) -> None:
     """Test paragraphs with different formatting transitions."""
+
     def func(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text='First', **first_format)
         mfo.new_paragraph(text='Second', **second_format)
@@ -270,13 +302,13 @@ def test_paragraph_format_transitions(capsys, first_format, second_format):
 
 @pytest.mark.parametrize('text,code,expected',
                          [('text', 'code', 'text code'),
-                          ('Here is the code: ',
-                           ' print("Hello")',
+                          ('Here is the code: ', ' print("Hello")',
                            'Here is the code: print("Hello")')])
-def test_add_code_in_text(capsys, text, code, expected):
+def test_add_code_in_text(capsys: pytest.CaptureFixture[str], text: str,
+                          code: str, expected: str) -> None:
     """Test the add_code_in_text method."""
-    def test_action(mfo):
-        assert isinstance(mfo, MultiFormatOdt)
+
+    def test_action(mfo: MultiFormatOdt) -> None:
         mfo.new_paragraph(text=text)
         mfo.add_code_in_text(text=code)
 
