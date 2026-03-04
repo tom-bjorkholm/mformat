@@ -29,7 +29,7 @@ def custom_spec() -> Optional[BuildSpec]:
         package_folders=None,
         identical_versions=True,
         mypy_on_test=True,
-        mypy_paths=[Path('base/test')],
+        mypy_paths=[Path('base/test'), Path('custom_build_tools/test')],
         additional_venv_packages=[
             'pypi-simple',
             'requests',
