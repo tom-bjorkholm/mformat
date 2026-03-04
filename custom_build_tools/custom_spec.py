@@ -29,7 +29,6 @@ def custom_spec() -> Optional[BuildSpec]:
         package_folders=None,
         identical_versions=True,
         mypy_on_test=True,
-        mypy_exclude_folders=[Path('custom_build_tools/test')],
         mypy_paths=[Path('base/test')],
         additional_venv_packages=[
             'pypi-simple',
