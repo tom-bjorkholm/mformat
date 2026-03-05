@@ -49,7 +49,8 @@ def test_register_pkg_formats2(capsys: pytest.CaptureFixture[str]) -> None:
     # pylint: disable=import-outside-toplevel,wrong-import-order
     from mformat_ext.mformat_docx import MultiFormatDocx
     from mformat_ext.mformat_odt import MultiFormatOdt
+    from mformat_ext.mformat_rtf import MultiFormatRtf
     assert register_formats_in_pkg() == \
         [MultiFormatHtml, MultiFormatMd, MultiFormatRst, MultiFormatTxt,
-         MultiFormatDocx, MultiFormatOdt]
+         MultiFormatDocx, MultiFormatOdt, MultiFormatRtf]
     check_capsys(capsys)

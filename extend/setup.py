@@ -18,6 +18,7 @@ setup(
     'python-docx >= 1.2.0',
     'odfdo >= 3.20.2',
     'pip >= 26.0.1',
+    'PyRTF3 >= 0.47.5',
     'setuptools >= 82.0.0',
     'build >= 1.4.0',
     'wheel>=0.46.3'

@@ -54,7 +54,7 @@ def multi_format_example(format_name: str,  # pylint: disable=too-many-statement
         mf.new_heading(level=2, text='Heading with URL to')
         # Add a URL to the heading.
         url = 'https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
-        url += 'example/src/simple_complete.py'
+        url += 'example/src/e50_simple_complete.py'
         mf.add_url(url=url, text='the example file')
         # Start a new paragraph.
         mf.new_paragraph('As you can see, we can add URLs to both')

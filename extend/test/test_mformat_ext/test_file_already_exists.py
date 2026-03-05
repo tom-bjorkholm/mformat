@@ -29,7 +29,8 @@ class FileExistsCallback:  # pylint: disable=too-few-public-methods
 
 @pytest.mark.parametrize('format_name, file_name', [('docx', 'test.docx'),
                                                     ('html', 'test.html'),
-                                                    ('md', 'test.md')])
+                                                    ('md', 'test.md'),
+                                                    ('rtf', 'test.rtf')])
 def test_file_exists_overwrite(format_name: str, file_name: str) -> None:
     """Test the file already exists functionality."""
     with TemporaryDirectory() as temp_dir:
@@ -47,7 +48,8 @@ def test_file_exists_overwrite(format_name: str, file_name: str) -> None:
 
 @pytest.mark.parametrize('format_name, file_name', [('docx', 'test.docx'),
                                                     ('html', 'test.html'),
-                                                    ('md', 'test.md')])
+                                                    ('md', 'test.md'),
+                                                    ('rtf', 'test.rtf')])
 def test_file_exists_no_overwrite(format_name: str, file_name: str) -> None:
     """Test the file already exists functionality not allowing overwrite."""
     with TemporaryDirectory() as temp_dir:
@@ -67,7 +69,8 @@ def test_file_exists_no_overwrite(format_name: str, file_name: str) -> None:
 
 @pytest.mark.parametrize('format_name, file_name', [('docx', 'test.docx'),
                                                     ('html', 'test.html'),
-                                                    ('md', 'test.md')])
+                                                    ('md', 'test.md'),
+                                                    ('rtf', 'test.rtf')])
 def test_file_exists_no_callback(format_name: str, file_name: str) -> None:
     """Test the file already exists functionality without a callback."""
     with TemporaryDirectory() as temp_dir:
@@ -84,7 +87,8 @@ def test_file_exists_no_callback(format_name: str, file_name: str) -> None:
 
 @pytest.mark.parametrize('format_name, file_name', [('docx', 'test.docx'),
                                                     ('html', 'test.html'),
-                                                    ('md', 'test.md')])
+                                                    ('md', 'test.md'),
+                                                    ('rtf', 'test.rtf')])
 def test_file_does_not_exist(format_name: str, file_name: str) -> None:
     """Test the file exists functionality when the file does not exist."""
     with TemporaryDirectory() as temp_dir:

@@ -70,9 +70,9 @@ EXPECTED_TXT_TEXT = [
     ),
     (
         'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/'
-        'simple_complete.py\n'
-        '===================================================================='
-        '=================\n'
+        'e50_simple_complete.py\n'
+        '==================================================================='
+        '======================\n'
         '\n'
     ),
     (
@@ -82,7 +82,7 @@ EXPECTED_TXT_TEXT = [
         'file is added\n'
         'here. The same example file\n'
         'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/'
-        'simple_complete.py\n'
+        'e50_simple_complete.py\n'
         '\n'
     ),
     (
@@ -188,7 +188,8 @@ EXPECTED_RST_TEXT = [
     ),
     (
         'Heading with URL to `the example file <https://bitbucket.org/'
-        'tom-bjorkholm/mformat/src/master/example/src/simple_complete.py>`_'
+        'tom-bjorkholm/mformat/src/master/example/src/'
+        'e50_simple_complete.py>`_'
     ),
     '* Item 1',
     '* Item 2',

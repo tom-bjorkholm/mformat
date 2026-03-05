@@ -12,13 +12,13 @@ closed. Add text does not automatically close the previous item type, instead
 it just adds text to that item. ***There is never a need to close an item
 type.***
 
-Heading with URL to `the example file <https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/simple_complete.py>`_
--------------------------------------------------------------------------------------------------------------------------------
+Heading with URL to `the example file <https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e50_simple_complete.py>`_
+-----------------------------------------------------------------------------------------------------------------------------------
 
 As you can see, we can add URLs to both headings and paragraphs. It is also
 possible to add URLs to text, for instance the URL to the example file is added
 here.
-`The same example file <https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/simple_complete.py>`_
+`The same example file <https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e50_simple_complete.py>`_
 
 URLs can (depending on the format) be formatted as clickable URLs or as text.
 To force URLs to be formatted as text, set url_as_text=True.

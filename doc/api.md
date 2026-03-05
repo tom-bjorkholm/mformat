@@ -124,6 +124,12 @@
   * [get\_plain\_text\_table](#mformat.plain_text_table.get_plain_text_table)
 * [mformat.reg\_pkg\_formats](#mformat.reg_pkg_formats)
   * [register\_formats\_in\_pkg](#mformat.reg_pkg_formats.register_formats_in_pkg)
+* [mformat\_ext.mformat\_rtf](#mformat_ext.mformat_rtf)
+  * [MultiFormatRtf](#mformat_ext.mformat_rtf.MultiFormatRtf)
+    * [\_\_init\_\_](#mformat_ext.mformat_rtf.MultiFormatRtf.__init__)
+    * [file\_name\_extension](#mformat_ext.mformat_rtf.MultiFormatRtf.file_name_extension)
+    * [get\_arg\_desciption](#mformat_ext.mformat_rtf.MultiFormatRtf.get_arg_desciption)
+    * [open](#mformat_ext.mformat_rtf.MultiFormatRtf.open)
 * [mformat\_ext.mformat\_odt](#mformat_ext.mformat_odt)
   * [OdtStyles](#mformat_ext.mformat_odt.OdtStyles)
   * [MultiFormatOdt](#mformat_ext.mformat_odt.MultiFormatOdt)
@@ -137,6 +143,9 @@
     * [file\_name\_extension](#mformat_ext.mformat_docx.MultiFormatDocx.file_name_extension)
     * [get\_arg\_desciption](#mformat_ext.mformat_docx.MultiFormatDocx.get_arg_desciption)
     * [open](#mformat_ext.mformat_docx.MultiFormatDocx.open)
+* [mformat\_ext.rtf\_codec](#mformat_ext.rtf_codec)
+  * [encode\_rtf\_text](#mformat_ext.rtf_codec.encode_rtf_text)
+  * [encode\_rtf\_field\_instruction](#mformat_ext.rtf_codec.encode_rtf_field_instruction)
 * [mformat\_ext.reg\_extpkg\_formats](#mformat_ext.reg_extpkg_formats)
   * [register\_formats\_in\_ext\_pkg](#mformat_ext.reg_extpkg_formats.register_formats_in_ext_pkg)
 
@@ -2033,6 +2042,81 @@ def register_formats_in_pkg() -> list[type[MultiFormat]]
 
 Get formats defined in the package to register with the factory.
 
+<a id="mformat_ext.mformat_rtf"></a>
+
+# mformat\_ext.mformat\_rtf
+
+Extension of the MultiFormat class for Rich Text Format files.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf"></a>
+
+## MultiFormatRtf Objects
+
+```python
+class MultiFormatRtf(MultiFormat)
+```
+
+Extension of the MultiFormat class for Rich Text Format files.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf.__init__"></a>
+
+#### \_\_init\_\_
+
+```python
+def __init__(file_name: PathLike,
+             url_as_text: bool = False,
+             file_exists_callback: Optional[Callable[[str], None]] = None)
+```
+
+Initialize the MultiFormatRtf class.
+
+**Arguments**:
+
+- `file_name` - The name of the file to write to.
+- `url_as_text` - Format URLs as text not clickable URLs.
+- `file_exists_callback` - A callback function to call if the file
+  already exists. Return to allow the file to
+  be overwritten. Raise an exception to prevent
+  the file from being overwritten.
+  (May for instance save existing file as
+  backup.)
+  (Default is to raise an exception.)
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf.file_name_extension"></a>
+
+#### file\_name\_extension
+
+```python
+@classmethod
+def file_name_extension(cls) -> str
+```
+
+Get the file name extension for the formatter.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf.get_arg_desciption"></a>
+
+#### get\_arg\_desciption
+
+```python
+@classmethod
+def get_arg_desciption(cls) -> FormatterDescriptor
+```
+
+Get the description of the arguments for the formatter.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf.open"></a>
+
+#### open
+
+```python
+def open() -> None
+```
+
+Open the file.
+
+Avoid using this method directly.
+Use as a context manager instead, using a with statement.
+
 <a id="mformat_ext.mformat_odt"></a>
 
 # mformat\_ext.mformat\_odt
@@ -2194,6 +2278,32 @@ Open the file.
 
 Avoid using this method directly.
 Use as a context manager instead, using a with statement.
+
+<a id="mformat_ext.rtf_codec"></a>
+
+# mformat\_ext.rtf\_codec
+
+Helper functions for RTF text and field encoding.
+
+<a id="mformat_ext.rtf_codec.encode_rtf_text"></a>
+
+#### encode\_rtf\_text
+
+```python
+def encode_rtf_text(text: str) -> str
+```
+
+Encode plain text so it is safe to insert in an RTF text run.
+
+<a id="mformat_ext.rtf_codec.encode_rtf_field_instruction"></a>
+
+#### encode\_rtf\_field\_instruction
+
+```python
+def encode_rtf_field_instruction(text: str) -> str
+```
+
+Encode text for an RTF field instruction string.
 
 <a id="mformat_ext.reg_extpkg_formats"></a>
 

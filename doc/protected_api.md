@@ -313,6 +313,57 @@
   * [get\_plain\_text\_table](#mformat.plain_text_table.get_plain_text_table)
 * [mformat.reg\_pkg\_formats](#mformat.reg_pkg_formats)
   * [register\_formats\_in\_pkg](#mformat.reg_pkg_formats.register_formats_in_pkg)
+* [mformat\_ext.mformat\_rtf](#mformat_ext.mformat_rtf)
+  * [MultiFormatRtf](#mformat_ext.mformat_rtf.MultiFormatRtf)
+    * [\_\_init\_\_](#mformat_ext.mformat_rtf.MultiFormatRtf.__init__)
+    * [file\_name\_extension](#mformat_ext.mformat_rtf.MultiFormatRtf.file_name_extension)
+    * [get\_arg\_desciption](#mformat_ext.mformat_rtf.MultiFormatRtf.get_arg_desciption)
+    * [\_create\_styles](#mformat_ext.mformat_rtf.MultiFormatRtf._create_styles)
+    * [\_create\_list\_style](#mformat_ext.mformat_rtf.MultiFormatRtf._create_list_style)
+    * [\_get\_heading\_style](#mformat_ext.mformat_rtf.MultiFormatRtf._get_heading_style)
+    * [\_get\_list\_style](#mformat_ext.mformat_rtf.MultiFormatRtf._get_list_style)
+    * [\_start\_new\_paragraph](#mformat_ext.mformat_rtf.MultiFormatRtf._start_new_paragraph)
+    * [\_require\_current\_paragraph](#mformat_ext.mformat_rtf.MultiFormatRtf._require_current_paragraph)
+    * [\_require\_current\_table](#mformat_ext.mformat_rtf.MultiFormatRtf._require_current_table)
+    * [\_text\_properties](#mformat_ext.mformat_rtf.MultiFormatRtf._text_properties)
+    * [\_append\_text](#mformat_ext.mformat_rtf.MultiFormatRtf._append_text)
+    * [\_build\_hyperlink\_style\_prefix](#mformat_ext.mformat_rtf.MultiFormatRtf._build_hyperlink_style_prefix)
+    * [\_build\_hyperlink\_field](#mformat_ext.mformat_rtf.MultiFormatRtf._build_hyperlink_field)
+    * [\_table\_column\_widths](#mformat_ext.mformat_rtf.MultiFormatRtf._table_column_widths)
+    * [\_table\_target\_width](#mformat_ext.mformat_rtf.MultiFormatRtf._table_target_width)
+    * [\_balance\_column\_widths](#mformat_ext.mformat_rtf.MultiFormatRtf._balance_column_widths)
+    * [\_scaled\_widths\_from\_char\_widths](#mformat_ext.mformat_rtf.MultiFormatRtf._scaled_widths_from_char_widths)
+    * [\_dynamic\_column\_widths](#mformat_ext.mformat_rtf.MultiFormatRtf._dynamic_column_widths)
+    * [\_write\_table\_row\_impl](#mformat_ext.mformat_rtf.MultiFormatRtf._write_table_row_impl)
+    * [open](#mformat_ext.mformat_rtf.MultiFormatRtf.open)
+    * [\_close](#mformat_ext.mformat_rtf.MultiFormatRtf._close)
+    * [\_write\_file\_prefix](#mformat_ext.mformat_rtf.MultiFormatRtf._write_file_prefix)
+    * [\_write\_file\_suffix](#mformat_ext.mformat_rtf.MultiFormatRtf._write_file_suffix)
+    * [\_start\_paragraph](#mformat_ext.mformat_rtf.MultiFormatRtf._start_paragraph)
+    * [\_end\_paragraph](#mformat_ext.mformat_rtf.MultiFormatRtf._end_paragraph)
+    * [\_start\_block\_quote](#mformat_ext.mformat_rtf.MultiFormatRtf._start_block_quote)
+    * [\_end\_block\_quote](#mformat_ext.mformat_rtf.MultiFormatRtf._end_block_quote)
+    * [\_start\_heading](#mformat_ext.mformat_rtf.MultiFormatRtf._start_heading)
+    * [\_end\_heading](#mformat_ext.mformat_rtf.MultiFormatRtf._end_heading)
+    * [\_write\_text](#mformat_ext.mformat_rtf.MultiFormatRtf._write_text)
+    * [\_write\_url](#mformat_ext.mformat_rtf.MultiFormatRtf._write_url)
+    * [\_write\_code\_in\_text](#mformat_ext.mformat_rtf.MultiFormatRtf._write_code_in_text)
+    * [\_start\_bullet\_list](#mformat_ext.mformat_rtf.MultiFormatRtf._start_bullet_list)
+    * [\_end\_bullet\_list](#mformat_ext.mformat_rtf.MultiFormatRtf._end_bullet_list)
+    * [\_start\_bullet\_item](#mformat_ext.mformat_rtf.MultiFormatRtf._start_bullet_item)
+    * [\_end\_bullet\_item](#mformat_ext.mformat_rtf.MultiFormatRtf._end_bullet_item)
+    * [\_start\_numbered\_list](#mformat_ext.mformat_rtf.MultiFormatRtf._start_numbered_list)
+    * [\_end\_numbered\_list](#mformat_ext.mformat_rtf.MultiFormatRtf._end_numbered_list)
+    * [\_start\_numbered\_item](#mformat_ext.mformat_rtf.MultiFormatRtf._start_numbered_item)
+    * [\_end\_numbered\_item](#mformat_ext.mformat_rtf.MultiFormatRtf._end_numbered_item)
+    * [\_start\_table](#mformat_ext.mformat_rtf.MultiFormatRtf._start_table)
+    * [\_end\_table](#mformat_ext.mformat_rtf.MultiFormatRtf._end_table)
+    * [\_write\_table\_first\_row](#mformat_ext.mformat_rtf.MultiFormatRtf._write_table_first_row)
+    * [\_write\_table\_row](#mformat_ext.mformat_rtf.MultiFormatRtf._write_table_row)
+    * [\_start\_code\_block](#mformat_ext.mformat_rtf.MultiFormatRtf._start_code_block)
+    * [\_end\_code\_block](#mformat_ext.mformat_rtf.MultiFormatRtf._end_code_block)
+    * [\_write\_code\_block](#mformat_ext.mformat_rtf.MultiFormatRtf._write_code_block)
+    * [\_encode\_text](#mformat_ext.mformat_rtf.MultiFormatRtf._encode_text)
 * [mformat\_ext.mformat\_odt](#mformat_ext.mformat_odt)
   * [OdtStyles](#mformat_ext.mformat_odt.OdtStyles)
   * [MultiFormatOdt](#mformat_ext.mformat_odt.MultiFormatOdt)
@@ -411,6 +462,11 @@
     * [\_end\_code\_block](#mformat_ext.mformat_docx.MultiFormatDocx._end_code_block)
     * [\_write\_code\_block](#mformat_ext.mformat_docx.MultiFormatDocx._write_code_block)
     * [\_encode\_text](#mformat_ext.mformat_docx.MultiFormatDocx._encode_text)
+* [mformat\_ext.rtf\_codec](#mformat_ext.rtf_codec)
+  * [\_to\_signed\_16bit](#mformat_ext.rtf_codec._to_signed_16bit)
+  * [\_unicode\_char\_to\_rtf](#mformat_ext.rtf_codec._unicode_char_to_rtf)
+  * [encode\_rtf\_text](#mformat_ext.rtf_codec.encode_rtf_text)
+  * [encode\_rtf\_field\_instruction](#mformat_ext.rtf_codec.encode_rtf_field_instruction)
 * [mformat\_ext.reg\_extpkg\_formats](#mformat_ext.reg_extpkg_formats)
   * [register\_formats\_in\_ext\_pkg](#mformat_ext.reg_extpkg_formats.register_formats_in_ext_pkg)
 
@@ -4520,6 +4576,623 @@ def register_formats_in_pkg() -> list[type[MultiFormat]]
 
 Get formats defined in the package to register with the factory.
 
+<a id="mformat_ext.mformat_rtf"></a>
+
+# mformat\_ext.mformat\_rtf
+
+Extension of the MultiFormat class for Rich Text Format files.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf"></a>
+
+## MultiFormatRtf Objects
+
+```python
+class MultiFormatRtf(MultiFormat)
+```
+
+Extension of the MultiFormat class for Rich Text Format files.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf.__init__"></a>
+
+#### \_\_init\_\_
+
+```python
+def __init__(file_name: PathLike,
+             url_as_text: bool = False,
+             file_exists_callback: Optional[Callable[[str], None]] = None)
+```
+
+Initialize the MultiFormatRtf class.
+
+**Arguments**:
+
+- `file_name` - The name of the file to write to.
+- `url_as_text` - Format URLs as text not clickable URLs.
+- `file_exists_callback` - A callback function to call if the file
+  already exists. Return to allow the file to
+  be overwritten. Raise an exception to prevent
+  the file from being overwritten.
+  (May for instance save existing file as
+  backup.)
+  (Default is to raise an exception.)
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf.file_name_extension"></a>
+
+#### file\_name\_extension
+
+```python
+@classmethod
+def file_name_extension(cls) -> str
+```
+
+Get the file name extension for the formatter.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf.get_arg_desciption"></a>
+
+#### get\_arg\_desciption
+
+```python
+@classmethod
+def get_arg_desciption(cls) -> FormatterDescriptor
+```
+
+Get the description of the arguments for the formatter.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._create_styles"></a>
+
+#### \_create\_styles
+
+```python
+def _create_styles() -> None
+```
+
+Create all paragraph styles used for RTF output.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._create_list_style"></a>
+
+#### \_create\_list\_style
+
+```python
+def _create_list_style(level: int, bullet: bool) -> ParagraphStyle
+```
+
+Create one list paragraph style for a given nesting level.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._get_heading_style"></a>
+
+#### \_get\_heading\_style
+
+```python
+def _get_heading_style(level: int) -> ParagraphStyle
+```
+
+Get the heading style for a heading level.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._get_list_style"></a>
+
+#### \_get\_list\_style
+
+```python
+def _get_list_style(level: int, bullet: bool) -> ParagraphStyle
+```
+
+Get a list style for level and type, creating it if needed.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._start_new_paragraph"></a>
+
+#### \_start\_new\_paragraph
+
+```python
+def _start_new_paragraph(style: Optional[ParagraphStyle] = None) -> None
+```
+
+Create and append a new paragraph to the document.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._require_current_paragraph"></a>
+
+#### \_require\_current\_paragraph
+
+```python
+def _require_current_paragraph(operation: str) -> Paragraph
+```
+
+Get current paragraph or raise if no paragraph is active.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._require_current_table"></a>
+
+#### \_require\_current\_table
+
+```python
+def _require_current_table(operation: str) -> Table
+```
+
+Get current table or raise if no table is active.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._text_properties"></a>
+
+#### \_text\_properties
+
+```python
+def _text_properties(formatting: Formatting,
+                     code: bool = False) -> Optional[TextPropertySet]
+```
+
+Build text property overrides for one text run.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._append_text"></a>
+
+#### \_append\_text
+
+```python
+def _append_text(text: str,
+                 formatting: Formatting,
+                 code: bool = False) -> None
+```
+
+Append text to the current paragraph.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._build_hyperlink_style_prefix"></a>
+
+#### \_build\_hyperlink\_style\_prefix
+
+```python
+@staticmethod
+def _build_hyperlink_style_prefix(formatting: Formatting) -> str
+```
+
+Build RTF style prefix to render links in blue with underline.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._build_hyperlink_field"></a>
+
+#### \_build\_hyperlink\_field
+
+```python
+def _build_hyperlink_field(url: str, text: str, formatting: Formatting) -> str
+```
+
+Build RTF field code for a hyperlink.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._table_column_widths"></a>
+
+#### \_table\_column\_widths
+
+```python
+@staticmethod
+def _table_column_widths(num_columns: int) -> tuple[int, ...]
+```
+
+Calculate equal fallback table column widths in twips.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._table_target_width"></a>
+
+#### \_table\_target\_width
+
+```python
+@staticmethod
+def _table_target_width(section: Section, num_columns: int) -> int
+```
+
+Get target total table width in twips from page settings.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._balance_column_widths"></a>
+
+#### \_balance\_column\_widths
+
+```python
+@staticmethod
+def _balance_column_widths(widths: list[int], target_total: int) -> None
+```
+
+Adjust column widths so they fit the target total width.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._scaled_widths_from_char_widths"></a>
+
+#### \_scaled\_widths\_from\_char\_widths
+
+```python
+@classmethod
+def _scaled_widths_from_char_widths(cls, char_widths: list[int],
+                                    target_total: int) -> tuple[int, ...]
+```
+
+Scale character-based widths into RTF twip column widths.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._dynamic_column_widths"></a>
+
+#### \_dynamic\_column\_widths
+
+```python
+def _dynamic_column_widths(num_columns: int) -> tuple[int, ...]
+```
+
+Calculate dynamic column widths from table text lengths.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._write_table_row_impl"></a>
+
+#### \_write\_table\_row\_impl
+
+```python
+def _write_table_row_impl(row: list[str], formatting: Formatting) -> None
+```
+
+Write one table row into the current RTF table.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf.open"></a>
+
+#### open
+
+```python
+def open() -> None
+```
+
+Open the file.
+
+Avoid using this method directly.
+Use as a context manager instead, using a with statement.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._close"></a>
+
+#### \_close
+
+```python
+def _close() -> None
+```
+
+Close the file.
+
+Avoid using this method directly.
+Use as a context manager instead, using a with statement.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._write_file_prefix"></a>
+
+#### \_write\_file\_prefix
+
+```python
+def _write_file_prefix() -> None
+```
+
+Write the file prefix.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._write_file_suffix"></a>
+
+#### \_write\_file\_suffix
+
+```python
+def _write_file_suffix() -> None
+```
+
+Write the file suffix.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._start_paragraph"></a>
+
+#### \_start\_paragraph
+
+```python
+def _start_paragraph() -> None
+```
+
+Start a paragraph.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._end_paragraph"></a>
+
+#### \_end\_paragraph
+
+```python
+def _end_paragraph() -> None
+```
+
+End a paragraph.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._start_block_quote"></a>
+
+#### \_start\_block\_quote
+
+```python
+def _start_block_quote() -> None
+```
+
+Start a block quote paragraph.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._end_block_quote"></a>
+
+#### \_end\_block\_quote
+
+```python
+def _end_block_quote() -> None
+```
+
+End a block quote paragraph.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._start_heading"></a>
+
+#### \_start\_heading
+
+```python
+def _start_heading(level: int) -> None
+```
+
+Start a heading paragraph.
+
+**Arguments**:
+
+- `level` - The level of the heading (1-9).
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._end_heading"></a>
+
+#### \_end\_heading
+
+```python
+def _end_heading(level: int) -> None
+```
+
+End a heading paragraph.
+
+**Arguments**:
+
+- `level` - The level of the heading (1-9).
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._write_text"></a>
+
+#### \_write\_text
+
+```python
+def _write_text(text: str, state: MultiFormatState,
+                formatting: Formatting) -> None
+```
+
+Write text into current item (paragraph, list item, etc.).
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._write_url"></a>
+
+#### \_write\_url
+
+```python
+def _write_url(url: str, text: Optional[str], state: MultiFormatState,
+               formatting: Formatting) -> None
+```
+
+Write a URL into current item (paragraph, list item, etc.).
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._write_code_in_text"></a>
+
+#### \_write\_code\_in\_text
+
+```python
+def _write_code_in_text(text: str, state: MultiFormatState) -> None
+```
+
+Write inline code into current item.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._start_bullet_list"></a>
+
+#### \_start\_bullet\_list
+
+```python
+def _start_bullet_list(level: int) -> None
+```
+
+Start a bullet list.
+
+**Arguments**:
+
+- `level` - The level of the bullet list.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._end_bullet_list"></a>
+
+#### \_end\_bullet\_list
+
+```python
+def _end_bullet_list(level: int) -> None
+```
+
+End a bullet list.
+
+**Arguments**:
+
+- `level` - The level of the bullet list.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._start_bullet_item"></a>
+
+#### \_start\_bullet\_item
+
+```python
+def _start_bullet_item(level: int) -> None
+```
+
+Start a bullet item.
+
+**Arguments**:
+
+- `level` - The level of the bullet item.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._end_bullet_item"></a>
+
+#### \_end\_bullet\_item
+
+```python
+def _end_bullet_item(level: int) -> None
+```
+
+End a bullet item.
+
+**Arguments**:
+
+- `level` - The level of the bullet item.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._start_numbered_list"></a>
+
+#### \_start\_numbered\_list
+
+```python
+def _start_numbered_list(level: int) -> None
+```
+
+Start a numbered list.
+
+**Arguments**:
+
+- `level` - The level of the numbered list.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._end_numbered_list"></a>
+
+#### \_end\_numbered\_list
+
+```python
+def _end_numbered_list(level: int) -> None
+```
+
+End a numbered list.
+
+**Arguments**:
+
+- `level` - The level of the numbered list.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._start_numbered_item"></a>
+
+#### \_start\_numbered\_item
+
+```python
+def _start_numbered_item(level: int, num: int, full_number: str) -> None
+```
+
+Start a numbered item.
+
+**Arguments**:
+
+- `level` - The level of the numbered item.
+- `num` - The number at this level.
+- `full_number` - The full number including parent levels.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._end_numbered_item"></a>
+
+#### \_end\_numbered\_item
+
+```python
+def _end_numbered_item(level: int, num: int) -> None
+```
+
+End a numbered item.
+
+**Arguments**:
+
+- `level` - The level of the numbered item.
+- `num` - The number at this level.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._start_table"></a>
+
+#### \_start\_table
+
+```python
+def _start_table(num_columns: int) -> None
+```
+
+Start a table.
+
+**Arguments**:
+
+- `num_columns` - The number of columns in the table.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._end_table"></a>
+
+#### \_end\_table
+
+```python
+def _end_table(num_columns: int, num_rows: int) -> None
+```
+
+End a table.
+
+**Arguments**:
+
+- `num_columns` - The number of columns in the table.
+- `num_rows` - The number of rows in the table.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._write_table_first_row"></a>
+
+#### \_write\_table\_first\_row
+
+```python
+def _write_table_first_row(first_row: list[str],
+                           formatting: Formatting) -> None
+```
+
+Write the first row of a table.
+
+**Arguments**:
+
+- `first_row` - The first row values.
+- `formatting` - Formatting for the row.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._write_table_row"></a>
+
+#### \_write\_table\_row
+
+```python
+def _write_table_row(row: list[str], formatting: Formatting,
+                     row_number: int) -> None
+```
+
+Write a row of a table.
+
+**Arguments**:
+
+- `row` - The row values.
+- `formatting` - Formatting for the row.
+- `row_number` - Row number in table.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._start_code_block"></a>
+
+#### \_start\_code\_block
+
+```python
+def _start_code_block(programming_language: Optional[str]) -> None
+```
+
+Start a code block.
+
+**Arguments**:
+
+- `programming_language` - The language of the code block.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._end_code_block"></a>
+
+#### \_end\_code\_block
+
+```python
+def _end_code_block(programming_language: Optional[str]) -> None
+```
+
+End a code block.
+
+**Arguments**:
+
+- `programming_language` - The language of the code block.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._write_code_block"></a>
+
+#### \_write\_code\_block
+
+```python
+def _write_code_block(text: str, programming_language: Optional[str]) -> None
+```
+
+Write a code block.
+
+**Arguments**:
+
+- `text` - The code text to write.
+- `programming_language` - The language of the code block.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._encode_text"></a>
+
+#### \_encode\_text
+
+```python
+def _encode_text(text: str) -> str
+```
+
+Encode text (escape special characters).
+
 <a id="mformat_ext.mformat_odt"></a>
 
 # mformat\_ext.mformat\_odt
@@ -5898,6 +6571,52 @@ def _encode_text(text: str) -> str
 ```
 
 Encode text (escape special characters).
+
+<a id="mformat_ext.rtf_codec"></a>
+
+# mformat\_ext.rtf\_codec
+
+Helper functions for RTF text and field encoding.
+
+<a id="mformat_ext.rtf_codec._to_signed_16bit"></a>
+
+#### \_to\_signed\_16bit
+
+```python
+def _to_signed_16bit(value: int) -> int
+```
+
+Convert a 16-bit unsigned value to signed representation.
+
+<a id="mformat_ext.rtf_codec._unicode_char_to_rtf"></a>
+
+#### \_unicode\_char\_to\_rtf
+
+```python
+def _unicode_char_to_rtf(char: str) -> str
+```
+
+Encode one Unicode character as one or more RTF ``\u`` codes.
+
+<a id="mformat_ext.rtf_codec.encode_rtf_text"></a>
+
+#### encode\_rtf\_text
+
+```python
+def encode_rtf_text(text: str) -> str
+```
+
+Encode plain text so it is safe to insert in an RTF text run.
+
+<a id="mformat_ext.rtf_codec.encode_rtf_field_instruction"></a>
+
+#### encode\_rtf\_field\_instruction
+
+```python
+def encode_rtf_field_instruction(text: str) -> str
+```
+
+Encode text for an RTF field instruction string.
 
 <a id="mformat_ext.reg_extpkg_formats"></a>
 
