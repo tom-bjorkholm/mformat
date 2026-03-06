@@ -11,9 +11,11 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import pytest
 import mammoth  # type: ignore[import-untyped]
+from docx import Document as DocxDocument
 from mformat_ext.mformat_docx import MultiFormatDocx
 from mformat.mformat import FormatterDescriptor
 from mformat.factory import create_mf
+from mformat.paper_size import PaperSize
 
 # Add base test helpers to path for shared test utilities
 _base_test_path = (Path(__file__).parent.parent.parent.parent / 'base' /
@@ -35,10 +37,39 @@ def test_get_arg_desciption(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the get_arg_desciption method."""
     assert MultiFormatDocx.get_arg_desciption() == \
         FormatterDescriptor(name='docx', mandatory_args=[],
-                            optional_args=[])
+                            optional_args=['paper_size'])
     out, err = capsys.readouterr()
     assert err == ''
     assert out == ''
+
+
+@pytest.mark.parametrize('paper_size, width_twips, height_twips', [
+    (PaperSize.A3, 16838, 23811),
+    (PaperSize.A4, 11906, 16838),
+    (PaperSize.A5, 8391, 11906),
+    (PaperSize.LEGAL, 12240, 20160),
+    (PaperSize.LETTER, 12240, 15840),
+])
+def test_paper_size_selection(capsys: pytest.CaptureFixture[str],
+                              paper_size: PaperSize,
+                              width_twips: int,
+                              height_twips: int) -> None:
+    """Test selecting different paper sizes for DOCX output."""
+    with TemporaryDirectory() as tmp_dir:
+        fpath = str(Path(tmp_dir) / 'test.docx')
+        with create_mf('docx', file_name=fpath,
+                       args={'paper_size': paper_size}) as mfd:
+            assert isinstance(mfd, MultiFormatDocx)
+            mfd.new_paragraph(text='Paper size test')
+        doc = DocxDocument(fpath)
+        section = doc.sections[0]
+        page_width = section.page_width
+        page_height = section.page_height
+        assert page_width is not None
+        assert page_height is not None
+        assert page_width.twips == width_twips
+        assert page_height.twips == height_twips
+    check_capsys(capsys)
 
 
 def silent_docx_create(capsys: pytest.CaptureFixture[str],

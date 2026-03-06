@@ -5,12 +5,22 @@
 # MIT License
 #
 
-from typing import Optional, Callable, NamedTuple
+from typing import Optional, Callable, NamedTuple, cast
 from odfdo import Document, Paragraph, Header, Table, Row, Cell, \
-    Link, List, ListItem, Style, Span, Element
+    Link, List, ListItem, Style, Span, Element, StylePageLayout
 from odfdo.utils import is_RFC3066
 from mformat.mformat import FormatterDescriptor, MultiFormat, PathLike
 from mformat.mformat_state import MultiFormatState, Formatting
+from mformat.paper_size import PaperSize
+
+_ODT_PAPER_SIZE_CM: dict[PaperSize, tuple[str, str]] = {
+    PaperSize.A3: ('29.70cm', '42.00cm'),
+    PaperSize.A4: ('21.00cm', '29.70cm'),
+    PaperSize.A5: ('14.80cm', '21.00cm'),
+    PaperSize.LEGAL: ('21.59cm', '35.56cm'),
+    PaperSize.LETTER: ('21.59cm', '27.94cm'),
+}
+"""Paper size mapping for ODT in centimeters (width, height)."""
 
 
 class OdtStyles(NamedTuple):
@@ -28,9 +38,11 @@ class OdtStyles(NamedTuple):
 class MultiFormatOdt(MultiFormat):
     """Extension of the MultiFormat class for ODT files."""
 
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(self, file_name: PathLike, url_as_text: bool = False,
                  file_exists_callback: Optional[Callable[[str], None]] = None,
-                 lang: str = 'en-UK'):
+                 lang: str = 'en-UK',
+                 paper_size: PaperSize = PaperSize.A4):
         """Initialize the MultiFormatOdt class.
 
         Args:
@@ -44,9 +56,11 @@ class MultiFormatOdt(MultiFormat):
                                   backup.)
                                   (Default is to raise an exception.)
             lang: The language of the document.
+            paper_size: Paper size for the document.
         """
         self.doc: Document = Document('text')
         self._set_document_language(lang)
+        self._set_document_paper_size(paper_size=paper_size)
         self.current_paragraph: Optional[Paragraph] = None
         self.odt_table: Optional[Table] = None
         self.odt_tablenumber: int = 1
@@ -79,6 +93,28 @@ class MultiFormatOdt(MultiFormat):
         for style in default_styles:
             style.set_properties(area='text', language=language,
                                  country=country)
+
+    def _set_document_paper_size(self, paper_size: PaperSize) -> None:
+        """Set paper width and height in the default ODT page layout."""
+        master_page = self.doc.styles.get_master_page(0)
+        if master_page is None:
+            raise RuntimeError('Default master page style is missing.')
+        page_layout_name = master_page.page_layout
+        if not page_layout_name:
+            raise RuntimeError('Default master page layout name is missing.')
+        page_layout_obj = self.doc.get_style(
+            family='page-layout',
+            name_or_element=page_layout_name)
+        if page_layout_obj is None:
+            raise RuntimeError(
+                f'Page layout style "{page_layout_name}" is missing.')
+        page_layout = cast(StylePageLayout, page_layout_obj)
+        page_width, page_height = _ODT_PAPER_SIZE_CM[paper_size]
+        page_layout.set_properties(
+            properties={
+                'fo:page-width': page_width,
+                'fo:page-height': page_height,
+            })
 
     def _insert_odt_styles(self) -> None:
         """Insert the ODT styles into the document."""
@@ -341,7 +377,7 @@ class MultiFormatOdt(MultiFormat):
     def get_arg_desciption(cls) -> FormatterDescriptor:
         """Get the description of the arguments for the formatter."""
         return FormatterDescriptor(name='odt', mandatory_args=[],
-                                   optional_args=['lang'])
+                                   optional_args=['lang', 'paper_size'])
 
     def open(self) -> None:
         """Open the file.

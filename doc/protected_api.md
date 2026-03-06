@@ -375,11 +375,13 @@
     * [\_write\_code\_block](#mformat_ext.mformat_rtf.MultiFormatRtf._write_code_block)
     * [\_encode\_text](#mformat_ext.mformat_rtf.MultiFormatRtf._encode_text)
 * [mformat\_ext.mformat\_odt](#mformat_ext.mformat_odt)
+  * [\_ODT\_PAPER\_SIZE\_CM](#mformat_ext.mformat_odt._ODT_PAPER_SIZE_CM)
   * [OdtStyles](#mformat_ext.mformat_odt.OdtStyles)
   * [MultiFormatOdt](#mformat_ext.mformat_odt.MultiFormatOdt)
     * [\_\_init\_\_](#mformat_ext.mformat_odt.MultiFormatOdt.__init__)
     * [\_split\_rfc3066\_language](#mformat_ext.mformat_odt.MultiFormatOdt._split_rfc3066_language)
     * [\_set\_document\_language](#mformat_ext.mformat_odt.MultiFormatOdt._set_document_language)
+    * [\_set\_document\_paper\_size](#mformat_ext.mformat_odt.MultiFormatOdt._set_document_paper_size)
     * [\_insert\_odt\_styles](#mformat_ext.mformat_odt.MultiFormatOdt._insert_odt_styles)
     * [\_create\_list\_level\_properties](#mformat_ext.mformat_odt.MultiFormatOdt._create_list_level_properties)
     * [\_create\_numbered\_list\_style](#mformat_ext.mformat_odt.MultiFormatOdt._create_numbered_list_style)
@@ -427,10 +429,12 @@
     * [\_encode\_text](#mformat_ext.mformat_odt.MultiFormatOdt._encode_text)
 * [mformat\_ext.mformat\_docx](#mformat_ext.mformat_docx)
   * [\_MAX\_LIST\_LEVEL](#mformat_ext.mformat_docx._MAX_LIST_LEVEL)
+  * [\_DOCX\_PAPER\_SIZE\_MM](#mformat_ext.mformat_docx._DOCX_PAPER_SIZE_MM)
   * [MultiFormatDocx](#mformat_ext.mformat_docx.MultiFormatDocx)
     * [\_\_init\_\_](#mformat_ext.mformat_docx.MultiFormatDocx.__init__)
     * [file\_name\_extension](#mformat_ext.mformat_docx.MultiFormatDocx.file_name_extension)
     * [get\_arg\_desciption](#mformat_ext.mformat_docx.MultiFormatDocx.get_arg_desciption)
+    * [\_set\_paper\_size](#mformat_ext.mformat_docx.MultiFormatDocx._set_paper_size)
     * [open](#mformat_ext.mformat_docx.MultiFormatDocx.open)
     * [\_close](#mformat_ext.mformat_docx.MultiFormatDocx._close)
     * [\_write\_file\_prefix](#mformat_ext.mformat_docx.MultiFormatDocx._write_file_prefix)
@@ -5334,6 +5338,12 @@ Encode text (escape special characters).
 
 Extension of the MultiFormat class for ODT files.
 
+<a id="mformat_ext.mformat_odt._ODT_PAPER_SIZE_CM"></a>
+
+#### \_ODT\_PAPER\_SIZE\_CM
+
+Paper size mapping for ODT in centimeters (width, height).
+
 <a id="mformat_ext.mformat_odt.OdtStyles"></a>
 
 ## OdtStyles Objects
@@ -5362,7 +5372,8 @@ Extension of the MultiFormat class for ODT files.
 def __init__(file_name: PathLike,
              url_as_text: bool = False,
              file_exists_callback: Optional[Callable[[str], None]] = None,
-             lang: str = 'en-UK')
+             lang: str = 'en-UK',
+             paper_size: PaperSize = PaperSize.A4)
 ```
 
 Initialize the MultiFormatOdt class.
@@ -5379,6 +5390,7 @@ Initialize the MultiFormatOdt class.
   backup.)
   (Default is to raise an exception.)
 - `lang` - The language of the document.
+- `paper_size` - Paper size for the document.
 
 <a id="mformat_ext.mformat_odt.MultiFormatOdt._split_rfc3066_language"></a>
 
@@ -5400,6 +5412,16 @@ def _set_document_language(lang: str) -> None
 ```
 
 Set language in default paragraph and graphic text styles.
+
+<a id="mformat_ext.mformat_odt.MultiFormatOdt._set_document_paper_size"></a>
+
+#### \_set\_document\_paper\_size
+
+```python
+def _set_document_paper_size(paper_size: PaperSize) -> None
+```
+
+Set paper width and height in the default ODT page layout.
 
 <a id="mformat_ext.mformat_odt.MultiFormatOdt._insert_odt_styles"></a>
 
@@ -6035,6 +6057,12 @@ Extension of the MultiFormat class for DOCX files.
 
 Maximum supported list nesting level for DOCX format.
 
+<a id="mformat_ext.mformat_docx._DOCX_PAPER_SIZE_MM"></a>
+
+#### \_DOCX\_PAPER\_SIZE\_MM
+
+Paper size mapping for DOCX in millimeters (width, height).
+
 <a id="mformat_ext.mformat_docx.MultiFormatDocx"></a>
 
 ## MultiFormatDocx Objects
@@ -6052,6 +6080,7 @@ Extension of the MultiFormat class for DOCX files.
 ```python
 def __init__(file_name: PathLike,
              url_as_text: bool = False,
+             paper_size: PaperSize = PaperSize.A4,
              file_exists_callback: Optional[Callable[[str], None]] = None)
 ```
 
@@ -6061,6 +6090,7 @@ Initialize the MultiFormatDocx class.
 
 - `file_name` - The name of the file to write to.
 - `url_as_text` - Format URLs as text not clickable URLs.
+- `paper_size` - Paper size for the document.
 - `file_exists_callback` - A callback function to call if the file
   already exists. Return to allow the file to
   be overwritten. Raise an exception to prevent
@@ -6090,6 +6120,16 @@ def get_arg_desciption(cls) -> FormatterDescriptor
 ```
 
 Get the description of the arguments for the formatter.
+
+<a id="mformat_ext.mformat_docx.MultiFormatDocx._set_paper_size"></a>
+
+#### \_set\_paper\_size
+
+```python
+def _set_paper_size(paper_size: PaperSize) -> None
+```
+
+Set page width and height for the first DOCX section.
 
 <a id="mformat_ext.mformat_docx.MultiFormatDocx.open"></a>
 

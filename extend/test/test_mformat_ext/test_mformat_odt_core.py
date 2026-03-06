@@ -6,6 +6,7 @@
 #
 
 import sys
+import zipfile
 from typing import Any, Callable, cast
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -17,6 +18,7 @@ from odf.teletype import extractText  # type: ignore[import-untyped]
 from mformat_ext.mformat_odt import MultiFormatOdt
 from mformat.mformat import FormatterDescriptor
 from mformat.factory import OptArgsDict, create_mf
+from mformat.paper_size import PaperSize
 
 # Add base test helpers to path for shared test utilities
 _base_test_path = (Path(__file__).parent.parent.parent.parent / 'base' /
@@ -176,6 +178,13 @@ def has_link_with_url(element: OdfElement, url: str) -> bool:
     return False
 
 
+def read_odt_styles_xml(file_name: str) -> str:
+    """Read and return the styles.xml content from an ODT file."""
+    with zipfile.ZipFile(file_name) as odt_file:
+        xml_bytes = odt_file.read('styles.xml')
+    return xml_bytes.decode('utf-8')
+
+
 # --- Tests for file extension and argument description ---
 
 
@@ -191,10 +200,34 @@ def test_get_arg_desciption(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the get_arg_desciption method."""
     assert MultiFormatOdt.get_arg_desciption() == \
         FormatterDescriptor(name='odt', mandatory_args=[],
-                            optional_args=['lang'])
+                            optional_args=['lang', 'paper_size'])
     out, err = capsys.readouterr()
     assert err == ''
     assert out == ''
+
+
+@pytest.mark.parametrize('paper_size, width_cm, height_cm', [
+    (PaperSize.A3, '29.70cm', '42.00cm'),
+    (PaperSize.A4, '21.00cm', '29.70cm'),
+    (PaperSize.A5, '14.80cm', '21.00cm'),
+    (PaperSize.LEGAL, '21.59cm', '35.56cm'),
+    (PaperSize.LETTER, '21.59cm', '27.94cm'),
+])
+def test_paper_size_selection(capsys: pytest.CaptureFixture[str],
+                              paper_size: PaperSize,
+                              width_cm: str,
+                              height_cm: str) -> None:
+    """Test selecting different paper sizes for ODT output."""
+    with TemporaryDirectory() as tmp_dir:
+        fpath = str(Path(tmp_dir) / 'test.odt')
+        with create_mf('odt', file_name=fpath,
+                       args={'paper_size': paper_size}) as mfo:
+            assert isinstance(mfo, MultiFormatOdt)
+            mfo.new_paragraph(text='Paper size test')
+        styles_xml = read_odt_styles_xml(fpath)
+        assert f'fo:page-width="{width_cm}"' in styles_xml
+        assert f'fo:page-height="{height_cm}"' in styles_xml
+    check_capsys(capsys)
 
 
 # --- Tests for basic file creation ---

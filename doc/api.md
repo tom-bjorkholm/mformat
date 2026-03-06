@@ -2249,7 +2249,8 @@ Extension of the MultiFormat class for ODT files.
 def __init__(file_name: PathLike,
              url_as_text: bool = False,
              file_exists_callback: Optional[Callable[[str], None]] = None,
-             lang: str = 'en-UK')
+             lang: str = 'en-UK',
+             paper_size: PaperSize = PaperSize.A4)
 ```
 
 Initialize the MultiFormatOdt class.
@@ -2266,6 +2267,7 @@ Initialize the MultiFormatOdt class.
   backup.)
   (Default is to raise an exception.)
 - `lang` - The language of the document.
+- `paper_size` - Paper size for the document.
 
 <a id="mformat_ext.mformat_odt.MultiFormatOdt.file_name_extension"></a>
 
@@ -2325,6 +2327,7 @@ Extension of the MultiFormat class for DOCX files.
 ```python
 def __init__(file_name: PathLike,
              url_as_text: bool = False,
+             paper_size: PaperSize = PaperSize.A4,
              file_exists_callback: Optional[Callable[[str], None]] = None)
 ```
 
@@ -2334,6 +2337,7 @@ Initialize the MultiFormatDocx class.
 
 - `file_name` - The name of the file to write to.
 - `url_as_text` - Format URLs as text not clickable URLs.
+- `paper_size` - Paper size for the document.
 - `file_exists_callback` - A callback function to call if the file
   already exists. Return to allow the file to
   be overwritten. Raise an exception to prevent

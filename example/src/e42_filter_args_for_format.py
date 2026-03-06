@@ -7,6 +7,7 @@
 
 from e01_paragraph import example_main
 from mformat.factory import create_mf, OptArgs, filter_args_mf
+from mformat.paper_size import PaperSize
 
 # Relative path from result/ to example CSS; works when viewing HTML locally.
 # Raw Bitbucket URL:
@@ -22,12 +23,16 @@ def filter_args_for_format_example(format_name: str, file_name: str) -> None:
     # Here we use the filter_args_mf function to filter the arguments to
     # match the format used. Only the arguments that are valid for the
     # format used are included in the returned OptArgs dictionary.
+    # Aside from the arguments we saw in e41_use_css_in_html.py we also
+    # pass the paper_size argument to the create_mf function that is valid
+    # for the Rich Text Format (RTF), DOCX and ODT formats.
     # The risk of using filter_args_mf function is that a misspelled
     # arguement will be silently filtered out, and the programming error will
     # not be detected.
     all_opt_args: OptArgs = {
         'css_file': CSS_PATH,
         'lang': 'de',
+        'paper_size': PaperSize.A5,
     }
     opt_args = filter_args_mf(args=all_opt_args, format_name=format_name)
     with create_mf(format_name=format_name, file_name=file_name,

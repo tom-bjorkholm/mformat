@@ -8,26 +8,39 @@
 from typing import Optional, Callable, Any
 from docx import Document
 from docx.document import Document as DocumentObject
+from docx.shared import Mm
 from docx.text.paragraph import Paragraph
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 from mformat.mformat import FormatterDescriptor, MultiFormat, PathLike
 from mformat.mformat_state import MultiFormatState, Formatting
+from mformat.paper_size import PaperSize
 
 _MAX_LIST_LEVEL = 5
 """Maximum supported list nesting level for DOCX format."""
+
+_DOCX_PAPER_SIZE_MM: dict[PaperSize, tuple[float, float]] = {
+    PaperSize.A3: (297.0, 420.0),
+    PaperSize.A4: (210.0, 297.0),
+    PaperSize.A5: (148.0, 210.0),
+    PaperSize.LEGAL: (215.9, 355.6),
+    PaperSize.LETTER: (215.9, 279.4),
+}
+"""Paper size mapping for DOCX in millimeters (width, height)."""
 
 
 class MultiFormatDocx(MultiFormat):
     """Extension of the MultiFormat class for DOCX files."""
 
     def __init__(self, file_name: PathLike, url_as_text: bool = False,
+                 paper_size: PaperSize = PaperSize.A4,
                  file_exists_callback: Optional[Callable[[str], None]] = None):
         """Initialize the MultiFormatDocx class.
 
         Args:
             file_name: The name of the file to write to.
             url_as_text: Format URLs as text not clickable URLs.
+            paper_size: Paper size for the document.
             file_exists_callback: A callback function to call if the file
                                   already exists. Return to allow the file to
                                   be overwritten. Raise an exception to prevent
@@ -37,6 +50,7 @@ class MultiFormatDocx(MultiFormat):
                                   (Default is to raise an exception.)
         """
         self.doc: DocumentObject = Document()
+        self._set_paper_size(paper_size=paper_size)
         self.current_paragraph: Optional[Paragraph] = None
         self._current_abstract_num: Any = None
         self._current_num_id: int = -1
@@ -52,7 +66,14 @@ class MultiFormatDocx(MultiFormat):
     def get_arg_desciption(cls) -> FormatterDescriptor:
         """Get the description of the arguments for the formatter."""
         return FormatterDescriptor(name='docx', mandatory_args=[],
-                                   optional_args=[])
+                                   optional_args=['paper_size'])
+
+    def _set_paper_size(self, paper_size: PaperSize) -> None:
+        """Set page width and height for the first DOCX section."""
+        page_width_mm, page_height_mm = _DOCX_PAPER_SIZE_MM[paper_size]
+        section = self.doc.sections[0]
+        section.page_width = Mm(page_width_mm)
+        section.page_height = Mm(page_height_mm)
 
     def open(self) -> None:
         """Open the file.

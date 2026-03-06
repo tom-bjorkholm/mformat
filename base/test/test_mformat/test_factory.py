@@ -194,7 +194,7 @@ def test_factory_reg_ok(  # pylint: disable=too-many-arguments,too-many-position
                                            'character_encoding'])
     assert usage_func('docx') == \
         FormatterDescriptor(name='docx', mandatory_args=[],
-                            optional_args=[])
+                            optional_args=['paper_size'])
     assert usage_func('rtf') == \
         FormatterDescriptor(name='rtf', mandatory_args=[],
                             optional_args=['paper_size'])
@@ -682,7 +682,7 @@ def wrap_usage_mf(format_name: str) -> FormatterDescriptor:
                           ('docx',
                            FormatterDescriptor(name='docx',
                                                mandatory_args=[],
-                                               optional_args=[])),
+                                               optional_args=['paper_size'])),
                           ('html',
                            FormatterDescriptor(
                                name='html',
@@ -698,7 +698,7 @@ def wrap_usage_mf(format_name: str) -> FormatterDescriptor:
                           ('Docx',
                            FormatterDescriptor(name='docx',
                                                mandatory_args=[],
-                                               optional_args=[])),
+                                               optional_args=['paper_size'])),
                           ('HTML',
                            FormatterDescriptor(
                                name='html',
