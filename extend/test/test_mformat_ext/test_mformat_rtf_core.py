@@ -129,7 +129,7 @@ def test_lists(capsys: pytest.CaptureFixture[str]) -> None:
     assert r'1.\tab' in content
     assert r'1.1.\tab' in content
     assert r'\fi-360\li360' in content
-    assert r'\fi-360\li720' in content
+    assert r'\fi-600\li720' in content
     assert r'\tx360' in content
     assert r'\tx720' in content
     assert 'First numbered' in content

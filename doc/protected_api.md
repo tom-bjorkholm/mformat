@@ -330,6 +330,8 @@
     * [\_create\_list\_style](#mformat_ext.mformat_rtf.MultiFormatRtf._create_list_style)
     * [\_get\_heading\_style](#mformat_ext.mformat_rtf.MultiFormatRtf._get_heading_style)
     * [\_get\_list\_style](#mformat_ext.mformat_rtf.MultiFormatRtf._get_list_style)
+    * [\_estimated\_marker\_width](#mformat_ext.mformat_rtf.MultiFormatRtf._estimated_marker_width)
+    * [\_numbered\_item\_properties](#mformat_ext.mformat_rtf.MultiFormatRtf._numbered_item_properties)
     * [\_start\_new\_paragraph](#mformat_ext.mformat_rtf.MultiFormatRtf._start_new_paragraph)
     * [\_require\_current\_paragraph](#mformat_ext.mformat_rtf.MultiFormatRtf._require_current_paragraph)
     * [\_require\_current\_table](#mformat_ext.mformat_rtf.MultiFormatRtf._require_current_table)
@@ -4787,6 +4789,29 @@ def _get_list_style(level: int, bullet: bool) -> ParagraphStyle
 ```
 
 Get a list style for level and type, creating it if needed.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._estimated_marker_width"></a>
+
+#### \_estimated\_marker\_width
+
+```python
+@staticmethod
+def _estimated_marker_width(full_number: str) -> int
+```
+
+Estimate marker width in twips for one numbered-item marker.
+
+<a id="mformat_ext.mformat_rtf.MultiFormatRtf._numbered_item_properties"></a>
+
+#### \_numbered\_item\_properties
+
+```python
+@staticmethod
+def _numbered_item_properties(level: int,
+                              full_number: str) -> ParagraphPropertySet
+```
+
+Build paragraph properties for one numbered list item.
 
 <a id="mformat_ext.mformat_rtf.MultiFormatRtf._start_new_paragraph"></a>
 

@@ -36,6 +36,8 @@ from mformat.mformat_state import MultiFormatState, Formatting
 _MAX_HEADING_LEVEL = 6
 _LIST_INDENT_TWIPS = 360
 _MIN_COLUMN_WIDTH_TWIPS = 800
+_NUMBER_CHAR_WIDTH_TWIPS = 120
+_NUMBER_MARKER_PADDING_TWIPS = 120
 
 #
 # As some help to future maintainers, here are some URLs
@@ -155,6 +157,24 @@ class MultiFormatRtf(MultiFormat):
             self.list_styles[key] = self._create_list_style(level=level,
                                                             bullet=bullet)
         return self.list_styles[key]
+
+    @staticmethod
+    def _estimated_marker_width(full_number: str) -> int:
+        """Estimate marker width in twips for one numbered-item marker."""
+        return (len(full_number) * _NUMBER_CHAR_WIDTH_TWIPS) + \
+            _NUMBER_MARKER_PADDING_TWIPS
+
+    @staticmethod
+    def _numbered_item_properties(level: int,
+                                  full_number: str) -> ParagraphPropertySet:
+        """Build paragraph properties for one numbered list item."""
+        base_indent = _LIST_INDENT_TWIPS * max(level, 1)
+        marker_width = MultiFormatRtf._estimated_marker_width(full_number)
+        text_indent = max(base_indent, marker_width)
+        return ParagraphPropertySet(
+            tabs=[TabPropertySet(width=text_indent)],
+            first_line_indent=-marker_width,
+            left_indent=text_indent)
 
     def _start_new_paragraph(self,
                              style: Optional[ParagraphStyle] = None) -> None:
@@ -449,9 +469,11 @@ class MultiFormatRtf(MultiFormat):
         _ = num
         style = self._get_list_style(level=level, bullet=False)
         self._start_new_paragraph(style=style)
+        paragraph = self._require_current_paragraph('starting numbered item')
+        paragraph.Properties = self._numbered_item_properties(
+            level=level, full_number=full_number)
         self._append_text(text=self._encode_text(full_number),
                           formatting=Formatting(False, False))
-        paragraph = self._require_current_paragraph('starting numbered item')
         paragraph.append(RawCode(r'\tab '))
 
     def _end_numbered_item(self, level: int, num: int) -> None:
