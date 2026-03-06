@@ -10,7 +10,8 @@ from pathlib import Path
 import pytest
 from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
-    check_docx_func, check_odt_func, check_txt_func, check_rst_func)
+    check_docx_func, check_odt_func, check_txt_func, check_rst_func,
+    check_rtf_func)
 # Add example/src to path
 # pylint: disable=duplicate-code
 _example_test_path = (
@@ -101,6 +102,13 @@ def test_e01_paragraph_odt(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the paragraph_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(paragraph_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e01_paragraph_rtf(capsys: pytest.CaptureFixture[str]) -> None:
+    """Test the paragraph_example function with the rtf format."""
+    expected_txt = EXPECTED_HTML_TEXT
+    check_rtf_func(paragraph_example, expected_txt)
     check_capsys_silent(capsys)
 
 

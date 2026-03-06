@@ -8,6 +8,8 @@
 from pathlib import Path
 from typing import Callable
 import sys
+import html as html_lib
+import re
 from tempfile import TemporaryDirectory
 import pytest
 from pymarkdown.api import PyMarkdownApi, PyMarkdownApiException, \
@@ -18,6 +20,7 @@ from html5lib.html5parser import ParseError
 import mammoth  # type: ignore[import-untyped]
 from odf.opendocument import load as odf_load  # type: ignore[import-untyped]
 from odf.odf2xhtml import ODF2XHTML  # type: ignore[import-untyped]
+from mformat_ext.rtf_codec import encode_rtf_text
 
 
 def check_capsys_silent(capsys: pytest.CaptureFixture[str]) -> None:
@@ -216,6 +219,99 @@ def check_html_func(func: Callable[[str, str], None],
             print(str(exc))
             assert False, 'HTML parse error'
         check_text_in_order(html, expected_txt)
+
+
+def _is_escaped_char(text: str, pos: int) -> bool:
+    """Check if character at pos is escaped with backslashes."""
+    num_backslashes = 0
+    idx = pos - 1
+    while idx >= 0 and text[idx] == '\\':
+        num_backslashes += 1
+        idx -= 1
+    return num_backslashes % 2 == 1
+
+
+def _check_rtf_group_balance(rtf: str) -> None:
+    """Check that unescaped RTF groups are balanced."""
+    nesting_level = 0
+    for pos, char in enumerate(rtf):
+        if char not in '{}':
+            continue
+        if _is_escaped_char(rtf, pos):
+            continue
+        if char == '{':
+            nesting_level += 1
+            continue
+        nesting_level -= 1
+        if nesting_level < 0:
+            print('Unexpected closing brace in RTF output.', file=sys.stderr)
+            print_line_col_of_pos(rtf, pos)
+            assert False
+    if nesting_level != 0:
+        print(f'RTF group nesting ends at {nesting_level}.',
+              file=sys.stderr)
+        assert False
+
+
+def _check_basic_rtf_structure(rtf: str) -> None:
+    """Check that generated RTF has expected basic structure."""
+    if not rtf.startswith('{\\rtf1'):
+        print('RTF header "{\\\\rtf1" is missing at file start.',
+              file=sys.stderr)
+        print_text(rtf[:400])
+    assert rtf.startswith('{\\rtf1')
+    for marker in ('\\fonttbl', '\\stylesheet'):
+        if marker not in rtf:
+            print(f'RTF marker "{marker}" was not found.',
+                  file=sys.stderr)
+        assert marker in rtf
+    _check_rtf_group_balance(rtf)
+
+
+HTML_TAG_RE = re.compile(r'<[^>]*>')
+RTF_SKIP_TEXTS = {'HTML file'}
+
+
+def _rtf_fragments_from_html_token(token: str) -> list[str]:
+    """Convert one expected HTML token to RTF fragments."""
+    stripped_token = token.strip()
+    if stripped_token.startswith('<') and '>' not in stripped_token:
+        return []
+    plain_text = HTML_TAG_RE.sub('', token)
+    plain_text = html_lib.unescape(plain_text)
+    fragments: list[str] = []
+    for line in plain_text.split('\n'):
+        stripped = line.strip()
+        if stripped == '' or stripped in RTF_SKIP_TEXTS:
+            continue
+        fragments.append(encode_rtf_text(stripped))
+    return fragments
+
+
+def rtf_version_of_html(html_text: list[str]) -> list[str]:
+    """Convert expected HTML fragments to expected RTF text fragments."""
+    rtf_text: list[str] = []
+    for token in html_text:
+        rtf_text.extend(_rtf_fragments_from_html_token(token))
+    return rtf_text
+
+
+def check_rtf_func(func: Callable[[str, str], None],
+                   expected_txt: list[str]) -> None:
+    """Check that function produces expected RTF text.
+
+    Args:
+        func: The function to check.
+        expected_txt: Fragments of expected text to check in order.
+    """
+    with TemporaryDirectory() as tmp_dir:
+        file_name = str(Path(tmp_dir) / 'test.rtf')
+        func('rtf', file_name)
+        with open(file_name, 'r', encoding='utf-8') as file:
+            rtf = file.read()
+        _check_basic_rtf_structure(rtf)
+        expected_rtf_txt = rtf_version_of_html(expected_txt)
+        check_text_in_order(rtf, expected_rtf_txt)
 
 
 COMMON_EXPECTED_DOCX_WARNINGS = [
