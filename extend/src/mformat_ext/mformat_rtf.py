@@ -13,6 +13,8 @@ from PyRTF.Elements import (  # type: ignore[import-untyped]
 )
 from PyRTF.PropertySets import (  # type: ignore[import-untyped]
     ParagraphPropertySet,
+    StandardPaper,
+    TabPropertySet,
     TextPropertySet,
 )
 from PyRTF.document.base import RawCode  # type: ignore[import-untyped]
@@ -27,11 +29,12 @@ from mformat_ext.rtf_codec import (
     encode_rtf_field_instruction,
     encode_rtf_text,
 )
+from mformat.paper_size import PaperSize
 from mformat.mformat import FormatterDescriptor, MultiFormat, PathLike
 from mformat.mformat_state import MultiFormatState, Formatting
 
 _MAX_HEADING_LEVEL = 6
-_LIST_INDENT_TWIPS = 720
+_LIST_INDENT_TWIPS = 360
 _MIN_COLUMN_WIDTH_TWIPS = 800
 
 #
@@ -50,12 +53,14 @@ class MultiFormatRtf(MultiFormat):
     """Extension of the MultiFormat class for Rich Text Format files."""
 
     def __init__(self, file_name: PathLike, url_as_text: bool = False,
+                 paper_size: PaperSize = PaperSize.A4,
                  file_exists_callback: Optional[Callable[[str], None]] = None):
         """Initialize the MultiFormatRtf class.
 
         Args:
             file_name: The name of the file to write to.
             url_as_text: Format URLs as text not clickable URLs.
+            paper_size: Paper size for the document.
             file_exists_callback: A callback function to call if the file
                                   already exists. Return to allow the file to
                                   be overwritten. Raise an exception to prevent
@@ -65,7 +70,8 @@ class MultiFormatRtf(MultiFormat):
                                   (Default is to raise an exception.)
         """
         self.doc: Document = Document()
-        self.section: Section = Section()
+        self.section: Section = Section(
+            paper=self._pyrtf_paper_size(paper_size=paper_size))
         self.doc.Sections.append(self.section)
         self.current_paragraph: Optional[Paragraph] = None
         self.current_table: Optional[Table] = None
@@ -85,7 +91,12 @@ class MultiFormatRtf(MultiFormat):
     def get_arg_desciption(cls) -> FormatterDescriptor:
         """Get the description of the arguments for the formatter."""
         return FormatterDescriptor(name='rtf', mandatory_args=[],
-                                   optional_args=[])
+                                   optional_args=['paper_size'])
+
+    @staticmethod
+    def _pyrtf_paper_size(paper_size: PaperSize) -> object:
+        """Map a PaperSize value to a PyRTF StandardPaper value."""
+        return getattr(StandardPaper, paper_size.name)
 
     def _create_styles(self) -> None:
         """Create all paragraph styles used for RTF output."""
@@ -126,6 +137,7 @@ class MultiFormatRtf(MultiFormat):
             style_name,
             TextStyle(TextPropertySet(font=fonts.Arial, size=22)),
             ParagraphPropertySet(space_before=20, space_after=20,
+                                 tabs=[TabPropertySet(width=indent)],
                                  first_line_indent=-_LIST_INDENT_TWIPS,
                                  left_indent=indent))
         self.doc.StyleSheet.ParagraphStyles.append(style)
@@ -144,8 +156,8 @@ class MultiFormatRtf(MultiFormat):
                                                             bullet=bullet)
         return self.list_styles[key]
 
-    def _start_new_paragraph(
-            self, style: Optional[ParagraphStyle] = None) -> None:
+    def _start_new_paragraph(self,
+                             style: Optional[ParagraphStyle] = None) -> None:
         """Create and append a new paragraph to the document."""
         paragraph_style = self.styles['normal'] if style is None else style
         paragraph = Paragraph(paragraph_style)

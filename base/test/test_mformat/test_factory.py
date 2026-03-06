@@ -195,6 +195,9 @@ def test_factory_reg_ok(  # pylint: disable=too-many-arguments,too-many-position
     assert usage_func('docx') == \
         FormatterDescriptor(name='docx', mandatory_args=[],
                             optional_args=[])
+    assert usage_func('rtf') == \
+        FormatterDescriptor(name='rtf', mandatory_args=[],
+                            optional_args=['paper_size'])
     check_capsys(capsys)
 
 
@@ -688,6 +691,10 @@ def wrap_usage_mf(format_name: str) -> FormatterDescriptor:
                                    'title', 'css_file',
                                    'lang',
                                    'character_encoding'])),
+                          ('rtf',
+                           FormatterDescriptor(name='rtf',
+                                               mandatory_args=[],
+                                               optional_args=['paper_size'])),
                           ('Docx',
                            FormatterDescriptor(name='docx',
                                                mandatory_args=[],
@@ -699,7 +706,11 @@ def wrap_usage_mf(format_name: str) -> FormatterDescriptor:
                                optional_args=[
                                    'title', 'css_file',
                                    'lang',
-                                   'character_encoding']))])
+                                   'character_encoding'])),
+                          ('RTF',
+                           FormatterDescriptor(name='rtf',
+                                               mandatory_args=[],
+                                               optional_args=['paper_size']))])
 def test_get_usage_wrap(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                         monkeypatch: pytest.MonkeyPatch,
                         wrap_func: Any, format_name: str,

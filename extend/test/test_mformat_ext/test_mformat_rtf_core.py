@@ -12,7 +12,8 @@ from tempfile import TemporaryDirectory
 import pytest
 from mformat_ext.mformat_rtf import MultiFormatRtf
 from mformat.mformat import FormatterDescriptor
-from mformat.factory import create_mf
+from mformat.factory import create_mf, OptArgs
+from mformat.paper_size import PaperSize
 
 # Add base test helpers to path for shared test utilities
 _base_test_path = (Path(__file__).parent.parent.parent.parent / 'base' /
@@ -24,12 +25,14 @@ from test_mformat.check_capsys import check_capsys  # noqa: E402
 
 def silent_rtf_create(capsys: pytest.CaptureFixture[str],
                       func: Callable[[MultiFormatRtf], None],
+                      args: OptArgs = None,
                       fname: str = 'test.rtf') -> str:
     """Check that ``func`` can write to an RTF file silently.
 
     Args:
         capsys: The pytest capsys fixture.
         func: The function to call with the MultiFormatRtf instance.
+        args: Optional constructor arguments for ``create_mf``.
         fname: Name of the file to write.
 
     Returns:
@@ -37,7 +40,7 @@ def silent_rtf_create(capsys: pytest.CaptureFixture[str],
     """
     with TemporaryDirectory() as tmp_dir:
         fpath = str(Path(tmp_dir) / fname)
-        with create_mf('rtf', file_name=fpath) as mfr:
+        with create_mf('rtf', file_name=fpath, args=args) as mfr:
             assert isinstance(mfr, MultiFormatRtf)
             func(mfr)
         output_file = Path(fpath)
@@ -59,7 +62,7 @@ def test_get_arg_desciption(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the get_arg_desciption method."""
     assert MultiFormatRtf.get_arg_desciption() == \
         FormatterDescriptor(name='rtf', mandatory_args=[],
-                            optional_args=[])
+                            optional_args=['paper_size'])
     out, err = capsys.readouterr()
     assert err == ''
     assert out == ''
@@ -125,6 +128,10 @@ def test_lists(capsys: pytest.CaptureFixture[str]) -> None:
     assert 'Bullet two' in content
     assert r'1.\tab' in content
     assert r'1.1.\tab' in content
+    assert r'\fi-360\li360' in content
+    assert r'\fi-360\li720' in content
+    assert r'\tx360' in content
+    assert r'\tx720' in content
     assert 'First numbered' in content
     assert 'Nested numbered' in content
 
@@ -177,3 +184,22 @@ def test_table_style_not_inherited_from_heading(
     assert 'Col1' in content
     assert 'V1' in content
     assert r'\intbl \s0' in content
+
+
+@pytest.mark.parametrize('paper_size, expected', [
+    (PaperSize.A4, r'\paperw11907\paperh16838'),
+    (PaperSize.A3, r'\paperw16838\paperh23811'),
+    (PaperSize.LETTER, r'\paperw12240\paperh15840'),
+    (PaperSize.LEGAL, r'\paperw12240\paperh20160'),
+])
+def test_paper_size_selection(capsys: pytest.CaptureFixture[str],
+                              paper_size: PaperSize,
+                              expected: str) -> None:
+    """Test selecting different paper sizes for RTF output."""
+
+    def func(mfr: MultiFormatRtf) -> None:
+        mfr.new_paragraph(text='Paper size test')
+
+    content = silent_rtf_create(capsys, func=func,
+                                args={'paper_size': paper_size})
+    assert expected in content

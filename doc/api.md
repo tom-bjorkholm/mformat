@@ -3,6 +3,13 @@
 * [mformat.mformat\_plaintextlike](#mformat.mformat_plaintextlike)
   * [MultiFormatPlainTextLike](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike)
     * [\_\_init\_\_](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike.__init__)
+* [mformat.paper\_size](#mformat.paper_size)
+  * [PaperSize](#mformat.paper_size.PaperSize)
+    * [allowed\_values](#mformat.paper_size.PaperSize.allowed_values)
+    * [from\_str](#mformat.paper_size.PaperSize.from_str)
+    * [lower](#mformat.paper_size.PaperSize.lower)
+    * [upper](#mformat.paper_size.PaperSize.upper)
+    * [normalize](#mformat.paper_size.PaperSize.normalize)
 * [mformat.mformat\_rst](#mformat.mformat_rst)
   * [MultiFormatRst](#mformat.mformat_rst.MultiFormatRst)
     * [\_\_init\_\_](#mformat.mformat_rst.MultiFormatRst.__init__)
@@ -196,6 +203,95 @@ Initialize the MultiFormatPlainTextLike class.
 - `character_encoding` - The character encoding to use.
   Default is 'utf-8'. Keep it as default unless
   you have a good specific reason to change it.
+
+<a id="mformat.paper_size"></a>
+
+# mformat.paper\_size
+
+Common paper size enum used by output format implementations.
+
+<a id="mformat.paper_size.PaperSize"></a>
+
+## PaperSize Objects
+
+```python
+class PaperSize(IntEnum)
+```
+
+Common paper sizes supported across some output formats.
+
+<a id="mformat.paper_size.PaperSize.allowed_values"></a>
+
+#### allowed\_values
+
+```python
+@staticmethod
+def allowed_values(include_lower: bool = False,
+                   include_upper: bool = False) -> list[str]
+```
+
+Return a list of all allowed paper size values.
+
+Normally only the capitalized values are returned.
+As from_str() can parse lower and upper case values,
+this method can be used to get a list of all allowed
+values for use in error messages.
+
+**Arguments**:
+
+- `include_lower` - Include lower case values.
+- `include_upper` - Include upper case values.
+
+<a id="mformat.paper_size.PaperSize.from_str"></a>
+
+#### from\_str
+
+```python
+@classmethod
+def from_str(cls,
+             paper_size: 'PaperSize' | str,
+             strict: bool = True) -> 'PaperSize'
+```
+
+Parse a paper size enum value from an enum member or string.
+
+**Arguments**:
+
+- `paper_size` - The paper size to parse.
+- `strict` - If True, the value must match a complete known value.
+  If False, the value may be a partial value,
+  and if it matches the start of only one known value,
+  that value will be returned. (Default is True.)
+
+<a id="mformat.paper_size.PaperSize.lower"></a>
+
+#### lower
+
+```python
+def lower() -> str
+```
+
+Return the lower case name of the paper size.
+
+<a id="mformat.paper_size.PaperSize.upper"></a>
+
+#### upper
+
+```python
+def upper() -> str
+```
+
+Return the upper case name of the paper size.
+
+<a id="mformat.paper_size.PaperSize.normalize"></a>
+
+#### normalize
+
+```python
+def normalize() -> str
+```
+
+Return the normalized name of the paper size.
 
 <a id="mformat.mformat_rst"></a>
 
@@ -2065,6 +2161,7 @@ Extension of the MultiFormat class for Rich Text Format files.
 ```python
 def __init__(file_name: PathLike,
              url_as_text: bool = False,
+             paper_size: PaperSize = PaperSize.A4,
              file_exists_callback: Optional[Callable[[str], None]] = None)
 ```
 
@@ -2074,6 +2171,7 @@ Initialize the MultiFormatRtf class.
 
 - `file_name` - The name of the file to write to.
 - `url_as_text` - Format URLs as text not clickable URLs.
+- `paper_size` - Paper size for the document.
 - `file_exists_callback` - A callback function to call if the file
   already exists. Return to allow the file to
   be overwritten. Raise an exception to prevent
