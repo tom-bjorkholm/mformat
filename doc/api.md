@@ -249,7 +249,7 @@ values for use in error messages.
 ```python
 @classmethod
 def from_str(cls,
-             paper_size: 'PaperSize' | str,
+             paper_size: PaperSizeInput,
              strict: bool = True) -> 'PaperSize'
 ```
 
@@ -291,7 +291,7 @@ Return the upper case name of the paper size.
 def normalize() -> str
 ```
 
-Return the normalized name of the paper size.
+Return the normalized (capitalized) name of the paper size.
 
 <a id="mformat.mformat_rst"></a>
 

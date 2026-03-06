@@ -6,6 +6,11 @@
 #
 
 from enum import IntEnum, auto
+from typing import Union
+
+
+type PaperSizeInput = Union['PaperSize', str]
+"""Type for a paper size input value."""
 
 
 class PaperSize(IntEnum):
@@ -41,7 +46,7 @@ class PaperSize(IntEnum):
         return values
 
     @classmethod
-    def from_str(cls, paper_size: 'PaperSize' | str,
+    def from_str(cls, paper_size: PaperSizeInput,
                  strict: bool = True) -> 'PaperSize':
         """Parse a paper size enum value from an enum member or string.
 
@@ -91,5 +96,5 @@ class PaperSize(IntEnum):
         return self.name.upper()
 
     def normalize(self) -> str:
-        """Return the normalized name of the paper size."""
+        """Return the normalized (capitalized) name of the paper size."""
         return self.name.capitalize()
