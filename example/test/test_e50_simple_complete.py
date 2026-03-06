@@ -13,7 +13,7 @@ from .test_e01_paragraph import (
 from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func, check_rst_func,
-    check_docx_func, check_odt_func, docx_version_of_html)
+    check_docx_func, check_odt_func, check_rtf_func, docx_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
 _example_test_path = (
@@ -318,4 +318,11 @@ def test_e50_simple_complete_odt(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the multi_format_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(multi_format_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e50_simple_complete_rtf(capsys: pytest.CaptureFixture[str]) -> None:
+    """Test the multi_format_example function with the rtf format."""
+    expected_txt = EXPECTED_HTML_TEXT
+    check_rtf_func(multi_format_example, expected_txt)
     check_capsys_silent(capsys)

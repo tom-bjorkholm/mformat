@@ -14,7 +14,8 @@ from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
     check_rst_func,
-    check_docx_func, check_odt_func, docx_version_of_html, odt_version_of_html)
+    check_docx_func, check_odt_func, check_rtf_func,
+    docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
 _example_test_path = (
@@ -138,6 +139,14 @@ def test_e11_numbered_nested_list_odt(
     """Test the numbered_nested_example function with the odt format."""
     expected_txt = EXPECTED_ODT_TEXT
     check_odt_func(numbered_nested_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e11_numbered_nested_list_rtf(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test the numbered_nested_example function with the rtf format."""
+    expected_txt = EXPECTED_HTML_TEXT
+    check_rtf_func(numbered_nested_example, expected_txt)
     check_capsys_silent(capsys)
 
 
