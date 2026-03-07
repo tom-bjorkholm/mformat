@@ -20,6 +20,54 @@ create_pypi = load_source_module(
 )
 
 
+def _set_version_history(monkeypatch: pytest.MonkeyPatch,
+                         version: str) -> None:
+    """Set VERSION_HISTORY to one deterministic test release."""
+    monkeypatch.setattr(
+        create_pypi,
+        'VERSION_HISTORY',
+        [['Version', 'Date', 'Python version', 'Description'],
+         [version, '01 Jan 2026', '3.12 or newer', 'Test release']]
+    )
+
+
+def _create_paths_for_version_check(
+        root: Path,
+        base_setup_version: str,
+        base_pyproject_version: str,
+        extend_setup_version: str,
+        extend_pyproject_version: str) -> dict[str, object]:
+    """Write local version files and return the corresponding paths dict."""
+    write_text(
+        root / 'base_setup.py',
+        f'version="{base_setup_version}"\n'
+    )
+    write_text(
+        root / 'base_pyproject.toml',
+        f'version = "{base_pyproject_version}"\n'
+    )
+    write_text(
+        root / 'ext_setup.py',
+        f'version="{extend_setup_version}"\n'
+    )
+    write_text(
+        root / 'ext_pyproject.toml',
+        f'version = "{extend_pyproject_version}"\n'
+    )
+    return {
+        'base': create_pypi.Paths(
+            readme=root / 'base_README.md',
+            setup=root / 'base_setup.py',
+            pyproject=root / 'base_pyproject.toml'
+        ),
+        'extend': create_pypi.Paths(
+            readme=root / 'ext_README.md',
+            setup=root / 'ext_setup.py',
+            pyproject=root / 'ext_pyproject.toml'
+        )
+    }
+
+
 def test_get_paths_returns_expected_structure(
         monkeypatch: pytest.MonkeyPatch) -> None:
     """Test create_pypi get_paths resolves both base and extend paths."""
@@ -56,50 +104,36 @@ def test_get_version_in_file(content: str, expected: str) -> None:
     assert version == expected
 
 
-def test_check_version_accepts_consistent_files() -> None:
+def test_check_version_accepts_consistent_files(
+        monkeypatch: pytest.MonkeyPatch) -> None:
     """Test check_version passes when all version values are consistent."""
+    _set_version_history(monkeypatch, '1.2')
     with TemporaryDirectory() as tmp_dir:
         root = Path(tmp_dir)
-        write_text(root / 'base_setup.py', 'version="0.4.5"\n')
-        write_text(root / 'base_pyproject.toml', 'version = "0.4.5"\n')
-        write_text(root / 'ext_setup.py', 'version="0.4.5"\n')
-        write_text(root / 'ext_pyproject.toml', 'version = "0.4.5"\n')
-        paths = {
-            'base': create_pypi.Paths(
-                readme=root / 'base_README.md',
-                setup=root / 'base_setup.py',
-                pyproject=root / 'base_pyproject.toml'
-            ),
-            'extend': create_pypi.Paths(
-                readme=root / 'ext_README.md',
-                setup=root / 'ext_setup.py',
-                pyproject=root / 'ext_pyproject.toml'
-            )
-        }
+        paths = _create_paths_for_version_check(
+            root=root,
+            base_setup_version='1.2.5',
+            base_pyproject_version='1.2.5',
+            extend_setup_version='1.2.5',
+            extend_pyproject_version='1.2.5'
+        )
         create_pypi.check_version(paths)
 
 
 def test_check_version_fails_on_mismatch(
-        capsys: pytest.CaptureFixture[str]) -> None:
+        capsys: pytest.CaptureFixture[str],
+        monkeypatch: pytest.MonkeyPatch) -> None:
     """Test check_version exits when version files do not match."""
+    _set_version_history(monkeypatch, '1.2')
     with TemporaryDirectory() as tmp_dir:
         root = Path(tmp_dir)
-        write_text(root / 'base_setup.py', 'version="0.4.5"\n')
-        write_text(root / 'base_pyproject.toml', 'version = "0.4.4"\n')
-        write_text(root / 'ext_setup.py', 'version="0.4.5"\n')
-        write_text(root / 'ext_pyproject.toml', 'version = "0.4.5"\n')
-        paths = {
-            'base': create_pypi.Paths(
-                readme=root / 'base_README.md',
-                setup=root / 'base_setup.py',
-                pyproject=root / 'base_pyproject.toml'
-            ),
-            'extend': create_pypi.Paths(
-                readme=root / 'ext_README.md',
-                setup=root / 'ext_setup.py',
-                pyproject=root / 'ext_pyproject.toml'
-            )
-        }
+        paths = _create_paths_for_version_check(
+            root=root,
+            base_setup_version='1.2.5',
+            base_pyproject_version='1.2.4',
+            extend_setup_version='1.2.5',
+            extend_pyproject_version='1.2.5'
+        )
         with pytest.raises(SystemExit) as exc:
             create_pypi.check_version(paths)
     assert exc.value.code == 1

@@ -164,13 +164,14 @@ probably provide a better introduction.
 
 ## Version history
 
-| Version | Date        | Python version | Description               |
-|---------|-------------|----------------|---------------------------|
-| 0.4     | 21 Feb 2026 | 3.12 or newer  | Added block quote support |
-| 0.3     | 18 Feb 2026 | 3.12 or newer  | Improved API and fixes    |
-| 0.2.2   | 31 Jan 2026 | 3.12 or newer  | Dependency corrected      |
-| 0.2.1   | 30 Jan 2026 | 3.12 or newer  | Minor documentation fix   |
-| 0.2     | 30 Jan 2026 | 3.12 or newer  | First released version    |
+| Version | Date        | Python version | Description                     |
+|---------|-------------|----------------|---------------------------------|
+| 0.5     | 07 Mar 2026 | 3.12 or newer  | Added RTF, TXT and reST formats |
+| 0.4     | 21 Feb 2026 | 3.12 or newer  | Added block quote support       |
+| 0.3     | 18 Feb 2026 | 3.12 or newer  | Improved API and fixes          |
+| 0.2.2   | 31 Jan 2026 | 3.12 or newer  | Dependency corrected            |
+| 0.2.1   | 30 Jan 2026 | 3.12 or newer  | Minor documentation fix         |
+| 0.2     | 30 Jan 2026 | 3.12 or newer  | First released version          |
 
 ## Output file formats
 
@@ -184,6 +185,7 @@ format was introduced.
 | md     | Markdown            | mformat       | 0.2                 |
 | odt    | Open Document Text  | mformat-ext   | 0.2                 |
 | reST   | reStructured Text   | mformat       | 0.5                 |
+| rtf    | Rich Text Format    | mformat-ext   | 0.5                 |
 | txt    | Plain text          | mformat       | 0.5                 |
 
 ## API changes in version 0.3 (deprecated methods)
@@ -210,8 +212,8 @@ some future version.
 
 ## Test summary
 
-- Test result: 2488 passed in 25s
+- Test result: 2578 passed in 27s
 - No Flake8 warnings.
 - No mypy errors found.
-- Built version(s): 0.4.1
+- Built version(s): 0.5
 - Build and test using Python 3.14.3

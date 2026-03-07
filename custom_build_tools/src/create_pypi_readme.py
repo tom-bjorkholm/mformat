@@ -197,6 +197,8 @@ P2_API_DOCUMENTATION_2 = 'probably provide a better introduction.'
 H2_VERSION_HISTORY = 'Version history'
 VERSION_HISTORY = [
      ['Version', 'Date', 'Python version', 'Description'],
+     ['0.5', '07 Mar 2026', '3.12 or newer',
+      'Added RTF, TXT and reST formats'],
      ['0.4', '21 Feb 2026', '3.12 or newer', 'Added block quote support'],
      ['0.3', '18 Feb 2026', '3.12 or newer', 'Improved API and fixes'],
      ['0.2.2', '31 Jan 2026', '3.12 or newer', 'Dependency corrected'],
@@ -213,6 +215,7 @@ FORMATS = [
     ['md', 'Markdown', 'mformat', '0.2'],
     ['odt', 'Open Document Text', 'mformat-ext', '0.2'],
     ['reST', 'reStructured Text', 'mformat', '0.5'],
+    ['rtf', 'Rich Text Format', 'mformat-ext', '0.5'],
     ['txt', 'Plain text', 'mformat', '0.5']
 ]
 H2_DEPRECATED = 'API changes in version 0.3 (deprecated methods)'
