@@ -6,7 +6,6 @@
 #
 
 import re
-import warnings
 from typing import Optional, Callable
 from mformat.mformat_textbased import MultiFormatTextBased
 from mformat.mformat import PathLike
@@ -180,20 +179,6 @@ class MultiFormatPlainTextLike(MultiFormatTextBased):
     def _indent_for_level(self, level: int) -> str:
         """Get indentation for a list level."""
         return 2 * (level - 1) * ' '
-
-    def _indent2(self, level: int) -> str:
-        """Get the indentation for a level.
-
-        .. deprecated:: 0.4.1
-          Use :meth:`_indent_for_level` instead.
-
-        Kept as compatibility wrapper. Use _indent_for_level in new code.
-        """
-        warnings.warn('_indent2 is deprecated. '
-                      'Use _indent_for_level instead.',
-                      DeprecationWarning,
-                      stacklevel=3)
-        return self._indent_for_level(level)
 
     # =================================================================
     # Paragraph and block quote

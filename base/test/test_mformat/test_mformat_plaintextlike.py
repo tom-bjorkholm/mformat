@@ -182,7 +182,7 @@ def test_empty_line_before(
 
 
 # =================================================================
-# _indent2
+# _indent_for_level
 # =================================================================
 
 @pytest.mark.parametrize('level, expected',
@@ -190,19 +190,13 @@ def test_empty_line_before(
                           (2, '  '),
                           (3, '    '),
                           (4, '      ')])
-def test_indent2(
-        capsys: pytest.CaptureFixture[str],
-        level: int,
-        expected: str) -> None:
-    """Test _indent2 returns indentation and warns as deprecated."""
+def test_indent_for_level(capsys: pytest.CaptureFixture[str],
+                          level: int, expected: str) -> None:
+    """Test _indent_for_level returns indentation."""
     with TemporaryDirectory() as temp_dir:
         file_name = str(Path(temp_dir) / 'test.test')
-        # pylint: disable=protected-access
         mf = PlainTextLikeTestImpl(file_name=file_name)
-        with pytest.deprecated_call(
-                match='_indent2 is deprecated. '
-                'Use _indent_for_level instead.'):
-            assert mf._indent2(level) == expected
+        # pylint: disable=protected-access
         assert mf._indent_for_level(level) == expected
     check_capsys(capsys)
 

@@ -11,7 +11,6 @@
     * [\_wrap\_and\_write\_atomic](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._wrap_and_write_atomic)
     * [\_empty\_line\_before](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._empty_line_before)
     * [\_indent\_for\_level](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._indent_for_level)
-    * [\_indent2](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._indent2)
     * [\_start\_paragraph](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_paragraph)
     * [\_end\_paragraph](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._end_paragraph)
     * [\_start\_block\_quote](#mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_block_quote)
@@ -645,21 +644,6 @@ def _indent_for_level(level: int) -> str
 ```
 
 Get indentation for a list level.
-
-<a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._indent2"></a>
-
-#### \_indent2
-
-```python
-def _indent2(level: int) -> str
-```
-
-Get the indentation for a level.
-
-.. deprecated:: 0.4.1
-  Use :meth:`_indent_for_level` instead.
-
-Kept as compatibility wrapper. Use _indent_for_level in new code.
 
 <a id="mformat.mformat_plaintextlike.MultiFormatPlainTextLike._start_paragraph"></a>
 
