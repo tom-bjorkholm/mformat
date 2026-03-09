@@ -167,6 +167,51 @@
     * [\_escape\_emphasis](#mformat.mformat_md.MultiFormatMd._escape_emphasis)
     * [\_escape\_equals](#mformat.mformat_md.MultiFormatMd._escape_equals)
     * [\_is\_emphasis\_position](#mformat.mformat_md.MultiFormatMd._is_emphasis_position)
+* [mformat.mformat\_latex](#mformat.mformat_latex)
+  * [MultiFormatLatex](#mformat.mformat_latex.MultiFormatLatex)
+    * [\_\_init\_\_](#mformat.mformat_latex.MultiFormatLatex.__init__)
+    * [get\_arg\_desciption](#mformat.mformat_latex.MultiFormatLatex.get_arg_desciption)
+    * [file\_name\_extension](#mformat.mformat_latex.MultiFormatLatex.file_name_extension)
+    * [\_normalize\_latex\_command](#mformat.mformat_latex.MultiFormatLatex._normalize_latex_command)
+    * [\_heading\_command](#mformat.mformat_latex.MultiFormatLatex._heading_command)
+    * [\_apply\_latex\_replacements](#mformat.mformat_latex.MultiFormatLatex._apply_latex_replacements)
+    * [\_preamble\_has\_documentclass](#mformat.mformat_latex.MultiFormatLatex._preamble_has_documentclass)
+    * [\_preamble\_has\_begin\_document](#mformat.mformat_latex.MultiFormatLatex._preamble_has_begin_document)
+    * [\_preamble\_has\_end\_document](#mformat.mformat_latex.MultiFormatLatex._preamble_has_end_document)
+    * [\_preamble\_has\_url\_package](#mformat.mformat_latex.MultiFormatLatex._preamble_has_url_package)
+    * [\_write\_with\_stage\_three\_replacements](#mformat.mformat_latex.MultiFormatLatex._write_with_stage_three_replacements)
+    * [\_ensure\_blank\_line\_before](#mformat.mformat_latex.MultiFormatLatex._ensure_blank_line_before)
+    * [\_ensure\_ending\_newline](#mformat.mformat_latex.MultiFormatLatex._ensure_ending_newline)
+    * [\_escape\_latex\_text](#mformat.mformat_latex.MultiFormatLatex._escape_latex_text)
+    * [\_tabular\_spec](#mformat.mformat_latex.MultiFormatLatex._tabular_spec)
+    * [\_format\_text](#mformat.mformat_latex.MultiFormatLatex._format_text)
+    * [\_write\_file\_prefix](#mformat.mformat_latex.MultiFormatLatex._write_file_prefix)
+    * [\_write\_file\_suffix](#mformat.mformat_latex.MultiFormatLatex._write_file_suffix)
+    * [\_start\_paragraph](#mformat.mformat_latex.MultiFormatLatex._start_paragraph)
+    * [\_end\_paragraph](#mformat.mformat_latex.MultiFormatLatex._end_paragraph)
+    * [\_start\_block\_quote](#mformat.mformat_latex.MultiFormatLatex._start_block_quote)
+    * [\_end\_block\_quote](#mformat.mformat_latex.MultiFormatLatex._end_block_quote)
+    * [\_start\_heading](#mformat.mformat_latex.MultiFormatLatex._start_heading)
+    * [\_end\_heading](#mformat.mformat_latex.MultiFormatLatex._end_heading)
+    * [\_write\_text](#mformat.mformat_latex.MultiFormatLatex._write_text)
+    * [\_write\_url](#mformat.mformat_latex.MultiFormatLatex._write_url)
+    * [\_write\_code\_in\_text](#mformat.mformat_latex.MultiFormatLatex._write_code_in_text)
+    * [\_start\_bullet\_list](#mformat.mformat_latex.MultiFormatLatex._start_bullet_list)
+    * [\_end\_bullet\_list](#mformat.mformat_latex.MultiFormatLatex._end_bullet_list)
+    * [\_start\_bullet\_item](#mformat.mformat_latex.MultiFormatLatex._start_bullet_item)
+    * [\_end\_bullet\_item](#mformat.mformat_latex.MultiFormatLatex._end_bullet_item)
+    * [\_start\_numbered\_list](#mformat.mformat_latex.MultiFormatLatex._start_numbered_list)
+    * [\_end\_numbered\_list](#mformat.mformat_latex.MultiFormatLatex._end_numbered_list)
+    * [\_start\_numbered\_item](#mformat.mformat_latex.MultiFormatLatex._start_numbered_item)
+    * [\_end\_numbered\_item](#mformat.mformat_latex.MultiFormatLatex._end_numbered_item)
+    * [\_start\_table](#mformat.mformat_latex.MultiFormatLatex._start_table)
+    * [\_end\_table](#mformat.mformat_latex.MultiFormatLatex._end_table)
+    * [\_write\_table\_first\_row](#mformat.mformat_latex.MultiFormatLatex._write_table_first_row)
+    * [\_write\_table\_row](#mformat.mformat_latex.MultiFormatLatex._write_table_row)
+    * [\_start\_code\_block](#mformat.mformat_latex.MultiFormatLatex._start_code_block)
+    * [\_end\_code\_block](#mformat.mformat_latex.MultiFormatLatex._end_code_block)
+    * [\_write\_code\_block](#mformat.mformat_latex.MultiFormatLatex._write_code_block)
+    * [\_encode\_text](#mformat.mformat_latex.MultiFormatLatex._encode_text)
 * [mformat.underline\_text](#mformat.underline_text)
   * [UnderlineSpec](#mformat.underline_text.UnderlineSpec)
     * [pattern](#mformat.underline_text.UnderlineSpec.pattern)
@@ -2660,6 +2705,550 @@ or string boundaries).
 **Returns**:
 
   True if the position could be an emphasis delimiter.
+
+<a id="mformat.mformat_latex"></a>
+
+# mformat.mformat\_latex
+
+MultiFormat class for LaTeX output format.
+
+<a id="mformat.mformat_latex.MultiFormatLatex"></a>
+
+## MultiFormatLatex Objects
+
+```python
+class MultiFormatLatex(MultiFormatTextBased)
+```
+
+MultiFormat class for LaTeX output format.
+
+<a id="mformat.mformat_latex.MultiFormatLatex.__init__"></a>
+
+#### \_\_init\_\_
+
+```python
+def __init__(file_name: PathLike,
+             url_as_text: bool = False,
+             file_exists_callback: Optional[Callable[[str], None]] = None,
+             character_encoding: str = 'utf-8',
+             document_class: Optional[DocumentClassInput] = None,
+             paper_size: Optional[PaperSizeInput] = None,
+             title: Optional[str] = None,
+             latex_preamble: str = '',
+             latex_heading_levels: Optional[dict[int, str]] = None,
+             latex_replacements: Optional[list[dict[str, str]]] = None)
+```
+
+Initialize the MultiFormatLatex class.
+
+**Arguments**:
+
+- `file_name` - The name of the file to write to.
+- `url_as_text` - Format URLs as text not clickable URLs.
+- `file_exists_callback` - A callback function to call if the file
+  already exists. Return to allow the file to
+  be overwritten. Raise an exception to prevent
+  the file from being overwritten.
+  (May for instance save existing file as
+  backup.)
+  (Default is to raise an exception.)
+- `character_encoding` - The character encoding to use.
+  Default is 'utf-8'. Keep it as default unless
+  you have a good specific reason to change it.
+- `document_class` - The document class to use. If None, the default
+  document class REPORT will be used.
+  The document class is written into the
+  documentclass command in the preamble in the
+  LaTeX output file, but it is also used to set
+  the default heading levels for the output file.
+- `paper_size` - The paper size to use. If None, the default
+  paper size A4 will be used.
+  The paper size is written into the
+  paper size command in the preamble in the
+  LaTeX output file. Note that paper_size cannot
+  be used if the latex_preamble string contains the
+  substring "\\documentclass".
+- `latex_preamble` - This string is written into the preamble of the
+  LaTeX output file. If the string does not contain
+  the substring "\\documentclass" it will be
+  written to the output file directly after the
+  "\\documentclass" command. If the string
+  contains the
+  string "\\documentclass", the string is inserted
+  first in the output file, and paper size is
+  taken from the latex_preamble string (in this
+  case it is an error to also supply paper_size).
+  If the string does not contain the substring
+  "\\begin{document}", the string is inserted
+  before the "\\begin{document}" command.
+  If the string contains the substring
+  "\\begin{document}", this class generates no
+  "\\begin{document}" command (and thus the
+  latex_preamble string can contain also text
+  after the "\\begin{document}" command).
+- `latex_heading_levels` - A dictionary of heading levels and their
+  corresponding LaTeX commands. This will
+  override the heading levels for the
+  document class. Note that this need not
+  map all heading levels, and the default
+  heading levels for the document class will
+  be used for the heading levels not mapped.
+- `latex_replacements` - A list of dictionaries of LaTeX replacements.
+  The list must contain 3 dictionaries.
+  The replacements in latex_replacements[0]
+  will be done on the text to be written,
+  before the standard encoding is applied.
+  This means that latex_replacements[0]
+  is usable for replacing text content,
+  but not for inserting LaTeX commands.
+  The replacements in latex_replacements[1]
+  will be done on the text to be written,
+  after the standard encoding is applied.
+  This means that latex_replacements[2]
+  is usable for inserting LaTeX commands.
+  The replacements in latex_replacements[2]
+  will be done after the latex commands
+  have been added to the text. This means
+  that latex_replacements[2] is usable for
+  replacing LaTeX commands.
+  (Default is None.)
+
+<a id="mformat.mformat_latex.MultiFormatLatex.get_arg_desciption"></a>
+
+#### get\_arg\_desciption
+
+```python
+@classmethod
+def get_arg_desciption(cls) -> FormatterDescriptor
+```
+
+Get the description of the arguments for the formatter.
+
+<a id="mformat.mformat_latex.MultiFormatLatex.file_name_extension"></a>
+
+#### file\_name\_extension
+
+```python
+@classmethod
+def file_name_extension(cls) -> str
+```
+
+Get the file name extension for the formatter.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._normalize_latex_command"></a>
+
+#### \_normalize\_latex\_command
+
+```python
+@staticmethod
+def _normalize_latex_command(command: str) -> str
+```
+
+Normalize a command name by stripping whitespace and backslash.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._heading_command"></a>
+
+#### \_heading\_command
+
+```python
+def _heading_command(level: int) -> str
+```
+
+Get a heading command for a level using deepest-known fallback.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._apply_latex_replacements"></a>
+
+#### \_apply\_latex\_replacements
+
+```python
+def _apply_latex_replacements(text: str, stage: int) -> str
+```
+
+Apply configured replacement stage to text.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._preamble_has_documentclass"></a>
+
+#### \_preamble\_has\_documentclass
+
+```python
+def _preamble_has_documentclass() -> bool
+```
+
+Check if preamble contains a document class command.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._preamble_has_begin_document"></a>
+
+#### \_preamble\_has\_begin\_document
+
+```python
+def _preamble_has_begin_document() -> bool
+```
+
+Check if preamble contains begin document command.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._preamble_has_end_document"></a>
+
+#### \_preamble\_has\_end\_document
+
+```python
+def _preamble_has_end_document() -> bool
+```
+
+Check if preamble contains end document command.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._preamble_has_url_package"></a>
+
+#### \_preamble\_has\_url\_package
+
+```python
+def _preamble_has_url_package() -> bool
+```
+
+Check if preamble contains URL-capable package.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._write_with_stage_three_replacements"></a>
+
+#### \_write\_with\_stage\_three\_replacements
+
+```python
+def _write_with_stage_three_replacements(text: str) -> None
+```
+
+Write text after applying stage-three replacements.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._ensure_blank_line_before"></a>
+
+#### \_ensure\_blank\_line\_before
+
+```python
+def _ensure_blank_line_before() -> None
+```
+
+Ensure there is an empty line before the next item.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._ensure_ending_newline"></a>
+
+#### \_ensure\_ending\_newline
+
+```python
+@staticmethod
+def _ensure_ending_newline(text: str) -> str
+```
+
+Return text ending with a newline.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._escape_latex_text"></a>
+
+#### \_escape\_latex\_text
+
+```python
+@staticmethod
+def _escape_latex_text(text: str) -> str
+```
+
+Escape LaTeX special characters in plain text content.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._tabular_spec"></a>
+
+#### \_tabular\_spec
+
+```python
+@staticmethod
+def _tabular_spec(num_columns: int) -> str
+```
+
+Build a simple tabular specification for given number of columns.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._format_text"></a>
+
+#### \_format\_text
+
+```python
+@staticmethod
+def _format_text(text: str, formatting: Formatting) -> str
+```
+
+Apply bold and italic formatting wrappers to text.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._write_file_prefix"></a>
+
+#### \_write\_file\_prefix
+
+```python
+def _write_file_prefix() -> None
+```
+
+Write the LaTeX file prefix and preamble.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._write_file_suffix"></a>
+
+#### \_write\_file\_suffix
+
+```python
+def _write_file_suffix() -> None
+```
+
+Write LaTeX document ending unless provided in preamble.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._start_paragraph"></a>
+
+#### \_start\_paragraph
+
+```python
+def _start_paragraph() -> None
+```
+
+Start a paragraph.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._end_paragraph"></a>
+
+#### \_end\_paragraph
+
+```python
+def _end_paragraph() -> None
+```
+
+End a paragraph.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._start_block_quote"></a>
+
+#### \_start\_block\_quote
+
+```python
+def _start_block_quote() -> None
+```
+
+Start a block quote.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._end_block_quote"></a>
+
+#### \_end\_block\_quote
+
+```python
+def _end_block_quote() -> None
+```
+
+End a block quote.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._start_heading"></a>
+
+#### \_start\_heading
+
+```python
+def _start_heading(level: int) -> None
+```
+
+Start a heading.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._end_heading"></a>
+
+#### \_end\_heading
+
+```python
+def _end_heading(level: int) -> None
+```
+
+End a heading.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._write_text"></a>
+
+#### \_write\_text
+
+```python
+def _write_text(text: str, state: MultiFormatState,
+                formatting: Formatting) -> None
+```
+
+Write text into current item (paragraph, bullet list item...).
+
+<a id="mformat.mformat_latex.MultiFormatLatex._write_url"></a>
+
+#### \_write\_url
+
+```python
+def _write_url(url: str, text: Optional[str], state: MultiFormatState,
+               formatting: Formatting) -> None
+```
+
+Write a URL into current item (paragraph, bullet list item...).
+
+<a id="mformat.mformat_latex.MultiFormatLatex._write_code_in_text"></a>
+
+#### \_write\_code\_in\_text
+
+```python
+def _write_code_in_text(text: str, state: MultiFormatState) -> None
+```
+
+Write code into current item (paragraph, bullet list item...).
+
+<a id="mformat.mformat_latex.MultiFormatLatex._start_bullet_list"></a>
+
+#### \_start\_bullet\_list
+
+```python
+def _start_bullet_list(level: int) -> None
+```
+
+Start a bullet list.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._end_bullet_list"></a>
+
+#### \_end\_bullet\_list
+
+```python
+def _end_bullet_list(level: int) -> None
+```
+
+End a bullet list.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._start_bullet_item"></a>
+
+#### \_start\_bullet\_item
+
+```python
+def _start_bullet_item(level: int) -> None
+```
+
+Start a bullet item.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._end_bullet_item"></a>
+
+#### \_end\_bullet\_item
+
+```python
+def _end_bullet_item(level: int) -> None
+```
+
+End a bullet item.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._start_numbered_list"></a>
+
+#### \_start\_numbered\_list
+
+```python
+def _start_numbered_list(level: int) -> None
+```
+
+Start a numbered list.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._end_numbered_list"></a>
+
+#### \_end\_numbered\_list
+
+```python
+def _end_numbered_list(level: int) -> None
+```
+
+End a numbered list.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._start_numbered_item"></a>
+
+#### \_start\_numbered\_item
+
+```python
+def _start_numbered_item(level: int, num: int, full_number: str) -> None
+```
+
+Start a numbered item.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._end_numbered_item"></a>
+
+#### \_end\_numbered\_item
+
+```python
+def _end_numbered_item(level: int, num: int) -> None
+```
+
+End a numbered item.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._start_table"></a>
+
+#### \_start\_table
+
+```python
+def _start_table(num_columns: int) -> None
+```
+
+Start a table.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._end_table"></a>
+
+#### \_end\_table
+
+```python
+def _end_table(num_columns: int, num_rows: int) -> None
+```
+
+End a table.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._write_table_first_row"></a>
+
+#### \_write\_table\_first\_row
+
+```python
+def _write_table_first_row(first_row: list[str],
+                           formatting: Formatting) -> None
+```
+
+Write the first row of the table.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._write_table_row"></a>
+
+#### \_write\_table\_row
+
+```python
+def _write_table_row(row: list[str], formatting: Formatting,
+                     row_number: int) -> None
+```
+
+Write a row of the table.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._start_code_block"></a>
+
+#### \_start\_code\_block
+
+```python
+def _start_code_block(programming_language: Optional[str]) -> None
+```
+
+Start a code block.
+
+The programming_language argument is accepted but ignored.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._end_code_block"></a>
+
+#### \_end\_code\_block
+
+```python
+def _end_code_block(programming_language: Optional[str]) -> None
+```
+
+End a code block.
+
+The programming_language argument is accepted but ignored.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._write_code_block"></a>
+
+#### \_write\_code\_block
+
+```python
+def _write_code_block(text: str, programming_language: Optional[str]) -> None
+```
+
+Write a code block.
+
+The programming_language argument is accepted but ignored.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._encode_text"></a>
+
+#### \_encode\_text
+
+```python
+def _encode_text(text: str) -> str
+```
+
+Encode text (escape special characters).
 
 <a id="mformat.underline_text"></a>
 

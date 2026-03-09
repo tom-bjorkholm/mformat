@@ -62,6 +62,11 @@
     * [\_\_init\_\_](#mformat.mformat_md.MultiFormatMd.__init__)
     * [file\_name\_extension](#mformat.mformat_md.MultiFormatMd.file_name_extension)
     * [get\_arg\_desciption](#mformat.mformat_md.MultiFormatMd.get_arg_desciption)
+* [mformat.mformat\_latex](#mformat.mformat_latex)
+  * [MultiFormatLatex](#mformat.mformat_latex.MultiFormatLatex)
+    * [\_\_init\_\_](#mformat.mformat_latex.MultiFormatLatex.__init__)
+    * [get\_arg\_desciption](#mformat.mformat_latex.MultiFormatLatex.get_arg_desciption)
+    * [file\_name\_extension](#mformat.mformat_latex.MultiFormatLatex.file_name_extension)
 * [mformat.underline\_text](#mformat.underline_text)
   * [UnderlineSpec](#mformat.underline_text.UnderlineSpec)
     * [pattern](#mformat.underline_text.UnderlineSpec.pattern)
@@ -1090,6 +1095,135 @@ def get_arg_desciption(cls) -> FormatterDescriptor
 ```
 
 Get the description of the arguments for the formatter.
+
+<a id="mformat.mformat_latex"></a>
+
+# mformat.mformat\_latex
+
+MultiFormat class for LaTeX output format.
+
+<a id="mformat.mformat_latex.MultiFormatLatex"></a>
+
+## MultiFormatLatex Objects
+
+```python
+class MultiFormatLatex(MultiFormatTextBased)
+```
+
+MultiFormat class for LaTeX output format.
+
+<a id="mformat.mformat_latex.MultiFormatLatex.__init__"></a>
+
+#### \_\_init\_\_
+
+```python
+def __init__(file_name: PathLike,
+             url_as_text: bool = False,
+             file_exists_callback: Optional[Callable[[str], None]] = None,
+             character_encoding: str = 'utf-8',
+             document_class: Optional[DocumentClassInput] = None,
+             paper_size: Optional[PaperSizeInput] = None,
+             title: Optional[str] = None,
+             latex_preamble: str = '',
+             latex_heading_levels: Optional[dict[int, str]] = None,
+             latex_replacements: Optional[list[dict[str, str]]] = None)
+```
+
+Initialize the MultiFormatLatex class.
+
+**Arguments**:
+
+- `file_name` - The name of the file to write to.
+- `url_as_text` - Format URLs as text not clickable URLs.
+- `file_exists_callback` - A callback function to call if the file
+  already exists. Return to allow the file to
+  be overwritten. Raise an exception to prevent
+  the file from being overwritten.
+  (May for instance save existing file as
+  backup.)
+  (Default is to raise an exception.)
+- `character_encoding` - The character encoding to use.
+  Default is 'utf-8'. Keep it as default unless
+  you have a good specific reason to change it.
+- `document_class` - The document class to use. If None, the default
+  document class REPORT will be used.
+  The document class is written into the
+  documentclass command in the preamble in the
+  LaTeX output file, but it is also used to set
+  the default heading levels for the output file.
+- `paper_size` - The paper size to use. If None, the default
+  paper size A4 will be used.
+  The paper size is written into the
+  paper size command in the preamble in the
+  LaTeX output file. Note that paper_size cannot
+  be used if the latex_preamble string contains the
+  substring "\\documentclass".
+- `latex_preamble` - This string is written into the preamble of the
+  LaTeX output file. If the string does not contain
+  the substring "\\documentclass" it will be
+  written to the output file directly after the
+  "\\documentclass" command. If the string
+  contains the
+  string "\\documentclass", the string is inserted
+  first in the output file, and paper size is
+  taken from the latex_preamble string (in this
+  case it is an error to also supply paper_size).
+  If the string does not contain the substring
+  "\\begin{document}", the string is inserted
+  before the "\\begin{document}" command.
+  If the string contains the substring
+  "\\begin{document}", this class generates no
+  "\\begin{document}" command (and thus the
+  latex_preamble string can contain also text
+  after the "\\begin{document}" command).
+- `latex_heading_levels` - A dictionary of heading levels and their
+  corresponding LaTeX commands. This will
+  override the heading levels for the
+  document class. Note that this need not
+  map all heading levels, and the default
+  heading levels for the document class will
+  be used for the heading levels not mapped.
+- `latex_replacements` - A list of dictionaries of LaTeX replacements.
+  The list must contain 3 dictionaries.
+  The replacements in latex_replacements[0]
+  will be done on the text to be written,
+  before the standard encoding is applied.
+  This means that latex_replacements[0]
+  is usable for replacing text content,
+  but not for inserting LaTeX commands.
+  The replacements in latex_replacements[1]
+  will be done on the text to be written,
+  after the standard encoding is applied.
+  This means that latex_replacements[2]
+  is usable for inserting LaTeX commands.
+  The replacements in latex_replacements[2]
+  will be done after the latex commands
+  have been added to the text. This means
+  that latex_replacements[2] is usable for
+  replacing LaTeX commands.
+  (Default is None.)
+
+<a id="mformat.mformat_latex.MultiFormatLatex.get_arg_desciption"></a>
+
+#### get\_arg\_desciption
+
+```python
+@classmethod
+def get_arg_desciption(cls) -> FormatterDescriptor
+```
+
+Get the description of the arguments for the formatter.
+
+<a id="mformat.mformat_latex.MultiFormatLatex.file_name_extension"></a>
+
+#### file\_name\_extension
+
+```python
+@classmethod
+def file_name_extension(cls) -> str
+```
+
+Get the file name extension for the formatter.
 
 <a id="mformat.underline_text"></a>
 

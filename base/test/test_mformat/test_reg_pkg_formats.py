@@ -10,6 +10,7 @@ import sys
 from typing import Any
 import pytest  # pylint: disable=unused-import # noqa: F401
 from mformat.mformat_html import MultiFormatHtml
+from mformat.mformat_latex import MultiFormatLatex
 from mformat.mformat_md import MultiFormatMd
 from mformat.mformat_rst import MultiFormatRst
 from mformat.mformat_txt import MultiFormatTxt
@@ -40,7 +41,8 @@ def test_register_pkg_formats1(
     # Intercept imports
     monkeypatch.setattr(builtins, '__import__', fake_import)
     assert register_formats_in_pkg() == \
-        [MultiFormatHtml, MultiFormatMd, MultiFormatRst, MultiFormatTxt]
+        [MultiFormatHtml, MultiFormatMd, MultiFormatRst, MultiFormatTxt,
+         MultiFormatLatex]
     check_capsys(capsys)
 
 
@@ -52,5 +54,5 @@ def test_register_pkg_formats2(capsys: pytest.CaptureFixture[str]) -> None:
     from mformat_ext.mformat_rtf import MultiFormatRtf
     assert register_formats_in_pkg() == \
         [MultiFormatHtml, MultiFormatMd, MultiFormatRst, MultiFormatTxt,
-         MultiFormatDocx, MultiFormatOdt, MultiFormatRtf]
+         MultiFormatLatex, MultiFormatDocx, MultiFormatOdt, MultiFormatRtf]
     check_capsys(capsys)

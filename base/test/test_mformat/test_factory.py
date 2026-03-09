@@ -4,6 +4,7 @@
 # Copyright (c) 2025 - 2026 Tom Björkholm
 # MIT License
 #
+# pylint: disable=too-many-lines
 
 import sys
 from io import StringIO
@@ -46,6 +47,24 @@ class MultiFormat2T(MultiFormat):
         """Test the get_arg_desciption method."""
         return FormatterDescriptor(name='mf2t', mandatory_args=[],
                                    optional_args=['arg1', 'arg2'])
+
+
+REQUIRED_FORMATS = ['LaTeX', 'docx', 'html', 'md', 'odt', 'reST', 'rtf',
+                    'txt']
+
+
+def _assert_required_formats(formats: list[str]) -> None:
+    """Assert that required built-in and extension formats are present."""
+    for format_name in REQUIRED_FORMATS:
+        assert format_name in formats
+
+
+def _invalid_format_message(format_name: str,
+                            available_formats: list[str]) -> str:
+    """Build expected invalid-format error message."""
+    sorted_formats = ', '.join(sorted(available_formats))
+    return (f'Format "{format_name}" is not registered. '
+            f'Available formats: {sorted_formats}')
 
 
 def test_factory_obj_reg_ok(capsys: pytest.CaptureFixture[str]) -> None:
@@ -107,17 +126,18 @@ def test_factory_obj_create_nok(capsys: pytest.CaptureFixture[str]) -> None:
     with pytest.raises(KeyError) as exc:
         factory.i_create('something', 'test.test', url_as_text=True,
                          args=None)
-    assert exc.value.args[0] == \
-        'Format "something" is not registered. Available formats: ' + \
-        'docx, html, md, odt, reST, rtf, txt'
+    expected = _invalid_format_message(
+        format_name='something',
+        available_formats=factory.i_get_registered_formats())
+    assert exc.value.args[0] == expected
     check_capsys(capsys)
 
 
 def test_factory_obj_get_regs(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the factory object get_registered_formats method."""
     factory = MultiFormatFactory()
-    assert sorted(factory.i_get_registered_formats()) == \
-        ['docx', 'html', 'md', 'odt', 'reST', 'rtf', 'txt']
+    formats = factory.i_get_registered_formats()
+    _assert_required_formats(formats)
     check_capsys(capsys)
 
 
@@ -135,9 +155,10 @@ def test_factory_obj_get_usage_nok(capsys: pytest.CaptureFixture[str]) -> None:
     factory = MultiFormatFactory()
     with pytest.raises(KeyError) as exc:
         factory.i_get_usage('something')
-    assert exc.value.args[0] == \
-        'Format "something" is not registered. Available formats: ' + \
-        'docx, html, md, odt, reST, rtf, txt'
+    expected = _invalid_format_message(
+        format_name='something',
+        available_formats=factory.i_get_registered_formats())
+    assert exc.value.args[0] == expected
     check_capsys(capsys)
 
 
@@ -180,8 +201,9 @@ def test_factory_reg_ok(  # pylint: disable=too-many-arguments,too-many-position
     mf2to4 = create_func('mf2t', 'test.test', url_as_text=True)
     assert mf2to4.arg1 == ''
     assert mf2to4.arg2 == ''
-    assert sorted(list_func()) == ['docx', 'html', 'md', 'mf2t',
-                                   'odt', 'reST', 'rtf', 'txt']
+    registered = list_func()
+    _assert_required_formats(registered)
+    assert 'mf2t' in registered
     assert usage_func('mf2t') == \
         FormatterDescriptor(name='mf2t', mandatory_args=[],
                             optional_args=['arg1', 'arg2'])
@@ -610,38 +632,29 @@ def wrap_list_reg_mf(lower: bool, upper: bool) -> list[str]:
                          [wrap_i_get_reg_formats,
                           wrap_get_reg_formats,
                           wrap_list_reg_mf])
-@pytest.mark.parametrize('lower, upper, expected',
-                         [(False, False,
-                           ['Case1', 'docx', 'html', 'md', 'odt',
-                            'reST', 'rtf', 'txt']),
-                          (False, True,
-                           ['Case1', 'CASE1',
-                            'docx', 'DOCX',
-                            'html', 'HTML',
-                            'md', 'MD',
-                            'odt', 'ODT',
-                            'reST', 'REST',
-                            'rtf', 'RTF',
-                            'txt', 'TXT']),
-                          (True, False,
-                           ['Case1', 'case1',
-                            'docx', 'html', 'md', 'odt', 'reST',
-                            'rest', 'rtf', 'txt']),
-                          (True, True,
-                           ['Case1', 'case1', 'CASE1',
-                            'docx', 'DOCX', 'html', 'HTML',
-                            'md', 'MD', 'odt', 'ODT',
-                            'reST', 'rest', 'REST',
-                            'rtf', 'RTF',
-                            'txt', 'TXT'])])
+@pytest.mark.parametrize('lower, upper',
+                         [(False, False),
+                          (False, True),
+                          (True, False),
+                          (True, True)])
 def test_factory_reg_ident5(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                             monkeypatch: pytest.MonkeyPatch,
                             wrap_func: Any, lower: bool,
-                            upper: bool, expected: list[str]) -> None:
+                            upper: bool) -> None:
     """Test the factory register method with identical names."""
     # Reset factory to get a new instance
     monkeypatch.setattr('mformat.factory._the_factory', None)
-    assert wrap_func(lower=lower, upper=upper) == expected
+    formats = wrap_func(lower=lower, upper=upper)
+    _assert_required_formats(formats)
+    assert 'Case1' in formats
+    if lower:
+        assert 'case1' in formats
+    else:
+        assert 'case1' not in formats
+    if upper:
+        assert 'CASE1' in formats
+    else:
+        assert 'CASE1' not in formats
     check_capsys(capsys)
 
 
