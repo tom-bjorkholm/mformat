@@ -31,3 +31,8 @@ AGENTS.md
 # example/result/*.docx
 # example/result/*.odt
 example/result/.*#
+example/result/*.dvi
+example/result/*.aux
+example/result/*.log
+example/result/*.out
+example/result/*.log

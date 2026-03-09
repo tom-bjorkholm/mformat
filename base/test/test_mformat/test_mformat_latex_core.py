@@ -75,6 +75,7 @@ def test_heading_fallback_deepest(capsys: pytest.CaptureFixture[str]) -> None:
     expected = (
         '\\documentclass[a4paper]{article}\n'
         '\\usepackage{hyperref}\n'
+        '\\usepackage{booktabs}\n'
         '\\begin{document}\n\n'
         '\\subparagraph{Deep}\n\n'
         '\\end{document}\n')
@@ -94,6 +95,7 @@ def test_custom_heading_mapping(capsys: pytest.CaptureFixture[str]) -> None:
     expected = (
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
+        '\\usepackage{booktabs}\n'
         '\\begin{document}\n\n'
         '\\myheading{Mapped}\n\n'
         '\\end{document}\n')
@@ -138,8 +140,49 @@ def test_add_url_escapes_text(capsys: pytest.CaptureFixture[str]) -> None:
     expected = (
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
+        '\\usepackage{booktabs}\n'
         '\\begin{document}\n\n'
         'See \\href{http://example.com?a=1\\&b=2}{Link}\n\n'
+        '\\end{document}\n')
+    check_run_with_context_manager(
+        format_name='LaTeX', file_extension='.tex', test_action=test_action,
+        expected_text=expected, capsys=capsys)
+
+
+def test_dash_conversion_in_prose(capsys: pytest.CaptureFixture[str]) -> None:
+    """Test conversion from space-dash-space to em dash in prose."""
+
+    def test_action(mfd: Any) -> None:
+        assert isinstance(mfd, MultiFormatLatex)
+        mfd.new_paragraph(text='A - B')
+
+    expected = (
+        '\\documentclass[a4paper]{report}\n'
+        '\\usepackage{hyperref}\n'
+        '\\usepackage{booktabs}\n'
+        '\\begin{document}\n\n'
+        'A --- B\n\n'
+        '\\end{document}\n')
+    check_run_with_context_manager(
+        format_name='LaTeX', file_extension='.tex', test_action=test_action,
+        expected_text=expected, capsys=capsys)
+
+
+def test_dash_not_converted_in_code_in_text(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test that code in text keeps dashes unchanged."""
+
+    def test_action(mfd: Any) -> None:
+        assert isinstance(mfd, MultiFormatLatex)
+        mfd.new_paragraph(text='Code:')
+        mfd.add_code_in_text(text='A - B')
+
+    expected = (
+        '\\documentclass[a4paper]{report}\n'
+        '\\usepackage{hyperref}\n'
+        '\\usepackage{booktabs}\n'
+        '\\begin{document}\n\n'
+        'Code: \\texttt{A - B}\n\n'
         '\\end{document}\n')
     check_run_with_context_manager(
         format_name='LaTeX', file_extension='.tex', test_action=test_action,
@@ -151,14 +194,15 @@ def test_write_code_block(capsys: pytest.CaptureFixture[str]) -> None:
 
     def test_action(mfd: Any) -> None:
         assert isinstance(mfd, MultiFormatLatex)
-        mfd.write_code_block(text='print("x")')
+        mfd.write_code_block(text='A - B')
 
     expected = (
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
+        '\\usepackage{booktabs}\n'
         '\\begin{document}\n\n'
         '\\begin{verbatim}\n'
-        'print("x")\n'
+        'A - B\n'
         '\\end{verbatim}\n\n'
         '\\end{document}\n')
     check_run_with_context_manager(
@@ -177,6 +221,33 @@ def test_write_table(capsys: pytest.CaptureFixture[str]) -> None:
     expected = (
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
+        '\\usepackage{booktabs}\n'
+        '\\begin{document}\n\n'
+        '\\begin{tabular}{ll}\n'
+        '\\toprule\n'
+        'H1 & H2 \\\\\n'
+        '\\midrule\n'
+        'a & b \\\\\n'
+        '\\bottomrule\n'
+        '\\end{tabular}\n\n'
+        '\\end{document}\n')
+    check_run_with_context_manager(
+        format_name='LaTeX', file_extension='.tex', test_action=test_action,
+        expected_text=expected, capsys=capsys)
+
+
+def test_write_table_fallback_without_booktabs_package(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test fallback table style when booktabs cannot be injected."""
+
+    def test_action(mfd: Any) -> None:
+        assert isinstance(mfd, MultiFormatLatex)
+        mfd.new_table(first_row=['H1', 'H2'])
+        mfd.add_table_row(row=['a', 'b'])
+
+    preamble = '\\documentclass[a4paper]{report}\n\\begin{document}\n'
+    expected = (
+        '\\documentclass[a4paper]{report}\n'
         '\\begin{document}\n\n'
         '\\begin{tabular}{|l|l|}\n'
         '\\hline\n'
@@ -188,7 +259,8 @@ def test_write_table(capsys: pytest.CaptureFixture[str]) -> None:
         '\\end{document}\n')
     check_run_with_context_manager(
         format_name='LaTeX', file_extension='.tex', test_action=test_action,
-        expected_text=expected, capsys=capsys)
+        expected_text=expected, args={'latex_preamble': preamble},
+        capsys=capsys)
 
 
 def test_replacement_pipeline(capsys: pytest.CaptureFixture[str]) -> None:
@@ -202,6 +274,7 @@ def test_replacement_pipeline(capsys: pytest.CaptureFixture[str]) -> None:
     expected = (
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
+        '\\usepackage{booktabs}\n'
         '\\begin{document}\n\n'
         '\\Strong{AND}\n\n'
         '\\end{document}\n')

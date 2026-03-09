@@ -172,6 +172,7 @@
     * [\_\_init\_\_](#mformat.mformat_latex.MultiFormatLatex.__init__)
     * [get\_arg\_desciption](#mformat.mformat_latex.MultiFormatLatex.get_arg_desciption)
     * [file\_name\_extension](#mformat.mformat_latex.MultiFormatLatex.file_name_extension)
+    * [add\_code\_in\_text](#mformat.mformat_latex.MultiFormatLatex.add_code_in_text)
     * [\_normalize\_latex\_command](#mformat.mformat_latex.MultiFormatLatex._normalize_latex_command)
     * [\_heading\_command](#mformat.mformat_latex.MultiFormatLatex._heading_command)
     * [\_apply\_latex\_replacements](#mformat.mformat_latex.MultiFormatLatex._apply_latex_replacements)
@@ -179,6 +180,10 @@
     * [\_preamble\_has\_begin\_document](#mformat.mformat_latex.MultiFormatLatex._preamble_has_begin_document)
     * [\_preamble\_has\_end\_document](#mformat.mformat_latex.MultiFormatLatex._preamble_has_end_document)
     * [\_preamble\_has\_url\_package](#mformat.mformat_latex.MultiFormatLatex._preamble_has_url_package)
+    * [\_preamble\_has\_booktabs\_package](#mformat.mformat_latex.MultiFormatLatex._preamble_has_booktabs_package)
+    * [\_can\_insert\_package](#mformat.mformat_latex.MultiFormatLatex._can_insert_package)
+    * [\_use\_booktabs\_tables](#mformat.mformat_latex.MultiFormatLatex._use_booktabs_tables)
+    * [\_current\_table\_uses\_booktabs](#mformat.mformat_latex.MultiFormatLatex._current_table_uses_booktabs)
     * [\_write\_with\_stage\_three\_replacements](#mformat.mformat_latex.MultiFormatLatex._write_with_stage_three_replacements)
     * [\_ensure\_blank\_line\_before](#mformat.mformat_latex.MultiFormatLatex._ensure_blank_line_before)
     * [\_ensure\_ending\_newline](#mformat.mformat_latex.MultiFormatLatex._ensure_ending_newline)
@@ -211,6 +216,7 @@
     * [\_start\_code\_block](#mformat.mformat_latex.MultiFormatLatex._start_code_block)
     * [\_end\_code\_block](#mformat.mformat_latex.MultiFormatLatex._end_code_block)
     * [\_write\_code\_block](#mformat.mformat_latex.MultiFormatLatex._write_code_block)
+    * [\_replace\_prose\_dashes](#mformat.mformat_latex.MultiFormatLatex._replace_prose_dashes)
     * [\_encode\_text](#mformat.mformat_latex.MultiFormatLatex._encode_text)
 * [mformat.underline\_text](#mformat.underline_text)
   * [UnderlineSpec](#mformat.underline_text.UnderlineSpec)
@@ -2835,6 +2841,16 @@ def file_name_extension(cls) -> str
 
 Get the file name extension for the formatter.
 
+<a id="mformat.mformat_latex.MultiFormatLatex.add_code_in_text"></a>
+
+#### add\_code\_in\_text
+
+```python
+def add_code_in_text(text: str, smart_ws: bool = True) -> None
+```
+
+Add inline code while preserving code text exactly.
+
 <a id="mformat.mformat_latex.MultiFormatLatex._normalize_latex_command"></a>
 
 #### \_normalize\_latex\_command
@@ -2906,6 +2922,48 @@ def _preamble_has_url_package() -> bool
 
 Check if preamble contains URL-capable package.
 
+<a id="mformat.mformat_latex.MultiFormatLatex._preamble_has_booktabs_package"></a>
+
+#### \_preamble\_has\_booktabs\_package
+
+```python
+def _preamble_has_booktabs_package() -> bool
+```
+
+Check if preamble contains booktabs package.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._can_insert_package"></a>
+
+#### \_can\_insert\_package
+
+```python
+@staticmethod
+def _can_insert_package(has_docclass: bool, has_begin_document: bool) -> bool
+```
+
+Check if package injection in preamble is safe.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._use_booktabs_tables"></a>
+
+#### \_use\_booktabs\_tables
+
+```python
+def _use_booktabs_tables(has_docclass: bool, has_begin_document: bool,
+                         has_booktabs_package: bool) -> bool
+```
+
+Decide whether tables can use booktabs commands.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._current_table_uses_booktabs"></a>
+
+#### \_current\_table\_uses\_booktabs
+
+```python
+def _current_table_uses_booktabs() -> bool
+```
+
+Decide if table output should use booktabs commands.
+
 <a id="mformat.mformat_latex.MultiFormatLatex._write_with_stage_three_replacements"></a>
 
 #### \_write\_with\_stage\_three\_replacements
@@ -2954,10 +3012,10 @@ Escape LaTeX special characters in plain text content.
 
 ```python
 @staticmethod
-def _tabular_spec(num_columns: int) -> str
+def _tabular_spec(num_columns: int, use_booktabs: bool) -> str
 ```
 
-Build a simple tabular specification for given number of columns.
+Build a tabular specification for current table style.
 
 <a id="mformat.mformat_latex.MultiFormatLatex._format_text"></a>
 
@@ -3239,6 +3297,17 @@ def _write_code_block(text: str, programming_language: Optional[str]) -> None
 Write a code block.
 
 The programming_language argument is accepted but ignored.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._replace_prose_dashes"></a>
+
+#### \_replace\_prose\_dashes
+
+```python
+@staticmethod
+def _replace_prose_dashes(text: str) -> str
+```
+
+Convert space-dash-space to em dash in prose.
 
 <a id="mformat.mformat_latex.MultiFormatLatex._encode_text"></a>
 

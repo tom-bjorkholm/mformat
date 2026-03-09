@@ -5,7 +5,9 @@
 # MIT License
 #
 
+import contextvars
 from copy import deepcopy
+import re
 from typing import Optional, Callable
 from mformat.document_class import DocumentClass, DocumentClassInput
 from mformat.paper_size import PaperSize, PaperSizeInput
@@ -59,6 +61,9 @@ _LATEX_ESCAPE_MAP: dict[str, str] = {
     '^': '\\textasciicircum{}',
     '~': '\\textasciitilde{}',
 }
+
+_SKIP_DASH_NORMALIZATION: contextvars.ContextVar[bool] = \
+    contextvars.ContextVar('_SKIP_DASH_NORMALIZATION', default=False)
 
 
 class MultiFormatLatex(MultiFormatTextBased):
@@ -198,7 +203,6 @@ class MultiFormatLatex(MultiFormatTextBased):
         if title is not None and not isinstance(title, str):
             raise ValueError('title must be a string')
         self.title: Optional[str] = title
-        self._latex_table_rows: list[list[str]] = []
         super().__init__(file_name=file_name, url_as_text=url_as_text,
                          file_exists_callback=file_exists_callback,
                          character_encoding=character_encoding)
@@ -219,6 +223,14 @@ class MultiFormatLatex(MultiFormatTextBased):
     def file_name_extension(cls) -> str:
         """Get the file name extension for the formatter."""
         return '.tex'
+
+    def add_code_in_text(self, text: str, smart_ws: bool = True) -> None:
+        """Add inline code while preserving code text exactly."""
+        token = _SKIP_DASH_NORMALIZATION.set(True)
+        try:
+            super().add_code_in_text(text=text, smart_ws=smart_ws)
+        finally:
+            _SKIP_DASH_NORMALIZATION.reset(token)
 
     @staticmethod
     def _normalize_latex_command(command: str) -> str:
@@ -270,6 +282,35 @@ class MultiFormatLatex(MultiFormatTextBased):
         return ('\\usepackage{hyperref}' in self.latex_preamble or
                 '\\usepackage{url}' in self.latex_preamble)
 
+    def _preamble_has_booktabs_package(self) -> bool:
+        """Check if preamble contains booktabs package."""
+        return bool(re.search(
+            r'\\usepackage(?:\[[^\]]*\])?\{[^}]*\bbooktabs\b[^}]*\}',
+            self.latex_preamble))
+
+    @staticmethod
+    def _can_insert_package(has_docclass: bool,
+                            has_begin_document: bool) -> bool:
+        """Check if package injection in preamble is safe."""
+        return not has_docclass or not has_begin_document
+
+    def _use_booktabs_tables(self, has_docclass: bool,
+                             has_begin_document: bool,
+                             has_booktabs_package: bool) -> bool:
+        """Decide whether tables can use booktabs commands."""
+        if has_booktabs_package:
+            return True
+        return self._can_insert_package(
+            has_docclass=has_docclass,
+            has_begin_document=has_begin_document)
+
+    def _current_table_uses_booktabs(self) -> bool:
+        """Decide if table output should use booktabs commands."""
+        return self._use_booktabs_tables(
+            has_docclass=self._preamble_has_documentclass(),
+            has_begin_document=self._preamble_has_begin_document(),
+            has_booktabs_package=self._preamble_has_booktabs_package())
+
     def _write_with_stage_three_replacements(self, text: str) -> None:
         """Write text after applying stage-three replacements."""
         assert self.file is not None
@@ -300,8 +341,10 @@ class MultiFormatLatex(MultiFormatTextBased):
                        for character in text)
 
     @staticmethod
-    def _tabular_spec(num_columns: int) -> str:
-        """Build a simple tabular specification for given number of columns."""
+    def _tabular_spec(num_columns: int, use_booktabs: bool) -> str:
+        """Build a tabular specification for current table style."""
+        if use_booktabs:
+            return 'l' * num_columns
         return '|' + '|'.join(['l'] * num_columns) + '|'
 
     @staticmethod
@@ -319,6 +362,11 @@ class MultiFormatLatex(MultiFormatTextBased):
         has_docclass = self._preamble_has_documentclass()
         has_begin_document = self._preamble_has_begin_document()
         has_url_package = self._preamble_has_url_package()
+        has_booktabs_package = self._preamble_has_booktabs_package()
+        use_booktabs_tables = self._use_booktabs_tables(
+            has_docclass=has_docclass,
+            has_begin_document=has_begin_document,
+            has_booktabs_package=has_booktabs_package)
         if not has_docclass:
             paper = self.paper_size.lower() + 'paper'
             docclass = self.document_class.lower()
@@ -327,6 +375,10 @@ class MultiFormatLatex(MultiFormatTextBased):
                 not has_url_package and \
                 not has_docclass:
             self.file.write('\\usepackage{hyperref}\n')
+        if use_booktabs_tables and \
+                not has_booktabs_package and \
+                not has_docclass:
+            self.file.write('\\usepackage{booktabs}\n')
         if self.latex_preamble:
             self.file.write(self._ensure_ending_newline(self.latex_preamble))
         if not self.url_as_text and \
@@ -334,6 +386,11 @@ class MultiFormatLatex(MultiFormatTextBased):
                 has_docclass and \
                 not has_begin_document:
             self.file.write('\\usepackage{hyperref}\n')
+        if use_booktabs_tables and \
+                not has_booktabs_package and \
+                has_docclass and \
+                not has_begin_document:
+            self.file.write('\\usepackage{booktabs}\n')
         encoded_title = self._encode_text(self.title) \
             if self.title is not None else None
         if encoded_title is not None:
@@ -465,31 +522,39 @@ class MultiFormatLatex(MultiFormatTextBased):
 
     def _start_table(self, num_columns: int) -> None:
         """Start a table."""
-        _ = num_columns  # pylint: disable=unused-variable
+        assert self.file is not None
         self._ensure_blank_line_before()
-        self._latex_table_rows = []
+        use_booktabs = self._current_table_uses_booktabs()
+        column_spec = self._tabular_spec(
+            num_columns=num_columns,
+            use_booktabs=use_booktabs)
+        self.file.write(f'\\begin{{tabular}}{{{column_spec}}}\n')
+        if use_booktabs:
+            self.file.write('\\toprule\n')
+        else:
+            self.file.write('\\hline\n')
 
     def _end_table(self, num_columns: int, num_rows: int) -> None:
         """End a table."""
+        _ = num_columns  # pylint: disable=unused-variable
         _ = num_rows  # pylint: disable=unused-variable
         assert self.file is not None
-        column_spec = self._tabular_spec(num_columns)
-        self.file.write(f'\\begin{{tabular}}{{{column_spec}}}\n')
-        self.file.write('\\hline\n')
-        for row in self._latex_table_rows:
-            self.file.write(' & '.join(row))
-            self.file.write(' \\\\\n')
-            self.file.write('\\hline\n')
+        use_booktabs = self._current_table_uses_booktabs()
+        if use_booktabs:
+            self.file.write('\\bottomrule\n')
         self.file.write('\\end{tabular}\n')
-        self._latex_table_rows = []
 
     def _write_table_first_row(self, first_row: list[str],
                                formatting: Formatting) -> None:
         """Write the first row of the table."""
+        assert self.file is not None
         row = [self._apply_latex_replacements(
             self._format_text(text=cell, formatting=formatting),
             stage=2) for cell in first_row]
-        self._latex_table_rows.append(row)
+        self.file.write(' & '.join(row))
+        self.file.write(' \\\\\n')
+        if not self._current_table_uses_booktabs():
+            self.file.write('\\hline\n')
 
     def _write_table_row(self, row: list[str],
                          formatting: Formatting, row_number: int) -> None:
@@ -502,7 +567,13 @@ class MultiFormatLatex(MultiFormatTextBased):
         local_row = [self._apply_latex_replacements(
             self._format_text(text=cell, formatting=formatting),
             stage=2) for cell in row]
-        self._latex_table_rows.append(local_row)
+        assert self.file is not None
+        if self._current_table_uses_booktabs() and row_number == 1:
+            self.file.write('\\midrule\n')
+        self.file.write(' & '.join(local_row))
+        self.file.write(' \\\\\n')
+        if not self._current_table_uses_booktabs():
+            self.file.write('\\hline\n')
 
     def _start_code_block(self, programming_language: Optional[str]) -> None:
         """Start a code block.
@@ -533,14 +604,21 @@ class MultiFormatLatex(MultiFormatTextBased):
         assert self.file is not None
         self.file.write(text)
 
+    @staticmethod
+    def _replace_prose_dashes(text: str) -> str:
+        """Convert space-dash-space to em dash in prose."""
+        return text.replace(' - ', ' --- ')
+
     def _encode_text(self, text: str) -> str:
         """Encode text (escape special characters)."""
         if not text:
             return text
-        if self.state == MultiFormatState.CODE_BLOCK:
+        if self.state == MultiFormatState.CODE_BLOCK or \
+                _SKIP_DASH_NORMALIZATION.get():
             return text
         result = deepcopy(text)
         result = self._apply_latex_replacements(result, stage=0)
+        result = self._replace_prose_dashes(result)
         result = self._escape_latex_text(result)
         result = self._apply_latex_replacements(result, stage=1)
         return result
