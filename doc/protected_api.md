@@ -30,6 +30,13 @@
     * [lower](#mformat.paper_size.PaperSize.lower)
     * [upper](#mformat.paper_size.PaperSize.upper)
     * [normalize](#mformat.paper_size.PaperSize.normalize)
+* [mformat.document\_class](#mformat.document_class)
+  * [DocumentClass](#mformat.document_class.DocumentClass)
+    * [allowed\_values](#mformat.document_class.DocumentClass.allowed_values)
+    * [from\_str](#mformat.document_class.DocumentClass.from_str)
+    * [lower](#mformat.document_class.DocumentClass.lower)
+    * [upper](#mformat.document_class.DocumentClass.upper)
+    * [normalize](#mformat.document_class.DocumentClass.normalize)
 * [mformat.mformat\_rst](#mformat.mformat_rst)
   * [MultiFormatRst](#mformat.mformat_rst.MultiFormatRst)
     * [\_\_init\_\_](#mformat.mformat_rst.MultiFormatRst.__init__)
@@ -317,6 +324,9 @@
   * [format\_bottom\_border](#mformat.plain_text_table.format_bottom_border)
   * [\_wrap\_row\_cells](#mformat.plain_text_table._wrap_row_cells)
   * [get\_plain\_text\_table](#mformat.plain_text_table.get_plain_text_table)
+* [mformat.enum\_str\_util](#mformat.enum_str_util)
+  * [from\_str](#mformat.enum_str_util.from_str)
+  * [possible\_values](#mformat.enum_str_util.possible_values)
 * [mformat.reg\_pkg\_formats](#mformat.reg_pkg_formats)
   * [register\_formats\_in\_pkg](#mformat.reg_pkg_formats.register_formats_in_pkg)
 * [mformat\_ext.mformat\_rtf](#mformat_ext.mformat_rtf)
@@ -789,8 +799,9 @@ Common paper sizes supported across some output formats.
 #### allowed\_values
 
 ```python
-@staticmethod
-def allowed_values(include_lower: bool = False,
+@classmethod
+def allowed_values(cls,
+                   include_lower: bool = False,
                    include_upper: bool = False) -> list[str]
 ```
 
@@ -822,6 +833,10 @@ Parse a paper size enum value from an enum member or string.
 **Arguments**:
 
 - `paper_size` - The paper size to parse.
+  Can be a PaperSize enum member or a string.
+  If a string, its case and any underscores or hyphens
+  will be ignored. If the string ends with "PAPER",
+  the "PAPER" will be ignored.
 - `strict` - If True, the value must match a complete known value.
   If False, the value may be a partial value,
   and if it matches the start of only one known value,
@@ -856,6 +871,98 @@ def normalize() -> str
 ```
 
 Return the normalized (capitalized) name of the paper size.
+
+<a id="mformat.document_class"></a>
+
+# mformat.document\_class
+
+Common document class enum used by output format implementations.
+
+<a id="mformat.document_class.DocumentClass"></a>
+
+## DocumentClass Objects
+
+```python
+class DocumentClass(IntEnum)
+```
+
+Common document classes used by at least LaTeX output format.
+
+<a id="mformat.document_class.DocumentClass.allowed_values"></a>
+
+#### allowed\_values
+
+```python
+@classmethod
+def allowed_values(cls,
+                   include_lower: bool = False,
+                   include_upper: bool = False) -> list[str]
+```
+
+Return a list of all allowed document class values.
+
+Normally only the capitalized values are returned.
+As from_str() can parse lower and upper case values,
+this method can be used to get a list of all allowed
+values for use in error messages.
+
+**Arguments**:
+
+- `include_lower` - Include lower case values.
+- `include_upper` - Include upper case values.
+
+<a id="mformat.document_class.DocumentClass.from_str"></a>
+
+#### from\_str
+
+```python
+@classmethod
+def from_str(cls,
+             document_class: DocumentClassInput,
+             strict: bool = True) -> 'DocumentClass'
+```
+
+Parse a document class enum value from an enum member or string.
+
+**Arguments**:
+
+- `document_class` - The document class to parse.
+  Can be a DocumentClass enum member or a string.
+  If a string, its case will be ignored.
+- `strict` - If True, the value must match a complete known value.
+  If False, the value may be a partial value,
+  and if it matches the start of only one known value,
+  that value will be returned. (Default is True.)
+
+<a id="mformat.document_class.DocumentClass.lower"></a>
+
+#### lower
+
+```python
+def lower() -> str
+```
+
+Return the lower case name of the document class.
+
+<a id="mformat.document_class.DocumentClass.upper"></a>
+
+#### upper
+
+```python
+def upper() -> str
+```
+
+Return the upper case name of the document class.
+
+<a id="mformat.document_class.DocumentClass.normalize"></a>
+
+#### normalize
+
+```python
+def normalize() -> str
+```
+
+Return the normalized (capitalized) name of the document class.
 
 <a id="mformat.mformat_rst"></a>
 
@@ -4646,6 +4753,81 @@ Get the plain text table as a list of lines.
   order it is to be output. The first line is the top border
   (if any), the second line is the first row of the table,
   the last line is the bottom border (if any).
+
+<a id="mformat.enum_str_util"></a>
+
+# mformat.enum\_str\_util
+
+Utility functions for working with enums and strings.
+
+<a id="mformat.enum_str_util.from_str"></a>
+
+#### from\_str
+
+```python
+def from_str(enumtype: type[Enum],
+             value: EnumStrInput,
+             strict: bool = True,
+             what: Optional[str] = None) -> Enum
+```
+
+Parse an enum value from an enum member or string.
+
+This function parses an enum value from a string, by matching the
+string to the enum member name. This matching is case insensitive.
+
+**Returns**:
+
+  The parsed enum value.
+  
+
+**Raises**:
+
+- `TypeError` - If the value is not a string or an enum member.
+- `KeyError` - If the value does not match any enum member.
+  (If strict is True and it does not match a complete
+  enum member name. If strict is False, and it does
+  not mactch the beginning of any enum member name).
+- `ValueError` - If the value is a partial value, strict is False,
+  and there is more than one matching enum member.
+  
+
+**Arguments**:
+
+- `enumtype` - The enum type to parse the value for.
+- `value` - The value to parse.
+- `strict` - If True, the value must match a complete known value.
+  If False, the value may be a partial value, and if it
+  matches the start of only one known value, that value
+  will be returned. (Default is True.)
+- `what` - A meaningful name for the enum type, for use in error
+  messages. If None, the enum type name will be used.
+
+<a id="mformat.enum_str_util.possible_values"></a>
+
+#### possible\_values
+
+```python
+def possible_values(enumtype: type[Enum],
+                    include_capitalized: bool = True,
+                    include_lower: bool = False,
+                    include_upper: bool = False) -> list[str]
+```
+
+Return a list of all possible string values for an enum type.
+
+This function returns a list of all possible string values for an enum
+type. The values are returned in the order of the enum members.
+Capitalized, upper case and lower case versions of the
+values are included if the corresponding include_* argument is True.
+If no include_* arguments are True, the return value will be empty.
+
+**Arguments**:
+
+- `enumtype` - The enum type to get the possible values for.
+- `include_capitalized` - Include capitalized version of values.
+- `include_lower` - Include lower case version of values.
+- `include_upper` - Include upper case version of values.
 
 <a id="mformat.reg_pkg_formats"></a>
 

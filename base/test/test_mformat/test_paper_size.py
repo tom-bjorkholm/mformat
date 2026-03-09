@@ -14,6 +14,7 @@ from mformat.paper_size import PaperSize
                          [('A3', True, PaperSize.A3),
                           ('a4', True, PaperSize.A4),
                           ('a5paper', True, PaperSize.A5),
+                          ('a4paper ', True, PaperSize.A4),
                           ('letter', True, PaperSize.LETTER),
                           ('legalpaper', True, PaperSize.LEGAL),
                           ('A4_PAPER', True, PaperSize.A4),
@@ -42,14 +43,23 @@ def test_from_str_value_error() -> None:
     """Test value error for unsupported paper size text."""
     with pytest.raises(KeyError) as exc:
         PaperSize.from_str('A2')
-    assert 'Unsupported paper size "A2"' in exc.value.args[0]
+    assert 'Value "A2" not a valid value for paper size' in exc.value.args[0]
 
 
 def test_from_str_value_error2() -> None:
     """Test value error for unsupported paper size text."""
-    with pytest.raises(KeyError) as exc:
+    with pytest.raises(ValueError) as exc:
         PaperSize.from_str('Le', strict=False)
-    assert 'Ambiguous paper size "Le"' in exc.value.args[0]
+    assert 'Ambiguous value "LE" for paper size' in exc.value.args[0]
+    assert 'Matches: LEGAL, LETTER' in exc.value.args[0]
+
+
+def test_from_str_value_error3() -> None:
+    """Test value error for strict=False and no match."""
+    with pytest.raises(KeyError) as exc:
+        PaperSize.from_str('A2', strict=False)
+    assert 'Value "A2" does not match any allowed value for paper size' \
+        in exc.value.args[0]
 
 
 @pytest.mark.parametrize('low, upp, expected',
