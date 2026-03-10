@@ -1,0 +1,21 @@
+\documentclass[a4paper]{report}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\begin{document}
+
+\chapter{Nesting points example}
+\begin{enumerate}
+\item First item
+\item Second item\textbf{ with some bold text}
+\begin{itemize}
+\item First bullet
+\item \textit{Second bullet is italic}\textbf{ with some bold} and some non-bold and non-italic text
+\begin{enumerate}
+\item First item in third level
+\item Second item in third level
+\end{enumerate}
+\end{itemize}
+\item Third item on first level. By specifying a lower level we end some nested lists.
+\end{enumerate}
+
+\end{document}

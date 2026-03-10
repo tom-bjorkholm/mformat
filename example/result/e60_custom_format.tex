@@ -1,0 +1,41 @@
+\documentclass[a4paper]{report}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\begin{document}
+
+\chapter{Custom Format Example}
+
+This example demonstrates how to create and use a custom format in the mformat framework. The same code can be used to write to different formats, just by changing the format name.
+
+\section{Features}
+\begin{itemize}
+\item Easy to extend the framework
+\item Supports most standard document elements
+\item Format-agnostic API
+\end{itemize}
+\begin{enumerate}
+\item First step: Create a format class
+\item Second step: Implement required methods
+\item Third step: Register the format
+\end{enumerate}
+
+\begin{tabular}{ll}
+\toprule
+\textbf{Element} & \textbf{Method} \\
+\midrule
+Paragraph & new\_paragraph() \\
+Heading & new\_heading() \\
+List & new\_bullet\_item() \\
+\bottomrule
+\end{tabular}
+
+\begin{verbatim}
+def example():
+    print("Hello, World!")
+\end{verbatim}
+
+This text is\textbf{ bold} and this is\textit{ italic}.
+
+Visit \href{https://example.com}{our website}
+
+\end{document}

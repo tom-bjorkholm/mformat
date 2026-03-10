@@ -1,0 +1,81 @@
+\documentclass[a4paper]{report}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\begin{document}
+
+\chapter{Main heading of example}
+
+With new\_paragraph we can start a paragraph. With add\_text we can add text to the paragraph.
+
+\section{Sub heading of example where add\_text adds text to the sub heading}
+
+Whenever we start a new item type the previous item type is automatically closed. Add text does not automatically close the previous item type, instead it just adds text to that item.\textit{\textbf{ There is never a need to close an item type.}}
+
+\section{Heading with URL to \href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e50\_simple\_complete.py}{the example file}}
+
+As you can see, we can add URLs to both headings and paragraphs. It is also possible to add URLs to text, for instance the URL to the example file is added here. \href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e50\_simple\_complete.py}{The same example file}
+
+URLs can (depending on the format) be formatted as clickable URLs or as text. To force URLs to be formatted as text, set url\_as\_text=True.
+
+You may have noticed that we have not worried about about the whitespace between text. This is because we use a smart whitespace handling.If we disable smart whitespace handling,we need to handle whitespace manually,  which can be cumbersome as shown here.
+
+\section{Bullet lists and numbered lists}
+\begin{itemize}
+\item Item 1
+\item Item 2
+\begin{itemize}
+\item Item 2.1
+\item Item 2.2
+\end{itemize}
+\item Item 3
+\end{itemize}
+\begin{enumerate}
+\item Item 1
+\item Item 2 with some more text. Naturally more text can be added in the same item using add\_text.
+\item Item 3
+\begin{enumerate}
+\item Item 3.1
+\begin{itemize}
+\item Item 3.1.1
+\item Item 3.1.1
+\end{itemize}
+\end{enumerate}
+\item Item 4
+\end{enumerate}
+
+\section{A simple table}
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Full Name} & \textbf{Street and Number} & \textbf{City or Town} \\
+\midrule
+\textit{John Doe} & \textit{123 Main St} & \textit{Anytown} \\
+Jane Doe & 456 Main St & Anytown \\
+Jim Doe & 789 Main St & The Village \\
+\bottomrule
+\end{tabular}
+
+\subsection{Another table}
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Name} & \textbf{Age} & \textbf{Gender} \\
+\midrule
+John Doe & 30 & Male \\
+Jane Doe & 25 & Female \\
+Jim Doe & 35 & Male \\
+\bottomrule
+\end{tabular}
+
+\section{Finally code blocks}
+
+Code blocks are written with write\_code\_block.
+
+\begin{verbatim}
+def my_function(x: int) -> int:
+    return x + 1
+
+print(my_function(1))
+\end{verbatim}
+
+\end{document}

@@ -1,0 +1,12 @@
+\documentclass[a4paper]{report}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\begin{document}
+
+\textbf{With new\_paragraph we can start a paragraph with the first sentence in bold.} Use add\_text to add text without bold to the paragraph.\textit{ Use add\_text to add text in italic to the paragraph.}\textit{\textbf{ Use add\_text to add text in bold and italic.}}
+
+\textit{With new\_paragraph we can start a second paragraph with the first sentence in italic.} Use add\_text to add text without italic to the second paragraph.\textbf{ Use add\_text to add text in bold to the second paragraph.}\textit{\textbf{ Use add\_text to add text in italic and bold to the second paragraph.}}
+
+\textbf{(As this example does not have a heading the generated markdown file will not have a heading. If markdownlint is used on the generated markdown file it will report an error for the missing heading.)}
+
+\end{document}

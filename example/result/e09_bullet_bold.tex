@@ -1,0 +1,18 @@
+\documentclass[a4paper]{report}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\begin{document}
+
+\chapter{Bullet list with bold text example}
+\begin{itemize}
+\item This is the first bullet point item. This is not bold or italic.\textbf{ However, this bold text is added to it.}\textit{ And this italic text is added to it.}
+\item \textbf{This is the bold bullet point item.} This non-bold text is added to it.
+\item \textit{This is the italic bullet point item.} This non-italic text is added to it.
+\item \textit{\textbf{This is the bold and italic bullet point item.}} This non-bold and non-italic text is added to it.
+\begin{itemize}
+\item This is in item in a nested bullet list.\textbf{ Bold text added to it.}\textit{ And italic text added to it.}
+\item \textit{\textbf{Second nested bullet point item.}} This non-bold and non-italic text is added to it.\textbf{ And bold}\textit{ and italic text added to it.}
+\end{itemize}
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,19 @@
+\documentclass[a4paper]{report}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\begin{document}
+
+\chapter{Numbered list with bold text example}
+\begin{enumerate}
+\item This is the first numbered point item. This is not bold or italic.\textbf{ However, this bold text is added to it.}\textit{ And this italic text is added to it.}
+\item \textbf{This is the bold numbered point item.} This non-bold text is added to it.
+\item \textit{This is the italic numbered point item.} This non-italic text is added to it.
+\item \textit{\textbf{This is the bold and italic item.}} This non-bold and non-italic text is added to it.
+\begin{enumerate}
+\item This is in item in a nested numbered point list.\textbf{ Bold text added to it.}\textit{ And italic text added to it.}
+\item \textit{\textbf{Second nested numbered point item.}} This non-bold and non-italic text is added to it.\textbf{ And bold}\textit{ and italic text added to it.}
+\end{enumerate}
+\item The final item is back at level 1. This is the final numbered point item.
+\end{enumerate}
+
+\end{document}

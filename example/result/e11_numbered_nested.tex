@@ -1,0 +1,20 @@
+\documentclass[a4paper]{report}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\begin{document}
+
+\chapter{Nested numbered list example}
+\begin{enumerate}
+\item This is the first numbered item. If we do not specify the level, it is at the same level as the previous item --- and when there is no previous item, it is at level 1.
+\item This is the second numbered item.
+\begin{enumerate}
+\item This is the third numbered item. This is the first item at level 2.
+\item Another item at level 2.
+\begin{enumerate}
+\item And an item at level 3.
+\end{enumerate}
+\end{enumerate}
+\item The final item is back at level 1.
+\end{enumerate}
+
+\end{document}

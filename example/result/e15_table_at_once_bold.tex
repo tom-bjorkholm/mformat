@@ -1,0 +1,32 @@
+\documentclass[a4paper]{report}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\begin{document}
+
+\chapter{Table in one call with bold first row example}
+
+This is a table with bold text in first row.
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Name} & \textbf{Age} & \textbf{City} \\
+\midrule
+Janet & 25 & New York \\
+Jacob & 30 & Los Angeles \\
+Jill & 35 & Chicago \\
+\bottomrule
+\end{tabular}
+
+Now a table with italics and bold in the first row.
+
+\begin{tabular}{lll}
+\toprule
+\textit{\textbf{Name}} & \textit{\textbf{Age}} & \textit{\textbf{City}} \\
+\midrule
+Janet & 25 & New York \\
+Jacob & 30 & Los Angeles \\
+Jill & 35 & Chicago \\
+\bottomrule
+\end{tabular}
+
+\end{document}

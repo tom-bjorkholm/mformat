@@ -1,0 +1,19 @@
+\documentclass[a4paper]{report}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\begin{document}
+
+\chapter{Nested bullet list example}
+\begin{itemize}
+\item This is the first bullet point item at level 1.
+\begin{itemize}
+\item This is the second bullet point item. This time at level 2.
+\item Another point item without specifying level. This means that it is at the same level as the previous item.
+\begin{itemize}
+\item This is a bullet point item at level 3.
+\end{itemize}
+\end{itemize}
+\item This is final bullet point item. This time at level 1
+\end{itemize}
+
+\end{document}

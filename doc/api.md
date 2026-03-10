@@ -67,7 +67,6 @@
     * [\_\_init\_\_](#mformat.mformat_latex.MultiFormatLatex.__init__)
     * [get\_arg\_desciption](#mformat.mformat_latex.MultiFormatLatex.get_arg_desciption)
     * [file\_name\_extension](#mformat.mformat_latex.MultiFormatLatex.file_name_extension)
-    * [add\_code\_in\_text](#mformat.mformat_latex.MultiFormatLatex.add_code_in_text)
 * [mformat.underline\_text](#mformat.underline_text)
   * [UnderlineSpec](#mformat.underline_text.UnderlineSpec)
     * [pattern](#mformat.underline_text.UnderlineSpec.pattern)
@@ -1225,16 +1224,6 @@ def file_name_extension(cls) -> str
 ```
 
 Get the file name extension for the formatter.
-
-<a id="mformat.mformat_latex.MultiFormatLatex.add_code_in_text"></a>
-
-#### add\_code\_in\_text
-
-```python
-def add_code_in_text(text: str, smart_ws: bool = True) -> None
-```
-
-Add inline code while preserving code text exactly.
 
 <a id="mformat.underline_text"></a>
 

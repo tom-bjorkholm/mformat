@@ -5,7 +5,6 @@
 # MIT License
 #
 
-import contextvars
 from copy import deepcopy
 import re
 from typing import Optional, Callable
@@ -61,9 +60,6 @@ _LATEX_ESCAPE_MAP: dict[str, str] = {
     '^': '\\textasciicircum{}',
     '~': '\\textasciitilde{}',
 }
-
-_SKIP_DASH_NORMALIZATION: contextvars.ContextVar[bool] = \
-    contextvars.ContextVar('_SKIP_DASH_NORMALIZATION', default=False)
 
 
 class MultiFormatLatex(MultiFormatTextBased):
@@ -223,14 +219,6 @@ class MultiFormatLatex(MultiFormatTextBased):
     def file_name_extension(cls) -> str:
         """Get the file name extension for the formatter."""
         return '.tex'
-
-    def add_code_in_text(self, text: str, smart_ws: bool = True) -> None:
-        """Add inline code while preserving code text exactly."""
-        token = _SKIP_DASH_NORMALIZATION.set(True)
-        try:
-            super().add_code_in_text(text=text, smart_ws=smart_ws)
-        finally:
-            _SKIP_DASH_NORMALIZATION.reset(token)
 
     @staticmethod
     def _normalize_latex_command(command: str) -> str:
@@ -613,8 +601,7 @@ class MultiFormatLatex(MultiFormatTextBased):
         """Encode text (escape special characters)."""
         if not text:
             return text
-        if self.state == MultiFormatState.CODE_BLOCK or \
-                _SKIP_DASH_NORMALIZATION.get():
+        if self.in_code:
             return text
         result = deepcopy(text)
         result = self._apply_latex_replacements(result, stage=0)

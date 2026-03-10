@@ -1,0 +1,16 @@
+\documentclass[a4paper]{report}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\begin{document}
+
+\chapter{URL in paragraph example}
+
+This is a paragraph with a URL: \href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example}{The examples are here.}
+
+The URL was added as a link using add\_url(text, url)
+
+By not specifying the text, the URL is shows as text: \url{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example}
+
+A paragraph can of course have multiple URLs. \href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src}{The source code of the examples are here.} and \href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result}{The produced output files are here.}
+
+\end{document}
