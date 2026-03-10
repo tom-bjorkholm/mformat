@@ -38,7 +38,7 @@ class TableInformation:  # pylint: disable=too-few-public-methods
         self.column_widths: list[int] = []
 
 
-class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods # noqa: E501
+class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods,too-many-instance-attributes # noqa: E501
     """Base class for all multi file format classes."""
 
     def __init__(self, file_name: PathLike,
@@ -65,6 +65,7 @@ class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods 
             self.file_name_with_extension(file_name,
                                           self.file_name_extension())
         self.state: MultiFormatState = MultiFormatState.EMPTY
+        self.in_code: bool = False
         self.url_as_text: bool = url_as_text
         self._file_exists_check()
         self.heading_level: Optional[int] = None
@@ -273,8 +274,12 @@ class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods 
             err = 'Cannot add code in text with line breaks. '
             err += 'Use write_code_block for that.'
             raise RuntimeError(err)
-        self._write_code_in_text(text=self._to_write(text, smart_ws, True),
-                                 state=self.state)
+        self.in_code = True
+        try:
+            self._write_code_in_text(text=self._to_write(text, smart_ws, True),
+                                     state=self.state)
+        finally:
+            self.in_code = False
 
     def add_url(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
                 url: str, text: Optional[str] = None,
@@ -493,11 +498,15 @@ class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods 
         if self.state != MultiFormatState.PARAGRAPH_END:
             self._end_state()
         self.state = MultiFormatState.CODE_BLOCK
-        self._start_code_block(programming_language=programming_language)
-        self._write_code_block(text=self._encode_text(text),
-                               programming_language=programming_language)
-        self._end_code_block(programming_language=programming_language)
-        self.state = MultiFormatState.PARAGRAPH_END
+        self.in_code = True
+        try:
+            self._start_code_block(programming_language=programming_language)
+            self._write_code_block(text=self._encode_text(text),
+                                   programming_language=programming_language)
+            self._end_code_block(programming_language=programming_language)
+        finally:
+            self.in_code = False
+            self.state = MultiFormatState.PARAGRAPH_END
 
     def _close(self) -> None:
         """Close the file.
@@ -519,6 +528,7 @@ class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods 
 
     def _end_state(self) -> None:
         """End the current state."""
+        self.in_code = False
         if self.state == MultiFormatState.EMPTY:
             self._write_file_prefix()
             self.state = MultiFormatState.PARAGRAPH_END
