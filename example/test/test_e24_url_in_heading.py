@@ -14,7 +14,7 @@ from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
     check_rst_func,
-    check_docx_func, check_odt_func, check_rtf_func,
+    check_docx_func, check_odt_func, check_rtf_func, check_latex_func,
     docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -126,6 +126,28 @@ EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_ODT_HTML_TEXT)
 EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
     EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_LATEX_TEXT = [
+    '\\documentclass[a4paper]{report}',
+    '\\chapter{URL in heading example}',
+    ('\\chapter{A heading with a URL: \\penalty0\\href{https://'
+     'bitbucket.org/tom-bjorkholm/mformat/src/master/example}{This URL '
+     'link to the examples.}\\penalty0}'),
+    ('\\section{A heading with a bold URL: \\textbf{\\penalty0\\href'
+     '{https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+     'example/src}{This bold URL link to the example source '
+     'code.}\\penalty0}}'),
+    ('\\section{A heading with an italic URL: \\textit{\\penalty0\\href'
+     '{https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+     'example/result}{This italic URL link to the examples '
+     'result.}\\penalty0}}'),
+    ('And with an italic and bold URL: \\textit{\\textbf{\\penalty0\\href'
+     '{https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+     'example/src}{This italic and bold URL link to the '
+     'examples.}\\penalty0}}}'),
+    ('The add\\_url function can be used to add a URL to a heading, '
+     'as well as'),
+    '\\end{document}',
+]
 
 
 def test_e24_url_in_headings_md(capsys: pytest.CaptureFixture[str]) -> None:
@@ -164,6 +186,14 @@ def test_e24_url_in_headings_rtf(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_url_in_heading function with the rtf format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_rtf_func(example_url_in_heading, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e24_url_in_headings_latex(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test the example_url_in_heading function with the latex format."""
+    expected_txt = EXPECTED_LATEX_TEXT
+    check_latex_func(example_url_in_heading, expected_txt)
     check_capsys_silent(capsys)
 
 

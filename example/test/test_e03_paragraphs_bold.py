@@ -15,7 +15,7 @@ from .example_checkers import (
     check_txt_func,
     check_rst_func,
     check_docx_func, check_odt_func, check_rtf_func,
-    docx_version_of_html, odt_version_of_html)
+    check_latex_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
 _example_test_path = (
@@ -81,6 +81,15 @@ EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_HTML_BODY_TEXT)
 EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
     EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_LATEX_TEXT = [
+    '\\documentclass[a4paper]{report}',
+    '\\textbf{With new\\_paragraph we can start a paragraph',
+    '\\textit{ Use add\\_text to add text in italic to the paragraph.}',
+    '\\textit{With new\\_paragraph we can start a second paragraph',
+    '\\textbf{ Use add\\_text to add text in bold to the second paragraph.}',
+    '\\textbf{(As this example does not have a heading',
+    '\\end{document}'
+]
 
 
 def test_e03_paragraphs_bold_md(capsys: pytest.CaptureFixture[str]) -> None:
@@ -118,6 +127,14 @@ def test_e03_paragraphs_bold_rtf(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the paragraphs_bold_example function with the rtf format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_rtf_func(paragraphs_bold_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e03_paragraphs_bold_latex(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test the paragraphs_bold_example function with the LaTeX format."""
+    expected_txt = EXPECTED_LATEX_TEXT
+    check_latex_func(paragraphs_bold_example, expected_txt)
     check_capsys_silent(capsys)
 
 

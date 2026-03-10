@@ -14,7 +14,7 @@ from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
     check_rst_func,
-    check_docx_func, check_odt_func, check_rtf_func,
+    check_docx_func, check_odt_func, check_rtf_func, check_latex_func,
     docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -151,6 +151,20 @@ EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_ODT_HTML_TEXT)
 EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
     EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_LATEX_TEXT = [
+    '\\documentclass[a4paper]{report}',
+    '\\chapter{URL in numbered point list example}',
+    '\\begin{enumerate}',
+    ('\\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+     'example/src}{This URL link to the examples.}'),
+    ('\\textit{\\penalty0\\href{https://bitbucket.org/tom-bjorkholm/'
+     'mformat/src/master/example/result}{This italic URL link to the '
+     'examples result.}\\penalty0}'),
+    ('\\textit{\\textbf{\\penalty0\\href{https://bitbucket.org/'
+     'tom-bjorkholm/mformat/src/master/example/src}{This italic and '
+     'bold URL link to the examples.}\\penalty0}}'),
+    '\\end{document}',
+]
 
 
 def test_e23_url_in_numbered_list_md(
@@ -195,6 +209,14 @@ def test_e23_url_in_numbered_list_rtf(
     """Test the example_url_in_numbered_list function with the rtf format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_rtf_func(example_url_in_numbered_list, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e23_url_in_numbered_list_latex(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test the example_url_in_numbered_list function with latex."""
+    expected_txt = EXPECTED_LATEX_TEXT
+    check_latex_func(example_url_in_numbered_list, expected_txt)
     check_capsys_silent(capsys)
 
 

@@ -14,7 +14,7 @@ from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
     check_rst_func,
-    check_docx_func, check_odt_func, check_rtf_func,
+    check_docx_func, check_odt_func, check_rtf_func, check_latex_func,
     docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -184,6 +184,17 @@ EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_ODT_HTML_BODY_TEXT)
 EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
     EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_LATEX_TEXT = [
+    '\\documentclass[a4paper]{report}',
+    '\\chapter{Numbered list with bold text example}',
+    ('\\textbf{ However, this bold text is added to it.}'),
+    '\\textit{ And this italic text is added to it.}',
+    '\\item \\textbf{This is the bold numbered point item.}',
+    ('\\item \\textit{\\textbf{Second nested numbered point item.}}'),
+    ('\\item The final item is back at level 1. This is the final '
+     'numbered point item.'),
+    '\\end{document}',
+]
 
 
 def test_e12_numbered_bold_md(capsys: pytest.CaptureFixture[str]) -> None:
@@ -222,6 +233,13 @@ def test_e12_numbered_bold_rtf(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the numbered_bold_example function with the rtf format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_rtf_func(numbered_bold_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e12_numbered_bold_latex(capsys: pytest.CaptureFixture[str]) -> None:
+    """Test the numbered_bold_example function with the latex format."""
+    expected_txt = EXPECTED_LATEX_TEXT
+    check_latex_func(numbered_bold_example, expected_txt)
     check_capsys_silent(capsys)
 
 

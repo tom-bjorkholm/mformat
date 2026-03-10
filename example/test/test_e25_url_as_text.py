@@ -14,7 +14,7 @@ from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
     check_rst_func,
-    check_docx_func, check_odt_func, check_rtf_func,
+    check_docx_func, check_odt_func, check_rtf_func, check_latex_func,
     docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -82,6 +82,19 @@ EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
     EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
 EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
     EXPECTED_HTML_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_LATEX_TEXT = [
+    '\\documentclass[a4paper]{report}',
+    '\\usepackage{booktabs}',
+    '\\chapter{URL in paragraph example}',
+    ('This is a paragraph with a URL: The examples are here. https://'
+     'bitbucket.org/tom-bjorkholm/mformat/src/master/example'),
+    ('By not specifying the text, the URL is shows as text: https://'
+     'bitbucket.org/tom-bjorkholm/mformat/src/master/example'),
+    ('The URLs are shown as text instead of clickable links. This might '
+     'be useful'),
+    ('url\\_as\\_text argument to the create\\_mf factory function.'),
+    '\\end{document}',
+]
 
 
 def test_e25_url_as_text_md(capsys: pytest.CaptureFixture[str]) -> None:
@@ -119,6 +132,13 @@ def test_e25_url_as_text_rtf(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_url_as_text function with the rtf format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_rtf_func(example_url_as_text, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e25_url_as_text_latex(capsys: pytest.CaptureFixture[str]) -> None:
+    """Test the example_url_as_text function with the latex format."""
+    expected_txt = EXPECTED_LATEX_TEXT
+    check_latex_func(example_url_as_text, expected_txt)
     check_capsys_silent(capsys)
 
 

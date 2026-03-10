@@ -15,7 +15,7 @@ from .example_checkers import (
     check_txt_func,
     check_rst_func,
     check_docx_func, check_odt_func, check_rtf_func,
-    docx_version_of_html, odt_version_of_html)
+    check_latex_func, docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
 _example_test_path = (
@@ -75,6 +75,15 @@ EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_HTML_BODY_TEXT)
 EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
     EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_LATEX_TEXT = [
+    '\\documentclass[a4paper]{report}',
+    '\\chapter{This is the first heading, it is at level 1}',
+    '\\section{This is the second heading, it is at level 2}',
+    '\\subsection{This is the third heading, it is at level 3}',
+    'We can add text to headings with add\\_text()',
+    '\\section{The fourth heading is again at level 2}',
+    '\\end{document}'
+]
 
 
 def test_e06_headings_md(capsys: pytest.CaptureFixture[str]) -> None:
@@ -111,6 +120,13 @@ def test_e06_headings_rtf(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the headings_example function with the rtf format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_rtf_func(headings_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e06_headings_latex(capsys: pytest.CaptureFixture[str]) -> None:
+    """Test the headings_example function with the LaTeX format."""
+    expected_txt = EXPECTED_LATEX_TEXT
+    check_latex_func(headings_example, expected_txt)
     check_capsys_silent(capsys)
 
 

@@ -13,7 +13,8 @@ from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
     check_rst_func,
-    check_docx_func, check_odt_func, check_rtf_func, odt_version_of_html)
+    check_docx_func, check_odt_func, check_rtf_func, check_latex_func,
+    odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
 _example_test_path = (
@@ -70,6 +71,16 @@ EXPECTED_HTML_TEXT = THIS_EXPECTED_HTML_PRE + \
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_HTML_BODY_TEXT)
 EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
     EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_LATEX_TEXT = [
+    '\\documentclass[a5paper]{report}',
+    '\\chapter{CSS in HTML gefiltert für andere Formate}',
+    'so dass sie nicht für andere Formate verfügbar ist.',
+    ('Die Ausgabe ist auf Deutsch; in HTML wird lang="de" im erzeugten'),
+    ('\\textless{}html\\textgreater{}-Tag gesetzt. Für ODT wird sprache '
+     'auch als "de" gesetzt.'),
+    'Für andere Formate wird die Sprache ignoriert.',
+    '\\end{document}',
+]
 
 
 def test_42_filter_args_for_format_md(
@@ -116,6 +127,14 @@ def test_42_filter_args_for_format_rtf(
     """Test the filter_args_for_format_example function with the rtf format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_rtf_func(filter_args_for_format_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_42_filter_args_for_format_latex(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test filter_args_for_format_example with the latex format."""
+    expected_txt = EXPECTED_LATEX_TEXT
+    check_latex_func(filter_args_for_format_example, expected_txt)
     check_capsys_silent(capsys)
 
 

@@ -14,7 +14,7 @@ from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
     check_rst_func,
-    check_docx_func, check_odt_func, check_rtf_func,
+    check_docx_func, check_odt_func, check_rtf_func, check_latex_func,
     docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -91,6 +91,17 @@ EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_ODT_HTML_TEXT)
 EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
     EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_LATEX_TEXT = [
+    '\\documentclass[a4paper]{report}',
+    '\\chapter{URL in paragraph with bold \\& italic example}',
+    ('\\textit{\\penalty0\\href{https://bitbucket.org/tom-bjorkholm/'
+     'mformat/src/master/example}{This italic URL link to the '
+     'examples}\\penalty0}'),
+    ('\\textbf{\\penalty0\\href{https://bitbucket.org/tom-bjorkholm/'
+     'mformat/src/master/example/src}{this bold URL link to the '
+     'example source code.}\\penalty0}'),
+    '\\end{document}',
+]
 
 
 def test_e21_url_in_paragraph_bold_md(
@@ -135,6 +146,14 @@ def test_e21_url_in_paragraph_bold_rtf(
     """Test the example_url_in_paragraph_bold function with the rtf format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_rtf_func(example_url_in_paragraph_bold, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e21_url_in_paragraph_bold_latex(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test the example_url_in_paragraph_bold function with latex."""
+    expected_txt = EXPECTED_LATEX_TEXT
+    check_latex_func(example_url_in_paragraph_bold, expected_txt)
     check_capsys_silent(capsys)
 
 

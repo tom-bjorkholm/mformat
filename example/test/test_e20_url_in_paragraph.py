@@ -14,7 +14,7 @@ from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
     check_rst_func,
-    check_docx_func, check_odt_func, check_rtf_func,
+    check_docx_func, check_odt_func, check_rtf_func, check_latex_func,
     docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -72,6 +72,18 @@ EXPECTED_HTML_TEXT = EXPECTED_HTML_PRE + \
 EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_HTML_BODY_TEXT)
 EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
     EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_LATEX_TEXT = [
+    '\\documentclass[a4paper]{report}',
+    '\\chapter{URL in paragraph example}',
+    ('\\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+     'example}{The examples are here.}'),
+    'The URL was added as a link using add\\_url(text, url)',
+    ('\\url{https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+     'example}'),
+    ('\\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+     'example/result}{The produced output files are here.}'),
+    '\\end{document}',
+]
 
 
 def test_e20_url_in_paragraph_md(capsys: pytest.CaptureFixture[str]) -> None:
@@ -108,6 +120,14 @@ def test_e20_url_in_paragraph_rtf(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the example_url_in_paragraph function with the rtf format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_rtf_func(example_url_in_paragraph, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e20_url_in_paragraph_latex(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test the example_url_in_paragraph function with the latex format."""
+    expected_txt = EXPECTED_LATEX_TEXT
+    check_latex_func(example_url_in_paragraph, expected_txt)
     check_capsys_silent(capsys)
 
 
