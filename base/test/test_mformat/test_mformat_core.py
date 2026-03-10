@@ -97,6 +97,7 @@ def test_mft_init(capsys: pytest.CaptureFixture[str]) -> None:
     mfmt = MultiFormat2(file_name='test')
     assert mfmt.file_name == 'test.test'
     assert mfmt.state == MultiFormatState.EMPTY
+    assert not mfmt.in_code
     assert not mfmt.url_as_text
     check_capsys(capsys)
 
@@ -289,8 +290,10 @@ def test_end_state(capsys: pytest.CaptureFixture[str],
     """Test that the end_state method is correct."""
     mfmt = MultiFormat3(file_name='test')
     mfmt.state = from_state
+    mfmt.in_code = True
     mfmt._end_state()  # pylint: disable=protected-access
     assert mfmt.state == to_state
+    assert not mfmt.in_code
     assert mfmt.count == count
     check_capsys(capsys)
 
@@ -333,6 +336,7 @@ def test_new_heading(capsys: pytest.CaptureFixture[str],  # pylint: disable=too-
     mfmt.state = from_state
     mfmt.new_heading(level=level, text=text)
     assert mfmt.state == to_state
+    assert not mfmt.in_code
     assert mfmt.heading_level == level
     assert mfmt.count == count
     check_capsys(capsys)
@@ -354,6 +358,7 @@ def test_new_heading_bold_italic(capsys: pytest.CaptureFixture[str],  # pylint: 
                         expected_bold=bold, expected_italic=italic)
     mfmt.new_heading(level=level, text=text, bold=bold, italic=italic)
     assert mfmt.state == MultiFormatState.HEADING
+    assert not mfmt.in_code
     assert mfmt.heading_level == level
     assert mfmt.count == {'_encode_text': 1, '_start_heading': 1,
                           '_write_text': 1, '_write_file_prefix': 1}
@@ -368,6 +373,7 @@ def test_heading_add_text(capsys: pytest.CaptureFixture[str]) -> None:
     mfmt.heading_level = 1
     mfmt.add_text(text='More text')
     assert mfmt.state == MultiFormatState.HEADING
+    assert not mfmt.in_code
     assert mfmt.count == {'_encode_text': 1, '_write_text': 1}
     check_capsys(capsys)
 
@@ -381,6 +387,7 @@ def test_heading_add_url(capsys: pytest.CaptureFixture[str]) -> None:
     mfmt.heading_level = 1
     mfmt.add_url(url='http://example.com', text='Example')
     assert mfmt.state == MultiFormatState.HEADING
+    assert not mfmt.in_code
     assert mfmt.count == {'_encode_text': 1, '_write_url': 1}
     check_capsys(capsys)
 
@@ -390,9 +397,11 @@ def test_end_state_heading(capsys: pytest.CaptureFixture[str]) -> None:
     mfmt = MultiFormat8(file_name='test', expected_text='Test',
                         expected_level=2)
     mfmt.state = MultiFormatState.HEADING
+    mfmt.in_code = True
     mfmt.heading_level = 2
     mfmt._end_state()  # pylint: disable=protected-access
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
+    assert not mfmt.in_code
     assert mfmt.heading_level is None
     assert mfmt.count == {'_end_heading': 1}
     check_capsys(capsys)
@@ -404,11 +413,13 @@ def test_heading_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
                         expected_level=1)
     mfmt.new_heading(level=1, text='Title')
     assert mfmt.state.name == 'HEADING'
+    assert not mfmt.in_code
     # Now start a paragraph - should end the heading
     # Note: We don't check expected_level for the paragraph
     mfmt.expected_text = 'Paragraph text'
     mfmt.new_paragraph(text='Paragraph text')
     assert mfmt.state == MultiFormatState.PARAGRAPH
+    assert not mfmt.in_code
     assert mfmt.heading_level is None
     assert mfmt.count == {'_encode_text': 2, '_start_heading': 1,
                           '_write_text': 2, '_write_file_prefix': 1,
@@ -426,6 +437,7 @@ def test_multiple_headings(capsys: pytest.CaptureFixture[str]) -> None:
     mfmt.expected_text = 'Second'
     mfmt.expected_level = 2
     mfmt.new_heading(level=2, text='Second')
+    assert not mfmt.in_code
     assert mfmt.heading_level == 2
     assert mfmt.count == {'_encode_text': 2, '_start_heading': 2,
                           '_write_text': 2, '_write_file_prefix': 1,
@@ -470,6 +482,7 @@ class MultiFormat12(MultiFormat4):
         """Write code into text."""
         assert isinstance(text, str)
         assert isinstance(state, MultiFormatState)
+        assert self.in_code
         self.inc_count('_write_code_in_text')
         assert text == self.expected_code
 
@@ -477,12 +490,14 @@ class MultiFormat12(MultiFormat4):
         """Start a code block."""
         if programming_language is not None:
             assert isinstance(programming_language, str)
+        assert self.in_code
         self.inc_count('_start_code_block')
 
     def _end_code_block(self, programming_language: Optional[str]) -> None:
         """End a code block."""
         if programming_language is not None:
             assert isinstance(programming_language, str)
+        assert self.in_code
         self.inc_count('_end_code_block')
 
     def _write_code_block(self, text: str,
@@ -491,6 +506,7 @@ class MultiFormat12(MultiFormat4):
         assert isinstance(text, str)
         if programming_language is not None:
             assert isinstance(programming_language, str)
+        assert self.in_code
         self.inc_count('_write_code_block')
         if self.code_in:
             assert text in self.expected_code
@@ -511,8 +527,10 @@ def test_write_code_block_basic(capsys: pytest.CaptureFixture[str]) -> None:
     txt = 'print("Hello")'
     mfmt = MultiFormat12(file_name='test', expected_code=txt)
     assert mfmt.state.name == 'EMPTY'
+    assert not mfmt.in_code
     mfmt.write_code_block(text=txt)
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
+    assert not mfmt.in_code
     assert mfmt.count == {
         '_encode_text': 1,
         '_write_file_prefix': 1,
@@ -529,6 +547,7 @@ def test_write_code_block_with_language(
     mfmt = MultiFormat12(file_name='test', expected_code=txt)
     mfmt.write_code_block(text=txt, programming_language='python')
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
+    assert not mfmt.in_code
     assert mfmt.count == {
         '_encode_text': 1,
         '_write_file_prefix': 1,
@@ -547,6 +566,7 @@ def test_paragraph_then_code_block(capsys: pytest.CaptureFixture[str]) -> None:
     mfmt.new_paragraph(text=text)
     mfmt.write_code_block(text=code)
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
+    assert not mfmt.in_code
     assert mfmt.count == {
         '_encode_text': 2,
         '_write_file_prefix': 1,
@@ -568,6 +588,7 @@ def test_code_block_then_paragraph(capsys: pytest.CaptureFixture[str]) -> None:
     mfmt.write_code_block(text=code)
     mfmt.new_paragraph(text=text)
     assert mfmt.state == MultiFormatState.PARAGRAPH
+    assert not mfmt.in_code
     assert mfmt.count == {
         '_encode_text': 2,
         '_write_file_prefix': 1,
@@ -586,6 +607,7 @@ def test_multiple_code_blocks(capsys: pytest.CaptureFixture[str]) -> None:
     mfmt.write_code_block(text='first', programming_language='python')
     mfmt.write_code_block(text='second', programming_language='javascript')
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
+    assert not mfmt.in_code
     assert mfmt.count == {
         '_encode_text': 2,
         '_write_file_prefix': 1,
@@ -601,6 +623,7 @@ def test_code_block_multiline(capsys: pytest.CaptureFixture[str]) -> None:
     mfmt = MultiFormat12(file_name='test', expected_code=code)
     mfmt.write_code_block(text=code, programming_language='python')
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
+    assert not mfmt.in_code
     assert mfmt.count == {
         '_encode_text': 1,
         '_write_file_prefix': 1,
@@ -615,6 +638,7 @@ def test_code_block_empty(capsys: pytest.CaptureFixture[str]) -> None:
     mfmt = MultiFormat12(file_name='test', expected_code='')
     mfmt.write_code_block(text='')
     assert mfmt.state == MultiFormatState.PARAGRAPH_END
+    assert not mfmt.in_code
     assert mfmt.count == {
         '_encode_text': 1,
         '_write_file_prefix': 1,
@@ -645,8 +669,10 @@ def test_code_in_text(capsys: pytest.CaptureFixture[str]) -> None:
     mfmt = MultiFormat12(file_name='test', expected_code=code,
                          expected_text=text)
     mfmt.new_paragraph(text=text)
+    assert not mfmt.in_code
     mfmt.add_code_in_text(text=code)
     assert mfmt.state == MultiFormatState.PARAGRAPH
+    assert not mfmt.in_code
     assert mfmt.count == {
         '_encode_text': 2,
         '_write_file_prefix': 1,
@@ -698,6 +724,7 @@ def test_block_quote_1(capsys: pytest.CaptureFixture[str],
                          code_in=False, expected_code='')
     mfmt.new_block_quote(text=text, bold=bold, italic=italic)
     assert mfmt.state == MultiFormatState.BLOCK_QUOTE
+    assert not mfmt.in_code
     assert mfmt.count == {'_encode_text': 1, '_start_block_quote': 1,
                           '_write_text': 1, '_write_file_prefix': 1}
     check_capsys(capsys)
@@ -710,9 +737,11 @@ def test_block_quote_2(capsys: pytest.CaptureFixture[str]) -> None:
                          code_in=False, expected_code='')
     mfmt.new_block_quote(text='Block quote')
     assert mfmt.state == MultiFormatState.BLOCK_QUOTE
+    assert not mfmt.in_code
     mfmt.expected_text = ' More text'
     mfmt.add_text(text='More text')
     assert mfmt.state == MultiFormatState.BLOCK_QUOTE
+    assert not mfmt.in_code
     assert mfmt.count == {'_encode_text': 2, '_start_block_quote': 1,
                           '_write_text': 2, '_write_file_prefix': 1}
     check_capsys(capsys)
@@ -725,6 +754,7 @@ def test_block_quote_3(capsys: pytest.CaptureFixture[str]) -> None:
                          code_in=False, expected_code='')
     mfmt.new_block_quote(text='Block quote')
     assert mfmt.state == MultiFormatState.BLOCK_QUOTE
+    assert not mfmt.in_code
     mfmt.expected_text = 'Paragraph text'
     mfmt.new_paragraph(text='Paragraph text')
     assert mfmt.count == {'_end_block_quote': 1, '_encode_text': 2,
@@ -740,6 +770,7 @@ def test_block_quote_4(capsys: pytest.CaptureFixture[str]) -> None:
                          code_in=False, expected_code='')
     mfmt.new_block_quote(text='Block quote 1')
     assert mfmt.state == MultiFormatState.BLOCK_QUOTE
+    assert not mfmt.in_code
     mfmt.expected_text = 'Next block quote'
     mfmt.new_block_quote(text='Next block quote')
     assert mfmt.count == {'_end_block_quote': 1, '_encode_text': 2,
