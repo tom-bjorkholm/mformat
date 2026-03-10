@@ -189,6 +189,96 @@ def test_dash_not_converted_in_code_in_text(
         expected_text=expected, capsys=capsys)
 
 
+def test_code_in_text_escapes_underscores_in_heading(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test that code in heading escapes LaTeX special characters."""
+
+    def test_action(mfd: Any) -> None:
+        assert isinstance(mfd, MultiFormatLatex)
+        mfd.new_heading(level=1, text='Code')
+        mfd.add_code_in_text(text='add_code_in_text()')
+
+    expected = (
+        '\\documentclass[a4paper]{report}\n'
+        '\\usepackage{hyperref}\n'
+        '\\usepackage{booktabs}\n'
+        '\\begin{document}\n\n'
+        '\\chapter{Code \\texttt{add\\_code\\_in\\_text()}}\n\n'
+        '\\end{document}\n')
+    check_run_with_context_manager(
+        format_name='LaTeX', file_extension='.tex', test_action=test_action,
+        expected_text=expected, capsys=capsys)
+
+
+def test_angle_brackets_are_escaped_in_text(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test that angle brackets are escaped in plain text."""
+
+    def test_action(mfd: Any) -> None:
+        assert isinstance(mfd, MultiFormatLatex)
+        mfd.new_paragraph(text='Tag <html>')
+
+    expected = (
+        '\\documentclass[a4paper]{report}\n'
+        '\\usepackage{hyperref}\n'
+        '\\usepackage{booktabs}\n'
+        '\\begin{document}\n\n'
+        'Tag \\textless{}html\\textgreater{}\n\n'
+        '\\end{document}\n')
+    check_run_with_context_manager(
+        format_name='LaTeX', file_extension='.tex', test_action=test_action,
+        expected_text=expected, capsys=capsys)
+
+
+def test_replacements_apply_in_code_in_text(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test replacement stages are applied for inline code."""
+
+    def test_action(mfd: Any) -> None:
+        assert isinstance(mfd, MultiFormatLatex)
+        mfd.new_paragraph(text='Code:')
+        mfd.add_code_in_text(text='x')
+
+    replacements = [{'x': '&'}, {'\\&': 'AND'}, {}]
+    expected = (
+        '\\documentclass[a4paper]{report}\n'
+        '\\usepackage{hyperref}\n'
+        '\\usepackage{booktabs}\n'
+        '\\begin{document}\n\n'
+        'Code: \\texttt{AND}\n\n'
+        '\\end{document}\n')
+    check_run_with_context_manager(
+        format_name='LaTeX', file_extension='.tex', test_action=test_action,
+        expected_text=expected,
+        args={'latex_replacements': replacements},
+        capsys=capsys)
+
+
+def test_replacements_apply_in_code_block_without_escaping(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test replacement stages in code blocks without text escaping."""
+
+    def test_action(mfd: Any) -> None:
+        assert isinstance(mfd, MultiFormatLatex)
+        mfd.write_code_block(text='x & y')
+
+    replacements = [{'x': '<'}, {'<': 'LT'}, {}]
+    expected = (
+        '\\documentclass[a4paper]{report}\n'
+        '\\usepackage{hyperref}\n'
+        '\\usepackage{booktabs}\n'
+        '\\begin{document}\n\n'
+        '\\begin{verbatim}\n'
+        'LT & y\n'
+        '\\end{verbatim}\n\n'
+        '\\end{document}\n')
+    check_run_with_context_manager(
+        format_name='LaTeX', file_extension='.tex', test_action=test_action,
+        expected_text=expected,
+        args={'latex_replacements': replacements},
+        capsys=capsys)
+
+
 def test_write_code_block(capsys: pytest.CaptureFixture[str]) -> None:
     """Test LaTeX code block output."""
 
@@ -223,13 +313,15 @@ def test_write_table(capsys: pytest.CaptureFixture[str]) -> None:
         '\\usepackage{hyperref}\n'
         '\\usepackage{booktabs}\n'
         '\\begin{document}\n\n'
+        '\\noindent\n'
         '\\begin{tabular}{ll}\n'
         '\\toprule\n'
         'H1 & H2 \\\\\n'
         '\\midrule\n'
         'a & b \\\\\n'
         '\\bottomrule\n'
-        '\\end{tabular}\n\n'
+        '\\end{tabular}\n'
+        '\\par\\medskip\n\n'
         '\\end{document}\n')
     check_run_with_context_manager(
         format_name='LaTeX', file_extension='.tex', test_action=test_action,
@@ -249,13 +341,15 @@ def test_write_table_fallback_without_booktabs_package(
     expected = (
         '\\documentclass[a4paper]{report}\n'
         '\\begin{document}\n\n'
+        '\\noindent\n'
         '\\begin{tabular}{|l|l|}\n'
         '\\hline\n'
         'H1 & H2 \\\\\n'
         '\\hline\n'
         'a & b \\\\\n'
         '\\hline\n'
-        '\\end{tabular}\n\n'
+        '\\end{tabular}\n'
+        '\\par\\medskip\n\n'
         '\\end{document}\n')
     check_run_with_context_manager(
         format_name='LaTeX', file_extension='.tex', test_action=test_action,

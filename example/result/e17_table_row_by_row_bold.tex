@@ -5,6 +5,7 @@
 
 \chapter{Table row by row with bold \& italic example}
 
+\noindent
 \begin{tabular}{lll}
 \toprule
 \textbf{City} & \textbf{Country} & \textbf{Size} \\
@@ -14,7 +15,9 @@ Mariehamn & Finland & Small \\
 \textit{\textbf{Tokyo}} & \textit{\textbf{Japan}} & \textit{\textbf{Huge}} \\
 \bottomrule
 \end{tabular}
+\par\medskip
 
+\noindent
 \begin{tabular}{lll}
 \toprule
 \textit{Capital} & \textit{Country} & \textit{Continent} \\
@@ -26,6 +29,7 @@ Kairo & Egypt & Africa \\
 \textit{\textbf{Brussels}} & \textit{\textbf{Belgium}} & \textit{\textbf{Europe}} \\
 \bottomrule
 \end{tabular}
+\par\medskip
 
 Note: As the rows are added and written one by one, the library cannot know the width of columns in future rows, this will make markdown formatted output look a bit odd when reading the markdown file, however any further formatting from markdown will hide this and make the table look as expected.
 

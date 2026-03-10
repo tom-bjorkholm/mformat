@@ -59,6 +59,8 @@ _LATEX_ESCAPE_MAP: dict[str, str] = {
     '_': '\\_',
     '^': '\\textasciicircum{}',
     '~': '\\textasciitilde{}',
+    '<': '\\textless{}',
+    '>': '\\textgreater{}',
 }
 
 
@@ -512,6 +514,7 @@ class MultiFormatLatex(MultiFormatTextBased):
         """Start a table."""
         assert self.file is not None
         self._ensure_blank_line_before()
+        self.file.write('\\noindent\n')
         use_booktabs = self._current_table_uses_booktabs()
         column_spec = self._tabular_spec(
             num_columns=num_columns,
@@ -531,6 +534,7 @@ class MultiFormatLatex(MultiFormatTextBased):
         if use_booktabs:
             self.file.write('\\bottomrule\n')
         self.file.write('\\end{tabular}\n')
+        self.file.write('\\par\\medskip\n')
 
     def _write_table_first_row(self, first_row: list[str],
                                formatting: Formatting) -> None:
@@ -601,11 +605,12 @@ class MultiFormatLatex(MultiFormatTextBased):
         """Encode text (escape special characters)."""
         if not text:
             return text
-        if self.in_code:
-            return text
         result = deepcopy(text)
         result = self._apply_latex_replacements(result, stage=0)
-        result = self._replace_prose_dashes(result)
+        if self.state == MultiFormatState.CODE_BLOCK:
+            return self._apply_latex_replacements(result, stage=1)
+        if not self.in_code:
+            result = self._replace_prose_dashes(result)
         result = self._escape_latex_text(result)
         result = self._apply_latex_replacements(result, stage=1)
         return result
