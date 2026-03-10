@@ -1,17 +1,18 @@
 \documentclass[a4paper]{report}
 \usepackage{hyperref}
 \usepackage{booktabs}
+\usepackage{xurl}
 \begin{document}
 
 \chapter{URL in heading example}
 
-\chapter{A heading with a URL: \href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example}{This URL link to the examples.}}
+\chapter{A heading with a URL: \penalty0\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example}{This URL link to the examples.}\penalty0}
 
-\section{A heading with a bold URL: \textbf{\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src}{This bold URL link to the example source code.}}}
+\section{A heading with a bold URL: \textbf{\penalty0\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src}{This bold URL link to the example source code.}\penalty0}}
 
-\section{A heading with an italic URL: \textit{\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result}{This italic URL link to the examples result.}}}
+\section{A heading with an italic URL: \textit{\penalty0\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result}{This italic URL link to the examples result.}\penalty0}}
 
-\section{And with an italic and bold URL: \textit{\textbf{\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src}{This italic and bold URL link to the examples.}}}}
+\section{And with an italic and bold URL: \textit{\textbf{\penalty0\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src}{This italic and bold URL link to the examples.}\penalty0}}}
 
 The add\_url function can be used to add a URL to a heading, as well as to paragraphs, bullet lists, and numbered point lists.
 

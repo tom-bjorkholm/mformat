@@ -1,10 +1,11 @@
 \documentclass[a4paper]{report}
 \usepackage{hyperref}
 \usepackage{booktabs}
+\usepackage{xurl}
 \begin{document}
 
 \chapter{URL in paragraph with bold \& italic example}
 
-This is a paragraph with a URL: \textit{\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example}{This italic URL link to the examples}} and \textbf{\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src}{this bold URL link to the example source code.}}
+This is a paragraph with a URL: \textit{\penalty0\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example}{This italic URL link to the examples}\penalty0} and \textbf{\penalty0\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src}{this bold URL link to the example source code.}\penalty0}
 
 \end{document}

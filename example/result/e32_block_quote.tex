@@ -1,6 +1,7 @@
 \documentclass[a4paper]{report}
 \usepackage{hyperref}
 \usepackage{booktabs}
+\usepackage{xurl}
 \begin{document}
 
 \chapter{Block Quote Example}
@@ -22,7 +23,7 @@ Block quotes can have\textbf{ bold} and\textit{ italic} text just like paragraph
 \section{Block Quote with URL}
 
 \begin{quote}
-For more information, visit \href{http://example.com}{Example Website} for details.
+For more information, visit \penalty0\href{http://example.com}{Example Website}\penalty0 for details.
 \end{quote}
 
 \section{Block Quote with Code}

@@ -236,9 +236,9 @@ def test_add_url_as_text(capsys: pytest.CaptureFixture[str],  # pylint: disable=
     mfmt.add_url(url=url, text=text)
     assert mfmt.state == MultiFormatState.PARAGRAPH
     if text is not None:
-        assert mfmt.count == {'_encode_text': 1, '_write_text': 1}
+        assert mfmt.count == {'_encode_text': 2, '_write_text': 1}
     else:
-        assert mfmt.count == {'_write_text': 1}
+        assert mfmt.count == {'_encode_text': 1, '_write_text': 1}
     check_capsys(capsys)
 
 
@@ -260,9 +260,9 @@ def test_add_url_as_text_formatting(capsys: pytest.CaptureFixture[str],  # pylin
     mfmt.add_url(url=url, text=text, bold=bold, italic=italic)
     assert mfmt.state == MultiFormatState.PARAGRAPH
     if text is not None:
-        assert mfmt.count == {'_encode_text': 1, '_write_text': 1}
+        assert mfmt.count == {'_encode_text': 2, '_write_text': 1}
     else:
-        assert mfmt.count == {'_write_text': 1}
+        assert mfmt.count == {'_encode_text': 1, '_write_text': 1}
     check_capsys(capsys)
 
 

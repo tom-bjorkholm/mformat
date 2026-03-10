@@ -179,6 +179,7 @@
     * [\_preamble\_has\_begin\_document](#mformat.mformat_latex.MultiFormatLatex._preamble_has_begin_document)
     * [\_preamble\_has\_end\_document](#mformat.mformat_latex.MultiFormatLatex._preamble_has_end_document)
     * [\_preamble\_has\_url\_package](#mformat.mformat_latex.MultiFormatLatex._preamble_has_url_package)
+    * [\_preamble\_has\_xurl\_package](#mformat.mformat_latex.MultiFormatLatex._preamble_has_xurl_package)
     * [\_preamble\_has\_booktabs\_package](#mformat.mformat_latex.MultiFormatLatex._preamble_has_booktabs_package)
     * [\_can\_insert\_package](#mformat.mformat_latex.MultiFormatLatex._can_insert_package)
     * [\_use\_booktabs\_tables](#mformat.mformat_latex.MultiFormatLatex._use_booktabs_tables)
@@ -189,6 +190,7 @@
     * [\_escape\_latex\_text](#mformat.mformat_latex.MultiFormatLatex._escape_latex_text)
     * [\_tabular\_spec](#mformat.mformat_latex.MultiFormatLatex._tabular_spec)
     * [\_format\_text](#mformat.mformat_latex.MultiFormatLatex._format_text)
+    * [\_url\_boundary\_break\_hints](#mformat.mformat_latex.MultiFormatLatex._url_boundary_break_hints)
     * [\_write\_file\_prefix](#mformat.mformat_latex.MultiFormatLatex._write_file_prefix)
     * [\_write\_file\_suffix](#mformat.mformat_latex.MultiFormatLatex._write_file_suffix)
     * [\_start\_paragraph](#mformat.mformat_latex.MultiFormatLatex._start_paragraph)
@@ -2911,6 +2913,16 @@ def _preamble_has_url_package() -> bool
 
 Check if preamble contains URL-capable package.
 
+<a id="mformat.mformat_latex.MultiFormatLatex._preamble_has_xurl_package"></a>
+
+#### \_preamble\_has\_xurl\_package
+
+```python
+def _preamble_has_xurl_package() -> bool
+```
+
+Check if preamble contains xurl package.
+
 <a id="mformat.mformat_latex.MultiFormatLatex._preamble_has_booktabs_package"></a>
 
 #### \_preamble\_has\_booktabs\_package
@@ -3016,6 +3028,17 @@ def _format_text(text: str, formatting: Formatting) -> str
 ```
 
 Apply bold and italic formatting wrappers to text.
+
+<a id="mformat.mformat_latex.MultiFormatLatex._url_boundary_break_hints"></a>
+
+#### \_url\_boundary\_break\_hints
+
+```python
+@staticmethod
+def _url_boundary_break_hints(text: str) -> str
+```
+
+Wrap URL text with low-penalty line break opportunities.
 
 <a id="mformat.mformat_latex.MultiFormatLatex._write_file_prefix"></a>
 

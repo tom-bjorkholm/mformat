@@ -270,7 +270,14 @@ class MultiFormatLatex(MultiFormatTextBased):
     def _preamble_has_url_package(self) -> bool:
         """Check if preamble contains URL-capable package."""
         return ('\\usepackage{hyperref}' in self.latex_preamble or
-                '\\usepackage{url}' in self.latex_preamble)
+                '\\usepackage{url}' in self.latex_preamble or
+                self._preamble_has_xurl_package())
+
+    def _preamble_has_xurl_package(self) -> bool:
+        """Check if preamble contains xurl package."""
+        return bool(re.search(
+            r'\\usepackage(?:\[[^\]]*\])?\{[^}]*\bxurl\b[^}]*\}',
+            self.latex_preamble))
 
     def _preamble_has_booktabs_package(self) -> bool:
         """Check if preamble contains booktabs package."""
@@ -346,12 +353,18 @@ class MultiFormatLatex(MultiFormatTextBased):
             text = f'\\textit{{{text}}}'
         return text
 
+    @staticmethod
+    def _url_boundary_break_hints(text: str) -> str:
+        """Wrap URL text with low-penalty line break opportunities."""
+        return f'\\penalty0{text}\\penalty0'
+
     def _write_file_prefix(self) -> None:
         """Write the LaTeX file prefix and preamble."""
         assert self.file is not None
         has_docclass = self._preamble_has_documentclass()
         has_begin_document = self._preamble_has_begin_document()
         has_url_package = self._preamble_has_url_package()
+        has_xurl_package = self._preamble_has_xurl_package()
         has_booktabs_package = self._preamble_has_booktabs_package()
         use_booktabs_tables = self._use_booktabs_tables(
             has_docclass=has_docclass,
@@ -376,6 +389,9 @@ class MultiFormatLatex(MultiFormatTextBased):
                 has_docclass and \
                 not has_begin_document:
             self.file.write('\\usepackage{hyperref}\n')
+        if not self.url_as_text and not has_begin_document:
+            if not has_xurl_package:
+                self.file.write('\\usepackage{xurl}\n')
         if use_booktabs_tables and \
                 not has_booktabs_package and \
                 has_docclass and \
@@ -447,6 +463,7 @@ class MultiFormatLatex(MultiFormatTextBased):
             url_text = f'\\href{{{safe_url}}}{{{text}}}'
         else:
             url_text = f'\\url{{{safe_url}}}'
+        url_text = self._url_boundary_break_hints(url_text)
         self._write_with_stage_three_replacements(
             self._format_text(text=url_text, formatting=formatting))
 

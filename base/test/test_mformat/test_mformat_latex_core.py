@@ -76,6 +76,7 @@ def test_heading_fallback_deepest(capsys: pytest.CaptureFixture[str]) -> None:
         '\\documentclass[a4paper]{article}\n'
         '\\usepackage{hyperref}\n'
         '\\usepackage{booktabs}\n'
+        '\\usepackage{xurl}\n'
         '\\begin{document}\n\n'
         '\\subparagraph{Deep}\n\n'
         '\\end{document}\n')
@@ -96,6 +97,7 @@ def test_custom_heading_mapping(capsys: pytest.CaptureFixture[str]) -> None:
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
         '\\usepackage{booktabs}\n'
+        '\\usepackage{xurl}\n'
         '\\begin{document}\n\n'
         '\\myheading{Mapped}\n\n'
         '\\end{document}\n')
@@ -141,12 +143,57 @@ def test_add_url_escapes_text(capsys: pytest.CaptureFixture[str]) -> None:
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
         '\\usepackage{booktabs}\n'
+        '\\usepackage{xurl}\n'
         '\\begin{document}\n\n'
-        'See \\href{http://example.com?a=1\\&b=2}{Link}\n\n'
+        'See \\penalty0'
+        '\\href{http://example.com?a=1\\&b=2}{Link}'
+        '\\penalty0\n\n'
         '\\end{document}\n')
     check_run_with_context_manager(
         format_name='LaTeX', file_extension='.tex', test_action=test_action,
         expected_text=expected, capsys=capsys)
+
+
+def test_add_url_without_text_uses_url_command(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    r"""Test URL emission without link text uses \url with break hints."""
+
+    def test_action(mfd: Any) -> None:
+        assert isinstance(mfd, MultiFormatLatex)
+        mfd.new_paragraph(text='See')
+        mfd.add_url(url='http://example.com/a?x=1&y=2')
+
+    expected = (
+        '\\documentclass[a4paper]{report}\n'
+        '\\usepackage{hyperref}\n'
+        '\\usepackage{booktabs}\n'
+        '\\usepackage{xurl}\n'
+        '\\begin{document}\n\n'
+        'See \\penalty0\\url{http://example.com/a?x=1\\&y=2}\\penalty0\n\n'
+        '\\end{document}\n')
+    check_run_with_context_manager(
+        format_name='LaTeX', file_extension='.tex', test_action=test_action,
+        expected_text=expected, capsys=capsys)
+
+
+def test_add_url_as_text_adds_needed_space(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test url_as_text mode keeps readable spacing before raw URL text."""
+
+    def test_action(mfd: Any) -> None:
+        assert isinstance(mfd, MultiFormatLatex)
+        mfd.new_paragraph(text='Prefix:')
+        mfd.add_url(url='https://example.com')
+
+    expected = (
+        '\\documentclass[a4paper]{report}\n'
+        '\\usepackage{booktabs}\n'
+        '\\begin{document}\n\n'
+        'Prefix: https://example.com\n\n'
+        '\\end{document}\n')
+    check_run_with_context_manager(
+        format_name='LaTeX', file_extension='.tex', test_action=test_action,
+        expected_text=expected, url_as_text=True, capsys=capsys)
 
 
 def test_dash_conversion_in_prose(capsys: pytest.CaptureFixture[str]) -> None:
@@ -160,6 +207,7 @@ def test_dash_conversion_in_prose(capsys: pytest.CaptureFixture[str]) -> None:
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
         '\\usepackage{booktabs}\n'
+        '\\usepackage{xurl}\n'
         '\\begin{document}\n\n'
         'A --- B\n\n'
         '\\end{document}\n')
@@ -181,6 +229,7 @@ def test_dash_not_converted_in_code_in_text(
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
         '\\usepackage{booktabs}\n'
+        '\\usepackage{xurl}\n'
         '\\begin{document}\n\n'
         'Code: \\texttt{A - B}\n\n'
         '\\end{document}\n')
@@ -202,6 +251,7 @@ def test_code_in_text_escapes_underscores_in_heading(
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
         '\\usepackage{booktabs}\n'
+        '\\usepackage{xurl}\n'
         '\\begin{document}\n\n'
         '\\chapter{Code \\texttt{add\\_code\\_in\\_text()}}\n\n'
         '\\end{document}\n')
@@ -222,6 +272,7 @@ def test_angle_brackets_are_escaped_in_text(
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
         '\\usepackage{booktabs}\n'
+        '\\usepackage{xurl}\n'
         '\\begin{document}\n\n'
         'Tag \\textless{}html\\textgreater{}\n\n'
         '\\end{document}\n')
@@ -244,6 +295,7 @@ def test_replacements_apply_in_code_in_text(
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
         '\\usepackage{booktabs}\n'
+        '\\usepackage{xurl}\n'
         '\\begin{document}\n\n'
         'Code: \\texttt{AND}\n\n'
         '\\end{document}\n')
@@ -267,6 +319,7 @@ def test_replacements_apply_in_code_block_without_escaping(
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
         '\\usepackage{booktabs}\n'
+        '\\usepackage{xurl}\n'
         '\\begin{document}\n\n'
         '\\begin{verbatim}\n'
         'LT & y\n'
@@ -290,6 +343,7 @@ def test_write_code_block(capsys: pytest.CaptureFixture[str]) -> None:
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
         '\\usepackage{booktabs}\n'
+        '\\usepackage{xurl}\n'
         '\\begin{document}\n\n'
         '\\begin{verbatim}\n'
         'A - B\n'
@@ -312,6 +366,7 @@ def test_write_table(capsys: pytest.CaptureFixture[str]) -> None:
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
         '\\usepackage{booktabs}\n'
+        '\\usepackage{xurl}\n'
         '\\begin{document}\n\n'
         '\\noindent\n'
         '\\begin{tabular}{ll}\n'
@@ -369,6 +424,7 @@ def test_replacement_pipeline(capsys: pytest.CaptureFixture[str]) -> None:
         '\\documentclass[a4paper]{report}\n'
         '\\usepackage{hyperref}\n'
         '\\usepackage{booktabs}\n'
+        '\\usepackage{xurl}\n'
         '\\begin{document}\n\n'
         '\\Strong{AND}\n\n'
         '\\end{document}\n')

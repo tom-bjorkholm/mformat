@@ -307,9 +307,8 @@ class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods,
         if self.url_as_text:
             text_to_write = ''
             if text:
-                assert text is not None
-                text_to_write = self._to_write(text, smart_ws, True) + ' '
-            text_to_write += url.strip()
+                text_to_write += self._to_write(text, smart_ws, True)
+            text_to_write += self._to_write(url, smart_ws, True)
             self._write_text(text_to_write, self.state, formatting)
             return
         # Write spacing before URL if needed

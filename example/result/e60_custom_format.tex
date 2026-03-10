@@ -1,6 +1,7 @@
 \documentclass[a4paper]{report}
 \usepackage{hyperref}
 \usepackage{booktabs}
+\usepackage{xurl}
 \begin{document}
 
 \chapter{Custom Format Example}
@@ -38,6 +39,6 @@ def example():
 
 This text is\textbf{ bold} and this is\textit{ italic}.
 
-Visit \href{https://example.com}{our website}
+Visit \penalty0\href{https://example.com}{our website}\penalty0
 
 \end{document}
