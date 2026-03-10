@@ -13,7 +13,8 @@ from .test_e01_paragraph import (
 from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func, check_rst_func,
-    check_docx_func, check_odt_func, check_rtf_func, docx_version_of_html)
+    check_docx_func, check_odt_func, check_rtf_func, check_latex_func,
+    docx_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
 _example_test_path = (
@@ -205,6 +206,33 @@ EXPECTED_RST_TEXT = [
     'def my_function(x: int) -> int:',
     'print(my_function(1))'
 ]
+EXPECTED_LATEX_TEXT = [
+    '\\documentclass[a4paper]{report}',
+    '\\chapter{Main heading of example}',
+    'With new\\_paragraph we can start a paragraph.',
+    '\\section{Sub heading of example where add\\_text adds text to the '
+    'sub heading}',
+    '\\textit{\\textbf{ There is never a need to close an item type.}}',
+    '\\section{Heading with URL to \\penalty0\\href{https://bitbucket.org/'
+    'tom-bjorkholm/mformat/src/master/example/src/e50\\_simple\\_complete.'
+    'py}{the example file}\\penalty0}',
+    '\\begin{itemize}',
+    '\\item Item 2.1',
+    '\\begin{enumerate}',
+    '\\item Item 3.1',
+    '\\section{A simple table}',
+    '\\begin{tabular}{lll}',
+    '\\textbf{Full Name} & \\textbf{Street and Number} & \\textbf{City or '
+    'Town} \\\\',
+    'Jim Doe & 789 Main St & The Village \\\\',
+    '\\subsection{Another table}',
+    '\\section{Finally code blocks}',
+    '\\begin{verbatim}',
+    'def my_function(x: int) -> int:',
+    'print(my_function(1))',
+    '\\end{verbatim}',
+    '\\end{document}'
+]
 EXPECTED_HTML_BODY_TEXT = [
     '<h1>',
     'Main heading of example',
@@ -325,4 +353,12 @@ def test_e50_simple_complete_rtf(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the multi_format_example function with the rtf format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_rtf_func(multi_format_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e50_simple_complete_latex(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test the multi_format_example function with the LaTeX format."""
+    expected_txt = EXPECTED_LATEX_TEXT
+    check_latex_func(multi_format_example, expected_txt)
     check_capsys_silent(capsys)

@@ -5,11 +5,15 @@
 # MIT License
 #
 
+from dataclasses import dataclass
+from functools import cache
 from pathlib import Path
 from typing import Callable
-import sys
 import html as html_lib
 import re
+import shutil
+import subprocess
+import sys
 from tempfile import TemporaryDirectory
 import pytest
 from pymarkdown.api import PyMarkdownApi, PyMarkdownApiException, \
@@ -219,6 +223,166 @@ def check_html_func(func: Callable[[str, str], None],
             print(str(exc))
             assert False, 'HTML parse error'
         check_text_in_order(html, expected_txt)
+
+
+@dataclass(frozen=True)
+class LatexToolchainStatus:
+    """Result from probing local LaTeX compile support."""
+
+    available: bool
+    compiler_path: str
+    message: str
+
+
+def _latex_smoke_test_text() -> str:
+    """Return a small LaTeX document for toolchain smoke testing."""
+    return (
+        '\\documentclass[a4paper]{report}\n'
+        '\\usepackage{hyperref}\n'
+        '\\usepackage{booktabs}\n'
+        '\\usepackage{xurl}\n'
+        '\\begin{document}\n'
+        '\\chapter{Smoke test}\n'
+        'See \\href{https://example.com/test\\_a}{Example link} and '
+        '\\url{https://example.com/test\\_b}.\n'
+        '\\begin{quote}\n'
+        'Quoted text.\n'
+        '\\end{quote}\n'
+        '\\noindent\n'
+        '\\begin{tabular}{lll}\n'
+        '\\toprule\n'
+        'A1 & B2 & C3 \\\\\n'
+        '\\cmidrule(lr){1-2}\n'
+        'x & y & z \\\\\n'
+        '\\bottomrule\n'
+        '\\end{tabular}\n'
+        '\\par\\medskip\n'
+        '\\begin{verbatim}\n'
+        'code line\n'
+        '\\end{verbatim}\n'
+        '\\end{document}\n'
+    )
+
+
+def _latex_compile_command(compiler_path: str, file_name: str) -> list[str]:
+    """Build the pdflatex command for compiling a LaTeX file."""
+    return [compiler_path, '-interaction=nonstopmode', '-halt-on-error',
+            '-file-line-error', file_name]
+
+
+def _trim_process_output(text: str, max_lines: int = 60) -> str:
+    """Trim captured process output to a manageable number of lines."""
+    lines = [line.rstrip() for line in text.splitlines() if line.strip()]
+    if len(lines) <= max_lines:
+        return '\n'.join(lines)
+    return '\n'.join(lines[:max_lines]) + '\n...'
+
+
+def _compile_latex_file(tex_file: Path,
+                        compiler_path: str) -> tuple[bool, str]:
+    """Compile a LaTeX file and return success flag and details."""
+    command = _latex_compile_command(compiler_path=compiler_path,
+                                     file_name=tex_file.name)
+    try:
+        process = subprocess.run(command, cwd=tex_file.parent, check=False,
+                                 capture_output=True, text=True, timeout=60)
+    except subprocess.TimeoutExpired:
+        return False, (
+            f'LaTeX compile timed out for {tex_file.name} using '
+            f'{compiler_path}.'
+        )
+    except OSError as exc:
+        return False, (
+            f'LaTeX compile could not start for {tex_file.name} using '
+            f'{compiler_path}: {exc}'
+        )
+    output = _trim_process_output(process.stdout + '\n' + process.stderr)
+    if process.returncode != 0:
+        message = (
+            f'LaTeX compile failed for {tex_file.name} using '
+            f'{compiler_path}. Return code: {process.returncode}.'
+        )
+        if output:
+            message += '\nCompiler output:\n' + output
+        return False, message
+    pdf_file = tex_file.with_suffix('.pdf')
+    if not pdf_file.exists():
+        message = (
+            f'LaTeX compile reported success for {tex_file.name} using '
+            f'{compiler_path}, but {pdf_file.name} was not created.'
+        )
+        if output:
+            message += '\nCompiler output:\n' + output
+        return False, message
+    return True, (
+        f'LaTeX compile succeeded for {tex_file.name} using '
+        f'{compiler_path}.'
+    )
+
+
+@cache
+def get_latex_toolchain_status() -> LatexToolchainStatus:
+    """Probe local pdflatex support once per test session."""
+    compiler_path = shutil.which('pdflatex')
+    if compiler_path is None:
+        message = (
+            'LaTeX example checks require pdflatex on PATH. '
+            'Install a working TeX distribution to enable LaTeX example '
+            'integration tests.'
+        )
+        return LatexToolchainStatus(available=False, compiler_path='',
+                                    message=message)
+    with TemporaryDirectory() as tmp_dir:
+        file_name = Path(tmp_dir) / 'latex_toolchain_smoke_test.tex'
+        with open(file_name, 'w', encoding='utf-8') as file:
+            file.write(_latex_smoke_test_text())
+        success, message = _compile_latex_file(file_name, compiler_path)
+    if not success:
+        return LatexToolchainStatus(available=False,
+                                    compiler_path=compiler_path,
+                                    message=message)
+    return LatexToolchainStatus(available=True, compiler_path=compiler_path,
+                                message=message)
+
+
+def check_latex_toolchain() -> None:
+    """Fail once with a clear message if pdflatex support is unavailable."""
+    status = get_latex_toolchain_status()
+    if not status.available:
+        pytest.fail(status.message)
+
+
+def _skip_if_latex_toolchain_unavailable() -> LatexToolchainStatus:
+    """Skip current LaTeX test when dedicated toolchain test should report."""
+    status = get_latex_toolchain_status()
+    if not status.available:
+        pytest.skip(
+            'LaTeX toolchain unavailable. See test_00_latex_toolchain for '
+            'details.'
+        )
+    return status
+
+
+def check_latex_func(func: Callable[[str, str], None],
+                     expected_txt: list[str]) -> None:
+    """Check that function produces compilable LaTeX with expected text.
+
+    Args:
+        func: The function to check.
+        expected_txt: Fragments of the expected LaTeX source text in the
+                      order they should appear.
+    """
+    status = _skip_if_latex_toolchain_unavailable()
+    with TemporaryDirectory() as tmp_dir:
+        file_name = str(Path(tmp_dir) / 'test.tex')
+        func('LaTeX', file_name)
+        success, message = _compile_latex_file(Path(file_name),
+                                               status.compiler_path)
+        if not success:
+            pytest.fail(message)
+        with open(file_name, 'r', encoding='utf-8') as file:
+            text = file.read()
+        check_text_in_order(text, expected_txt)
 
 
 def _is_escaped_char(text: str, pos: int) -> bool:

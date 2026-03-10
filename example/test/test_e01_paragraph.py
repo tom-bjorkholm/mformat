@@ -11,7 +11,7 @@ import pytest
 from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_docx_func, check_odt_func, check_txt_func, check_rst_func,
-    check_rtf_func)
+    check_rtf_func, check_latex_func)
 # Add example/src to path
 # pylint: disable=duplicate-code
 _example_test_path = (
@@ -72,6 +72,19 @@ EXPECTED_ODT_PRE = [
 EXPECTED_ODT_BODY_TEXT = EXPECTED_HTML_BODY_TEXT
 EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
     EXPECTED_ODT_BODY_TEXT + EXPECTED_HTML_POST
+EXPECTED_LATEX_TEXT = [
+    '\\documentclass[a4paper]{report}',
+    '\\usepackage{hyperref}',
+    '\\usepackage{booktabs}',
+    '\\usepackage{xurl}',
+    '\\begin{document}',
+    'With new\\_paragraph we can start a paragraph.',
+    'With add\\_text we can add text to the paragraph.',
+    'We can also add text to the paragraph in multiple calls using '
+    'add\\_text.',
+    'generated markdown file will not have a heading.',
+    '\\end{document}'
+]
 
 
 def test_e01_paragraph_md(capsys: pytest.CaptureFixture[str]) -> None:
@@ -109,6 +122,13 @@ def test_e01_paragraph_rtf(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the paragraph_example function with the rtf format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_rtf_func(paragraph_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e01_paragraph_latex(capsys: pytest.CaptureFixture[str]) -> None:
+    """Test the paragraph_example function with the LaTeX format."""
+    expected_txt = EXPECTED_LATEX_TEXT
+    check_latex_func(paragraph_example, expected_txt)
     check_capsys_silent(capsys)
 
 

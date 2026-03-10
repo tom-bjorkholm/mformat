@@ -14,7 +14,7 @@ from .example_checkers import (
     check_markdown_func, check_capsys_silent, check_html_func,
     check_txt_func,
     check_rst_func,
-    check_docx_func, check_odt_func, check_rtf_func,
+    check_docx_func, check_odt_func, check_rtf_func, check_latex_func,
     docx_version_of_html, odt_version_of_html)
 # Add example/src to path
 # pylint: disable=duplicate-code
@@ -147,6 +147,20 @@ EXPECTED_ODT_BODY_TEXT = odt_version_of_html(EXPECTED_HTML_BODY_TEXT1 +
                                              EXPECTED_ODT_HTML_TEXT2)
 EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + EXPECTED_ODT_BODY_TEXT + \
     EXPECTED_HTML_POST
+EXPECTED_LATEX_TEXT = [
+    '\\documentclass[a4paper]{report}',
+    '\\chapter{Code blocks example}',
+    'This is a normal paragraph with some text.',
+    '\\texttt{write\\_code\\_block()}',
+    '\\texttt{add\\_code\\_in\\_text()}',
+    '\\begin{verbatim}',
+    'def hello_world(i: int) -> int:',
+    'print("Hello, World!")',
+    'print("This is another line of code.")',
+    'return 42',
+    '\\end{verbatim}',
+    '\\end{document}'
+]
 
 
 def test_e30_code_blocks_md(capsys: pytest.CaptureFixture[str]) -> None:
@@ -184,6 +198,13 @@ def test_e30_code_blocks_rtf(capsys: pytest.CaptureFixture[str]) -> None:
     """Test the code_blocks_example function with the rtf format."""
     expected_txt = EXPECTED_HTML_TEXT
     check_rtf_func(code_blocks_example, expected_txt)
+    check_capsys_silent(capsys)
+
+
+def test_e30_code_blocks_latex(capsys: pytest.CaptureFixture[str]) -> None:
+    """Test the code_blocks_example function with the LaTeX format."""
+    expected_txt = EXPECTED_LATEX_TEXT
+    check_latex_func(code_blocks_example, expected_txt)
     check_capsys_silent(capsys)
 
 
