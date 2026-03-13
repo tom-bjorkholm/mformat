@@ -224,17 +224,3 @@ def test_main_generates_readme_when_examples_exist(
     assert 'Found 1 example files.' in out
     assert 'Generated:' in out
     assert 'Simple paragraph example.' in text
-
-
-def test_create_example_readme_hook_calls_main(
-        monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test create_example_readme hook delegates to main."""
-    called = {'count': 0}
-
-    def fake_main() -> None:
-        """Record one call."""
-        called['count'] += 1
-
-    monkeypatch.setattr(create_example, 'main', fake_main)
-    create_example.create_example_readme_hook(object(), object())
-    assert called['count'] == 1

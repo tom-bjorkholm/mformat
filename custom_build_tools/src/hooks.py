@@ -1,5 +1,12 @@
 #! /usr/bin/env python3
-"""Custom build hook functions for this repository."""
+"""Thin build hook wrappers for this repository.
+
+These wrappers stay in a separate module because ``custom_spec.py`` is loaded
+early in the build flow, before the project virtual environment exists and
+before its extra packages have been installed. The real hook scripts therefore
+need to be launched later with the venv Python instead of being imported
+directly from ``custom_spec.py``.
+"""
 
 # Copyright (c) 2026 Tom Björkholm
 # MIT License
@@ -13,8 +20,11 @@ COMMON_BUILD_TOOLS_SRC = (
     Path(__file__).resolve().parents[2] / 'common_build_tools' / 'src'
 )
 sys.path.insert(0, str(COMMON_BUILD_TOOLS_SRC))
-# pylint: disable=wrong-import-position
-from build_spec import BuildInformation, BuildSpec  # noqa: E402
+# pylint: disable=wrong-import-position,import-error
+from build_spec import (  # noqa: E402
+    BuildInformation,
+    BuildSpec,
+)
 
 
 def _venv_python(project_root: Path) -> Path:
@@ -24,6 +34,9 @@ def _venv_python(project_root: Path) -> Path:
     return project_root / 'venv' / 'bin' / 'python'
 
 
+# custom_spec.py is imported before the project venv exists and before its
+# extra packages are installed, so the real hook modules must be executed later
+# with the venv interpreter instead of being imported directly there.
 def _run_script_with_venv(script_file: Path, project_root: Path) -> None:
     """Run one script file with venv Python and fail on non-zero exit."""
     command = [str(_venv_python(project_root)), str(script_file)]
@@ -36,34 +49,45 @@ def _run_script_with_venv(script_file: Path, project_root: Path) -> None:
     )
 
 
+def _run_custom_script(build_information: BuildInformation,
+                       script_name: str) -> None:
+    """Run one script from custom_build_tools/src with the venv Python."""
+    project_root = Path(build_information['project_root'])
+    script_file = project_root / 'custom_build_tools' / 'src' / script_name
+    _run_script_with_venv(script_file, project_root)
+
+
 def run_examples_hook(build_spec: BuildSpec,
                       build_information: BuildInformation) -> None:
     """Run all example programs."""
     _ = build_spec
-    project_root = Path(build_information['project_root'])
-    custom_src = project_root / 'custom_build_tools' / 'src'
-    _run_script_with_venv(custom_src / 'run_examples.py', project_root)
+    _run_custom_script(build_information, 'run_examples.py')
 
 
-def generate_readmes_hook(build_spec: BuildSpec,
-                          build_information: BuildInformation) -> None:
-    """Generate project-specific README files from custom scripts."""
+def create_example_readme_hook(
+        build_spec: BuildSpec,
+        build_information: BuildInformation) -> None:
+    """Generate example/README.md from the example source and result files."""
     _ = build_spec
-    project_root = Path(build_information['project_root'])
-    custom_src = project_root / 'custom_build_tools' / 'src'
-    _run_script_with_venv(custom_src / 'create_example_readme.py',
-                          project_root)
-    _run_script_with_venv(custom_src / 'create_pypi_readme.py',
-                          project_root)
+    _run_custom_script(build_information, 'create_example_readme.py')
+
+
+def create_pypi_readme_hook(build_spec: BuildSpec,
+                            build_information: BuildInformation) -> None:
+    """Generate the package README_pypi.md files."""
+    _ = build_spec
+    _run_custom_script(build_information, 'create_pypi_readme.py')
 
 
 def restore_equiv_docx_odt_hook(build_spec: BuildSpec,
                                 build_information: BuildInformation) -> None:
     """Restore unchanged docx/odt files that git reports as modified."""
     _ = build_spec
-    project_root = Path(build_information['project_root'])
-    custom_src = project_root / 'custom_build_tools' / 'src'
-    _run_script_with_venv(
-        custom_src / 'git_restore_equiv_docx_odt.py',
-        project_root
-    )
+    _run_custom_script(build_information, 'git_restore_equiv_docx_odt.py')
+
+
+def restore_equiv_pdf_hook(build_spec: BuildSpec,
+                           build_information: BuildInformation) -> None:
+    """Restore unchanged PDF files that git reports as modified."""
+    _ = build_spec
+    _run_custom_script(build_information, 'git_restore_equiv_pdf.py')

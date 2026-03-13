@@ -18,7 +18,7 @@ from mformat.paper_size import PaperSize
 
 
 class PdfInspection(NamedTuple):
-    """Selected PDF details extracted through a subprocess."""
+    """Selected first-page PDF details extracted in a subprocess."""
 
     page_text: str
     metadata_title: str
@@ -131,10 +131,17 @@ def _spans_by_text(spans: list[PdfSpan], text: str) -> list[PdfSpan]:
 
 
 def _inspect_pdf(file_name: str) -> PdfInspection:
-    """Inspect one PDF file through a subprocess using PyMuPDF."""
+    """Inspect one PDF file in a subprocess using the PyMuPDF API.
+
+    The subprocess keeps current PyMuPDF import-time SWIG deprecation
+    warnings out of the main pytest process while still exercising the
+    actual PDF reader used by these tests.
+    """
     script = """
 import json
 import sys
+# Import inside the subprocess: current PyMuPDF builds in this venv still
+# emit SWIG-layer DeprecationWarnings at import time.
 import pymupdf
 with pymupdf.open(sys.argv[1]) as pdf_document:
     page = pdf_document[0]

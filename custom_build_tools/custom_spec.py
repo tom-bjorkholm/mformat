@@ -14,11 +14,15 @@ COMMON_BUILD_TOOLS_SRC = (
 CUSTOM_BUILD_TOOLS_SRC = Path(__file__).resolve().parent / 'src'
 sys.path.insert(0, str(COMMON_BUILD_TOOLS_SRC))
 sys.path.insert(0, str(CUSTOM_BUILD_TOOLS_SRC))
-# pylint: disable=wrong-import-position
-from build_spec import BuildSpec  # noqa: E402
+# pylint: disable=wrong-import-position,import-error
+from build_spec import (  # noqa: E402
+    BuildSpec,
+)
 from hooks import (  # noqa: E402
-    generate_readmes_hook,
+    create_example_readme_hook,
+    create_pypi_readme_hook,
     restore_equiv_docx_odt_hook,
+    restore_equiv_pdf_hook,
     run_examples_hook,
 )
 
@@ -44,6 +48,10 @@ def custom_spec() -> Optional[BuildSpec]:
             'types-html5lib',
             'PyMuPDF'
         ],
-        custom_after_test=[run_examples_hook, generate_readmes_hook],
-        custom_final=[restore_equiv_docx_odt_hook],
+        custom_after_test=[
+            run_examples_hook,
+            create_example_readme_hook,
+            create_pypi_readme_hook
+        ],
+        custom_final=[restore_equiv_docx_odt_hook, restore_equiv_pdf_hook],
     )

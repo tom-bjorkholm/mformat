@@ -16,10 +16,15 @@ committed version of the file.
 
 from enum import IntEnum, auto
 from typing import Callable
-import sys
-import subprocess
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from git_restore_equiv_common import (
+    exit_for_missing_venv_dependency,
+    get_committed_file,
+    is_git_status_modified,
+    list_equivalent_files,
+    restore_sorted_files,
+)
 try:
     import mammoth  # type: ignore
     from odf.opendocument import load as odf_load  # type: ignore
@@ -27,9 +32,7 @@ try:
     from htmlcompare import compare_html  # type: ignore
     from mformat.factory import create_mf
 except ImportError as exc:
-    print('You need to run this with venv activated.')
-    print(f'str(exc): {str(exc)}')
-    sys.exit(1)
+    exit_for_missing_venv_dependency(exc)
 
 
 def are_docx_files_equivalent(file1: Path, file2: Path) -> bool:
@@ -107,18 +110,10 @@ EQUIV_DISPATCH: dict[FileType, Callable[[Path, Path], bool]] = {
     FileType.DOCX: are_docx_files_equivalent,
     FileType.ODT: are_odt_files_equivalent,
 }
-
-
-def get_committed_file(file: Path, temp_dir: Path) -> Path:
-    """Get the committed version of the file."""
-    committed_file = temp_dir / file.name
-    git_str = f'cd {file.parent} >/dev/null 2>/dev/null; '
-    git_str += f'git show HEAD:./{file.name}'
-    with open(committed_file, 'wb') as f:
-        cpi = subprocess.run(git_str, shell=True, stdout=f,
-                             check=True)
-        cpi.check_returncode()
-    return committed_file
+PATTERN_DISPATCH: dict[str, Callable[[Path, Path], bool]] = {
+    '*.docx': are_docx_files_equivalent,
+    '*.odt': are_odt_files_equivalent,
+}
 
 
 def is_unchanged_file(file: Path, file_type: FileType,
@@ -128,46 +123,19 @@ def is_unchanged_file(file: Path, file_type: FileType,
     return EQUIV_DISPATCH[file_type](file, committed_file)
 
 
-def is_git_status_modified(file: Path) -> bool:
-    """Check if the file is modified in the git status."""
-    git_str = f'git status --short {file}'
-    cpi = subprocess.run(git_str, shell=True, stdout=subprocess.PIPE,
-                         check=True)
-    if cpi.returncode != 0:
-        raise RuntimeError(f'Failed to check if {file} is modified in ' +
-                           'the git status')
-    return cpi.stdout.decode('utf-8').strip() != ''
-
-
 def list_unchanged_files() -> list[str]:
     """Find unchanged files in example/result/*.docx, example/result/*.odt."""
-    with TemporaryDirectory() as temp_dir_name:
-        temp_dir = Path(temp_dir_name)
-        unchanged_files: list[str] = []
-        result_dir = (
-            Path(__file__).resolve().parents[2] / 'example' / 'result'
-        )
-        for file in result_dir.glob('*.docx'):
-            if is_git_status_modified(file):
-                #  print(f'{file} is modified in the git status')
-                if is_unchanged_file(file, FileType.DOCX, temp_dir):
-                    unchanged_files.append(str(file))
-        for file in result_dir.glob('*.odt'):
-            if is_git_status_modified(file):
-                #  print(f'{file} is modified in the git status')
-                if is_unchanged_file(file, FileType.ODT, temp_dir):
-                    unchanged_files.append(str(file))
-        return unchanged_files
+    return list_equivalent_files(
+        __file__,
+        PATTERN_DISPATCH,
+        is_git_status_modified,
+        get_committed_file
+    )
 
 
 def restore_unchanged_files() -> None:
     """Restore unchanged files."""
-    unchanged_files = list_unchanged_files()
-    for file in sorted(unchanged_files):
-        git_str = f'git restore {file}'
-        subprocess.run(git_str, shell=True, check=True)
-        print(f'git restored {file}')
-    print(f'Restored {len(unchanged_files)} unchanged files.')
+    restore_sorted_files(list_unchanged_files())
 
 
 def main() -> None:

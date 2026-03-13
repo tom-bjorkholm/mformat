@@ -23,6 +23,7 @@ restore_equiv = load_source_module(
     'git_restore_equiv_docx_odt',
     'git_restore_equiv_docx_odt.py'
 )
+restore_common = __import__('git_restore_equiv_common')
 
 
 @dataclass
@@ -197,7 +198,7 @@ def test_is_git_status_modified_raises_runtime_error_on_bad_return_code(
         _ = check
         return FakeResult()
 
-    monkeypatch.setattr(restore_equiv.subprocess, 'run', fake_run)
+    monkeypatch.setattr(restore_common.subprocess, 'run', fake_run)
     with pytest.raises(RuntimeError) as exc:
         _ = restore_equiv.is_git_status_modified(Path('any.file'))
     assert 'Failed to check if any.file is modified in the git status' == (
@@ -230,18 +231,31 @@ def test_list_unchanged_files_filters_using_status_and_comparison(
             """Return if file is marked as modified."""
             return file_path.resolve() in modified_files
 
-        def fake_unchanged(file_path: Path, file_type: object,
-                           temp_dir: Path) -> bool:
-            """Return if modified file is equivalent to committed version."""
-            _ = file_type
+        def fake_get_committed(file_path: Path, temp_dir: Path) -> Path:
+            """Return deterministic committed file path."""
             _ = temp_dir
+            return file_path
+
+        def fake_compare_docx(file_path: Path, committed_file: Path) -> bool:
+            """Return if one DOCX file is equivalent to committed version."""
+            _ = committed_file
             return file_path.resolve() in equivalent_files
+
+        def fake_compare_odt(_file_path: Path, committed_file: Path) -> bool:
+            """Return if one ODT file is equivalent to committed version."""
+            _ = committed_file
+            return False
 
         monkeypatch.setattr(restore_equiv, '__file__', str(fake_file))
         monkeypatch.setattr(restore_equiv, 'is_git_status_modified',
                             fake_status)
-        monkeypatch.setattr(restore_equiv, 'is_unchanged_file',
-                            fake_unchanged)
+        monkeypatch.setattr(restore_equiv, 'get_committed_file',
+                            fake_get_committed)
+        monkeypatch.setattr(
+            restore_equiv,
+            'PATTERN_DISPATCH',
+            {'*.docx': fake_compare_docx, '*.odt': fake_compare_odt}
+        )
         unchanged = restore_equiv.list_unchanged_files()
     assert len(unchanged) == 1
     assert Path(unchanged[0]).resolve() == (result_dir / 'a.docx').resolve()
@@ -251,26 +265,27 @@ def test_restore_unchanged_files_restores_in_sorted_order(
         capsys: pytest.CaptureFixture[str],
         monkeypatch: pytest.MonkeyPatch) -> None:
     """Test restore_unchanged_files calls git restore in sorted order."""
-    commands: list[str] = []
+    calls: list[list[str]] = []
 
     def fake_list_unchanged() -> list[str]:
         """Return unsorted unchanged file list."""
         return ['/tmp/z.docx', '/tmp/a.odt']
 
-    def fake_run(command: str, shell: bool, check: bool) -> object:
-        """Record restore commands."""
-        assert shell
-        assert check
-        commands.append(command)
-        return object()
+    def fake_restore_sorted_files(unchanged_files: list[str]) -> None:
+        """Record unchanged file list passed to shared restore helper."""
+        calls.append(unchanged_files)
+        for file in sorted(unchanged_files):
+            print(f'git restored {file}')
+        print(f'Restored {len(unchanged_files)} unchanged files.')
 
     monkeypatch.setattr(restore_equiv, 'list_unchanged_files',
                         fake_list_unchanged)
-    monkeypatch.setattr(restore_equiv.subprocess, 'run', fake_run)
+    monkeypatch.setattr(restore_equiv, 'restore_sorted_files',
+                        fake_restore_sorted_files)
     restore_equiv.restore_unchanged_files()
     out, err = capsys.readouterr()
     assert err == ''
-    assert commands == ['git restore /tmp/a.odt', 'git restore /tmp/z.docx']
+    assert calls == [['/tmp/z.docx', '/tmp/a.odt']]
     assert 'git restored /tmp/a.odt' in out
     assert 'git restored /tmp/z.docx' in out
     assert 'Restored 2 unchanged files.' in out

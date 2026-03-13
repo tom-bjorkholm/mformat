@@ -112,9 +112,9 @@ def test_run_examples_hook_calls_expected_script(
     )]
 
 
-def test_generate_readmes_hook_calls_both_scripts(
+def test_create_example_readme_hook_calls_expected_script(
         monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test generate_readmes_hook runs both README generation scripts."""
+    """Test create_example_readme_hook calls the expected script path."""
     calls: list[tuple[Path, Path]] = []
 
     def fake_run_script(script_file: Path, project_root: Path) -> None:
@@ -125,19 +125,33 @@ def test_generate_readmes_hook_calls_both_scripts(
         project_root = Path(tmp_dir)
         info = {'project_root': str(project_root)}
         monkeypatch.setattr(hooks, '_run_script_with_venv', fake_run_script)
-        hooks.generate_readmes_hook(object(), info)
-    assert calls == [
-        (
-            project_root / 'custom_build_tools' / 'src' /
-            'create_example_readme.py',
-            project_root
-        ),
-        (
-            project_root / 'custom_build_tools' / 'src' /
-            'create_pypi_readme.py',
-            project_root
-        )
-    ]
+        hooks.create_example_readme_hook(object(), info)
+    assert calls == [(
+        project_root / 'custom_build_tools' / 'src' /
+        'create_example_readme.py',
+        project_root
+    )]
+
+
+def test_create_pypi_readme_hook_calls_expected_script(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test create_pypi_readme_hook calls the expected script path."""
+    calls: list[tuple[Path, Path]] = []
+
+    def fake_run_script(script_file: Path, project_root: Path) -> None:
+        """Record one call."""
+        calls.append((script_file, project_root))
+
+    with TemporaryDirectory() as tmp_dir:
+        project_root = Path(tmp_dir)
+        info = {'project_root': str(project_root)}
+        monkeypatch.setattr(hooks, '_run_script_with_venv', fake_run_script)
+        hooks.create_pypi_readme_hook(object(), info)
+    assert calls == [(
+        project_root / 'custom_build_tools' / 'src' /
+        'create_pypi_readme.py',
+        project_root
+    )]
 
 
 def test_restore_equiv_docx_odt_hook_calls_expected_script(
@@ -160,5 +174,26 @@ def test_restore_equiv_docx_odt_hook_calls_expected_script(
     assert calls == [(
         project_root / 'custom_build_tools' / 'src' /
         'git_restore_equiv_docx_odt.py',
+        project_root
+    )]
+
+
+def test_restore_equiv_pdf_hook_calls_expected_script(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test restore_equiv_pdf_hook calls the expected script path."""
+    calls: list[tuple[Path, Path]] = []
+
+    def fake_run_script(script_file: Path, project_root: Path) -> None:
+        """Record one call."""
+        calls.append((script_file, project_root))
+
+    with TemporaryDirectory() as tmp_dir:
+        project_root = Path(tmp_dir)
+        info = {'project_root': str(project_root)}
+        monkeypatch.setattr(hooks, '_run_script_with_venv', fake_run_script)
+        hooks.restore_equiv_pdf_hook(object(), info)
+    assert calls == [(
+        project_root / 'custom_build_tools' / 'src' /
+        'git_restore_equiv_pdf.py',
         project_root
     )]

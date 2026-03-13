@@ -4,6 +4,7 @@
 import subprocess
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
+import sys
 from types import ModuleType
 
 _SRC_DIR = Path(__file__).resolve().parents[1] / 'src'
@@ -12,6 +13,8 @@ _SRC_DIR = Path(__file__).resolve().parents[1] / 'src'
 def load_source_module(module_name: str, file_name: str) -> ModuleType:
     """Load one module from custom_build_tools/src by file name."""
     file_path = _SRC_DIR / file_name
+    if str(_SRC_DIR) not in sys.path:
+        sys.path.insert(0, str(_SRC_DIR))
     spec = spec_from_file_location(module_name, file_path)
     assert spec is not None
     assert spec.loader is not None

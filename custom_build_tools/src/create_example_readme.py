@@ -272,13 +272,5 @@ def main() -> None:
     print(f'Generated: {readme_path}')
 
 
-def create_example_readme_hook(build_spec: object,
-                               build_information: object) -> None:
-    """Run README generation as a common_build_tools custom hook."""
-    _ = build_spec
-    _ = build_information
-    main()
-
-
 if __name__ == '__main__':
     main()

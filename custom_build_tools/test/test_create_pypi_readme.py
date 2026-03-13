@@ -158,17 +158,3 @@ def test_create_pypi_readme_writes_markdown(
     assert '## Version history' in text
     assert '## Test summary' in text
     assert 'Created' in err
-
-
-def test_create_pypi_readme_hook_calls_main(
-        monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test create_pypi_readme hook delegates to main."""
-    called = {'count': 0}
-
-    def fake_main() -> None:
-        """Record one call."""
-        called['count'] += 1
-
-    monkeypatch.setattr(create_pypi, 'main', fake_main)
-    create_pypi.create_pypi_readme_hook(object(), object())
-    assert called['count'] == 1
