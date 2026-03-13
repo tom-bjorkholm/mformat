@@ -41,7 +41,8 @@ def custom_spec() -> Optional[BuildSpec]:
             'mammoth',
             'odfpy',
             'htmlcompare',
-            'types-html5lib'
+            'types-html5lib',
+            'PyMuPDF'
         ],
         custom_after_test=[run_examples_hook, generate_readmes_hook],
         custom_final=[restore_equiv_docx_odt_hook],

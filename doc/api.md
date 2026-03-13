@@ -159,6 +159,23 @@
     * [file\_name\_extension](#mformat_ext.mformat_odt.MultiFormatOdt.file_name_extension)
     * [get\_arg\_desciption](#mformat_ext.mformat_odt.MultiFormatOdt.get_arg_desciption)
     * [open](#mformat_ext.mformat_odt.MultiFormatOdt.open)
+* [mformat\_ext.mformat\_pdf](#mformat_ext.mformat_pdf)
+  * [PdfStyles](#mformat_ext.mformat_pdf.PdfStyles)
+  * [\_PendingTextBlock](#mformat_ext.mformat_pdf._PendingTextBlock)
+    * [\_\_init\_\_](#mformat_ext.mformat_pdf._PendingTextBlock.__init__)
+    * [append\_fragment](#mformat_ext.mformat_pdf._PendingTextBlock.append_fragment)
+    * [markup\_text](#mformat_ext.mformat_pdf._PendingTextBlock.markup_text)
+    * [plain\_text](#mformat_ext.mformat_pdf._PendingTextBlock.plain_text)
+  * [\_PdfHeadingParagraph](#mformat_ext.mformat_pdf._PdfHeadingParagraph)
+    * [\_\_init\_\_](#mformat_ext.mformat_pdf._PdfHeadingParagraph.__init__)
+  * [\_PdfDocumentTemplate](#mformat_ext.mformat_pdf._PdfDocumentTemplate)
+    * [\_\_init\_\_](#mformat_ext.mformat_pdf._PdfDocumentTemplate.__init__)
+    * [afterFlowable](#mformat_ext.mformat_pdf._PdfDocumentTemplate.afterFlowable)
+  * [MultiFormatPdf](#mformat_ext.mformat_pdf.MultiFormatPdf)
+    * [\_\_init\_\_](#mformat_ext.mformat_pdf.MultiFormatPdf.__init__)
+    * [file\_name\_extension](#mformat_ext.mformat_pdf.MultiFormatPdf.file_name_extension)
+    * [get\_arg\_desciption](#mformat_ext.mformat_pdf.MultiFormatPdf.get_arg_desciption)
+    * [open](#mformat_ext.mformat_pdf.MultiFormatPdf.open)
 * [mformat\_ext.mformat\_docx](#mformat_ext.mformat_docx)
   * [MultiFormatDocx](#mformat_ext.mformat_docx.MultiFormatDocx)
     * [\_\_init\_\_](#mformat_ext.mformat_docx.MultiFormatDocx.__init__)
@@ -2608,6 +2625,201 @@ def get_arg_desciption(cls) -> FormatterDescriptor
 Get the description of the arguments for the formatter.
 
 <a id="mformat_ext.mformat_odt.MultiFormatOdt.open"></a>
+
+#### open
+
+```python
+def open() -> None
+```
+
+Open the file.
+
+Avoid using this method directly.
+Use as a context manager instead, using a with statement.
+
+<a id="mformat_ext.mformat_pdf"></a>
+
+# mformat\_ext.mformat\_pdf
+
+Extension of the MultiFormat class for PDF files.
+
+<a id="mformat_ext.mformat_pdf.PdfStyles"></a>
+
+## PdfStyles Objects
+
+```python
+class PdfStyles(NamedTuple)
+```
+
+Styles used for PDF output.
+
+<a id="mformat_ext.mformat_pdf._PendingTextBlock"></a>
+
+## \_PendingTextBlock Objects
+
+```python
+class _PendingTextBlock()
+```
+
+State for one text-like block being accumulated.
+
+<a id="mformat_ext.mformat_pdf._PendingTextBlock.__init__"></a>
+
+#### \_\_init\_\_
+
+```python
+def __init__(style: ParagraphStyle,
+             bullet_text: Optional[str] = None,
+             heading_level: Optional[int] = None) -> None
+```
+
+Initialize one pending text block.
+
+<a id="mformat_ext.mformat_pdf._PendingTextBlock.append_fragment"></a>
+
+#### append\_fragment
+
+```python
+def append_fragment(markup: str, plain_text: str) -> None
+```
+
+Append one markup fragment and its plain-text counterpart.
+
+<a id="mformat_ext.mformat_pdf._PendingTextBlock.markup_text"></a>
+
+#### markup\_text
+
+```python
+def markup_text() -> str
+```
+
+Return accumulated markup text for the block.
+
+<a id="mformat_ext.mformat_pdf._PendingTextBlock.plain_text"></a>
+
+#### plain\_text
+
+```python
+def plain_text() -> str
+```
+
+Return accumulated plain text for the block.
+
+<a id="mformat_ext.mformat_pdf._PdfHeadingParagraph"></a>
+
+## \_PdfHeadingParagraph Objects
+
+```python
+class _PdfHeadingParagraph(Paragraph)
+```
+
+Paragraph carrying outline metadata for one heading.
+
+<a id="mformat_ext.mformat_pdf._PdfHeadingParagraph.__init__"></a>
+
+#### \_\_init\_\_
+
+```python
+def __init__(text: str, style: ParagraphStyle, heading_level: int,
+             plain_text: str) -> None
+```
+
+Initialize one outline-aware heading paragraph.
+
+<a id="mformat_ext.mformat_pdf._PdfDocumentTemplate"></a>
+
+## \_PdfDocumentTemplate Objects
+
+```python
+class _PdfDocumentTemplate(SimpleDocTemplate)
+```
+
+Simple document template that registers outline entries.
+
+<a id="mformat_ext.mformat_pdf._PdfDocumentTemplate.__init__"></a>
+
+#### \_\_init\_\_
+
+```python
+def __init__(file_name: str, title: Optional[str],
+             pagesize: tuple[float, float]) -> None
+```
+
+Initialize one PDF document template.
+
+<a id="mformat_ext.mformat_pdf._PdfDocumentTemplate.afterFlowable"></a>
+
+#### afterFlowable
+
+```python
+def afterFlowable(flowable: object) -> None
+```
+
+Register a bookmark and outline entry after rendering heading.
+
+<a id="mformat_ext.mformat_pdf.MultiFormatPdf"></a>
+
+## MultiFormatPdf Objects
+
+```python
+class MultiFormatPdf(MultiFormat)
+```
+
+Extension of the MultiFormat class for PDF output files.
+
+<a id="mformat_ext.mformat_pdf.MultiFormatPdf.__init__"></a>
+
+#### \_\_init\_\_
+
+```python
+def __init__(file_name: PathLike,
+             url_as_text: bool = False,
+             paper_size: PaperSize = PaperSize.A4,
+             title: Optional[str] = None,
+             file_exists_callback: Optional[Callable[[str], None]] = None)
+```
+
+Initialize the MultiFormatPdf class.
+
+**Arguments**:
+
+- `file_name` - The name of the file to write to.
+- `url_as_text` - Format URLs as text not clickable URLs.
+- `paper_size` - Paper size for the document.
+  (Default is A4 paper size.)
+- `title` - PDF document metadata title.
+  This is not rendered as visible document content.
+- `file_exists_callback` - A callback function to call if the file
+  already exists. Return to allow the file to
+  be overwritten. Raise an exception to
+  prevent the file from being overwritten.
+  (May for instance save existing file as
+  backup.)
+  (Default is to raise an exception.)
+
+<a id="mformat_ext.mformat_pdf.MultiFormatPdf.file_name_extension"></a>
+
+#### file\_name\_extension
+
+```python
+@classmethod
+def file_name_extension(cls) -> str
+```
+
+Get the file name extension for the formatter.
+
+<a id="mformat_ext.mformat_pdf.MultiFormatPdf.get_arg_desciption"></a>
+
+#### get\_arg\_desciption
+
+```python
+@classmethod
+def get_arg_desciption(cls) -> FormatterDescriptor
+```
+
+Get the description of the arguments for the formatter.
+
+<a id="mformat_ext.mformat_pdf.MultiFormatPdf.open"></a>
 
 #### open
 

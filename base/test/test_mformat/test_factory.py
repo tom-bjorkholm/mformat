@@ -14,6 +14,7 @@ from typing import Any
 import pytest
 from mformat_ext.mformat_docx import MultiFormatDocx
 from mformat_ext.mformat_odt import MultiFormatOdt
+from mformat_ext.mformat_pdf import MultiFormatPdf
 from mformat.factory import (MultiFormatFactory, OptArgs, create_mf,
                              filter_args_mf, list_registered_mf, register_mf,
                              usage_mf)
@@ -49,8 +50,8 @@ class MultiFormat2T(MultiFormat):
                                    optional_args=['arg1', 'arg2'])
 
 
-REQUIRED_FORMATS = ['LaTeX', 'docx', 'html', 'md', 'odt', 'reST', 'rtf',
-                    'txt']
+REQUIRED_FORMATS = ['LaTeX', 'docx', 'html', 'md', 'odt', 'pdf', 'reST',
+                    'rtf', 'txt']
 
 
 def _assert_required_formats(formats: list[str]) -> None:
@@ -297,6 +298,7 @@ def _build_file_name(tmp_dir: str, fmt: str,
                           ('md', MultiFormatMd),
                           ('docx', MultiFormatDocx),
                           ('odt', MultiFormatOdt),
+                          ('pdf', MultiFormatPdf),
                           ('txt', MultiFormatTxt)])
 @pytest.mark.parametrize('as_path', [False, True])
 def test_create_mf_file_name_type_matrix(

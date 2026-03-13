@@ -6,7 +6,8 @@ from setuptools import setup
 setup(
   name='mformat_ext',
   version='0.5.1',
-  description='Uniform way to write simple text extended with DOCX and ODT files',
+  description=('Uniform way to write simple text extended with DOCX '
+               'and ODT files'),
   author='Tom Björkholm',
   author_email='klausuler_linnet0q@icloud.com',
   python_requires='>=3.12',
@@ -19,6 +20,7 @@ setup(
     'odfdo >= 3.21.0',
     'pip >= 26.0.1',
     'PyRTF3 >= 0.47.5',
+    'reportlab >= 4.4.10',
     'setuptools >= 82.0.0',
     'build >= 1.4.0',
     'wheel>=0.46.3'
