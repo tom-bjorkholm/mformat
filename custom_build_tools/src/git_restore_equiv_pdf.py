@@ -17,6 +17,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from collections.abc import Callable
 from typing import Any
+import warnings
 from git_restore_equiv_common import (
     exit_for_missing_venv_dependency,
     get_committed_file,
@@ -24,10 +25,16 @@ from git_restore_equiv_common import (
     list_equivalent_files,
     restore_sorted_files,
 )
-try:
-    import pymupdf
-except ImportError as exc:
-    exit_for_missing_venv_dependency(exc)
+with warnings.catch_warnings():
+    warnings.filterwarnings(
+        'ignore',
+        message=r'builtin type .* has no __module__ attribute',
+        category=DeprecationWarning,
+    )
+    try:
+        import pymupdf
+    except ImportError as exc:
+        exit_for_missing_venv_dependency(exc)
 
 _IGNORED_METADATA_KEYS = {'creationDate', 'modDate'}
 _ROUND_DIGITS = 3

@@ -2,6 +2,7 @@
 """Tests for custom_build_tools/src/git_restore_equiv_pdf.py."""
 
 from pathlib import Path
+import subprocess
 import sys
 from tempfile import TemporaryDirectory
 import pytest
@@ -20,6 +21,35 @@ restore_equiv_pdf = load_source_module(
     'git_restore_equiv_pdf',
     'git_restore_equiv_pdf.py'
 )
+
+
+def test_import_suppresses_pymupdf_deprecation_warnings() -> None:
+    """Test module import hides known PyMuPDF import-time warnings."""
+    src_dir = Path(__file__).resolve().parents[1] / 'src'
+    script = """
+from importlib.util import module_from_spec, spec_from_file_location
+from pathlib import Path
+import sys
+import warnings
+warnings.simplefilter('default', DeprecationWarning)
+src_dir = Path(sys.argv[1])
+sys.path.insert(0, str(src_dir))
+spec = spec_from_file_location(
+    'git_restore_equiv_pdf_import_check',
+    src_dir / 'git_restore_equiv_pdf.py',
+)
+assert spec is not None
+assert spec.loader is not None
+module = module_from_spec(spec)
+spec.loader.exec_module(module)
+"""
+    result = subprocess.run(
+        [sys.executable, '-c', script, str(src_dir)],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert 'DeprecationWarning' not in result.stderr
 
 
 def _write_pdf(file_name: Path, text: str, title: str,

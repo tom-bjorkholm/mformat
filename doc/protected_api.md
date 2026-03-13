@@ -7084,6 +7084,12 @@ class MultiFormatPdf(MultiFormat)
 
 Extension of the MultiFormat class for PDF output files.
 
+Visible headings also become PDF outline entries. The first rendered
+heading creates one outline root entry. If heading levels skip one or
+more intermediate levels, the outline repeats the current heading title
+at each missing level so the PDF outline still forms a continuous
+hierarchy.
+
 <a id="mformat_ext.mformat_pdf.MultiFormatPdf.__init__"></a>
 
 #### \_\_init\_\_

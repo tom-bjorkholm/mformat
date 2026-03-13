@@ -153,7 +153,14 @@ class _PdfDocumentTemplate(SimpleDocTemplate):  # type: ignore[misc]
 
 
 class MultiFormatPdf(MultiFormat):
-    """Extension of the MultiFormat class for PDF output files."""
+    """Extension of the MultiFormat class for PDF output files.
+
+    Visible headings also become PDF outline entries. The first rendered
+    heading creates one outline root entry. If heading levels skip one or
+    more intermediate levels, the outline repeats the current heading title
+    at each missing level so the PDF outline still forms a continuous
+    hierarchy.
+    """
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(self, file_name: PathLike, url_as_text: bool = False,
