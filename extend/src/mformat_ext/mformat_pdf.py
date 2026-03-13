@@ -12,6 +12,7 @@ from reportlab.lib.pagesizes import (  # type: ignore[import-untyped]
     A3, A4, A5, LEGAL, LETTER)
 from reportlab.lib.styles import (  # type: ignore[import-untyped]
     ParagraphStyle, getSampleStyleSheet)
+from reportlab.pdfbase import pdfmetrics  # type: ignore[import-untyped]
 from reportlab.platypus import (  # type: ignore[import-untyped]
     Paragraph, Preformatted, SimpleDocTemplate, Table, TableStyle)
 from mformat.mformat import FormatterDescriptor, MultiFormat, PathLike
@@ -29,9 +30,12 @@ _PDF_PAPER_SIZE: dict[PaperSize, tuple[float, float]] = {
 
 _PAGE_MARGIN = 54.0
 _BULLET_TEXT = '\u2022'
-_LIST_INDENT = 18.0
-_LIST_HANGING_INDENT = 12.0
+_DEFAULT_OUTLINE_ROOT_TITLE = 'Document'
+_LIST_LEVEL_INDENT = 18.0
+_LIST_MARKER_GAP = 8.0
 _MAX_HEADING_STYLE_LEVEL = 6
+_TABLE_VERTICAL_SPACE = 6.0
+_URL_COLOR = '#1a5fb4'
 
 # Some information sources for PDF generation with reportlab:
 # https://pypi.org/project/reportlab/
@@ -49,8 +53,8 @@ class PdfStyles(NamedTuple):
     block_quote: ParagraphStyle
     code_block: ParagraphStyle
     table_cell: ParagraphStyle
+    list_base: ParagraphStyle
     headings: dict[int, ParagraphStyle]
-    list_items: dict[int, ParagraphStyle]
 
 
 class _PendingTextBlock:  # pylint: disable=too-few-public-methods
@@ -97,6 +101,7 @@ class _PdfDocumentTemplate(SimpleDocTemplate):  # type: ignore[misc]
     """Simple document template that registers outline entries."""
 
     def __init__(self, file_name: str, title: Optional[str],
+                 outline_root_title: str,
                  pagesize: tuple[float, float]) -> None:
         """Initialize one PDF document template."""
         kwargs: dict[str, object] = {
@@ -109,8 +114,10 @@ class _PdfDocumentTemplate(SimpleDocTemplate):  # type: ignore[misc]
         if title is not None:
             kwargs['title'] = title
         super().__init__(file_name, **kwargs)
+        self.outline_root_title = outline_root_title
         self._bookmark_counter = 0
         self._last_outline_level = -1
+        self._outline_root_created = False
 
     def _next_bookmark_key(self) -> str:
         """Return a unique bookmark key."""
@@ -125,12 +132,18 @@ class _PdfDocumentTemplate(SimpleDocTemplate):  # type: ignore[misc]
         title = flowable.plain_text.strip()
         if not title:
             return
-        target_level = max(flowable.heading_level - 1, 0)
+        if not self._outline_root_created:
+            bookmark_key = self._next_bookmark_key()
+            self.canv.bookmarkPage(bookmark_key)
+            self.canv.addOutlineEntry(self.outline_root_title, bookmark_key,
+                                      level=0)
+            self._outline_root_created = True
+            self._last_outline_level = 0
+        target_level = max(flowable.heading_level, 1)
         outline_levels = [target_level]
         if target_level > self._last_outline_level + 1:
-            outline_levels = list(range(
-                self._last_outline_level + 1,
-                target_level + 1))
+            outline_levels = list(range(self._last_outline_level + 1,
+                                        target_level + 1))
         for outline_level in outline_levels:
             bookmark_key = self._next_bookmark_key()
             self.canv.bookmarkPage(bookmark_key)
@@ -224,6 +237,8 @@ class MultiFormatPdf(MultiFormat):
             backColor=colors.HexColor('#f0f0f0'), spaceBefore=6, spaceAfter=6)
         table_cell_style = ParagraphStyle(
             'pdf-table-cell', parent=body_style, spaceBefore=0, spaceAfter=0)
+        list_base_style = ParagraphStyle(
+            'pdf-list-base', parent=body_style, spaceBefore=1, spaceAfter=1)
         headings: dict[int, ParagraphStyle] = {}
         heading_sizes = {
             1: 18,
@@ -239,29 +254,36 @@ class MultiFormatPdf(MultiFormat):
                 fontName='Helvetica-Bold', fontSize=size, leading=size + 4,
                 spaceBefore=14 if level == 1 else 10,
                 spaceAfter=6)
-        list_items: dict[int, ParagraphStyle] = {}
-        for level in range(1, 10):
-            list_items[level] = ParagraphStyle(
-                f'pdf-list-{level}', parent=body_style,
-                leftIndent=_LIST_INDENT * level,
-                firstLineIndent=-_LIST_HANGING_INDENT, bulletIndent=0,
-                spaceBefore=1, spaceAfter=1)
         return PdfStyles(body=body_style,
                          block_quote=block_quote_style,
                          code_block=code_block_style,
                          table_cell=table_cell_style,
-                         headings=headings,
-                         list_items=list_items)
+                         list_base=list_base_style,
+                         headings=headings)
 
     def _heading_style(self, level: int) -> ParagraphStyle:
         """Return a visible heading style for a heading level."""
         bounded_level = max(1, min(level, _MAX_HEADING_STYLE_LEVEL))
         return self.pdf_styles.headings[bounded_level]
 
-    def _list_style(self, level: int) -> ParagraphStyle:
-        """Return a paragraph style for one list nesting level."""
-        bounded_level = max(1, min(level, max(self.pdf_styles.list_items)))
-        return self.pdf_styles.list_items[bounded_level]
+    def _list_style(self, level: int, marker_text: str) -> ParagraphStyle:
+        """Return a paragraph style for one list item."""
+        bounded_level = max(1, level)
+        base_indent = _LIST_LEVEL_INDENT * (bounded_level - 1)
+        marker_width = pdfmetrics.stringWidth(
+            marker_text,
+            self.pdf_styles.list_base.fontName,
+            self.pdf_styles.list_base.fontSize,
+        )
+        return ParagraphStyle(
+            f'pdf-list-{bounded_level}-{marker_text}',
+            parent=self.pdf_styles.list_base,
+            bulletFontName=self.pdf_styles.list_base.fontName,
+            bulletFontSize=self.pdf_styles.list_base.fontSize,
+            bulletIndent=base_indent,
+            leftIndent=base_indent + marker_width + _LIST_MARKER_GAP,
+            firstLineIndent=0,
+        )
 
     def _require_current_block(self, operation: str) -> _PendingTextBlock:
         """Return current pending block or raise a helpful error."""
@@ -324,6 +346,11 @@ class MultiFormatPdf(MultiFormat):
         pdf_document = _PdfDocumentTemplate(
             file_name=self.file_name,
             title=self.title,
+            outline_root_title=(
+                self.title.strip()
+                if self.title is not None and self.title.strip()
+                else _DEFAULT_OUTLINE_ROOT_TITLE
+            ),
             pagesize=self.page_size,
         )
         pdf_document.build(self.story)
@@ -387,8 +414,9 @@ class MultiFormatPdf(MultiFormat):
         _ = state
         block = self._require_current_block('writing URL')
         display_text = url if text is None else text
-        markup = f'<a href="{self._escape_attribute(url)}">' \
-                 f'{self._escape_text(display_text)}</a>'
+        markup = (f'<font color="{_URL_COLOR}"><u><a '
+                  f'href="{self._escape_attribute(url)}">'
+                  f'{self._escape_text(display_text)}</a></u></font>')
         markup = self._apply_formatting(markup, formatting)
         block.append_fragment(markup=markup, plain_text=display_text)
 
@@ -410,8 +438,9 @@ class MultiFormatPdf(MultiFormat):
 
     def _start_bullet_item(self, level: int) -> None:
         """Start a bullet item."""
-        self.current_block = _PendingTextBlock(style=self._list_style(level),
-                                               bullet_text=_BULLET_TEXT)
+        self.current_block = _PendingTextBlock(
+            style=self._list_style(level, _BULLET_TEXT),
+            bullet_text=_BULLET_TEXT)
 
     def _end_bullet_item(self, level: int) -> None:
         """End a bullet item."""
@@ -430,8 +459,9 @@ class MultiFormatPdf(MultiFormat):
                              full_number: str) -> None:
         """Start a numbered item."""
         _ = num
-        self.current_block = _PendingTextBlock(style=self._list_style(level),
-                                               bullet_text=full_number)
+        self.current_block = _PendingTextBlock(
+            style=self._list_style(level, full_number),
+            bullet_text=full_number)
 
     def _end_numbered_item(self, level: int, num: int) -> None:
         """End a numbered item."""
@@ -450,6 +480,8 @@ class MultiFormatPdf(MultiFormat):
         _ = num_rows
         pdf_table = Table(self.current_table_rows,
                           colWidths=self._table_column_widths(), repeatRows=1)
+        pdf_table.spaceBefore = _TABLE_VERTICAL_SPACE
+        pdf_table.spaceAfter = _TABLE_VERTICAL_SPACE
         pdf_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e8e8e8')),
             ('BOX', (0, 0), (-1, -1), 0.5, colors.black),

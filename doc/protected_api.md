@@ -7048,7 +7048,7 @@ Simple document template that registers outline entries.
 #### \_\_init\_\_
 
 ```python
-def __init__(file_name: str, title: Optional[str],
+def __init__(file_name: str, title: Optional[str], outline_root_title: str,
              pagesize: tuple[float, float]) -> None
 ```
 
@@ -7194,10 +7194,10 @@ Return a visible heading style for a heading level.
 #### \_list\_style
 
 ```python
-def _list_style(level: int) -> ParagraphStyle
+def _list_style(level: int, marker_text: str) -> ParagraphStyle
 ```
 
-Return a paragraph style for one list nesting level.
+Return a paragraph style for one list item.
 
 <a id="mformat_ext.mformat_pdf.MultiFormatPdf._require_current_block"></a>
 

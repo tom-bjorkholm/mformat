@@ -2741,7 +2741,7 @@ Simple document template that registers outline entries.
 #### \_\_init\_\_
 
 ```python
-def __init__(file_name: str, title: Optional[str],
+def __init__(file_name: str, title: Optional[str], outline_root_title: str,
              pagesize: tuple[float, float]) -> None
 ```
 

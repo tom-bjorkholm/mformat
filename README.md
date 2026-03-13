@@ -100,8 +100,8 @@ The script `build_helpers/create_pypi_readme.py` creates the 2 readme files for 
 
 ## Test summary
 
-- Test result: 2708 passed in 38s
-- No Flake8 warnings.
+- Test result: 2710 passed in 38s
+- Flake8 errors/warnings.
 - No mypy errors found.
 - Built version(s): 0.5.1
 - Build and test using Python 3.14.3
