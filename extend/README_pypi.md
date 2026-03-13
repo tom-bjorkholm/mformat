@@ -150,8 +150,8 @@ programmer new to mformat. See
 
 ## API documentation
 
-PI documentation automatically extracted from the Python code and docstrings are
-available
+API documentation automatically extracted from the Python code and docstrings
+are available
 [here for the public API](https://bitbucket.org/tom-bjorkholm/mformat/src/master/doc/api.md)
 for programmers using the API and
 [here for the protected API](https://bitbucket.org/tom-bjorkholm/mformat/src/master/doc/protected_api.md)
@@ -178,15 +178,17 @@ probably provide a better introduction.
 The following table provides information about in which version support for a
 format was introduced.
 
-| Format | Full name of format | Which package | Starting at version |
-|--------|---------------------|---------------|---------------------|
-| docx   | Microsoft Word      | mformat-ext   | 0.2                 |
-| html   | HTML Web page       | mformat       | 0.2                 |
-| md     | Markdown            | mformat       | 0.2                 |
-| odt    | Open Document Text  | mformat-ext   | 0.2                 |
-| reST   | reStructured Text   | mformat       | 0.5                 |
-| rtf    | Rich Text Format    | mformat-ext   | 0.5                 |
-| txt    | Plain text          | mformat       | 0.5                 |
+| Format | Full name of format      | Which package | Starting at version |
+|--------|--------------------------|---------------|---------------------|
+| docx   | Microsoft Word           | mformat-ext   | 0.2                 |
+| html   | HTML Web page            | mformat       | 0.2                 |
+| LaTeX  | LaTeX typesetting        | mformat       | 0.6                 |
+| md     | Markdown                 | mformat       | 0.2                 |
+| odt    | Open Document Text       | mformat-ext   | 0.2                 |
+| pdf    | Portable Document Format | mformat-ext   | 0.6                 |
+| reST   | reStructured Text        | mformat       | 0.5                 |
+| rtf    | Rich Text Format         | mformat-ext   | 0.5                 |
+| txt    | Plain text               | mformat       | 0.5                 |
 
 ## API changes in version 0.3 (deprecated methods)
 
@@ -200,7 +202,7 @@ look for end or stop methods (that do not exist). People have also pointed out
 that phrases like "new paragraph" are commonly used in dictation.
 
 The old methods are still available, but are deprecated and will be removed in
-some future version.
+the next version.
 
 | New method              | Deprecated method         |
 |-------------------------|---------------------------|
@@ -211,9 +213,3 @@ some future version.
 | new_table               | start_table               |
 
 ## Test summary
-
-- Test result: 2740 passed in 42s
-- No Flake8 warnings.
-- No mypy errors found.
-- Built version(s): 0.5.1
-- Build and test using Python 3.14.3

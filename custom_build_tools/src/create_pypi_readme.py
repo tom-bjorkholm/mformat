@@ -178,7 +178,7 @@ URL_EXAMPLES = \
 URL_EXAMPLES_TEXT = 'list of examples'
 P1_EXAMPLES_2 = '.'
 H2_API_DOCUMENTATION = 'API documentation'
-P1_API_DOCUMENTATION_1 = 'PI documentation automatically extracted from ' \
+P1_API_DOCUMENTATION_1 = 'API documentation automatically extracted from ' \
     'the Python code and docstrings are available '
 API_URL_PUBLIC = \
     'https://bitbucket.org/tom-bjorkholm/mformat/src/master/doc/api.md'
@@ -212,8 +212,10 @@ FORMATS = [
     ['Format', 'Full name of format', 'Which package', 'Starting at version'],
     ['docx', 'Microsoft Word', 'mformat-ext', '0.2'],
     ['html', 'HTML Web page', 'mformat', '0.2'],
+    ['LaTeX', 'LaTeX typesetting', 'mformat', '0.6'],
     ['md', 'Markdown', 'mformat', '0.2'],
     ['odt', 'Open Document Text', 'mformat-ext', '0.2'],
+    ['pdf', 'Portable Document Format', 'mformat-ext', '0.6'],
     ['reST', 'reStructured Text', 'mformat', '0.5'],
     ['rtf', 'Rich Text Format', 'mformat-ext', '0.5'],
     ['txt', 'Plain text', 'mformat', '0.5']
@@ -230,7 +232,7 @@ P1_DEPRECATED = 'In version 0.2.x the public API was build around methods ' \
     'stop methods (that do not exist). People have also pointed ' \
     'out that phrases like "new paragraph" are commonly used in dictation.'
 P2_DEPRECATED = 'The old methods are still available, but are deprecated '\
-    'and will be removed in some future version.'
+    'and will be removed in the next version.'
 T_DEPRECATED = [
     ['New method', 'Deprecated method'],
     ['new_paragraph', 'start_paragraph'],
