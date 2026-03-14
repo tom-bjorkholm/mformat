@@ -16,6 +16,14 @@ from .test_helpers import (MultiFormat2, MultiFormat3, MultiFormat4,
                            MultiFormat5, MultiFormat8, MultiFormat9)
 
 
+class MultiFormatCloseRaises(MultiFormat5):
+    """Class used for testing close errors during context manager exit."""
+
+    def _close(self) -> None:
+        """Raise an error when close is attempted."""
+        raise RuntimeError('close failed')
+
+
 @pytest.mark.parametrize('file_name, extension, res',
                          [('test', 'txt', 'test.txt'),
                           ('test.txt', 'txt', 'test.txt'),
@@ -305,6 +313,18 @@ def test_enter_exit(capsys: pytest.CaptureFixture[str]) -> None:
         assert mfmt.count == {'open': 1}
     assert isinstance(mfmt, MultiFormat5)
     assert mfmt.count == {'open': 1, '_close': 1}
+    check_capsys(capsys)
+
+
+def test_exit_preserves_primary_exception_when_close_raises(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test close errors are attached as notes to the primary exception."""
+    with pytest.raises(ValueError) as exc:
+        with MultiFormatCloseRaises(file_name='test', expected_text='abc'):
+            raise ValueError('body failed')
+    assert exc.value.args[0] == 'body failed'
+    assert exc.value.__notes__ == [
+        'Additionally, close() raised: close failed']
     check_capsys(capsys)
 
 

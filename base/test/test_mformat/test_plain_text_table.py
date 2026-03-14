@@ -197,6 +197,14 @@ class TestSelectColumnWidthsValidation:
             select_column_widths(
                 [[1, 2]], _simple_spec(), 80)  # type: ignore[list-item]
 
+    def test_missing_border_spec_raises(self) -> None:
+        """Test missing border specifications raise ValueError."""
+        invalid_spec: Any = None
+        with pytest.raises(ValueError,
+                           match='Border specification is invalid'):
+            select_column_widths(
+                [['a']], invalid_spec, 80)
+
     @pytest.mark.parametrize('max_len', [0, 1, 5, 9, -1])
     def test_max_line_length_below_10_raises(
             self, max_len: int) -> None:
@@ -402,6 +410,13 @@ class TestAlignCellValue:
             result = align_cell_value('', align, 3)
             assert result == '   '
             assert len(result) == 3
+
+    def test_invalid_alignment_raises_value_error(self) -> None:
+        """Test invalid alignment values raise ValueError."""
+        invalid_alignment: Any = 99
+        with pytest.raises(ValueError,
+                           match='Invalid alignment: 99'):
+            align_cell_value('foo', invalid_alignment, 5)
 
 
 # --- Tests for format_one_table_row ---

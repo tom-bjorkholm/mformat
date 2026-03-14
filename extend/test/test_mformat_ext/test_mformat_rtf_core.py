@@ -6,12 +6,13 @@
 #
 
 import sys
+from types import SimpleNamespace
 from typing import Callable
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import pytest
 from mformat_ext.mformat_rtf import MultiFormatRtf
-from mformat.mformat import FormatterDescriptor
+from mformat.mformat import FormatterDescriptor, TableInformation
 from mformat.factory import create_mf, OptArgs
 from mformat.paper_size import PaperSize
 
@@ -168,6 +169,117 @@ def test_heading_then_paragraph_style_reset(
     assert 'Paragraph after heading' in content
     assert r'\s13' in content
     assert r'\s0' in content
+
+
+def test_require_current_paragraph_raises_when_missing(
+        capsys: pytest.CaptureFixture[str],
+        tmp_path: Path) -> None:
+    """Test missing current paragraphs raise a runtime error."""
+    # pylint: disable=protected-access
+    formatter = MultiFormatRtf(file_name=tmp_path / 'test.rtf')
+    with pytest.raises(RuntimeError) as exc:
+        formatter._require_current_paragraph('writing text')
+    assert exc.value.args[0] == 'No current paragraph for writing text'
+    check_capsys(capsys)
+
+
+def test_require_current_table_raises_when_missing(
+        capsys: pytest.CaptureFixture[str],
+        tmp_path: Path) -> None:
+    """Test missing current tables raise a runtime error."""
+    # pylint: disable=protected-access
+    formatter = MultiFormatRtf(file_name=tmp_path / 'test.rtf')
+    with pytest.raises(RuntimeError) as exc:
+        formatter._require_current_table('writing row')
+    assert exc.value.args[0] == 'No current table for writing row'
+    check_capsys(capsys)
+
+
+def test_table_column_widths_validate_column_count(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test fallback table widths validate the number of columns."""
+    # pylint: disable=protected-access
+    with pytest.raises(RuntimeError) as exc:
+        _ = MultiFormatRtf._table_column_widths(0)
+    assert exc.value.args[0] == 'Table must have at least one column'
+    assert MultiFormatRtf._table_column_widths(3) == (800, 800, 800)
+    check_capsys(capsys)
+
+
+def test_table_target_width_uses_minimum_for_invalid_section_width(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test table target width falls back for missing page width data."""
+    # pylint: disable=protected-access
+    section = SimpleNamespace(Width=0)
+    assert MultiFormatRtf._table_target_width(section, 2) == 1600
+    check_capsys(capsys)
+
+
+def test_balance_column_widths_handles_empty_and_exact_totals(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test width balancing exits cleanly for simple no-op cases."""
+    # pylint: disable=protected-access
+    empty_widths: list[int] = []
+    MultiFormatRtf._balance_column_widths(empty_widths, 1000)
+    assert not empty_widths
+    exact_widths = [800, 800]
+    MultiFormatRtf._balance_column_widths(exact_widths, 1600)
+    assert exact_widths == [800, 800]
+    check_capsys(capsys)
+
+
+def test_balance_column_widths_reduces_widest_columns_first(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test balancing removes overflow from the widest columns first."""
+    # pylint: disable=protected-access
+    widths = [1500, 1000, 900]
+    MultiFormatRtf._balance_column_widths(widths, 2500)
+    assert widths == [800, 800, 900]
+    check_capsys(capsys)
+
+
+def test_balance_column_widths_skips_columns_at_minimum_width(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test balancing skips columns that cannot shrink any further."""
+    # pylint: disable=protected-access
+    widths = [800, 1000, 800]
+    MultiFormatRtf._balance_column_widths(widths, 1500)
+    assert widths == [800, 800, 800]
+    check_capsys(capsys)
+
+
+def test_scaled_widths_from_char_widths_returns_empty_for_empty_input(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test scaling helper returns an empty tuple for empty input."""
+    # pylint: disable=protected-access
+    assert MultiFormatRtf._scaled_widths_from_char_widths([], 2400) == tuple()
+    check_capsys(capsys)
+
+
+def test_dynamic_column_widths_falls_back_without_table_data(
+        capsys: pytest.CaptureFixture[str],
+        tmp_path: Path) -> None:
+    """Test dynamic widths fall back when no table data is available."""
+    # pylint: disable=protected-access
+    formatter = MultiFormatRtf(file_name=tmp_path / 'test.rtf')
+    assert formatter._dynamic_column_widths(2) == (800, 800)
+    check_capsys(capsys)
+
+
+def test_dynamic_column_widths_falls_back_when_scaling_returns_empty(
+        capsys: pytest.CaptureFixture[str],
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path) -> None:
+    """Test dynamic widths fall back when scaling yields no widths."""
+    # pylint: disable=protected-access
+    formatter = MultiFormatRtf(file_name=tmp_path / 'test.rtf')
+    formatter.table = TableInformation()
+    formatter.table.column_widths = [4, 8]
+    monkeypatch.setattr(
+        formatter, '_scaled_widths_from_char_widths',
+        lambda char_widths, target_total: tuple())
+    assert formatter._dynamic_column_widths(2) == (800, 800)
+    check_capsys(capsys)
 
 
 def test_table_style_not_inherited_from_heading(

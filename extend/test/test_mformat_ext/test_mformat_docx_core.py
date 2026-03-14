@@ -9,6 +9,7 @@ import sys
 from typing import Any, Callable, cast
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import Mock
 import pytest
 import mammoth  # type: ignore[import-untyped]
 from docx import Document as DocxDocument
@@ -217,6 +218,22 @@ def test_heading_formatting(capsys: pytest.CaptureFixture[str], bold: bool,
         assert '<strong>' in html
     if italic:
         assert '<em>' in html
+
+
+def test_create_abstract_num_appends_when_no_num_exists(
+        capsys: pytest.CaptureFixture[str],
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path) -> None:
+    """Test abstract numbering is appended when numbering has no num node."""
+    # pylint: disable=protected-access
+    formatter = MultiFormatDocx(file_name=tmp_path / 'test.docx')
+    numbering = Mock()
+    numbering.find.return_value = None
+    monkeypatch.setattr(formatter, '_get_numbering_xml', lambda: numbering)
+    monkeypatch.setattr(formatter, '_next_abstract_num_id', lambda: 7)
+    abstract_num = formatter._create_abstract_num(bullet=True)
+    numbering.append.assert_called_once_with(abstract_num)
+    check_capsys(capsys)
 
 
 # Tests for code blocks

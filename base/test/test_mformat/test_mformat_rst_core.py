@@ -12,6 +12,7 @@ import pytest
 from mformat.factory import create_mf
 from mformat.mformat import FormatterDescriptor
 from mformat.mformat_rst import MultiFormatRst
+from mformat.mformat_state import MultiFormatState
 from mformat.plain_text_table import TableAlignment
 from .check_capsys import check_capsys
 from .rst_test_helpers import RST_FILE_EXTENSION, check_rst_output
@@ -203,6 +204,19 @@ def test_write_code_block(capsys: pytest.CaptureFixture[str],
         expected_text=expected)
 
 
+def test_write_empty_code_block(capsys: pytest.CaptureFixture[str]) -> None:
+    """Test empty code blocks keep the required indented blank line."""
+    check_rst_output(
+        capsys=capsys,
+        method_calls=[
+            ('write_code_block', {
+                'text': '',
+                'programming_language': None,
+            }),
+        ],
+        expected_text='::\n\n    \n\n')
+
+
 def test_encode_text_restructuredtext_escapes(
         capsys: pytest.CaptureFixture[str]) -> None:
     """Test _encode_text escapes reST-sensitive characters."""
@@ -213,6 +227,20 @@ def test_encode_text_restructuredtext_escapes(
             # pylint: disable=protected-access
             assert mfd._encode_text(r'a*b `c` |d \e') == \
                 r'a\*b \`c\` \|d \\e'
+    check_capsys(capsys)
+
+
+def test_encode_text_in_code_block_returns_text_unchanged(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test _encode_text leaves code-block text untouched."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name = str(Path(tmp_dir) / 'test.rst')
+        with create_mf('reST', file_name) as mfd:
+            assert type(mfd).__name__ == 'MultiFormatRst'
+            mfd.state = MultiFormatState.CODE_BLOCK
+            # pylint: disable=protected-access
+            assert mfd._encode_text(r'a*b `c` |d \e') == \
+                r'a*b `c` |d \e'
     check_capsys(capsys)
 
 

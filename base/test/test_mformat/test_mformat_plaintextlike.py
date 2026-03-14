@@ -246,6 +246,38 @@ def test_wrap_and_write_continues_line(
     check_capsys(capsys)
 
 
+def test_write_word_with_wrapping_fits_with_pending_whitespace(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test direct word writes keep pending whitespace when the word fits."""
+    # pylint: disable=protected-access
+    def callback(mf: PlainTextLikeTestImpl) -> None:
+        assert mf.file is not None
+        mf.file.write('Hello')
+        mf._current_column = 5
+        mf._continuation_indent = '  '
+        mf._pending_whitespace = '  '
+        mf._write_word_with_wrapping('world', 12, 2)
+        assert mf._current_column == 12
+        assert mf._pending_whitespace == ''
+    assert _write_and_read(callback) == 'Hello  world'
+    check_capsys(capsys)
+
+
+def test_write_word_with_wrapping_keeps_long_word_on_indent(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test long words are kept on the line while still in indent area."""
+    # pylint: disable=protected-access
+    def callback(mf: PlainTextLikeTestImpl) -> None:
+        assert mf.file is not None
+        mf.file.write('>>')
+        mf._current_column = 2
+        mf._write_word_with_wrapping('toolong', 5, 2)
+        assert mf._current_column == 9
+        assert mf._pending_whitespace == ''
+    assert _write_and_read(callback) == '>>toolong'
+    check_capsys(capsys)
+
+
 # =================================================================
 # _wrap_and_write_atomic
 # =================================================================

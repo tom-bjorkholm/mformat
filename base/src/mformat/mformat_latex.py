@@ -157,8 +157,8 @@ class MultiFormatLatex(MultiFormatTextBased):
             DocumentClass.from_str(document_class) \
             if document_class is not None else DocumentClass.REPORT
         if self.document_class not in _DEF_LATEX_HEADING_LEVELS:
-            raise ValueError(f'document_class {self.document_class} has no '
-                             'default heading levels')
+            raise ValueError(f'document_class {self.document_class.name} '
+                             'has no default heading levels')
         self.heading_levels: dict[int, str] = \
             deepcopy(_DEF_LATEX_HEADING_LEVELS[self.document_class])
         self.paper_size: PaperSize = PaperSize.from_str(paper_size) \

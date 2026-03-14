@@ -7,6 +7,7 @@
 
 from typing import Any
 import pytest
+from mformat.mformat_state import Formatting
 from mformat.plain_text_table import TableAlignment
 from .check_capsys import check_capsys
 from .test_helpers import (check_run_with_context_manager,
@@ -65,6 +66,23 @@ def test_table_row_mismatch_runtime_error(
     with pytest.raises(RuntimeError) as exc:
         _ = run_with_context_manager('txt', '.txt', test_action)
     assert exc.value.args[0] == 'Row has 2 columns, but table has 3 columns'
+    check_capsys(capsys)
+
+
+def test_table_row_mismatch_value_error(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test _write_table_row reports row number in error message."""
+    def test_action(mfd: Any) -> None:
+        assert type(mfd).__name__ == 'MultiFormatTxt'
+        mfd.new_table(first_row=['Name', 'Age', 'City'])
+        mfd._write_table_row(  # pylint: disable=protected-access
+            row=['Alice', '30'],
+            formatting=Formatting(bold=False, italic=False),
+            row_number=2)
+
+    with pytest.raises(ValueError) as exc:
+        _ = run_with_context_manager('txt', '.txt', test_action)
+    assert exc.value.args[0] == 'Row 2 has 2 columns, but table has 3 columns.'
     check_capsys(capsys)
 
 

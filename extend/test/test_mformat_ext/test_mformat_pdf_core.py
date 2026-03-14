@@ -362,6 +362,15 @@ def test_append_current_block_handles_empty_paragraph_and_heading(
     assert heading.style is formatter.pdf_styles.headings[6]
 
 
+def test_append_current_block_is_noop_when_missing(tmp_path: Path) -> None:
+    """Test appending without a current block leaves the story unchanged."""
+    # pylint: disable=protected-access
+    formatter = MultiFormatPdf(file_name=tmp_path / 'test.pdf')
+    formatter._append_current_block()
+    assert formatter.current_block is None
+    assert not formatter.story
+
+
 def test_table_column_widths_respect_weights_and_minimums(
         tmp_path: Path) -> None:
     """Test table column widths use proportional weights and minimum one."""

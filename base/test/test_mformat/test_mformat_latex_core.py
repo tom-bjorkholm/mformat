@@ -9,14 +9,17 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any
 import pytest
+from mformat import mformat_latex as mformat_latex_module
 from mformat.document_class import DocumentClass
 from mformat.mformat import FormatterDescriptor
 from mformat.mformat_latex import MultiFormatLatex
+from mformat.mformat_state import Formatting, MultiFormatState
 from mformat.paper_size import PaperSize
 from .check_capsys import check_capsys
 from .test_helpers import (check_formatter_character_encoding,
                            check_invalid_character_encoding_constructor,
-                           check_run_with_context_manager)
+                           check_run_with_context_manager,
+                           run_with_context_manager)
 
 
 def test_file_name_extension(capsys: pytest.CaptureFixture[str]) -> None:
@@ -65,6 +68,57 @@ def test_constructor_paper_size_with_documentclass_in_preamble(
     check_capsys(capsys)
 
 
+@pytest.mark.parametrize(
+    'kwargs, expected_message',
+    [
+        ({'latex_preamble': None},
+         'latex_preamble must be a string'),
+        ({'latex_heading_levels': []},
+         'latex_heading_levels must be a dictionary'),
+        ({'latex_heading_levels': {'1': 'section'}},
+         'latex_heading_levels must contain only int keys'),
+        ({'latex_heading_levels': {1: 2}},
+         'latex_heading_levels must contain only str values'),
+        ({'latex_replacements': {}},
+         'latex_replacements must be a list'),
+        ({'latex_replacements': [{}, {}]},
+         'latex_replacements must contain 3 dictionaries'),
+        ({'latex_replacements': [{'ok': 'value'}, {}, {1: 'bad'}]},
+         'latex_replacements dictionaries must contain only str keys and '
+         'str values'),
+        ({'title': 7},
+         'title must be a string'),
+    ])
+def test_constructor_validation_errors(
+        capsys: pytest.CaptureFixture[str],
+        kwargs: dict[str, Any],
+        expected_message: str) -> None:
+    """Test constructor validation for malformed optional arguments."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name = str(Path(tmp_dir) / 'test')
+        with pytest.raises(ValueError) as exc:
+            _ = MultiFormatLatex(file_name=file_name, **kwargs)
+    assert exc.value.args[0] == expected_message
+    check_capsys(capsys)
+
+
+def test_constructor_raises_when_default_heading_levels_are_missing(
+        capsys: pytest.CaptureFixture[str],
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test constructor rejects document classes without heading mapping."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name = str(Path(tmp_dir) / 'test')
+        # pylint: disable=protected-access
+        monkeypatch.delitem(
+            mformat_latex_module._DEF_LATEX_HEADING_LEVELS,
+            DocumentClass.REPORT)
+        with pytest.raises(ValueError) as exc:
+            _ = MultiFormatLatex(file_name=file_name)
+    assert exc.value.args[0] == (
+        'document_class REPORT has no default heading levels')
+    check_capsys(capsys)
+
+
 def test_heading_fallback_deepest(capsys: pytest.CaptureFixture[str]) -> None:
     """Test heading fallback to deepest known command."""
 
@@ -108,6 +162,64 @@ def test_custom_heading_mapping(capsys: pytest.CaptureFixture[str]) -> None:
         capsys=capsys)
 
 
+def test_normalize_latex_command_rejects_empty_commands(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test empty LaTeX command names are rejected."""
+    with pytest.raises(ValueError) as exc:
+        # pylint: disable=protected-access
+        _ = MultiFormatLatex._normalize_latex_command(' \\ ')
+    assert exc.value.args[0] == 'LaTeX command name cannot be empty'
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize(
+    'level, expected',
+    [
+        (1, 'subsection'),
+        (4, 'subsection'),
+    ])
+def test_heading_command_fallbacks(
+        capsys: pytest.CaptureFixture[str],
+        level: int,
+        expected: str) -> None:
+    """Test heading command lookup for shallow and intermediate fallbacks."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name = str(Path(tmp_dir) / 'test')
+        mfd = MultiFormatLatex(file_name=file_name)
+        mfd.heading_levels = {3: 'subsection', 5: 'paragraph'}
+        # pylint: disable=protected-access
+        assert mfd._heading_command(level) == expected
+    check_capsys(capsys)
+
+
+def test_heading_command_raises_when_no_levels_are_configured(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test heading lookup fails clearly when no levels are configured."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name = str(Path(tmp_dir) / 'test')
+        mfd = MultiFormatLatex(file_name=file_name)
+        mfd.heading_levels = {}
+        with pytest.raises(RuntimeError) as exc:
+            # pylint: disable=protected-access
+            mfd._heading_command(level=2)
+    assert exc.value.args[0] == 'No heading levels are configured'
+    check_capsys(capsys)
+
+
+def test_use_booktabs_tables_returns_true_for_existing_package(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test existing booktabs package forces booktabs table output."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name = str(Path(tmp_dir) / 'test')
+        mfd = MultiFormatLatex(file_name=file_name)
+        # pylint: disable=protected-access
+        assert mfd._use_booktabs_tables(
+            has_docclass=True,
+            has_begin_document=True,
+            has_booktabs_package=True)
+    check_capsys(capsys)
+
+
 def test_title_with_begin_document_in_preamble(
         capsys: pytest.CaptureFixture[str]) -> None:
     """Test title handling when preamble already has begin document."""
@@ -129,6 +241,38 @@ def test_title_with_begin_document_in_preamble(
         expected_text=expected,
         args={'title': 'My Title', 'latex_preamble': preamble},
         capsys=capsys)
+
+
+@pytest.mark.parametrize('before', ['Alpha\n', 'Alpha'])
+def test_ensure_blank_line_before_adds_needed_spacing(
+        capsys: pytest.CaptureFixture[str], before: str) -> None:
+    """Test blank-line insertion after partial or non-newline endings."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name = str(Path(tmp_dir) / 'test')
+        mfd = MultiFormatLatex(file_name=file_name)
+        mfd.open()
+        assert mfd.file is not None
+        mfd.file.write(before)
+        mfd._ensure_blank_line_before()  # pylint: disable=protected-access
+        mfd._close()  # pylint: disable=protected-access
+        assert Path(mfd.file_name).read_text(encoding='utf-8') == 'Alpha\n\n'
+    check_capsys(capsys)
+
+
+@pytest.mark.parametrize('before', ['', '\n\n'])
+def test_ensure_blank_line_before_is_noop_for_blank_or_empty_state(
+        capsys: pytest.CaptureFixture[str], before: str) -> None:
+    """Test blank-line helper leaves empty or already blank-separated text."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name = str(Path(tmp_dir) / 'test')
+        mfd = MultiFormatLatex(file_name=file_name)
+        mfd.open()
+        assert mfd.file is not None
+        mfd.file.write(before)
+        mfd._ensure_blank_line_before()  # pylint: disable=protected-access
+        mfd._close()  # pylint: disable=protected-access
+        assert Path(mfd.file_name).read_text(encoding='utf-8') == before
+    check_capsys(capsys)
 
 
 def test_add_url_escapes_text(capsys: pytest.CaptureFixture[str]) -> None:
@@ -354,6 +498,29 @@ def test_write_code_block(capsys: pytest.CaptureFixture[str]) -> None:
         expected_text=expected, capsys=capsys)
 
 
+def test_docclass_preamble_injects_required_packages(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test docclass-only preambles gain the needed package lines."""
+
+    def test_action(mfd: Any) -> None:
+        assert isinstance(mfd, MultiFormatLatex)
+        mfd.new_paragraph(text='x')
+
+    expected = (
+        '\\documentclass[a4paper]{report}\n'
+        '\\usepackage{hyperref}\n'
+        '\\usepackage{xurl}\n'
+        '\\usepackage{booktabs}\n'
+        '\\begin{document}\n\n'
+        'x\n\n'
+        '\\end{document}\n')
+    check_run_with_context_manager(
+        format_name='LaTeX', file_extension='.tex', test_action=test_action,
+        expected_text=expected,
+        args={'latex_preamble': '\\documentclass[a4paper]{report}'},
+        capsys=capsys)
+
+
 def test_write_table(capsys: pytest.CaptureFixture[str]) -> None:
     """Test simple LaTeX table output."""
 
@@ -433,6 +600,54 @@ def test_replacement_pipeline(capsys: pytest.CaptureFixture[str]) -> None:
         expected_text=expected,
         args={'latex_replacements': replacements},
         capsys=capsys)
+
+
+def test_write_table_row_reports_row_number(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test _write_table_row reports row number in error messages."""
+
+    def test_action(mfd: Any) -> None:
+        assert isinstance(mfd, MultiFormatLatex)
+        mfd.new_table(first_row=['Name', 'Age', 'City'])
+        mismatched_row = ['Alice', '30']
+        formatting = Formatting(bold=False, italic=False)
+        mfd._write_table_row(  # pylint: disable=protected-access
+            row=mismatched_row,
+            formatting=formatting,
+            row_number=2)
+
+    with pytest.raises(ValueError) as exc:
+        _ = run_with_context_manager('LaTeX', '.tex', test_action)
+    assert exc.value.args[0] == 'Row 2 has 2 columns, but table has 3 columns.'
+    check_capsys(capsys)
+
+
+def test_write_file_suffix_skips_duplicate_end_document(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test suffix writer stays silent when preamble already ends the file."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name = str(Path(tmp_dir) / 'test')
+        mfd = MultiFormatLatex(
+            file_name=file_name,
+            latex_preamble='\\documentclass{report}\n\\end{document}\n')
+        mfd.open()
+        mfd._write_file_suffix()  # pylint: disable=protected-access
+        mfd._close()  # pylint: disable=protected-access
+        assert Path(mfd.file_name).read_text(encoding='utf-8') == ''
+    check_capsys(capsys)
+
+
+def test_encode_text_returns_empty_string_unchanged(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test empty strings are returned unchanged during LaTeX encoding."""
+    with TemporaryDirectory() as tmp_dir:
+        file_name = str(Path(tmp_dir) / 'test')
+        mfd = MultiFormatLatex(file_name=file_name)
+        # pylint: disable=protected-access
+        assert mfd._encode_text('') == ''
+        mfd.state = MultiFormatState.CODE_BLOCK
+        assert mfd._encode_text('') == ''
+    check_capsys(capsys)
 
 
 @pytest.mark.parametrize('character_encoding, expected_text_bytes',

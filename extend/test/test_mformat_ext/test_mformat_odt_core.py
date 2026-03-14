@@ -10,6 +10,7 @@ import zipfile
 from typing import Any, Callable, cast
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import Mock
 import pytest
 from odf.opendocument import load as odf_load  # type: ignore[import-untyped]
 from odf.text import P, H, Span, A  # type: ignore[import-untyped]
@@ -256,6 +257,100 @@ def test_create_nok(capsys: pytest.CaptureFixture[str]) -> None:
     out, err = capsys.readouterr()
     assert err == ''
     assert out == ''
+
+
+def test_split_rfc3066_language_rejects_invalid_code(
+        capsys: pytest.CaptureFixture[str]) -> None:
+    """Test invalid RFC3066 language codes raise TypeError."""
+    with pytest.raises(TypeError) as exc:
+        # pylint: disable=protected-access
+        _ = MultiFormatOdt._split_rfc3066_language('english')
+    assert exc.value.args[0] == (
+        'Language must be "xx" lang or "xx-YY" lang-COUNTRY code '
+        '(RFC3066)')
+    check_capsys(capsys)
+
+
+def test_set_document_paper_size_requires_master_page(
+        capsys: pytest.CaptureFixture[str],
+        tmp_path: Path) -> None:
+    """Test paper-size setup fails when the master page is missing."""
+    # pylint: disable=protected-access
+    formatter = MultiFormatOdt(file_name=tmp_path / 'test.odt')
+    doc = Mock()
+    doc.styles.get_master_page.return_value = None
+    formatter.doc = cast(Any, doc)
+    with pytest.raises(RuntimeError) as exc:
+        formatter._set_document_paper_size(PaperSize.A4)
+    assert exc.value.args[0] == 'Default master page style is missing.'
+    check_capsys(capsys)
+
+
+def test_set_document_paper_size_requires_page_layout_name(
+        capsys: pytest.CaptureFixture[str],
+        tmp_path: Path) -> None:
+    """Test paper-size setup fails when the page layout name is missing."""
+    # pylint: disable=protected-access
+    formatter = MultiFormatOdt(file_name=tmp_path / 'test.odt')
+    doc = Mock()
+    master_page = Mock()
+    master_page.page_layout = ''
+    doc.styles.get_master_page.return_value = master_page
+    formatter.doc = cast(Any, doc)
+    with pytest.raises(RuntimeError) as exc:
+        formatter._set_document_paper_size(PaperSize.A4)
+    assert exc.value.args[0] == 'Default master page layout name is missing.'
+    check_capsys(capsys)
+
+
+def test_set_document_paper_size_requires_page_layout_style(
+        capsys: pytest.CaptureFixture[str],
+        tmp_path: Path) -> None:
+    """Test paper-size setup fails when the page layout style is missing."""
+    # pylint: disable=protected-access
+    formatter = MultiFormatOdt(file_name=tmp_path / 'test.odt')
+    doc = Mock()
+    master_page = Mock()
+    master_page.page_layout = 'MissingLayout'
+    doc.styles.get_master_page.return_value = master_page
+    doc.get_style.return_value = None
+    formatter.doc = cast(Any, doc)
+    with pytest.raises(RuntimeError) as exc:
+        formatter._set_document_paper_size(PaperSize.A4)
+    assert exc.value.args[0] == 'Page layout style "MissingLayout" is missing.'
+    check_capsys(capsys)
+
+
+def test_insert_odt_styles_includes_font_styles(
+        capsys: pytest.CaptureFixture[str],
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path) -> None:
+    """Test font styles are inserted into the document style collection."""
+    # pylint: disable=protected-access
+    formatter = MultiFormatOdt(file_name=tmp_path / 'test.odt')
+    font_style = Mock()
+    formatter.odt_styles = formatter.odt_styles._replace(
+        text_styles={},
+        font_styles={'font': font_style},
+        paragraph_styles={})
+    doc = Mock()
+    formatter.doc = cast(Any, doc)
+    numbered_style = Mock()
+    bullet_style = Mock()
+    monkeypatch.setattr(
+        formatter, '_create_numbered_list_style',
+        lambda: numbered_style)
+    monkeypatch.setattr(
+        formatter, '_create_bullet_list_style',
+        lambda: bullet_style)
+    formatter._insert_odt_styles()
+    inserted = [
+        style_call.args[0]
+        for style_call in doc.insert_style.call_args_list]
+    assert inserted[0] is font_style
+    assert numbered_style in inserted
+    assert bullet_style in inserted
+    check_capsys(capsys)
 
 
 # --- Tests for language parameter ---
