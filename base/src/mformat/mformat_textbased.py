@@ -99,7 +99,7 @@ class MultiFormatTextBased(MultiFormat):
         """
         assert self.file is not None
         assert num_chars > 0
-        if rec_count > 8:
+        if rec_count > 8:  # pragma: no cover
             # Limit 8 is bigger than longest utf-8 encoded character (6 bytes)
             return ''
         number_of_bytes = min(num_chars * 6 + rec_count, end_pos)
