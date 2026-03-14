@@ -7,14 +7,12 @@
 
 from html import escape
 from typing import Optional, Callable, NamedTuple
-from reportlab.lib import colors  # type: ignore[import-untyped]
-from reportlab.lib.pagesizes import (  # type: ignore[import-untyped]
-    A3, A4, A5, LEGAL, LETTER)
-from reportlab.lib.styles import (  # type: ignore[import-untyped]
-    ParagraphStyle, getSampleStyleSheet)
-from reportlab.pdfbase import pdfmetrics  # type: ignore[import-untyped]
-from reportlab.platypus import (  # type: ignore[import-untyped]
-    Paragraph, Preformatted, SimpleDocTemplate, Table, TableStyle)
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A3, A4, A5, LEGAL, LETTER
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.pdfbase import pdfmetrics
+from reportlab.platypus import Flowable, Paragraph, Preformatted, \
+    SimpleDocTemplate, Table, TableStyle
 from mformat.mformat import FormatterDescriptor, MultiFormat, PathLike
 from mformat.mformat_state import MultiFormatState, Formatting
 from mformat.paper_size import PaperSize
@@ -86,7 +84,7 @@ class _PendingTextBlock:  # pylint: disable=too-few-public-methods
         return ''.join(self.plain_text_parts)
 
 
-class _PdfHeadingParagraph(Paragraph):  # type: ignore[misc]
+class _PdfHeadingParagraph(Paragraph):
     """Paragraph carrying outline metadata for one heading."""
 
     def __init__(self, text: str, style: ParagraphStyle,
@@ -97,7 +95,7 @@ class _PdfHeadingParagraph(Paragraph):  # type: ignore[misc]
         self.plain_text = plain_text
 
 
-class _PdfDocumentTemplate(SimpleDocTemplate):  # type: ignore[misc]
+class _PdfDocumentTemplate(SimpleDocTemplate):
     """Simple document template that registers outline entries."""
 
     def __init__(self, file_name: str, title: Optional[str],
@@ -189,7 +187,7 @@ class MultiFormatPdf(MultiFormat):
         self.paper_size = paper_size
         self.title = title
         self.page_size = _PDF_PAPER_SIZE[paper_size]
-        self.story: list[object] = []
+        self.story: list[Flowable] = []
         self.pdf_styles = self._create_pdf_styles()
         self.current_block: Optional[_PendingTextBlock] = None
         self.current_table_rows: list[list[Paragraph]] = []

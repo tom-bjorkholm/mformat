@@ -166,6 +166,7 @@ probably provide a better introduction.
 
 | Version | Date        | Python version | Description                     |
 |---------|-------------|----------------|---------------------------------|
+| 0.6     | 14 Mar 2026 | 3.12 or newer  | Added PDF and LaTeX formats     |
 | 0.5     | 07 Mar 2026 | 3.12 or newer  | Added RTF, TXT and reST formats |
 | 0.4     | 21 Feb 2026 | 3.12 or newer  | Added block quote support       |
 | 0.3     | 18 Feb 2026 | 3.12 or newer  | Improved API and fixes          |
@@ -217,5 +218,5 @@ the next version.
 - Test result: 2790 passed in 41s
 - No Flake8 warnings.
 - No mypy errors found.
-- Built version(s): 0.5.1
+- Built version(s): 0.6
 - Build and test using Python 3.14.3

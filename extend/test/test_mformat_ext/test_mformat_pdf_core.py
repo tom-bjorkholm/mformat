@@ -13,8 +13,7 @@ from tempfile import TemporaryDirectory
 from typing import NamedTuple
 from unittest.mock import Mock, call
 import pytest
-from reportlab.platypus import (  # type: ignore[import-untyped]
-    Paragraph, Preformatted)
+from reportlab.platypus import Paragraph, Preformatted
 from mformat_ext.mformat_pdf import (MultiFormatPdf, _PendingTextBlock,
                                      _PdfDocumentTemplate,
                                      _PdfHeadingParagraph)

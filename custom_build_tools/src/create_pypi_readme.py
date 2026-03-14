@@ -197,6 +197,7 @@ P2_API_DOCUMENTATION_2 = 'probably provide a better introduction.'
 H2_VERSION_HISTORY = 'Version history'
 VERSION_HISTORY = [
      ['Version', 'Date', 'Python version', 'Description'],
+     ['0.6', '14 Mar 2026', '3.12 or newer', 'Added PDF and LaTeX formats'],
      ['0.5', '07 Mar 2026', '3.12 or newer',
       'Added RTF, TXT and reST formats'],
      ['0.4', '21 Feb 2026', '3.12 or newer', 'Added block quote support'],
