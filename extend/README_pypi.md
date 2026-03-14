@@ -191,32 +191,10 @@ format was introduced.
 | rtf    | Rich Text Format         | mformat-ext   | 0.5                 |
 | txt    | Plain text               | mformat       | 0.5                 |
 
-## API changes in version 0.3 (deprecated methods)
-
-In version 0.2.x the public API was build around methods that started document
-items, like start_paragraph. However, experience showed that this was not
-intuitive for the user. Many users were trying to use end or stop methods (that
-do not exist) in pair with the start methods. To address this, the public API
-was changed in version 0.3.0 to use methods named new something, like
-new_paragraph. With this naming the intuition should hopefully not tell users to
-look for end or stop methods (that do not exist). People have also pointed out
-that phrases like "new paragraph" are commonly used in dictation.
-
-The old methods are still available, but are deprecated and will be removed in
-the next version.
-
-| New method              | Deprecated method         |
-|-------------------------|---------------------------|
-| new_paragraph           | start_paragraph           |
-| new_heading             | start_heading             |
-| new_bullet_item         | start_bullet_item         |
-| new_numbered_point_item | start_numbered_point_item |
-| new_table               | start_table               |
-
 ## Test summary
 
 - Test result: 2790 passed in 40s
 - No Flake8 warnings.
 - No mypy errors found.
-- Built version(s): 0.6
+- Built version(s): 0.6.1
 - Build and test using Python 3.14.3

@@ -99,11 +99,6 @@
     * [write\_complete\_table](#mformat.mformat.MultiFormat.write_complete_table)
     * [write\_code\_block](#mformat.mformat.MultiFormat.write_code_block)
     * [file\_name\_with\_extension](#mformat.mformat.MultiFormat.file_name_with_extension)
-    * [start\_paragraph](#mformat.mformat.MultiFormat.start_paragraph)
-    * [start\_heading](#mformat.mformat.MultiFormat.start_heading)
-    * [start\_bullet\_item](#mformat.mformat.MultiFormat.start_bullet_item)
-    * [start\_numbered\_point\_item](#mformat.mformat.MultiFormat.start_numbered_point_item)
-    * [start\_table](#mformat.mformat.MultiFormat.start_table)
 * [mformat.mformat\_html](#mformat.mformat_html)
   * [MultiFormatHtml](#mformat.mformat_html.MultiFormatHtml)
     * [\_\_init\_\_](#mformat.mformat_html.MultiFormatHtml.__init__)
@@ -1801,88 +1796,6 @@ def file_name_with_extension(file_name: PathLike, extension: str) -> str
 ```
 
 Get the file name with the extension.
-
-<a id="mformat.mformat.MultiFormat.start_paragraph"></a>
-
-#### start\_paragraph
-
-```python
-def start_paragraph(text: str,
-                    smart_ws: bool = True,
-                    bold: bool = False,
-                    italic: bool = False) -> None
-```
-
-Start a new paragraph (deprecated).
-
-.. deprecated:: 0.3.0
-  Use :meth:`new_paragraph` instead.
-
-<a id="mformat.mformat.MultiFormat.start_heading"></a>
-
-#### start\_heading
-
-```python
-def start_heading(level: int,
-                  text: str,
-                  smart_ws: bool = True,
-                  bold: bool = False,
-                  italic: bool = False) -> None
-```
-
-Start a new heading (deprecated).
-
-.. deprecated:: 0.3.0
-  Use :meth:`new_heading` instead.
-
-<a id="mformat.mformat.MultiFormat.start_bullet_item"></a>
-
-#### start\_bullet\_item
-
-```python
-def start_bullet_item(text: str,
-                      level: Optional[int] = None,
-                      smart_ws: bool = True,
-                      bold: bool = False,
-                      italic: bool = False) -> None
-```
-
-Start a bullet item (deprecated).
-
-.. deprecated:: 0.3.0
-  Use :meth:`new_bullet_item` instead.
-
-<a id="mformat.mformat.MultiFormat.start_numbered_point_item"></a>
-
-#### start\_numbered\_point\_item
-
-```python
-def start_numbered_point_item(text: str,
-                              level: Optional[int] = None,
-                              smart_ws: bool = True,
-                              bold: bool = False,
-                              italic: bool = False) -> None
-```
-
-Start a numbered point item (deprecated).
-
-.. deprecated:: 0.3.0
-  Use :meth:`new_numbered_point_item` instead.
-
-<a id="mformat.mformat.MultiFormat.start_table"></a>
-
-#### start\_table
-
-```python
-def start_table(first_row: list[str],
-                bold: bool = False,
-                italic: bool = False) -> None
-```
-
-Start a table (deprecated).
-
-.. deprecated:: 0.3.0
-  Use :meth:`new_table` instead.
 
 <a id="mformat.mformat_html"></a>
 

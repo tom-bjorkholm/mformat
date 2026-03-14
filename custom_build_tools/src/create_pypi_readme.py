@@ -221,27 +221,7 @@ FORMATS = [
     ['rtf', 'Rich Text Format', 'mformat-ext', '0.5'],
     ['txt', 'Plain text', 'mformat', '0.5']
 ]
-H2_DEPRECATED = 'API changes in version 0.3 (deprecated methods)'
-P1_DEPRECATED = 'In version 0.2.x the public API was build around methods ' \
-    'that started document items, like start_paragraph. However, experience ' \
-    'showed that this was not intuitive for the user. Many users ' \
-    'were trying to use end or stop methods (that do not exist) in pair '\
-    'with the start methods. ' \
-    'To address this, the public API was changed in version 0.3.0 to use ' \
-    'methods named new something, like new_paragraph. With this naming ' \
-    'the intuition should hopefully not tell users to look for end or ' \
-    'stop methods (that do not exist). People have also pointed ' \
-    'out that phrases like "new paragraph" are commonly used in dictation.'
-P2_DEPRECATED = 'The old methods are still available, but are deprecated '\
-    'and will be removed in the next version.'
-T_DEPRECATED = [
-    ['New method', 'Deprecated method'],
-    ['new_paragraph', 'start_paragraph'],
-    ['new_heading', 'start_heading'],
-    ['new_bullet_item', 'start_bullet_item'],
-    ['new_numbered_point_item', 'start_numbered_point_item'],
-    ['new_table', 'start_table']
-]
+
 DISPATCHER: dict[str, dict[ReadmeType, str]] = {
     'title': {
         ReadmeType.BASE: TITLE_BASE,
@@ -327,10 +307,6 @@ def create_pypi_readme(readme_type: ReadmeType, path: Path) -> None:
         mft.new_heading(level=2, text=H2_FORMATS)
         mft.new_paragraph(text=P1_FORMATS)
         mft.write_complete_table(table=FORMATS)
-        mft.new_heading(level=2, text=H2_DEPRECATED)
-        mft.new_paragraph(text=P1_DEPRECATED)
-        mft.new_paragraph(text=P2_DEPRECATED)
-        mft.write_complete_table(table=T_DEPRECATED)
         mft.new_heading(level=2, text='Test summary')
     print(f'Created {str(path)} file for {readme_type.name}',
           file=sys.stderr)

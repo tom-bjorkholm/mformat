@@ -10,7 +10,6 @@ from typing import NamedTuple, Callable, Optional
 from pathlib import Path
 import sys
 import os
-import warnings
 from mformat.mformat_lists_impl import ListHandlerMixin, PointListType
 from mformat.mformat_state import MultiFormatState, FormattingWithWS, \
     Formatting
@@ -825,73 +824,3 @@ class MultiFormat(ListHandlerMixin):  # pylint: disable=too-many-public-methods,
         """Encode a table row."""
         assert isinstance(row, list)
         return [self._encode_text(cell) for cell in row]
-
-    # ========================================================================
-    # Deprecated methods - to be removed in future versions
-    # ========================================================================
-
-    def start_paragraph(self, text: str, smart_ws: bool = True,
-                        bold: bool = False, italic: bool = False) -> None:
-        """Start a new paragraph (deprecated).
-
-        .. deprecated:: 0.3.0
-          Use :meth:`new_paragraph` instead.
-        """
-        warnings.warn('start_paragraph is deprecated. '
-                      'Use new_paragraph instead.', DeprecationWarning,
-                      stacklevel=3)
-        self.new_paragraph(text, smart_ws, bold, italic)
-
-    def start_heading(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                      level: int, text: str, smart_ws: bool = True,
-                      bold: bool = False, italic: bool = False) -> None:
-        """Start a new heading (deprecated).
-
-        .. deprecated:: 0.3.0
-          Use :meth:`new_heading` instead.
-        """
-        warnings.warn('start_heading is deprecated. '
-                      'Use new_heading instead.', DeprecationWarning,
-                      stacklevel=3)
-        self.new_heading(level, text, smart_ws, bold, italic)
-
-    def start_bullet_item(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                          text: str, level: Optional[int] = None,
-                          smart_ws: bool = True, bold: bool = False,
-                          italic: bool = False) -> None:
-        """Start a bullet item (deprecated).
-
-        .. deprecated:: 0.3.0
-          Use :meth:`new_bullet_item` instead.
-        """
-        warnings.warn('start_bullet_item is deprecated. '
-                      'Use new_bullet_item instead.', DeprecationWarning,
-                      stacklevel=3)
-        self.new_bullet_item(text, level, smart_ws, bold, italic)
-
-    def start_numbered_point_item(self,  # pylint: disable=too-many-arguments,too-many-positional-arguments # noqa: E501
-                                  text: str, level: Optional[int] = None,
-                                  smart_ws: bool = True, bold: bool = False,
-                                  italic: bool = False) -> None:
-        """Start a numbered point item (deprecated).
-
-        .. deprecated:: 0.3.0
-          Use :meth:`new_numbered_point_item` instead.
-        """
-        warnings.warn('start_numbered_point_item is deprecated. '
-                      'Use new_numbered_point_item instead.',
-                      DeprecationWarning,
-                      stacklevel=3)
-        self.new_numbered_point_item(text, level, smart_ws, bold, italic)
-
-    def start_table(self, first_row: list[str],
-                    bold: bool = False, italic: bool = False) -> None:
-        """Start a table (deprecated).
-
-        .. deprecated:: 0.3.0
-          Use :meth:`new_table` instead.
-        """
-        warnings.warn('start_table is deprecated. '
-                      'Use new_table instead.', DeprecationWarning,
-                      stacklevel=3)
-        self.new_table(first_row, bold, italic)
