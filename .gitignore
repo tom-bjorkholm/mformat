@@ -28,6 +28,7 @@ extend/*.egg-info
 .claude/*
 .claudeignore
 AGENTS.md
+CLAUDE.md
 # example/result/*.docx
 # example/result/*.odt
 example/result/.*#

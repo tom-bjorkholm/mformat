@@ -24,22 +24,22 @@ _example_test_path = (
 sys.path.insert(0, str(_example_test_path))
 from e20_url_in_paragraph import example_url_in_paragraph  # pylint: disable=wrong-import-position,wrong-import-order # noqa: E402,E501
 
-_BB = 'https://bitbucket.org/tom-bjorkholm/mformat/src/master'
+_BB = 'https://github.com/tom-bjorkholm/mformat/blob/master'
 EXPECTED_MD_TEXT = [
     '# URL in paragraph example\n\n'
     'This is a paragraph with a URL:\n'
     '[The examples are here.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example)\n\n'
+    '(https://github.com/tom-bjorkholm/mformat/blob/master/example)\n\n'
     'The URL was added as a link using add_url(text, url)\n\n'
     'By not specifying the text, the URL is shows as text:\n'
-    '[https://bitbucket.org/tom-bjorkholm/mformat/src/master/example]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example)\n\n'
+    '[https://github.com/tom-bjorkholm/mformat/blob/master/example]'
+    '(https://github.com/tom-bjorkholm/mformat/blob/master/example)\n\n'
     'A paragraph can of course have multiple URLs.\n'
     '[The source code of the examples are here.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)\n'
+    '(https://github.com/tom-bjorkholm/mformat/blob/master/example/src)\n'
     'and\n'
     '[The produced output files are here.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result)'
+    '(https://github.com/tom-bjorkholm/mformat/blob/master/example/result)'
     '\n'
 ]
 EXPECTED_HTML_BODY_TEXT = [
@@ -75,12 +75,12 @@ EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
 EXPECTED_LATEX_TEXT = [
     '\\documentclass[a4paper]{report}',
     '\\chapter{URL in paragraph example}',
-    ('\\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    ('\\href{https://github.com/tom-bjorkholm/mformat/blob/master/'
      'example}{The examples are here.}'),
     'The URL was added as a link using add\\_url(text, url)',
-    ('\\url{https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    ('\\url{https://github.com/tom-bjorkholm/mformat/blob/master/'
      'example}'),
-    ('\\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    ('\\href{https://github.com/tom-bjorkholm/mformat/blob/master/'
      'example/result}{The produced output files are here.}'),
     '\\end{document}',
 ]
@@ -139,7 +139,7 @@ EXPECTED_TXT_TEXT = [
     ),
     (
         'This is a paragraph with a URL: The examples are here.\n'
-        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example\n'
+        'https://github.com/tom-bjorkholm/mformat/blob/master/example\n'
         '\n'
     ),
     (
@@ -148,16 +148,16 @@ EXPECTED_TXT_TEXT = [
     ),
     (
         'By not specifying the text, the URL is shows as text:\n'
-        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example\n'
+        'https://github.com/tom-bjorkholm/mformat/blob/master/example\n'
         '\n'
     ),
     (
         'A paragraph can of course have multiple URLs. The source code of '
         'the examples\n'
-        'are here. https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
-        'example/src\n'
-        'and The produced output files are here.\n'
-        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/'
+        'are here. https://github.com/tom-bjorkholm/mformat/blob/master/'
+        'example/src and\n'
+        'The produced output files are here.\n'
+        'https://github.com/tom-bjorkholm/mformat/blob/master/example/'
         'result\n'
     ),
 ]
@@ -174,9 +174,9 @@ def test_e20_url_in_paragraph_rst(capsys: pytest.CaptureFixture[str]) -> None:
     """Test example_url_in_paragraph with the reST format."""
     expected_txt = [
         'URL in paragraph example',
-        '`The examples are here. <https://bitbucket.org',
-        '`https://bitbucket.org/tom-bjorkholm/mformat/src/master/example',
-        '`The produced output files are here. <https://bitbucket.org',
+        '`The examples are here. <https://github.com',
+        '`https://github.com/tom-bjorkholm/mformat/blob/master/example',
+        '`The produced output files are here. <https://github.com',
     ]
     expected_error: list[str] = []
     check_rst_func(example_url_in_paragraph, expected_txt, expected_error)

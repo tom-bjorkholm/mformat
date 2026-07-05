@@ -29,18 +29,18 @@ EXPECTED_MD_TEXT = [
     '# URL in bullet list example\n\n',
     '- This is a bullet list with a URL:\n',
     '  [This URL link to the examples.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)\n',
+    '(https://github.com/tom-bjorkholm/mformat/blob/master/example/src)\n',
     '- Another bullet point with a bold URL:\n',
     ('  **[This bold URL link to the example source code.]'
-     '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)**'
+     '(https://github.com/tom-bjorkholm/mformat/blob/master/example/src)**'
      '\n'),
     '- A bullet point with an italic URL:\n',
     ('  *[This italic URL link to the examples result.]'
-     '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result)*'
+     '(https://github.com/tom-bjorkholm/mformat/blob/master/example/result)*'
      '\n'),
     '- Last point with an italic and bold URL:\n',
     ('  ***[This italic and bold URL link to the examples.]'
-     '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)***'
+     '(https://github.com/tom-bjorkholm/mformat/blob/master/example/src)***'
      '\n'),
 ]
 EXPECTED_HTML_BODY_TEXT = [
@@ -50,28 +50,28 @@ EXPECTED_HTML_BODY_TEXT = [
     '<ul>',
     '<li>',
     'This is a bullet list with a URL:',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This URL link to the examples.',
     '</a>',
     '</li>',
     '<li>',
     'Another bullet point with a bold URL:',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This bold URL link to the example source code.',
     '</a>',
     '</li>',
     '<li>',
     'A bullet point with an italic URL:',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/result">',
     'This italic URL link to the examples result.',
     '</a>',
     '</li>',
     '<li>',
     'Last point with an italic and bold URL:',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This italic and bold URL link to the examples.',
     '</a>',
@@ -89,13 +89,13 @@ EXPECTED_LATEX_TEXT = [
     '\\documentclass[a4paper]{report}',
     '\\chapter{URL in bullet list example}',
     '\\begin{itemize}',
-    ('\\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    ('\\href{https://github.com/tom-bjorkholm/mformat/blob/master/'
      'example/src}{This URL link to the examples.}'),
-    ('\\textbf{\\penalty0\\href{https://bitbucket.org/tom-bjorkholm/'
-     'mformat/src/master/example/src}{This bold URL link to the '
+    ('\\textbf{\\penalty0\\href{https://github.com/tom-bjorkholm/'
+     'mformat/blob/master/example/src}{This bold URL link to the '
      'example source code.}\\penalty0}'),
-    ('\\textit{\\textbf{\\penalty0\\href{https://bitbucket.org/'
-     'tom-bjorkholm/mformat/src/master/example/src}{This italic and '
+    ('\\textit{\\textbf{\\penalty0\\href{https://github.com/'
+     'tom-bjorkholm/mformat/blob/master/example/src}{This italic and '
      'bold URL link to the examples.}\\penalty0}}'),
     '\\end{document}',
 ]
@@ -161,20 +161,19 @@ EXPECTED_TXT_TEXT = [
     ),
     (
         '- This is a bullet list with a URL: This URL link to the examples.\n'
-        '  https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/'
+        '  https://github.com/tom-bjorkholm/mformat/blob/master/example/'
         'src\n'
         '- Another bullet point with a bold URL: This bold URL link to the '
         'example\n'
-        '  source code.\n'
-        '  https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/'
-        'src\n'
+        '  source code. https://github.com/tom-bjorkholm/mformat/blob/master/'
+        'example/src\n'
         '- A bullet point with an italic URL: This italic URL link to the '
         'examples\n'
-        '  result. https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+        '  result. https://github.com/tom-bjorkholm/mformat/blob/master/'
         'example/result\n'
         '- Last point with an italic and bold URL: This italic and bold URL '
         'link to the\n'
-        '  examples. https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+        '  examples. https://github.com/tom-bjorkholm/mformat/blob/master/'
         'example/src\n'
     ),
 ]

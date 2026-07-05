@@ -53,7 +53,7 @@ def multi_format_example(format_name: str,  # pylint: disable=too-many-statement
         # Starting a heading automatically closes the paragraph.
         mf.new_heading(level=2, text='Heading with URL to')
         # Add a URL to the heading.
-        url = 'https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+        url = 'https://github.com/tom-bjorkholm/mformat/blob/master/'
         url += 'example/src/e50_simple_complete.py'
         mf.add_url(url=url, text='the example file')
         # Start a new paragraph.

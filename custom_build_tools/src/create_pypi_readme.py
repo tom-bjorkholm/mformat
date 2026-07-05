@@ -174,18 +174,18 @@ H2_EXAMPLES = 'Example programs'
 P1_EXAMPLES_1 = 'A number of minimal but complete example programs are ' \
     'provided to help the programmer new to mformat. See '
 URL_EXAMPLES = \
-    'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/README.md'
+    'https://github.com/tom-bjorkholm/mformat/blob/master/example/README.md'
 URL_EXAMPLES_TEXT = 'list of examples'
 P1_EXAMPLES_2 = '.'
 H2_API_DOCUMENTATION = 'API documentation'
 P1_API_DOCUMENTATION_1 = 'API documentation automatically extracted from ' \
     'the Python code and docstrings are available '
 API_URL_PUBLIC = \
-    'https://bitbucket.org/tom-bjorkholm/mformat/src/master/doc/api.md'
+    'https://github.com/tom-bjorkholm/mformat/blob/master/doc/api.md'
 API_URL_PUBLIC_TEXT = 'here for the public API'
 P1_API_DOCUMENTATION_2 = 'for programmers using the API and '
 API_URL_PROTECTED = \
-    'https://bitbucket.org/tom-bjorkholm/mformat/src/master/doc/' \
+    'https://github.com/tom-bjorkholm/mformat/blob/master/doc/' \
     'protected_api.md'
 API_URL_PROTECTED_TEXT = 'here for the protected API'
 P1_API_DOCUMENTATION_3 = 'for programmers that want to extend the API by ' \

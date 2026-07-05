@@ -29,19 +29,19 @@ EXPECTED_MD_TEXT = [
     '# URL in numbered point list example\n\n',
     '1. A numbered point with a URL:\n',
     '[This URL link to the examples.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '(https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src)\n\n',
     '2. A numbered point with a bold URL:\n',
     '**[This bold URL link to the example source code.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '(https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src)**\n\n',
     '3. And with an italic URL:\n',
     '*[This italic URL link to the examples result.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '(https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/result)*\n\n',
     '4. And with an italic and bold URL:\n',
     '***[This italic and bold URL link to the examples.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '(https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src)***\n'
 ]
 EXPECTED_HTML_BODY_TEXT = [
@@ -51,7 +51,7 @@ EXPECTED_HTML_BODY_TEXT = [
     '<ol>',
     '<li>',
     'A numbered point with a URL: ',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This URL link to the examples.',
     '</a>',
@@ -59,7 +59,7 @@ EXPECTED_HTML_BODY_TEXT = [
     '<li>',
     'A numbered point with a bold URL: ',
     '<strong>',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This bold URL link to the example source code.',
     '</a>',
@@ -68,7 +68,7 @@ EXPECTED_HTML_BODY_TEXT = [
     '<li>',
     'And with an italic URL: ',
     '<em>',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/result">',
     'This italic URL link to the examples result.',
     '</a>',
@@ -77,7 +77,7 @@ EXPECTED_HTML_BODY_TEXT = [
     '<li>',
     'And with an italic and bold URL: ',
     '<em>', '<strong>',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This italic and bold URL link to the examples.',
     '</a>',
@@ -91,22 +91,22 @@ EXPECTED_DOCX_HTML_TEXT = [
     'URL in numbered point list example',
     '</h1>',
     'A numbered point with a URL: ',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This URL link to the examples.',
     '</a>',
     'A numbered point with a bold URL: ',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This bold URL link to the example source code.',
     '</a>',
     'And with an italic URL: ',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/result">',
     'This italic URL link to the examples result.',
     '</a>',
     'And with an italic and bold URL: ',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This italic and bold URL link to the examples.',
     '</a>'
@@ -118,28 +118,28 @@ EXPECTED_ODT_HTML_TEXT = [
     '<ol>',
     '<li>',
     'A numbered point with a URL: ',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This URL link to the examples.',
     '</a>',
     '</li>',
     '<li>',
     'A numbered point with a bold URL: ',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This bold URL link to the example source code.',
     '</a>',
     '</li>',
     '<li>',
     'And with an italic URL: ',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/result">',
     'This italic URL link to the examples result.',
     '</a>',
     '</li>',
     '<li>',
     'And with an italic and bold URL: ',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This italic and bold URL link to the examples.',
     '</a>',
@@ -155,13 +155,13 @@ EXPECTED_LATEX_TEXT = [
     '\\documentclass[a4paper]{report}',
     '\\chapter{URL in numbered point list example}',
     '\\begin{enumerate}',
-    ('\\href{https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    ('\\href{https://github.com/tom-bjorkholm/mformat/blob/master/'
      'example/src}{This URL link to the examples.}'),
-    ('\\textit{\\penalty0\\href{https://bitbucket.org/tom-bjorkholm/'
-     'mformat/src/master/example/result}{This italic URL link to the '
+    ('\\textit{\\penalty0\\href{https://github.com/tom-bjorkholm/'
+     'mformat/blob/master/example/result}{This italic URL link to the '
      'examples result.}\\penalty0}'),
-    ('\\textit{\\textbf{\\penalty0\\href{https://bitbucket.org/'
-     'tom-bjorkholm/mformat/src/master/example/src}{This italic and '
+    ('\\textit{\\textbf{\\penalty0\\href{https://github.com/'
+     'tom-bjorkholm/mformat/blob/master/example/src}{This italic and '
      'bold URL link to the examples.}\\penalty0}}'),
     '\\end{document}',
 ]
@@ -228,19 +228,19 @@ EXPECTED_TXT_TEXT = [
     ),
     (
         '1. A numbered point with a URL: This URL link to the examples.\n'
-        '   https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/'
+        '   https://github.com/tom-bjorkholm/mformat/blob/master/example/'
         'src\n'
         '2. A numbered point with a bold URL: This bold URL link to the '
         'example source\n'
-        '   code. https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+        '   code. https://github.com/tom-bjorkholm/mformat/blob/master/'
         'example/src\n'
         '3. And with an italic URL: This italic URL link to the examples '
         'result.\n'
-        '   https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/'
+        '   https://github.com/tom-bjorkholm/mformat/blob/master/example/'
         'result\n'
         '4. And with an italic and bold URL: This italic and bold URL link '
         'to the\n'
-        '   examples. https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+        '   examples. https://github.com/tom-bjorkholm/mformat/blob/master/'
         'example/src\n'
     ),
 ]

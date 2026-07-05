@@ -10,7 +10,7 @@ from mformat.factory import create_mf, OptArgs
 
 # Relative path from result/ to example CSS; works when viewing HTML locally.
 # Raw Bitbucket URL:
-# https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/css/e41_styles.css  # noqa: E501
+# https://github.com/tom-bjorkholm/mformat/blob/master/example/css/e41_styles.css  # noqa: E501
 CSS_PATH = '../css/e41_styles.css'
 
 

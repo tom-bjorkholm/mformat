@@ -24,15 +24,15 @@ _example_test_path = (
 sys.path.insert(0, str(_example_test_path))
 from e21_url_in_paragraph_bold import example_url_in_paragraph_bold  # pylint: disable=wrong-import-position,wrong-import-order # noqa: E402,E501
 
-_BB = 'https://bitbucket.org/tom-bjorkholm/mformat/src/master'
+_BB = 'https://github.com/tom-bjorkholm/mformat/blob/master'
 EXPECTED_MD_TEXT = [
     '# URL in paragraph with bold & italic example\n\n'
     'This is a paragraph with a URL:\n'
     '*[This italic URL link to the examples]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example)*\n'
+    '(https://github.com/tom-bjorkholm/mformat/blob/master/example)*\n'
     'and\n'
     '**[this bold URL link to the example source code.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)**'
+    '(https://github.com/tom-bjorkholm/mformat/blob/master/example/src)**'
 ]
 EXPECTED_HTML_BODY_TEXT = [
     '<h1>',
@@ -94,11 +94,11 @@ EXPECTED_ODT_TEXT = EXPECTED_ODT_PRE + \
 EXPECTED_LATEX_TEXT = [
     '\\documentclass[a4paper]{report}',
     '\\chapter{URL in paragraph with bold \\& italic example}',
-    ('\\textit{\\penalty0\\href{https://bitbucket.org/tom-bjorkholm/'
-     'mformat/src/master/example}{This italic URL link to the '
+    ('\\textit{\\penalty0\\href{https://github.com/tom-bjorkholm/'
+     'mformat/blob/master/example}{This italic URL link to the '
      'examples}\\penalty0}'),
-    ('\\textbf{\\penalty0\\href{https://bitbucket.org/tom-bjorkholm/'
-     'mformat/src/master/example/src}{this bold URL link to the '
+    ('\\textbf{\\penalty0\\href{https://github.com/tom-bjorkholm/'
+     'mformat/blob/master/example/src}{this bold URL link to the '
      'example source code.}\\penalty0}'),
     '\\end{document}',
 ]
@@ -166,10 +166,10 @@ EXPECTED_TXT_TEXT = [
     (
         'This is a paragraph with a URL: This italic URL link to the '
         'examples\n'
-        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example and '
-        'this bold\n'
-        'URL link to the example source code.\n'
-        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src\n'
+        'https://github.com/tom-bjorkholm/mformat/blob/master/example and '
+        'this bold URL\n'
+        'link to the example source code.\n'
+        'https://github.com/tom-bjorkholm/mformat/blob/master/example/src\n'
     ),
 ]
 
@@ -187,7 +187,7 @@ def test_e21_url_in_paragraph_bold_rst(
     """Test example_url_in_paragraph_bold with the reST format."""
     expected_txt = [
         'URL in paragraph with bold & italic example',
-        '*`This italic URL link to the examples <https://bitbucket.org',
+        '*`This italic URL link to the examples <https://github.com',
         '**`this bold URL link to the example source code.',
     ]
     expected_error: list[str] = []

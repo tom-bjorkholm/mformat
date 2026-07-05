@@ -16,486 +16,486 @@ examples. Simpler examples are listed earlier, to help you get started.
 - Write an example file with a paragraph.
 
   - Source:
-    [e01_paragraph.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e01_paragraph.py)
+    [e01_paragraph.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e01_paragraph.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e01_paragraph.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e01_paragraph.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e01_paragraph.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e01_paragraph.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e01_paragraph.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e01_paragraph.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e01_paragraph.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e01_paragraph.odt)
 
 - Write an example file with several paragraphs.
 
   - Source:
-    [e02_paragraphs.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e02_paragraphs.py)
+    [e02_paragraphs.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e02_paragraphs.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e02_paragraphs.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e02_paragraphs.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e02_paragraphs.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e02_paragraphs.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e02_paragraphs.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e02_paragraphs.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e02_paragraphs.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e02_paragraphs.odt)
 
 - Write an example file with several paragraphs and bold text.
 
   - Source:
-    [e03_paragraphs_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e03_paragraphs_bold.py)
+    [e03_paragraphs_bold.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e03_paragraphs_bold.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e03_paragraphs_bold.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e03_paragraphs_bold.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e03_paragraphs_bold.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e03_paragraphs_bold.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e03_paragraphs_bold.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e03_paragraphs_bold.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e03_paragraphs_bold.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e03_paragraphs_bold.odt)
 
 - Write an example file with smart whitespace handling.
 
   - Source:
-    [e04_paragraphs_smart_ws.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e04_paragraphs_smart_ws.py)
+    [e04_paragraphs_smart_ws.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e04_paragraphs_smart_ws.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e04_paragraphs_smart_ws.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e04_paragraphs_smart_ws.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e04_paragraphs_smart_ws.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e04_paragraphs_smart_ws.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e04_paragraphs_smart_ws.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e04_paragraphs_smart_ws.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e04_paragraphs_smart_ws.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e04_paragraphs_smart_ws.odt)
 
 ## Headings
 
 - Write an example file with a heading.
 
   - Source:
-    [e05_heading.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e05_heading.py)
+    [e05_heading.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e05_heading.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e05_heading.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e05_heading.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e05_heading.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e05_heading.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e05_heading.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e05_heading.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e05_heading.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e05_heading.odt)
 
 - Write an example file with several headings.
 
   - Source:
-    [e06_headings.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e06_headings.py)
+    [e06_headings.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e06_headings.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e06_headings.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e06_headings.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e06_headings.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e06_headings.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e06_headings.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e06_headings.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e06_headings.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e06_headings.odt)
 
 ## Bullet Lists
 
 - Write an example file with a bullet list.
 
   - Source:
-    [e07_bullet_list.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e07_bullet_list.py)
+    [e07_bullet_list.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e07_bullet_list.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e07_bullet_list.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e07_bullet_list.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e07_bullet_list.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e07_bullet_list.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e07_bullet_list.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e07_bullet_list.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e07_bullet_list.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e07_bullet_list.odt)
 
 - Write an example file with a nestedbullet list.
 
   - Source:
-    [e08_bullet_nested.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e08_bullet_nested.py)
+    [e08_bullet_nested.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e08_bullet_nested.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e08_bullet_nested.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e08_bullet_nested.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e08_bullet_nested.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e08_bullet_nested.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e08_bullet_nested.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e08_bullet_nested.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e08_bullet_nested.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e08_bullet_nested.odt)
 
 - Write an example file with a bullet list with bold text.
 
   - Source:
-    [e09_bullet_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e09_bullet_bold.py)
+    [e09_bullet_bold.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e09_bullet_bold.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e09_bullet_bold.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e09_bullet_bold.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e09_bullet_bold.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e09_bullet_bold.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e09_bullet_bold.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e09_bullet_bold.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e09_bullet_bold.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e09_bullet_bold.odt)
 
 ## Numbered Lists
 
 - Write an example file with a numbered list.
 
   - Source:
-    [e10_numbered_list.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e10_numbered_list.py)
+    [e10_numbered_list.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e10_numbered_list.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e10_numbered_list.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e10_numbered_list.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e10_numbered_list.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e10_numbered_list.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e10_numbered_list.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e10_numbered_list.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e10_numbered_list.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e10_numbered_list.odt)
 
 - Write an example file with a nested numbered list.
 
   - Source:
-    [e11_numbered_nested.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e11_numbered_nested.py)
+    [e11_numbered_nested.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e11_numbered_nested.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e11_numbered_nested.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e11_numbered_nested.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e11_numbered_nested.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e11_numbered_nested.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e11_numbered_nested.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e11_numbered_nested.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e11_numbered_nested.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e11_numbered_nested.odt)
 
 - Write an example file with a numbered point list with bold text.
 
   - Source:
-    [e12_numbered_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e12_numbered_bold.py)
+    [e12_numbered_bold.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e12_numbered_bold.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e12_numbered_bold.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e12_numbered_bold.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e12_numbered_bold.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e12_numbered_bold.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e12_numbered_bold.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e12_numbered_bold.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e12_numbered_bold.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e12_numbered_bold.odt)
 
 ## Mixed Lists
 
 - Show how to nest numbered points with bullet points.
 
   - Source:
-    [e13_numbered_bullet_nested.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e13_numbered_bullet_nested.py)
+    [e13_numbered_bullet_nested.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e13_numbered_bullet_nested.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e13_numbered_bullet_nested.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e13_numbered_bullet_nested.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e13_numbered_bullet_nested.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e13_numbered_bullet_nested.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e13_numbered_bullet_nested.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e13_numbered_bullet_nested.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e13_numbered_bullet_nested.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e13_numbered_bullet_nested.odt)
 
 ## Tables
 
 - Show how to write a complete table in one call.
 
   - Source:
-    [e14_table_at_once.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e14_table_at_once.py)
+    [e14_table_at_once.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e14_table_at_once.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e14_table_at_once.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e14_table_at_once.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e14_table_at_once.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e14_table_at_once.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e14_table_at_once.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e14_table_at_once.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e14_table_at_once.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e14_table_at_once.odt)
 
 - Show how to write a complete table in one call with bold first row.
 
   - Source:
-    [e15_table_at_once_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e15_table_at_once_bold.py)
+    [e15_table_at_once_bold.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e15_table_at_once_bold.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e15_table_at_once_bold.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e15_table_at_once_bold.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e15_table_at_once_bold.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e15_table_at_once_bold.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e15_table_at_once_bold.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e15_table_at_once_bold.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e15_table_at_once_bold.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e15_table_at_once_bold.odt)
 
 - Show how to write a table row by row.
 
   - Source:
-    [e16_table_row_by_row.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e16_table_row_by_row.py)
+    [e16_table_row_by_row.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e16_table_row_by_row.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e16_table_row_by_row.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e16_table_row_by_row.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e16_table_row_by_row.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e16_table_row_by_row.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e16_table_row_by_row.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e16_table_row_by_row.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e16_table_row_by_row.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e16_table_row_by_row.odt)
 
 - Show how to write a table row by row with bold and italic text.
 
   - Source:
-    [e17_table_row_by_row_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e17_table_row_by_row_bold.py)
+    [e17_table_row_by_row_bold.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e17_table_row_by_row_bold.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e17_table_row_by_row_bold.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e17_table_row_by_row_bold.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e17_table_row_by_row_bold.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e17_table_row_by_row_bold.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e17_table_row_by_row_bold.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e17_table_row_by_row_bold.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e17_table_row_by_row_bold.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e17_table_row_by_row_bold.odt)
 
 ## URLs
 
 - Show how to write a URL in a paragraph.
 
   - Source:
-    [e20_url_in_paragraph.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e20_url_in_paragraph.py)
+    [e20_url_in_paragraph.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e20_url_in_paragraph.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e20_url_in_paragraph.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e20_url_in_paragraph.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e20_url_in_paragraph.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e20_url_in_paragraph.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e20_url_in_paragraph.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e20_url_in_paragraph.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e20_url_in_paragraph.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e20_url_in_paragraph.odt)
 
 - Show how to write a bold and italic URL in a paragraph.
 
   - Source:
-    [e21_url_in_paragraph_bold.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e21_url_in_paragraph_bold.py)
+    [e21_url_in_paragraph_bold.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e21_url_in_paragraph_bold.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e21_url_in_paragraph_bold.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e21_url_in_paragraph_bold.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e21_url_in_paragraph_bold.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e21_url_in_paragraph_bold.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e21_url_in_paragraph_bold.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e21_url_in_paragraph_bold.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e21_url_in_paragraph_bold.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e21_url_in_paragraph_bold.odt)
 
 - Show how to write a URL in a bullet list.
 
   - Source:
-    [e22_url_in_bullet_list.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e22_url_in_bullet_list.py)
+    [e22_url_in_bullet_list.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e22_url_in_bullet_list.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e22_url_in_bullet_list.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e22_url_in_bullet_list.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e22_url_in_bullet_list.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e22_url_in_bullet_list.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e22_url_in_bullet_list.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e22_url_in_bullet_list.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e22_url_in_bullet_list.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e22_url_in_bullet_list.odt)
 
 - Show how to write a URL in a numbered point list.
 
   - Source:
-    [e23_url_in_numbered_list.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e23_url_in_numbered_list.py)
+    [e23_url_in_numbered_list.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e23_url_in_numbered_list.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e23_url_in_numbered_list.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e23_url_in_numbered_list.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e23_url_in_numbered_list.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e23_url_in_numbered_list.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e23_url_in_numbered_list.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e23_url_in_numbered_list.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e23_url_in_numbered_list.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e23_url_in_numbered_list.odt)
 
 - Show how to write a URL in a heading, both italic and bold.
 
   - Source:
-    [e24_url_in_heading.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e24_url_in_heading.py)
+    [e24_url_in_heading.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e24_url_in_heading.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e24_url_in_heading.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e24_url_in_heading.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e24_url_in_heading.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e24_url_in_heading.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e24_url_in_heading.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e24_url_in_heading.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e24_url_in_heading.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e24_url_in_heading.odt)
 
 - Show how to force URLs to be shown as text.
 
   - Source:
-    [e25_url_as_text.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e25_url_as_text.py)
+    [e25_url_as_text.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e25_url_as_text.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e25_url_as_text.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e25_url_as_text.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e25_url_as_text.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e25_url_as_text.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e25_url_as_text.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e25_url_as_text.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e25_url_as_text.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e25_url_as_text.odt)
 
 ## Code and Code Blocks
 
 - Show how to write code blocks.
 
   - Source:
-    [e30_code_blocks.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e30_code_blocks.py)
+    [e30_code_blocks.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e30_code_blocks.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e30_code_blocks.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e30_code_blocks.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e30_code_blocks.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e30_code_blocks.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e30_code_blocks.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e30_code_blocks.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e30_code_blocks.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e30_code_blocks.odt)
 
 - Show how to write code in a heading and list items.
 
   - Source:
-    [e31_code_in_heading.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e31_code_in_heading.py)
+    [e31_code_in_heading.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e31_code_in_heading.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e31_code_in_heading.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e31_code_in_heading.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e31_code_in_heading.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e31_code_in_heading.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e31_code_in_heading.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e31_code_in_heading.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e31_code_in_heading.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e31_code_in_heading.odt)
 
 ## Passing extra arguments
 
 - Show a callback function to handle an existing file.
 
   - Source:
-    [e40_handle_existing_file.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e40_handle_existing_file.py)
+    [e40_handle_existing_file.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e40_handle_existing_file.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e40_handle_existing_file.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e40_handle_existing_file.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e40_handle_existing_file.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e40_handle_existing_file.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e40_handle_existing_file.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e40_handle_existing_file.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e40_handle_existing_file.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e40_handle_existing_file.odt)
 
 - Show how to use a CSS file and set document language in HTML.
 
   - Source:
-    [e41_use_css_in_html.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e41_use_css_in_html.py)
+    [e41_use_css_in_html.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e41_use_css_in_html.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e41_use_css_in_html.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e41_use_css_in_html.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e41_use_css_in_html.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e41_use_css_in_html.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e41_use_css_in_html.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e41_use_css_in_html.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e41_use_css_in_html.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e41_use_css_in_html.odt)
 
 ## Complete Example
 
 - Write an example file with most features of the multi format class.
 
   - Source:
-    [e50_simple_complete.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e50_simple_complete.py)
+    [e50_simple_complete.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e50_simple_complete.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e50_simple_complete.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e50_simple_complete.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e50_simple_complete.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e50_simple_complete.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e50_simple_complete.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e50_simple_complete.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e50_simple_complete.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e50_simple_complete.odt)
 
 ## Extend with own formats
 
 - A custom tree format class that extends MultiFormatTextBased.
 
   - Source:
-    [e60_custom_format.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e60_custom_format.py)
+    [e60_custom_format.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e60_custom_format.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e60_custom_format.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e60_custom_format.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e60_custom_format.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e60_custom_format.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e60_custom_format.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e60_custom_format.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e60_custom_format.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e60_custom_format.odt)
 
 ## Other
 
 - Show how to write block quotes.
 
   - Source:
-    [e32_block_quote.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e32_block_quote.py)
+    [e32_block_quote.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e32_block_quote.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e32_block_quote.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e32_block_quote.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e32_block_quote.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e32_block_quote.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e32_block_quote.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e32_block_quote.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e32_block_quote.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e32_block_quote.odt)
 
 - Show filtering of arguments to match the format used.
 
   - Source:
-    [e42_filter_args_for_format.py](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/e42_filter_args_for_format.py)
+    [e42_filter_args_for_format.py](https://github.com/tom-bjorkholm/mformat/blob/master/example/src/e42_filter_args_for_format.py)
 
   - Results:
 
-    - [HTML](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e42_filter_args_for_format.html)
+    - [HTML](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e42_filter_args_for_format.html)
 
-    - [Markdown](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e42_filter_args_for_format.md)
+    - [Markdown](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e42_filter_args_for_format.md)
 
-    - [Word (docx)](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e42_filter_args_for_format.docx)
+    - [Word (docx)](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e42_filter_args_for_format.docx)
 
-    - [ODT](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result/e42_filter_args_for_format.odt)
+    - [ODT](https://github.com/tom-bjorkholm/mformat/blob/master/example/result/e42_filter_args_for_format.odt)

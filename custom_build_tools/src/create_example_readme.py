@@ -33,9 +33,9 @@ INTRO_PARAGRAPHS = [
     'you get started.',
 ]
 
-# Base URL for bitbucket repository
-BITBUCKET_BASE_URL = (
-    'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example'
+# Base URL for GitHub repository
+GITHUB_BASE_URL = (
+    'https://github.com/tom-bjorkholm/mformat/blob/master/example'
 )
 
 # Categories with their file name patterns (prefix after 'e' and before '_')
@@ -192,9 +192,9 @@ def group_examples_by_category(
     return grouped
 
 
-def generate_bitbucket_url(relative_path: str) -> str:
-    """Generate a bitbucket URL for a file."""
-    return f'{BITBUCKET_BASE_URL}/{relative_path}'
+def generate_github_url(relative_path: str) -> str:
+    """Generate a GitHub URL for a file."""
+    return f'{GITHUB_BASE_URL}/{relative_path}'
 
 
 def get_ordered_categories(
@@ -232,7 +232,7 @@ def write_readme(examples: list[ExampleInfo], readme_path: Path) -> None:
                 # Example description (level 2 bullet)
                 mf.new_bullet_item(text=example.description, level=1)
                 # Source code link (level 3 bullet)
-                source_url = generate_bitbucket_url(f'src/{example.name}.py')
+                source_url = generate_github_url(f'src/{example.name}.py')
                 mf.new_bullet_item(text='Source: ', level=2)
                 mf.add_url(text=f'{example.name}.py', url=source_url)
                 # Result files (level 3 bullet header, level 4 for each file)
@@ -242,7 +242,7 @@ def write_readme(examples: list[ExampleInfo], readme_path: Path) -> None:
                 for ext in RESULT_EXTENSIONS:
                     if ext not in example.result_files:
                         continue
-                    result_url = generate_bitbucket_url(
+                    result_url = generate_github_url(
                         f'result/{example.name}{ext}')
                     ext_name = EXTENSION_NAMES.get(ext, ext)
                     mf.new_bullet_item(text='', level=3)

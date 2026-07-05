@@ -29,17 +29,17 @@ EXPECTED_MD_TEXT = [
     '# URL in paragraph example\n\n'
     'This is a paragraph with a URL: '
     'The examples are here.',
-    'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example\n\n',
+    'https://github.com/tom-bjorkholm/mformat/blob/master/example\n\n',
     'The URL was added as a link using add_url(text, url)\n\n',
     'By not specifying the text, the URL is shows as text:\n'
-    'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example\n\n',
+    'https://github.com/tom-bjorkholm/mformat/blob/master/example\n\n',
     'A paragraph can of course have multiple URLs. '
     'The source code of the examples',
     'are here. '
-    'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src '
+    'https://github.com/tom-bjorkholm/mformat/blob/master/example/src '
     'and\n'
     'The produced output files are here.',
-    'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result'
+    'https://github.com/tom-bjorkholm/mformat/blob/master/example/result'
     '\n\n',
     'The URLs are shown as text instead of clickable links.',
     'This might be useful when',
@@ -53,21 +53,21 @@ EXPECTED_HTML_BODY_TEXT = [
     '</h1>',
     '<p>',
     'This is a paragraph with a URL: The examples are here.',
-    'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example',
+    'https://github.com/tom-bjorkholm/mformat/blob/master/example',
     '</p>',
     '<p>',
     'The URL was added as a link using add_url(text, url)',
     '</p>',
     '<p>',
     'By not specifying the text, the URL is shows as text:',
-    'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example',
+    'https://github.com/tom-bjorkholm/mformat/blob/master/example',
     '</p>',
     '<p>',
     'A paragraph can of course have multiple URLs.',
     'The source code of the examples are here.',
-    'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src',
+    'https://github.com/tom-bjorkholm/mformat/blob/master/example/src',
     'and The produced output files are here.',
-    'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result',
+    'https://github.com/tom-bjorkholm/mformat/blob/master/example/result',
     '</p>',
     '<p>',
     'The URLs are shown as text instead of clickable links.',
@@ -87,9 +87,9 @@ EXPECTED_LATEX_TEXT = [
     '\\usepackage{booktabs}',
     '\\chapter{URL in paragraph example}',
     ('This is a paragraph with a URL: The examples are here. https://'
-     'bitbucket.org/tom-bjorkholm/mformat/src/master/example'),
+     'github.com/tom-bjorkholm/mformat/blob/master/example'),
     ('By not specifying the text, the URL is shows as text: https://'
-     'bitbucket.org/tom-bjorkholm/mformat/src/master/example'),
+     'github.com/tom-bjorkholm/mformat/blob/master/example'),
     ('The URLs are shown as text instead of clickable links. This might '
      'be useful'),
     ('url\\_as\\_text argument to the create\\_mf factory function.'),
@@ -150,7 +150,7 @@ EXPECTED_TXT_TEXT = [
     ),
     (
         'This is a paragraph with a URL: The examples are here.\n'
-        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example\n'
+        'https://github.com/tom-bjorkholm/mformat/blob/master/example\n'
         '\n'
     ),
     (
@@ -159,16 +159,16 @@ EXPECTED_TXT_TEXT = [
     ),
     (
         'By not specifying the text, the URL is shows as text:\n'
-        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example\n'
+        'https://github.com/tom-bjorkholm/mformat/blob/master/example\n'
         '\n'
     ),
     (
         'A paragraph can of course have multiple URLs. The source code of '
         'the examples\n'
-        'are here. https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
-        'example/src\n'
-        'and The produced output files are here.\n'
-        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/'
+        'are here. https://github.com/tom-bjorkholm/mformat/blob/master/'
+        'example/src and\n'
+        'The produced output files are here.\n'
+        'https://github.com/tom-bjorkholm/mformat/blob/master/example/'
         'result\n'
         '\n'
     ),

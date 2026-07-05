@@ -70,9 +70,9 @@ EXPECTED_TXT_TEXT = [
         '\n'
     ),
     (
-        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/'
+        'https://github.com/tom-bjorkholm/mformat/blob/master/example/src/'
         'e50_simple_complete.py\n'
-        '==================================================================='
+        '================================================================='
         '======================\n'
         '\n'
     ),
@@ -82,7 +82,7 @@ EXPECTED_TXT_TEXT = [
         'possible to add URLs to text, for instance the URL to the example '
         'file is added\n'
         'here. The same example file\n'
-        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src/'
+        'https://github.com/tom-bjorkholm/mformat/blob/master/example/src/'
         'e50_simple_complete.py\n'
         '\n'
     ),
@@ -188,8 +188,8 @@ EXPECTED_RST_TEXT = [
         '------------------------------------------------------------------\n'
     ),
     (
-        'Heading with URL to `the example file <https://bitbucket.org/'
-        'tom-bjorkholm/mformat/src/master/example/src/'
+        'Heading with URL to `the example file <https://github.com/'
+        'tom-bjorkholm/mformat/blob/master/example/src/'
         'e50_simple_complete.py>`_'
     ),
     '* Item 1',
@@ -213,8 +213,8 @@ EXPECTED_LATEX_TEXT = [
     '\\section{Sub heading of example where add\\_text adds text to the '
     'sub heading}',
     '\\textit{\\textbf{ There is never a need to close an item type.}}',
-    '\\section{Heading with URL to \\penalty0\\href{https://bitbucket.org/'
-    'tom-bjorkholm/mformat/src/master/example/src/e50\\_simple\\_complete.'
+    '\\section{Heading with URL to \\penalty0\\href{https://github.com/'
+    'tom-bjorkholm/mformat/blob/master/example/src/e50\\_simple\\_complete.'
     'py}{the example file}\\penalty0}',
     '\\begin{itemize}',
     '\\item Item 2.1',

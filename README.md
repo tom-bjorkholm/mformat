@@ -30,7 +30,7 @@ To make it easy for a programmer new to mformat to start using it there are a nu
 The mformat repo uses submodules. To clone it use the command:
 
 ````sh
-git clone --recurse-submodules git@bitbucket.org:tom-bjorkholm/mformat.git
+git clone --recurse-submodules git@github.com:tom-bjorkholm/mformat.git
 ````
 
 If you forgot to include the `--recurse-submodules` in your `git clone` command
@@ -91,7 +91,7 @@ reports.
 
 The file `./common_build_tools/README.md` (in git submodule - see above) contains more
 information about the build system. This README can also be viewed at
-[https://bitbucket.org/tom-bjorkholm/common_build_tools/src/master/README.md](https://bitbucket.org/tom-bjorkholm/common_build_tools/src/master/README.md)
+[https://github.com/tom-bjorkholm/common_build_tools/blob/master/README.md](https://github.com/tom-bjorkholm/common_build_tools/blob/master/README.md)
 
 ### The readme files for PyPI
 
@@ -100,8 +100,9 @@ The script `build_helpers/create_pypi_readme.py` creates the 2 readme files for 
 
 ## Test summary
 
-- Test result: 2790 passed in 40s
-- No Flake8 warnings.
+- Test result: 2831 passed in 48s
+- No flake8 warnings.
 - No mypy errors found.
+- Python layout warnings.
 - Built version(s): 0.6.1
-- Build and test using Python 3.14.3
+- Build and test using Python 3.14.6

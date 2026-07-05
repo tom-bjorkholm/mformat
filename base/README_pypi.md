@@ -145,21 +145,21 @@ to another nesting level.
 
 A number of minimal but complete example programs are provided to help the
 programmer new to mformat. See
-[list of examples](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/README.md)
+[list of examples](https://github.com/tom-bjorkholm/mformat/blob/master/example/README.md)
 .
 
 ## API documentation
 
 API documentation automatically extracted from the Python code and docstrings
 are available
-[here for the public API](https://bitbucket.org/tom-bjorkholm/mformat/src/master/doc/api.md)
+[here for the public API](https://github.com/tom-bjorkholm/mformat/blob/master/doc/api.md)
 for programmers using the API and
-[here for the protected API](https://bitbucket.org/tom-bjorkholm/mformat/src/master/doc/protected_api.md)
+[here for the protected API](https://github.com/tom-bjorkholm/mformat/blob/master/doc/protected_api.md)
 for programmers that want to extend the API by adding their own derived class
 that provide some other output format.
 
 Even though some may like reading API documentation, the
-[example programs](https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/README.md)
+[example programs](https://github.com/tom-bjorkholm/mformat/blob/master/example/README.md)
 probably provide a better introduction.
 
 ## Version history
@@ -193,8 +193,9 @@ format was introduced.
 
 ## Test summary
 
-- Test result: 2790 passed in 40s
-- No Flake8 warnings.
+- Test result: 2831 passed in 48s
+- No flake8 warnings.
 - No mypy errors found.
+- Python layout warnings.
 - Built version(s): 0.6.1
-- Build and test using Python 3.14.3
+- Build and test using Python 3.14.6

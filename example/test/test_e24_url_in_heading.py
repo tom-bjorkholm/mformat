@@ -29,18 +29,18 @@ EXPECTED_MD_TEXT = [
     '# URL in heading example\n\n',
     '# A heading with a URL: '
     '[This URL link to the examples.]'
-    '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example)\n\n',
+    '(https://github.com/tom-bjorkholm/mformat/blob/master/example)\n\n',
     '## A heading with a bold URL: ',
     ('**[This bold URL link to the example source code.]'
-     '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)**'
+     '(https://github.com/tom-bjorkholm/mformat/blob/master/example/src)**'
      '\n\n'),
     '## A heading with an italic URL: ',
     ('*[This italic URL link to the examples result.]'
-     '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/result)*'
+     '(https://github.com/tom-bjorkholm/mformat/blob/master/example/result)*'
      '\n\n'),
     '## And with an italic and bold URL: ',
     ('***[This italic and bold URL link to the examples.]'
-     '(https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src)***'
+     '(https://github.com/tom-bjorkholm/mformat/blob/master/example/src)***'
      '\n\n'),
     ('The add_url function can be used to add a URL to a heading, as well '
      'as to'),
@@ -51,7 +51,7 @@ EXPECTED_HTML_BODY_TEXT = [
     '</h1>',
     '<h1>',
     'A heading with a URL:',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example">',
     'This URL link to the examples.',
     '</a>',
@@ -59,7 +59,7 @@ EXPECTED_HTML_BODY_TEXT = [
     '<h2>',
     'A heading with a bold URL:',
     '<strong>',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This bold URL link to the example source code.',
     '</a>',
@@ -68,14 +68,14 @@ EXPECTED_HTML_BODY_TEXT = [
     '<h2>',
     'A heading with an italic URL:',
     '<em>',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/result">',
     'This italic URL link to the examples result.',
     '</a>', '</em>', '</h2>',
     '<h2>',
     'And with an italic and bold URL:',
     '<em>', '<strong>',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This italic and bold URL link to the examples.',
     '</a>', '</strong>', '</em>', '</h2>', '<p>',
@@ -90,28 +90,28 @@ EXPECTED_DOCX_HTML_TEXT = [
     '</h1>',
     '<h1>',
     'A heading with a URL:',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example">',
     'This URL link to the examples.',
     '</a>',
     '</h1>',
     '<h2>',
     'A heading with a bold URL:',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This bold URL link to the example source code.',
     '</a>',
     '</h2>',
     '<h2>',
     'A heading with an italic URL:',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/result">',
     'This italic URL link to the examples result.',
     '</a>',
     '</h2>',
     '<h2>',
     'And with an italic and bold URL:',
-    '<a href="https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+    '<a href="https://github.com/tom-bjorkholm/mformat/blob/master/'
     'example/src">',
     'This italic and bold URL link to the examples.',
     '</a>',
@@ -130,18 +130,18 @@ EXPECTED_LATEX_TEXT = [
     '\\documentclass[a4paper]{report}',
     '\\chapter{URL in heading example}',
     ('\\chapter{A heading with a URL: \\penalty0\\href{https://'
-     'bitbucket.org/tom-bjorkholm/mformat/src/master/example}{This URL '
+     'github.com/tom-bjorkholm/mformat/blob/master/example}{This URL '
      'link to the examples.}\\penalty0}'),
     ('\\section{A heading with a bold URL: \\textbf{\\penalty0\\href'
-     '{https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+     '{https://github.com/tom-bjorkholm/mformat/blob/master/'
      'example/src}{This bold URL link to the example source '
      'code.}\\penalty0}}'),
     ('\\section{A heading with an italic URL: \\textit{\\penalty0\\href'
-     '{https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+     '{https://github.com/tom-bjorkholm/mformat/blob/master/'
      'example/result}{This italic URL link to the examples '
      'result.}\\penalty0}}'),
     ('And with an italic and bold URL: \\textit{\\textbf{\\penalty0\\href'
-     '{https://bitbucket.org/tom-bjorkholm/mformat/src/master/'
+     '{https://github.com/tom-bjorkholm/mformat/blob/master/'
      'example/src}{This italic and bold URL link to the '
      'examples.}\\penalty0}}}'),
     ('The add\\_url function can be used to add a URL to a heading, '
@@ -209,8 +209,8 @@ EXPECTED_TXT_TEXT = [
         '\n'
     ),
     (
-        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example\n'
-        '**************************************************************\n'
+        'https://github.com/tom-bjorkholm/mformat/blob/master/example\n'
+        '************************************************************\n'
         '\n'
     ),
     (
@@ -221,8 +221,8 @@ EXPECTED_TXT_TEXT = [
         '\n'
     ),
     (
-        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src\n'
-        '==================================================================\n'
+        'https://github.com/tom-bjorkholm/mformat/blob/master/example/src\n'
+        '================================================================\n'
         '\n'
     ),
     (
@@ -233,10 +233,9 @@ EXPECTED_TXT_TEXT = [
         '\n'
     ),
     (
-        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/'
+        'https://github.com/tom-bjorkholm/mformat/blob/master/example/'
         'result\n'
-        '===================================================================='
-        '=\n'
+        '===================================================================\n'
         '\n'
     ),
     (
@@ -247,8 +246,8 @@ EXPECTED_TXT_TEXT = [
         '\n'
     ),
     (
-        'https://bitbucket.org/tom-bjorkholm/mformat/src/master/example/src\n'
-        '==================================================================\n'
+        'https://github.com/tom-bjorkholm/mformat/blob/master/example/src\n'
+        '================================================================\n'
         '\n'
     ),
     (

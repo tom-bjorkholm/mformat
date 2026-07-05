@@ -8,7 +8,7 @@
 from e01_paragraph import example_main
 from mformat.factory import create_mf
 
-REPO_URL = 'https://bitbucket.org/tom-bjorkholm/mformat/src/master'
+REPO_URL = 'https://github.com/tom-bjorkholm/mformat/blob/master'
 EXAMPLES_URL = f'{REPO_URL}/example'
 
 
