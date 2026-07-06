@@ -194,9 +194,9 @@ format was introduced.
 
 ## Test summary
 
-- Test result: 2831 passed in 52s
+- Test result: 2831 passed in 48s
 - No flake8 warnings.
 - No mypy errors found.
 - Python layout report not available.
-- Built version(s): 0.7
+- Built version(s): 0.7.1
 - Build and test using Python 3.14.6
