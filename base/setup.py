@@ -5,18 +5,13 @@ from setuptools import setup
 
 setup(
   name='mformat',
-  version='0.6.1',
+  version='0.7',
   description='Uniform way to write simple text to different file formats',
   author='Tom Björkholm',
   author_email='klausuler_linnet0q@icloud.com',
   python_requires='>=3.12',
   packages=['mformat'],
   package_dir={'mformat': 'src/mformat'},
-  package_data={'mformat': ['src/py.typed']},
-  install_requires=[  # pylint: disable=duplicate-code
-    'pip',
-    'setuptools',
-    'build',
-    'wheel'
-  ]
+  package_data={'mformat': ['py.typed']},
+  install_requires=[]
 )
