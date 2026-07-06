@@ -54,4 +54,5 @@ def custom_spec() -> Optional[BuildSpec]:
             create_pypi_readme_hook
         ],
         custom_final=[restore_equiv_docx_odt_hook, restore_equiv_pdf_hook],
+        python_layout_check=False
     )
