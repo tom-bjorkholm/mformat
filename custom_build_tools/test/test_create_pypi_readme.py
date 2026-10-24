@@ -34,9 +34,7 @@ def _set_version_history(monkeypatch: pytest.MonkeyPatch,
 def _create_paths_for_version_check(
         root: Path,
         base_setup_version: str,
-        base_pyproject_version: str,
-        extend_setup_version: str,
-        extend_pyproject_version: str) -> dict[str, object]:
+        extend_setup_version: str) -> dict[str, object]:
     """Write local version files and return the corresponding paths dict."""
     write_text(
         root / 'base_setup.py',
@@ -44,7 +42,7 @@ def _create_paths_for_version_check(
     )
     write_text(
         root / 'base_pyproject.toml',
-        f'version = "{base_pyproject_version}"\n'
+        '\n'
     )
     write_text(
         root / 'ext_setup.py',
@@ -52,7 +50,7 @@ def _create_paths_for_version_check(
     )
     write_text(
         root / 'ext_pyproject.toml',
-        f'version = "{extend_pyproject_version}"\n'
+        '\n'
     )
     return {
         'base': create_pypi.Paths(
@@ -113,9 +111,7 @@ def test_check_version_accepts_consistent_files(
         paths = _create_paths_for_version_check(
             root=root,
             base_setup_version='1.2.5',
-            base_pyproject_version='1.2.5',
             extend_setup_version='1.2.5',
-            extend_pyproject_version='1.2.5'
         )
         create_pypi.check_version(paths)
 
@@ -130,9 +126,7 @@ def test_check_version_fails_on_mismatch(
         paths = _create_paths_for_version_check(
             root=root,
             base_setup_version='1.2.5',
-            base_pyproject_version='1.2.4',
-            extend_setup_version='1.2.5',
-            extend_pyproject_version='1.2.5'
+            extend_setup_version='1.2.4'
         )
         with pytest.raises(SystemExit) as exc:
             create_pypi.check_version(paths)

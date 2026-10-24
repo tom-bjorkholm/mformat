@@ -17,9 +17,9 @@ setup(
   install_requires=[
     'mformat >= 0.7.1',
     'python-docx >= 1.2.0',
-    'odfdo >= 3.22.10',
+    'odfdo >= 3.27.2',
     'PyRTF3 >= 0.47.5',
-    'reportlab >= 5.0.0',
-    'types-reportlab >= 4.5.1.20260521',
+    'reportlab >= 5.1.0',
+    'types-reportlab >= 5.0.0.20261008',
   ]
 )

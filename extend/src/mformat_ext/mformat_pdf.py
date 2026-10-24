@@ -102,16 +102,9 @@ class _PdfDocumentTemplate(SimpleDocTemplate):
                  outline_root_title: str,
                  pagesize: tuple[float, float]) -> None:
         """Initialize one PDF document template."""
-        kwargs: dict[str, object] = {
-            'pagesize': pagesize,
-            'leftMargin': _PAGE_MARGIN,
-            'rightMargin': _PAGE_MARGIN,
-            'topMargin': _PAGE_MARGIN,
-            'bottomMargin': _PAGE_MARGIN,
-        }
-        if title is not None:
-            kwargs['title'] = title
-        super().__init__(file_name, **kwargs)
+        super().__init__(file_name, pagesize=pagesize, title=title,
+                         leftMargin=_PAGE_MARGIN, rightMargin=_PAGE_MARGIN,
+                         topMargin=_PAGE_MARGIN, bottomMargin=_PAGE_MARGIN)
         self.outline_root_title = outline_root_title
         self._bookmark_counter = 0
         self._last_outline_level = -1

@@ -25,12 +25,12 @@ from git_restore_equiv_common import (
     list_equivalent_files,
     restore_sorted_files,
 )
+_PYMUPDF_IMPORT_WARNINGS = (r'builtin type .* has no __module__ attribute',
+                            r"'typing\.ByteString' .* deprecated")
 with warnings.catch_warnings():
-    warnings.filterwarnings(
-        'ignore',
-        message=r'builtin type .* has no __module__ attribute',
-        category=DeprecationWarning,
-    )
+    for _message in _PYMUPDF_IMPORT_WARNINGS:
+        warnings.filterwarnings('ignore', message=_message,
+                                category=DeprecationWarning)
     try:
         import pymupdf
     except ImportError as exc:

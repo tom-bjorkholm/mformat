@@ -340,10 +340,9 @@ def check_version(paths: PathsForBoth) -> None:
     for key, path in paths.items():
         assert key in ['base', 'extend']
         assert isinstance(path, Paths)
-        versions.append(get_version_in_file(path.pyproject))
         versions.append(get_version_in_file(path.setup))
-    if len(versions) != 4:
-        print(f'Expected 4 versions, got {len(versions)}',
+    if len(versions) != 2:
+        print(f'Expected 2 versions, got {len(versions)}',
               file=sys.stderr)
         sys.exit(1)
     for i in versions[1:]:

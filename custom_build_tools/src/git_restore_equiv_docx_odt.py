@@ -29,7 +29,7 @@ try:
     import mammoth  # type: ignore
     from odf.opendocument import load as odf_load  # type: ignore
     from odf.odf2xhtml import ODF2XHTML  # type: ignore
-    from htmlcompare import compare_html  # type: ignore
+    from htmlcompare import Difference, compare_html
     from mformat.factory import create_mf
 except ImportError as exc:
     exit_for_missing_venv_dependency(exc)
@@ -45,6 +45,14 @@ def are_docx_files_equivalent(file1: Path, file2: Path) -> bool:
     ret = content1.value == content2.value
     assert isinstance(ret, bool)
     return ret
+
+
+def is_anchor_difference(diff: Difference) -> bool:
+    """Check if a difference involves an anchor on either side.
+
+    Either side may be None (for example a missing or an extra node).
+    """
+    return 'anchor' in f'{diff.expected} {diff.actual}'
 
 
 def are_odt_files_equivalent(file1: Path, file2: Path) -> bool:
@@ -64,7 +72,7 @@ def are_odt_files_equivalent(file1: Path, file2: Path) -> bool:
         title_pos = html2a.find('</head>')
         html2 = html2a[title_pos:]
     result = compare_html(html1, html2)
-    diffs = [d for d in result.differences if 'anchor' not in d.expected]
+    diffs = [d for d in result.differences if not is_anchor_difference(d)]
     if diffs:
         #  print(f'diffs: {diffs}')
         return False

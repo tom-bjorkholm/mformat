@@ -557,3 +557,24 @@ def test_deeply_nested_numbered_list(
     assert 'Level 3' in all_text
     assert 'Level 4' in all_text
     assert 'Level 5' in all_text
+
+
+@pytest.mark.parametrize('numbered', [False, True])
+def test_item_paragraph_exact(capsys: pytest.CaptureFixture[str],
+                              numbered: bool) -> None:
+    """Test that each list item paragraph holds exactly the item text.
+
+    Guards against stray leading whitespace or line breaks in list items.
+    """
+
+    def func(mfo: MultiFormatOdt) -> None:
+        for text in ('First item', 'Second item'):
+            if numbered:
+                mfo.new_numbered_point_item(text=text)
+            else:
+                mfo.new_bullet_item(text=text)
+
+    doc = silent_odt_create(capsys, func=func)
+    texts = [[get_element_text(para) for para in item.getElementsByType(P)]
+             for item in get_elements_by_type(doc, ListItem)]
+    assert texts == [['First item'], ['Second item']]

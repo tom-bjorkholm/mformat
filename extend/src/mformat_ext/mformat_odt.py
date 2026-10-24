@@ -613,9 +613,7 @@ class MultiFormatOdt(MultiFormat):
             level: The level of the bullet item (1-9).
         """
         assert isinstance(level, int)
-        self.odt_listitem = ListItem()
-        self.odt_listitem.text_content = Paragraph(text_or_element=Paragraph())
-        assert self.odt_listitem is not None
+        self.odt_listitem = ListItem(text_or_element=Paragraph())
         self.current_paragraph = None
 
     def _end_bullet_item(self, level: int) -> None:

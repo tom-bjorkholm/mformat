@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import sys
 from tempfile import TemporaryDirectory
-from typing import BinaryIO
+from typing import BinaryIO, Optional
 import pytest
 _TEST_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(_TEST_DIR))
@@ -37,7 +37,8 @@ class FakeHtmlResult:
 class FakeDifference:
     """Store one fake HTML difference."""
 
-    expected: str
+    expected: Optional[str]
+    actual: Optional[str]
 
 
 @dataclass
@@ -68,13 +69,16 @@ def test_are_docx_files_equivalent_uses_converted_html(
 
 
 @pytest.mark.parametrize(
-    'expected_values, expected_result',
-    [(['anchor only'], True),
-     (['anchor first', 'paragraph diff'], False)]
+    'diff_values, expected_result',
+    [([('anchor only', None)], True),
+     ([(None, '<a id="anchor001">')], True),
+     ([('<p>', None)], False),
+     ([(None, "text('extra')")], False),
+     ([('anchor first', None), ('paragraph diff', 'other')], False)]
 )
 def test_are_odt_files_equivalent_filters_anchor_differences(
         monkeypatch: pytest.MonkeyPatch,
-        expected_values: list[str],
+        diff_values: list[tuple[Optional[str], Optional[str]]],
         expected_result: bool) -> None:
     """Test ODT equivalence ignores anchor differences only."""
     class FakeConverter:  # pylint: disable=too-few-public-methods
@@ -89,8 +93,8 @@ def test_are_odt_files_equivalent_filters_anchor_differences(
         """Return configured differences regardless of input html."""
         _ = html1
         _ = html2
-        differences = [FakeDifference(expected=value)
-                       for value in expected_values]
+        differences = [FakeDifference(expected=expected, actual=actual)
+                       for expected, actual in diff_values]
         return FakeCompareResult(differences=differences)
 
     def fake_odf_load(file_obj: BinaryIO) -> object:
