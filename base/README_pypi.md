@@ -166,6 +166,7 @@ probably provide a better introduction.
 
 | Version | Date        | Python version | Description                     |
 |---------|-------------|----------------|---------------------------------|
+| 0.8     | 25 Oct 2026 | 3.12 or newer  | Updates for Python 3.15         |
 | 0.7     | 06 Jul 2026 | 3.12 or newer  | Relaxed dependencies            |
 | 0.6     | 14 Mar 2026 | 3.12 or newer  | Added PDF and LaTeX formats     |
 | 0.5     | 07 Mar 2026 | 3.12 or newer  | Added RTF, TXT and reST formats |
@@ -194,10 +195,10 @@ format was introduced.
 
 ## Test summary
 
-- Test result: 2696 passed in 30s
+- Test result: 2696 passed in 29s
 - No flake8 warnings.
 - No mypy errors found.
 - No pylint warnings.
 - Python layout report not available.
-- Built version(s): 0.7.1
+- Built version(s): 0.8
 - Build and test using Python 3.15.1

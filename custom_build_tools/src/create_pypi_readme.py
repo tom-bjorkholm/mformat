@@ -197,6 +197,7 @@ P2_API_DOCUMENTATION_2 = 'probably provide a better introduction.'
 H2_VERSION_HISTORY = 'Version history'
 VERSION_HISTORY = [
      ['Version', 'Date', 'Python version', 'Description'],
+     ['0.8', '25 Oct 2026', '3.12 or newer', 'Updates for Python 3.15'],
      ['0.7', '06 Jul 2026', '3.12 or newer', 'Relaxed dependencies'],
      ['0.6', '14 Mar 2026', '3.12 or newer', 'Added PDF and LaTeX formats'],
      ['0.5', '07 Mar 2026', '3.12 or newer',
