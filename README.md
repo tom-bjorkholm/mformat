@@ -105,5 +105,5 @@ The script `build_helpers/create_pypi_readme.py` creates the 2 readme files for 
 - No mypy errors found.
 - No pylint warnings.
 - Python layout report not available.
-- Built version(s): 0.8
+- Built version(s): 0.8.1
 - Build and test using Python 3.15.1

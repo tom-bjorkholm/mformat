@@ -194,20 +194,6 @@ P2_API_DOCUMENTATION_1 = 'Even though some may like reading API ' \
     'documentation, the '
 URL_EXAMPLES_TEXT2 = 'example programs'
 P2_API_DOCUMENTATION_2 = 'probably provide a better introduction.'
-H2_VERSION_HISTORY = 'Version history'
-VERSION_HISTORY = [
-     ['Version', 'Date', 'Python version', 'Description'],
-     ['0.8', '25 Oct 2026', '3.12 or newer', 'Updates for Python 3.15'],
-     ['0.7', '06 Jul 2026', '3.12 or newer', 'Relaxed dependencies'],
-     ['0.6', '14 Mar 2026', '3.12 or newer', 'Added PDF and LaTeX formats'],
-     ['0.5', '07 Mar 2026', '3.12 or newer',
-      'Added RTF, TXT and reST formats'],
-     ['0.4', '21 Feb 2026', '3.12 or newer', 'Added block quote support'],
-     ['0.3', '18 Feb 2026', '3.12 or newer', 'Improved API and fixes'],
-     ['0.2.2', '31 Jan 2026', '3.12 or newer', 'Dependency corrected'],
-     ['0.2.1', '30 Jan 2026', '3.12 or newer', 'Minor documentation fix'],
-     ['0.2', '30 Jan 2026', '3.12 or newer', 'First released version']
-]
 H2_FORMATS = 'Output file formats'
 P1_FORMATS = 'The following table provides information about in which '\
     'version support for a format was introduced.'
@@ -304,8 +290,6 @@ def create_pypi_readme(readme_type: ReadmeType, path: Path) -> None:
         mft.new_paragraph(text=P2_API_DOCUMENTATION_1)
         mft.add_url(url=URL_EXAMPLES, text=URL_EXAMPLES_TEXT2)
         mft.add_text(text=P2_API_DOCUMENTATION_2)
-        mft.new_heading(level=2, text=H2_VERSION_HISTORY)
-        mft.write_complete_table(table=VERSION_HISTORY)
         mft.new_heading(level=2, text=H2_FORMATS)
         mft.new_paragraph(text=P1_FORMATS)
         mft.write_complete_table(table=FORMATS)
@@ -326,15 +310,6 @@ def get_version_in_file(path: Path) -> str:
     return ''
 
 
-def version_in_readme() -> str:
-    """Get the biggest version number in README we create now."""
-    version = '0.0.0'
-    for line in VERSION_HISTORY[1:]:
-        if line[0] > version:
-            version = line[0]
-    return version
-
-
 def check_version(paths: PathsForBoth) -> None:
     """Check that the version information is consistent between the files."""
     versions: list[str] = []
@@ -349,20 +324,6 @@ def check_version(paths: PathsForBoth) -> None:
     for i in versions[1:]:
         if i != versions[0]:
             print(f'Versions are not consistent: {versions[0]} and {i}',
-                  file=sys.stderr)
-            sys.exit(1)
-    ver_in_readme = version_in_readme()
-    if ver_in_readme > versions[0]:
-        print(f'Version in README {ver_in_readme} is not consistent with '
-              f'versions in files {versions[0]}',
-              file=sys.stderr)
-        sys.exit(1)
-    ver_list_readme: list[str] = ver_in_readme.split('.')
-    ver_list_files: list[str] = versions[0].split('.')
-    for j in [0, 1]:
-        if ver_list_readme[j] != ver_list_files[j]:
-            print(f'Version in README {ver_in_readme} is not consistent with '
-                  f'versions in files {versions[0]}',
                   file=sys.stderr)
             sys.exit(1)
 

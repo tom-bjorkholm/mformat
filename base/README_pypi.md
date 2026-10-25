@@ -162,20 +162,6 @@ Even though some may like reading API documentation, the
 [example programs](https://github.com/tom-bjorkholm/mformat/blob/master/example/README.md)
 probably provide a better introduction.
 
-## Version history
-
-| Version | Date        | Python version | Description                     |
-|---------|-------------|----------------|---------------------------------|
-| 0.8     | 25 Oct 2026 | 3.12 or newer  | Updates for Python 3.15         |
-| 0.7     | 06 Jul 2026 | 3.12 or newer  | Relaxed dependencies            |
-| 0.6     | 14 Mar 2026 | 3.12 or newer  | Added PDF and LaTeX formats     |
-| 0.5     | 07 Mar 2026 | 3.12 or newer  | Added RTF, TXT and reST formats |
-| 0.4     | 21 Feb 2026 | 3.12 or newer  | Added block quote support       |
-| 0.3     | 18 Feb 2026 | 3.12 or newer  | Improved API and fixes          |
-| 0.2.2   | 31 Jan 2026 | 3.12 or newer  | Dependency corrected            |
-| 0.2.1   | 30 Jan 2026 | 3.12 or newer  | Minor documentation fix         |
-| 0.2     | 30 Jan 2026 | 3.12 or newer  | First released version          |
-
 ## Output file formats
 
 The following table provides information about in which version support for a
@@ -200,5 +186,5 @@ format was introduced.
 - No mypy errors found.
 - No pylint warnings.
 - Python layout report not available.
-- Built version(s): 0.8
+- Built version(s): 0.8.1
 - Build and test using Python 3.15.1

@@ -20,17 +20,6 @@ create_pypi = load_source_module(
 )
 
 
-def _set_version_history(monkeypatch: pytest.MonkeyPatch,
-                         version: str) -> None:
-    """Set VERSION_HISTORY to one deterministic test release."""
-    monkeypatch.setattr(
-        create_pypi,
-        'VERSION_HISTORY',
-        [['Version', 'Date', 'Python version', 'Description'],
-         [version, '01 Jan 2026', '3.12 or newer', 'Test release']]
-    )
-
-
 def _create_paths_for_version_check(
         root: Path,
         base_setup_version: str,
@@ -102,10 +91,8 @@ def test_get_version_in_file(content: str, expected: str) -> None:
     assert version == expected
 
 
-def test_check_version_accepts_consistent_files(
-        monkeypatch: pytest.MonkeyPatch) -> None:
+def test_check_version_accepts_consistent_files() -> None:
     """Test check_version passes when all version values are consistent."""
-    _set_version_history(monkeypatch, '1.2')
     with TemporaryDirectory() as tmp_dir:
         root = Path(tmp_dir)
         paths = _create_paths_for_version_check(
@@ -117,10 +104,8 @@ def test_check_version_accepts_consistent_files(
 
 
 def test_check_version_fails_on_mismatch(
-        capsys: pytest.CaptureFixture[str],
-        monkeypatch: pytest.MonkeyPatch) -> None:
+        capsys: pytest.CaptureFixture[str]) -> None:
     """Test check_version exits when version files do not match."""
-    _set_version_history(monkeypatch, '1.2')
     with TemporaryDirectory() as tmp_dir:
         root = Path(tmp_dir)
         paths = _create_paths_for_version_check(
@@ -149,6 +134,5 @@ def test_create_pypi_readme_writes_markdown(
     assert out == ''
     assert '# mformat' in text
     assert '## Installing mformat (base package, this package)' in text
-    assert '## Version history' in text
     assert '## Test summary' in text
     assert 'Created' in err
