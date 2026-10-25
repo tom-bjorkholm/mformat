@@ -195,10 +195,10 @@ format was introduced.
 
 ## Test summary
 
-- Test result: 2696 passed in 44s
+- Test result: 2696 passed in 40s
 - No flake8 warnings.
 - No mypy errors found.
 - No pylint warnings.
 - Python layout report not available.
 - Built version(s): 0.8
-- Build and test using Python 3.12.10
+- Build and test using Python 3.13.17
